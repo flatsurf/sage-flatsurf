@@ -27,7 +27,7 @@ EXAMPLES::
 #
 #        Copyright (C) 2013-2019 Vincent Delecroix
 #                      2013-2019 W. Patrick Hooper
-#                           2023 Julian Rüth
+#                      2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ from flatsurf.geometry.categories.surface_category import SurfaceCategoryWithAxi
 from flatsurf.geometry.categories.half_translation_surfaces import (
     HalfTranslationSurfaces,
 )
+from flatsurf.cache import cached_surface_method
 
 
 class TranslationSurfaces(SurfaceCategoryWithAxiom):
@@ -313,6 +314,45 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
         """
 
+        class ParentMethods:
+            r"""
+            Provides methods available to all translation surfaces built from
+            finitely many polygons.
+
+            If you want to add functionality to such surfaces you most likely
+            want to put it here.
+            """
+
+            @cached_surface_method
+            def pyflatsurf(self):
+                r"""
+                Return an isomorphism to a surface backed by libflatsurf.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+                    0
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+                    1
+
+                    sage: S.glue((0, 0), (1, 1))
+                    sage: S.glue((0, 1), (1, 2))
+                    sage: S.glue((0, 2), (1, 0))
+
+                    sage: S.set_immutable()
+
+                    sage: T = S.pyflatsurf().codomain()  # optional: pyflatsurf  # random output due to cppyy deprecation warnings
+                    sage: T  # optional: pyflatsurf
+                    Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+
+                """
+                from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
+                return Surface_pyflatsurf._from_flatsurf(self)
+
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
             The category of translation surfaces without boundary built from
@@ -350,10 +390,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         H_3(4)
 
                     """
-                    from surface_dynamics import AbelianStratum
+                    from surface_dynamics import Stratum
                     from sage.rings.integer_ring import ZZ
 
-                    return AbelianStratum([ZZ(a - 1) for a in self.angles()])
+                    return Stratum([ZZ(a - 1) for a in self.angles()], 1)
 
                 def canonicalize(self, in_place=None):
                     r"""
@@ -394,7 +434,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             "the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf"
                         )
 
-                    s = self.delaunay_decomposition().standardize_polygons()
+                    s = self.delaunay_decompose().codomain().standardize_polygons()
 
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
@@ -502,7 +542,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if all(a != 1 for a in self.angles()):
                         # no 2π angle
                         return self
-                    from flatsurf.geometry.pyflatsurf_conversion import (
+                    from flatsurf.geometry.pyflatsurf.conversion import (
                         from_pyflatsurf,
                         to_pyflatsurf,
                     )
@@ -560,7 +600,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             "only triangulated surfaces can be rel-deformed"
                         )
 
-                    from flatsurf.geometry.pyflatsurf_conversion import (
+                    from flatsurf.geometry.pyflatsurf.conversion import (
                         FlatTriangulationConversion,
                     )
 

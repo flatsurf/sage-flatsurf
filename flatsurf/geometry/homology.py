@@ -50,9 +50,9 @@ https://github.com/flatsurf/sage-flatsurf/issues/166)::
     sage: from flatsurf import Polygon, similarity_surfaces, SimplicialHomology, GL2ROrbitClosure
 
     sage: P = Polygon(angles=[3, 4, 13])
-    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation").triangulate()
+    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation").triangulate().codomain()
 
-    sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion  # optional: pyflatsurf
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion  # optional: pyflatsurf
     sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
     sage: T = conversion.codomain()  # optional: pyflatsurf
     sage: O = GL2ROrbitClosure(T)  # optional: pyflatsurf
@@ -89,8 +89,10 @@ from typing import List, Tuple
 
 from sage.structure.parent import Parent
 from sage.structure.element import Element
-
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
+
+from flatsurf.geometry.morphism import MorphismSpace
 
 
 class SimplicialHomologyClass(Element):
@@ -233,7 +235,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: 3 * H.gens()[0]
             3*B[(0, 1)]
@@ -253,7 +254,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0].coefficients()
             (1, 0)
@@ -273,7 +273,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0] == H.gens()[0]
             True
@@ -306,7 +305,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: hash(H.gens()[0]) == hash(H.gens()[0])
             True
@@ -322,7 +320,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0]
             B[(0, 1)]
@@ -338,7 +335,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a,b = H.gens()
             sage: a.coefficient(a)
@@ -372,7 +368,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
             sage: a + b
@@ -389,7 +384,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
             sage: a - b
@@ -406,7 +400,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
             sage: a + b
@@ -425,7 +418,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: h = H.gens()[0]
             sage: h.surface()
@@ -442,7 +434,6 @@ class SimplicialHomologyClass(Element):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: h = H.gens()[0]
             sage: bool(h)
@@ -560,7 +551,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.is_absolute()
             True
@@ -576,7 +566,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.some_elements()
             [0, B[(0, 1)], B[(0, 0)]]
@@ -592,7 +581,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.surface() == T
             True
@@ -610,7 +598,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.chain_module()
             Free module generated by {(0, 1), (0, 0)} over Integer Ring
@@ -629,7 +616,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
 
         In dimension 1, this is the set of edges::
 
@@ -682,7 +668,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
             H₁(Translation Surface in H_1(0) built from a square)
@@ -713,7 +698,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
 
         ::
 
@@ -783,7 +767,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._chain_complex()
             Chain complex with at most 3 nonzero terms over Integer Ring
@@ -827,7 +810,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.zero()
             0
@@ -845,7 +827,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._homology()
             (Finitely generated module V/W over Integer Ring with invariants (0, 0),
@@ -905,7 +886,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._test_homology()
 
@@ -931,7 +911,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
             H₁(Translation Surface in H_1(0) built from a square)
@@ -969,7 +948,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
         ::
@@ -1026,7 +1004,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
 
         ::
 
@@ -1053,6 +1030,22 @@ class SimplicialHomologyGroup(Parent):
         homology, from_homology, _ = self._homology()
         return tuple(self(from_homology(g)) for g in homology.gens())
 
+    def ngens(self):
+        r"""
+        Return the Betti number of this homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+
+            sage: H = T.homology()
+            sage: H.ngens()
+            2
+
+        """
+        return len(self.gens())
+
     def degree(self):
         r"""
         Return the degree `k` for this homology `H_k`.
@@ -1061,7 +1054,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
             sage: H.degree()
@@ -1074,13 +1066,16 @@ class SimplicialHomologyGroup(Parent):
         r"""
         Return a symplectic basis of generators of this homology group.
 
-        TODO: Add a reference and a definition.
+        A symplectic basis is a basis of the form `(e_1, \ldots, e_n, f_1,
+        \ldots, f_n)` such that for the
+        :meth:`SimplicialHomologyClass.algebraic_intersection`, `e_i
+        \cdot e_j = f_i \cdot f_j = 0` and `e_i \cdot f_j = \delta_{ij}` for
+        all `i` and `j`.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
 
         ::
 
@@ -1112,7 +1107,9 @@ class SimplicialHomologyGroup(Parent):
                 "cannot determine symplectic basis for this homology group over this ring yet"
             )
 
-        return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]
+        return [
+            sum(c * g for (c, g) in zip(row, self.gens())) for row in C
+        ]  # pyright: ignore
 
     def _test_symplectic_basis(self, **options):
         r"""
@@ -1122,7 +1119,6 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._test_symplectic_basis()
 
@@ -1150,6 +1146,99 @@ class SimplicialHomologyGroup(Parent):
             for bb in B:
                 tester.assertEqual(b.algebraic_intersection(bb), 0)
 
+    def hom(self, f, codomain=None):
+        r"""
+        Return the homomorphism of homology induced by ``f``.
+
+        INPUT:
+
+        - ``f`` -- a morphism of surfaces or a matrix
+
+        - ``codomain`` -- the simplicial homology this morphism maps into
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: g.matrix()  # optional: pyflatsurf
+            [1 0]
+            [2 1]
+
+            sage: H.gens()
+            (B[(0, 1)], B[(0, 0)])
+            sage: [g(h) for h in H.gens()]  # optional: pyflatsurf
+            [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]
+
+        """
+        from flatsurf.geometry.veech_group import SurfaceMorphism
+        from sage.matrix.matrix0 import Matrix
+        from sage.all import Hom
+
+        if isinstance(f, SurfaceMorphism):
+            if codomain is None:
+                codomain = f.codomain().homology()
+
+            if codomain.surface() is not f.codomain():
+                raise ValueError("codomain must be codomain of morphism or None")
+
+            if f.domain() is self.surface():
+                parent = Hom(self, codomain)
+                return parent.__make_element_class__(
+                    SimplicialHomologyMorphism_induced
+                )(parent, f)
+        elif isinstance(f, Matrix):
+            if codomain is None:
+                if f.is_square():
+                    codomain = self
+
+            if codomain is None:
+                raise NotImplementedError("cannot deduce codomain from this matrix")
+
+            if f.ncols() != self.ngens():
+                raise ValueError(
+                    "matrix must have one column for each generator of homology"
+                )
+
+            if f.nrows() != codomain.ngens():
+                raise ValueError(
+                    "matrix must have one row for each generator of the codomain"
+                )
+
+            parent = Hom(self, codomain)
+            return parent.__make_element_class__(SimplicialHomologyMorphism_matrix)(
+                parent, f
+            )
+
+        raise NotImplementedError(
+            "cannot create a morphism in homology from this data yet"
+        )
+
+    def _Hom_(self, Y, category=None):
+        r"""
+                Return the space of morphisms from this homology to ``Y``.
+        k        EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: H = S.homology()
+
+                    sage: End(H)
+                    Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)
+
+        """
+        if isinstance(Y, SimplicialHomologyGroup):
+            return SimplicialHomologyMorphismSpace(self, Y, category=category)
+
+        return super()._Hom_(Y, category=category)
+
     def __eq__(self, other):
         r"""
         Return whether this homology is indistinguishable from ``other``.
@@ -1164,11 +1253,9 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: HH = SimplicialHomology(T)
 
             sage: H == HH
@@ -1195,11 +1282,9 @@ class SimplicialHomologyGroup(Parent):
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
             sage: T = translation_surfaces.square_torus()
-            sage: T.set_immutable()
             sage: HH = SimplicialHomology(T)
 
             sage: hash(H) == hash(HH)
@@ -1215,6 +1300,685 @@ class SimplicialHomologyGroup(Parent):
                 self.category(),
             )
         )
+
+
+class SimplicialHomologyMorphismSpace(MorphismSpace):
+    r"""
+    The space of homomorphisms from the homology ``domain`` to ``codomain``.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: A = S.affine_automorphism_group()
+        sage: M = matrix([[1, 0], [0, 1]])
+        sage: f = A.derivative().section()(M, check=False)
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: g = H.hom(f)
+        sage: G = g.parent()
+
+    Since these are homomorphisms in homology, they preserve the linear
+    structure of the homology::
+
+        sage: g.category()
+        Category of endsets of modules over Integer Ring
+
+    TESTS::
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphismSpace
+        sage: isinstance(G, SimplicialHomologyMorphismSpace)
+        True
+
+        sage: TestSuite(G).run()
+
+    """
+
+    def __init__(self, domain, codomain, category=None):
+        from sage.all import Hom
+
+        super().__init__(
+            domain,
+            codomain,
+            category=category or Hom(domain, codomain).homset_category(),
+        )
+
+    def an_element(self):
+        r"""
+        Return some homomorphism in homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+            sage: End(S.homology()).an_element()
+            Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)
+              Defn: [1 0]
+                    [0 1]
+
+            sage: Hom(S.homology(), T.homology()).an_element()
+            Generic morphism:
+              From: H₁(Translation Surface in H_1(0) built from a square)
+              To:   H₁(Translation Surface in H_2(2) built from 3 squares)
+              Defn: [0 0]
+                    [0 0]
+                    [0 0]
+                    [0 0]
+
+        """
+        if self.domain() is self.codomain():
+            return self.identity()
+        return self.zero()
+
+    def identity(self):
+        r"""
+        Return the identity homomorphism in this space (if it exists.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+            sage: End(S.homology()).identity()
+            Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)
+              Defn: [1 0]
+                    [0 1]
+
+        """
+        if self.is_endomorphism_set():
+            from sage.all import identity_matrix
+
+            matrix = identity_matrix(
+                self.codomain().base_ring(), self.domain().ngens(), sparse=True
+            )
+            return self.__make_element_class__(SimplicialHomologyMorphism_matrix)(
+                self, matrix
+            )
+        return super().identity()
+
+    def zero(self):
+        r"""
+        Return the zero homomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+
+            sage: End(S.homology()).zero()
+            Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)
+              Defn: [0 0]
+                    [0 0]
+
+        """
+        from sage.all import zero_matrix
+
+        return self.domain().hom(
+            zero_matrix(
+                self.codomain().base_ring(),
+                nrows=self.codomain().ngens(),
+                ncols=self.domain().ngens(),
+                sparse=True,
+            ),
+            codomain=self.codomain(),
+        )
+
+    def base_ring(self):
+        r"""
+        Return the ring over which these homomorphisms are defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+
+            sage: End(S.homology()).base_ring()
+            Integer Ring
+
+        """
+        if self.domain().base_ring() is self.codomain().base_ring():
+            return self.domain().base_ring()
+
+        return super().base_ring()
+
+    def __reduce__(self):
+        r"""
+        Return a picklable version of this space.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+
+            sage: H = End(S.homology()).base_ring()
+            sage: loads(dumps(H)) == H
+            True
+
+        """
+        return SimplicialHomologyMorphismSpace, (
+            self.domain(),
+            self.codomain(),
+            self.homset_category(),
+        )
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this space of homomorphisms.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+
+            sage: H = End(S.homology())
+            sage: H
+            Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)
+
+        """
+        if self.domain() == self.codomain():
+            return f"Endomorphisms of {self.domain()!r}"
+        return f"Homomorphisms from {self.domain()!r} to {self.codomain()!r}"
+
+
+class SimplicialHomologyMorphism_base(Morphism):
+    r"""
+    Base class for all homomorphisms in homology.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: A = S.affine_automorphism_group()
+        sage: M = matrix([[1, 0], [0, 1]])
+        sage: f = A.derivative().section()(M, check=False)
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: g = H.hom(f)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_base
+        sage: isinstance(g, SimplicialHomologyMorphism_base)
+        True
+
+        sage: TestSuite(g).run()  # optional: pyflatsurf
+
+    """
+
+    @cached_method
+    def matrix(self):
+        r"""
+        Return the matrix describing this homomorphism on the generators of
+        homology (as a multiplication from the left.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: H.gens()
+            (B[(0, 1)], B[(0, 0)], B[(1, 1)], B[(2, 0)])
+            sage: g = H.hom(f)
+
+            sage: g.matrix()  # optional: pyflatsurf
+            [1 0 0 0]
+            [1 1 2 0]
+            [0 0 1 0]
+            [1 0 0 1]
+
+        """
+        from sage.all import matrix
+
+        return matrix(
+            [list(self(gen).coefficients()) for gen in self.domain().gens()]
+        ).transpose()
+
+    def _add_(self, other):
+        r"""
+        Return the pointwise sum of this morphism and ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: h = End(H).one()
+
+            sage: g + h  # optional: pyflatsurf
+            Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)
+              Defn: [2 0 0 0]
+                    [1 2 2 0]
+                    [0 0 2 0]
+                    [1 0 0 2]
+
+        """
+        return self.domain().hom(
+            self.matrix() + other.matrix(), codomain=self.codomain()
+        )
+
+    def _acted_upon_(self, x, self_on_left):
+        r"""
+        Return the morphism given by pointwise multiplying with ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: (2**1234567 * g).matrix().trace() == 2**1234569  # optional: pyflatsurf
+            True
+
+        """
+        return self.domain().hom(x * self.matrix())
+
+    def _neg_(self):
+        r"""
+        Return the pointwise negative of this homomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: -g  # optional: pyflatsurf
+            Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)
+              Defn: [-1  0  0  0]
+                    [-1 -1 -2  0]
+                    [ 0  0 -1  0]
+                    [-1  0  0 -1]
+
+        """
+        return self.domain().hom(-self.matrix(), codomain=self.codomain())
+
+    def _composition(self, other):
+        r"""
+        Return the composition of this homomorphism and ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 2)
+            sage: U = translation_surfaces.mcmullen_L(1, 1, 1, 3)
+
+            sage: f = S.homology().hom(2 * identity_matrix(4), codomain=T.homology())
+            sage: g = T.homology().hom(3 * identity_matrix(4), codomain=U.homology())
+
+            sage: g * f
+            Generic morphism:
+              From: H₁(Translation Surface in H_2(2) built from 3 squares)
+              To:   H₁(Translation Surface in H_2(2) built from 2 squares and a rectangle)
+              Defn: [6 0 0 0]
+                    [0 6 0 0]
+                    [0 0 6 0]
+                    [0 0 0 6]
+
+        """
+        return other.domain().hom(
+            self.matrix() * other.matrix(), codomain=self.codomain()
+        )
+
+    def __bool__(self):
+        r"""
+        Return whether this is not the homommorphism that is zero everywhere.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: bool(g)  # optional: pyflatsurf
+            True
+
+            sage: bool(g.parent().zero())
+            False
+
+        """
+        return bool(self.matrix())
+
+
+class SimplicialHomologyMorphism_matrix(SimplicialHomologyMorphism_base):
+    r"""
+    A homomorphism of homology that is given by a matrix that describes the
+    homomorphism on the generators.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+        sage: T = translation_surfaces.square_torus()
+
+        sage: f = S.homology().hom(matrix([[1, 2, 3, 4], [5, 6, 7, 8]]), codomain=T.homology())
+        sage: f
+        Generic morphism:
+          From: H₁(Translation Surface in H_2(2) built from 3 squares)
+          To:   H₁(Translation Surface in H_1(0) built from a square)
+          Defn: [1 2 3 4]
+                [5 6 7 8]
+
+    TESTS::
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_matrix
+        sage: isinstance(f, SimplicialHomologyMorphism_matrix)
+        True
+
+        sage: TestSuite(f).run()
+
+    """
+
+    def __init__(self, parent, matrix):
+        super().__init__(parent)
+
+        if matrix.is_mutable():
+            from sage.all import matrix as copy
+
+            matrix = copy(matrix)
+            matrix.set_immutable()
+
+        self._matrix = matrix
+
+    def _call_(self, g):
+        r"""
+        Return the image of ``g`` under this homomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: T = translation_surfaces.square_torus()
+
+            sage: f = S.homology().hom(matrix([[1, 2, 3, 4], [5, 6, 7, 8]]), codomain=T.homology())
+            sage: [f(gen) for gen in S.homology().gens()]
+            [5*B[(0, 0)] + B[(0, 1)],
+             6*B[(0, 0)] + 2*B[(0, 1)],
+             7*B[(0, 0)] + 3*B[(0, 1)],
+             8*B[(0, 0)] + 4*B[(0, 1)]]
+
+        """
+        from sage.all import vector
+
+        image = self._matrix * vector(g.coefficients())
+
+        homology, to_chain, to_homology = self.codomain()._homology()
+
+        image = sum(
+            coefficient * gen for (coefficient, gen) in zip(image, homology.gens())
+        )
+
+        return self.codomain()(to_chain(image))
+
+    def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        .. NOTE::
+
+            We cannot override ``_richcmp_`` since our non-uniqueness of
+            surfaces breaks the coercion framework in SageMath.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: h = H.hom(g.matrix())  # optional: pyflatsurf
+            sage: h == h  # optional: pyflatsurf
+            True
+
+        Note that this determines whether two morphisms are indistinguishable,
+        not whether they are pointwise the same::
+
+            sage: h == g  # optional: pyflatsurf
+            False
+
+        """
+        if not isinstance(other, SimplicialHomologyMorphism_matrix):
+            return False
+
+        return self.parent() == other.parent() and self._matrix == other._matrix
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this morphism that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: f = End(S.homology()).one()
+            sage: g = End(S.homology()).one()
+
+            sage: hash(f) == hash(g)
+            True
+
+        """
+        return hash((self.parent(), self._matrix))
+
+    def _repr_defn(self):
+        r"""
+        Helper method for :meth:`_repr_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: f = End(S.homology()).one()
+            sage: f
+            Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)
+              Defn: [1 0 0 0]
+                    [0 1 0 0]
+                    [0 0 1 0]
+                    [0 0 0 1]
+
+        """
+        return repr(self._matrix)
+
+
+class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
+    r"""
+    A homomorphism of homology induced by a morphism of surfaces.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: A = S.affine_automorphism_group()
+        sage: M = matrix([[1, 2], [0, 1]])
+        sage: f = A.derivative().section()(M, check=False)
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: g = H.hom(f)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_induced
+        sage: isinstance(g, SimplicialHomologyMorphism_induced)
+        True
+
+        sage: TestSuite(g).run()  # optional: pyflatsurf
+
+    """
+
+    def __init__(self, parent, morphism):
+        super().__init__(parent)
+
+        self._morphism = morphism
+
+    def _call_(self, x):
+        r"""
+        Return the image of the homology class ``x`` under this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: H.gens()
+            (B[(0, 1)], B[(0, 0)])
+            sage: [g(h) for h in H.gens()]  # optional: pyflatsurf
+            [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]
+
+        """
+        return self._morphism._image_homology(x, codomain=self.codomain())
+
+    def _repr_type(self):
+        r"""
+        Helper method for :meth:`_repr_` to produce a printable representation
+        of this homomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: g._repr_type()
+            'Induced'
+
+        """
+        return "Induced"
+
+    def _repr_defn(self):
+        r"""
+        Helper method for :meth:`_repr_` to produce a printable representation
+        of this homomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: print(g._repr_defn())
+            Induced by Affine endomorphism of Translation Surface in H_1(0) built from a square
+              Defn: Lift of linear action given by
+                    [1 2]
+                    [0 1]
+
+        """
+        return f"Induced by {self._morphism!r}"
+
+    def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        .. NOTE::
+
+            We cannot override ``_richcmp_`` since our non-uniqueness of
+            surfaces breaks the coercion framework in SageMath.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: h = H.hom(f)
+
+            sage: g == h
+            True
+
+        Note that this does not compare homomorphisms pointwise::
+
+            sage: h = H.hom(g.matrix())  # optional: pyflatsurf
+            sage: g == h  # optional: pyflatsurf
+            False
+
+        """
+        if not isinstance(other, SimplicialHomologyMorphism_induced):
+            return False
+
+        return self.parent() == other.parent() and self._morphism == other._morphism
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this homomorphism that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: h = H.hom(f)
+            sage: hash(g) == hash(h)
+            True
+
+        """
+        return hash((self.parent(), self._morphism))
 
 
 def SimplicialHomology(
@@ -1256,7 +2020,6 @@ def SimplicialHomology(
 
         sage: from flatsurf import translation_surfaces, SimplicialHomology
         sage: T = translation_surfaces.square_torus()
-        sage: T.set_immutable()
         sage: SimplicialHomology(T) is SimplicialHomology(T)
         True
 
