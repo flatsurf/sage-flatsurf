@@ -77,8 +77,8 @@ jobs:
       # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
       - name: Fix cppyy dependencies on macOS
         run: |
-          mamba install -y libcxx=16
-          echo "libcxx ==16" >> $CONDA_PREFIX/conda-meta/pinned
+          mamba install -y libcxx=17
+          echo "libcxx 17.*" >> $CONDA_PREFIX/conda-meta/pinned
         if: ${{ matrix.on == 'macos-13' }}
       - name: Install dependencies
         run: |
