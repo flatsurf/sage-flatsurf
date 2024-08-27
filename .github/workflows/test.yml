@@ -65,11 +65,10 @@ jobs:
             optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
-          # Disabled until https://github.com/conda-forge/clangdev-feedstock/pull/309, https://github.com/conda-forge/cppyy-cling-feedstock/pull/62 has been merged
-          # - on: macos-13
-          #   optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
-          #   environment: "flatsurf.yml"
-          #   python: "3.10.8"
+          - on: macos-13
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
+            environment: "flatsurf.yml"
+            python: "3.10.8"
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
