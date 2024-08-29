@@ -108,7 +108,6 @@ jobs:
       - name: Initialize cppyy
         run: |
           # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
-          export PREFIX=$CONDA_PREFIX
           python -c 'import cppyy' || true
       - name: Run SageMath doctests
         run: |
