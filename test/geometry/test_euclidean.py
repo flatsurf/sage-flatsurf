@@ -22,7 +22,7 @@ Test basic geometry methods used in polygon construction.
 
 import pytest
 
-from sage.all import QQ, randint
+from sage.all import QQ, randint, vector
 
 
 @pytest.mark.repeat(1024)
@@ -60,10 +60,10 @@ def test_segment_intersect():
     from flatsurf.geometry.euclidean import is_segment_intersecting
 
     while True:
-        us = (randint(-4, 4), randint(-4, 4))
-        ut = (randint(-4, 4), randint(-4, 4))
-        vs = (randint(-4, 4), randint(-4, 4))
-        vt = (randint(-4, 4), randint(-4, 4))
+        us = vector((randint(-4, 4), randint(-4, 4)))
+        ut = vector((randint(-4, 4), randint(-4, 4)))
+        vs = vector((randint(-4, 4), randint(-4, 4)))
+        vt = vector((randint(-4, 4), randint(-4, 4)))
         if us != ut and vs != vt:
             break
 

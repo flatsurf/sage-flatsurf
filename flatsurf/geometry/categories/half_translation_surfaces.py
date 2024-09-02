@@ -55,6 +55,7 @@ from flatsurf.geometry.categories.surface_category import (
 )
 from sage.misc.lazy_import import LazyImport
 from sage.all import QQ, AA
+from sage.misc.cachefunc import cached_method
 
 
 class HalfTranslationSurfaces(SurfaceCategory):
@@ -193,7 +194,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         Q_0(0, -1^4)
 
                     """
-                    angles = self.angles()
+                    angles = list(self.angles())
 
                     for a, b in self.gluings():
                         if a == b:
@@ -456,4 +457,5 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         S.glue((relabelling[p1], e1), (relabelling[p2], e2))
 
                     S._refine_category_(self.category())
+                    S.set_immutable()
                     return S, M

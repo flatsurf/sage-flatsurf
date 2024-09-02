@@ -25,21 +25,6 @@ r"""
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from collections import deque
-
-from flatsurf.geometry.euclidean import line_intersection
-from flatsurf.geometry.surface_objects import SaddleConnection
-
-# Vincent question:
-# using deque has the disadvantage of losing the initial points
-# ideally doig
-#  my_line[i]
-# we should always access to the same element
-
-# I wanted to be able to flow backward thus inserting at the beginning of a list.
-# Perhaps it would be better to model this on a deque-like class that is indexed by
-# all integers rather than just the non-negative ones? Do you know of such
-# a class? Alternately, we could store an offset.
 
 
 def get_linearity_coeff(u, v):
@@ -481,6 +466,8 @@ class AbstractStraightLineTrajectory:
             Point (0, 1/2) of polygon 0
             2 2
         """
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
         # Partition the segments making up the trajectories by label.
         if isinstance(traj, SaddleConnection):
             traj = traj.trajectory()
@@ -506,11 +493,17 @@ class AbstractStraightLineTrajectory:
                 seg_list_2 = lab_to_seg2[label]
                 for seg1 in seg_list_1:
                     for seg2 in seg_list_2:
+                        from flatsurf.geometry.euclidean import line_intersection
+
                         x = line_intersection(
-                            seg1.start().point(),
-                            seg1.start().point() + seg1.start().vector(),
-                            seg2.start().point(),
-                            seg2.start().point() + seg2.start().vector(),
+                            (
+                                seg1.start().point(),
+                                seg1.start().point() + seg1.start().vector(),
+                            ),
+                            (
+                                seg2.start().point(),
+                                seg2.start().point() + seg2.start().vector(),
+                            ),
                         )
                         if x is not None:
                             pos = (
@@ -561,6 +554,8 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
     """
 
     def __init__(self, tangent_vector):
+        from collections import deque
+
         self._segments = deque()
         seg = SegmentInPolygon(tangent_vector)
         self._segments.append(seg)
@@ -755,6 +750,8 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             poly.vertex(i + 1) - poly.vertex(i), start.point() - poly.vertex(i)
         )
         x *= T.length_bot(i)
+
+        from collections import deque
 
         self._points = deque()  # we store triples (lab, edge, rel_pos)
         self._points.append((p, i, x))

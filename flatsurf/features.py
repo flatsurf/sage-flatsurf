@@ -77,9 +77,19 @@ pyexactreal_feature = PythonModule(
     "pyexactreal", url="https://github.com/flatsurf/exact-real/#install-with-conda"
 )
 
-pyflatsurf_feature = PythonModule(
-    "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
-)
+
+class PyflatsurfModule(PythonModule):
+    def __init__(self):
+        super().__init__(
+            "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
+        )
+
+    def is_saddle_connection_enumeration_functional(self):
+        # TODO: Check whether version is >=3.14.1
+        return False
+
+
+pyflatsurf_feature = PyflatsurfModule()
 
 gmpxxyy_feature = PythonModule(
     "gmpxxyy", url="https://github.com/flatsurf/flatsurf/#install-with-conda"

@@ -36,8 +36,7 @@ We can use morphisms to follow a surface through a retriangulation process::
     sage: morphism = S.subdivide_edges(3)
     sage: morphism = morphism.codomain().triangulate() * morphism
     sage: T = morphism.codomain()
-
-    sage: morphism
+    sage: morphism  # TODO: Get rid of the identity in the sequence below.
     Composite morphism:
       From: Translation Surface in H_2(2) built from a regular octagon
       To:   Triangulation of Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
@@ -1517,6 +1516,15 @@ class SurfaceMorphism(Morphism):
             "not a single edge maps to this edge, cannot implement preimage of this edge yet"
         )
 
+    def _image_line_segment(self, s):
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a line segment yet")
+
+    def _section_line_segment(self, t):
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute a preimage of a line segment yet")
+
+    def _test_section_line_segment(self, **options):
+        raise NotImplementedError
+
     def _composition(self, other):
         r"""
         Return the composition of this morphism and ``other``.
@@ -1556,6 +1564,252 @@ class SurfaceMorphism(Morphism):
             return other
 
         return CompositionMorphism._create_morphism(self, other)
+
+    def push_vector_forward(self, tangent_vector):
+        import warnings
+
+        warnings.warn(
+            "push_vector_forward() has been deprecated and will be removed in a future version of sage-flatsurf; call the morphism with the tangent vector instead, i.e., instead of morphism.push_vector_forward(t) use morphism(t)"
+        )
+
+        return self(tangent_vector)
+
+    def pull_vector_back(self, tangent_vector):
+        import warnings
+
+        warnings.warn(
+            "pull_vector_back() has been deprecated and will be removed in a future version of sage-flatsurf; call a section of morphism with the tangent vector instead, i.e., instead of morphism.pull_vector_back(t) use morphism.section()(t)"
+        )
+
+        return self.section()(tangent_vector)
+
+    def _image_saddle_connection(self, c):
+        r"""
+        Return the image of saddle connection ``c`` under this morphism.
+
+        This is a helper method for :meth:`__call__`.
+
+        Subclasses should implement this method if the morphism is meaningful
+        on the level of saddle connections.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+        The image of a saddle connection::
+
+            sage: from flatsurf.geometry.saddle_connection import SaddleConnection
+            sage: c = SaddleConnection.from_vertex(S, 0, 0, (1, 1))
+            sage: c
+            Saddle connection (1, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
+
+            sage: morphism(c)
+            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
+
+        Not all morphisms are meaningful on the level of saddle connections::
+
+            sage: morphism = S.subdivide()
+            sage: morphism(c)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: a InsertMarkedPointsInFaceMorphism_with_category cannot compute the image of a saddle connection yet
+
+        """
+        raise NotImplementedError(
+            f"a {type(self).__name__} cannot compute the image of a saddle connection yet"
+        )
+
+    def _section_saddle_connection(self, t):
+        r"""
+        Return a preimage of a saddle connection ``t`` under this morphism.
+
+        This is a helper method for :meth:`__call__` of the :meth:`section`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: T = morphism.codomain()
+
+            sage: from flatsurf.geometry.saddle_connection import SaddleConnection
+            sage: t = SaddleConnection.from_vertex(T, 0, 0, (2, 1)); t
+            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
+            sage: (morphism * morphism.section())(t)
+            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
+
+        """
+        raise NotImplementedError(
+            f"a {type(self).__name__} cannot compute a preimage of a saddle connection yet"
+        )
+
+    def _test_section_saddle_connection(self, **options):
+        r"""
+        Verify that :meth:`_section_saddle_connection` actually produces a
+        section.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: morphism._test_section_saddle_connection()
+
+        """
+        tester = self._tester(**options)
+
+        section = self.section()
+        identity = self * section
+
+        from itertools import islice
+
+        for q in tester.some_elements(islice(self.codomain().saddle_connections(), 16)):
+            tester.assertEqual(identity(q), q)
+
+    def _image_tangent_vector(self, t):
+        r"""
+        Return the image of the tangent vector ``v`` under this morphism.
+
+        This is a helper method for :meth:`__call__`.
+
+        Subclasses should implement this method if the morphism is meaningful
+        on the level of tangent vectors.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+        The image of a tangent vector::
+
+            sage: t = S.tangent_vector(0, (0, 0), (1, 1))
+            sage: morphism(t)
+            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
+
+        Not all morphisms are meaningful on the level of tangent vectors::
+
+            # TODO: Add an example of such a morphism
+
+        """
+        raise NotImplementedError(
+            f"a {type(self).__name__} cannot compute the image of a tangent vector yet"
+        )
+
+    def _section_tangent_vector(self, q):
+        r"""
+        Return a preimage of the tangent vector ``q`` under this morphism.
+
+        This is a helper method for :meth:`__call__` of the :meth:`section`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: T = morphism.codomain()
+
+            sage: q = T.tangent_vector(0, (0, 0), (2, 1)); q
+            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
+            sage: (morphism * morphism.section())(q)
+            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
+
+        """
+        raise NotImplementedError(
+            f"a {type(self).__name__} cannot compute a preimage of a tangent vector yet"
+        )
+
+    def _test_section_tangent_vector(self, **options):
+        r"""
+        Verify that :meth:`_section_tangent_vector` actually produces a
+        section.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: morphism._test_section_tangent_vector()
+
+        """
+        tester = self._tester(**options)
+
+        section = self.section()
+        identity = self * section
+
+        for q in tester.some_elements(self.codomain().tangent_bundle().some_elements()):
+            tester.assertEqual(identity(q), q)
+
+    def change(self, domain=None, codomain=None, check=True):
+        r"""
+        Return a copy of this morphism with the domain or codomain replaced
+        with ``domain`` and ``codomain``, respectively.
+
+        For this to work, the ``domain`` must be trivially a replacement for
+        the original domain and the ``codomain`` must be trivially a
+        replacement for the original codomain. This method is sometimes useful
+        to implement new morphisms. It should not be necessary to call this
+        method otherwise. This method is usually used when the domain or
+        codomain was originally mutable or to replace the domain or codomain
+        with another indistinguishable domain or codomain.
+
+        INPUT:
+
+        - ``domain`` -- a surface (default: ``None``); if set, the surfaces
+          replaces the domain of this morphism
+
+        - ``codomain`` -- a surface (default: ``None``); if set, the surfaces
+          replaces the codomain of this morphism
+
+        - ``check`` -- a boolean (default: ``True``); whether to check
+          compatibility of the ``domain`` and ``codomain`` with the data
+          defining the original morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: morphism.domain()
+            Unknown Surface
+
+            sage: S.set_immutable()
+            sage: morphism = morphism.change(domain=S)
+            sage: morphism.domain()
+            Translation Surface in H_1(0) built from a square
+
+        ::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=True)
+            sage: morphism.domain()
+            Unknown Surface
+            sage: morphism.codomain()
+            Unknown Surface
+
+            sage: S.set_immutable()
+            sage: morphism = morphism.change(codomain=S)
+            sage: morphism.domain()
+            Unknown Surface
+            sage: morphism.codomain()
+            Translation Surface in H_1(0) built from a rectangle
+
+        """
+        if domain is not None:
+            raise NotImplementedError(
+                f"a {type(self).__name__} cannot swap out its domain yet"
+            )
+        if codomain is not None:
+            raise NotImplementedError(
+                f"a {type(self).__name__} cannot swap out its codomain yet"
+            )
+
+        return self
 
     def __eq__(self, other):
         r"""
@@ -1767,6 +2021,9 @@ class SectionMorphism(SurfaceMorphism):
         """
         return self._morphism._image_homology_edge(label, edge, codomain=codomain)
 
+    def _image_line_segment(self, x): return self._morphism._section_line_segment(x)
+    def _section_line_segment(self, y): return self._morphism._image_line_segment(y)
+
     def __eq__(self, other):
         r"""
         Return whether this section is indistinguishable from ``other``.
@@ -1837,6 +2094,9 @@ class SectionMorphism(SurfaceMorphism):
         return f"Section of {self._morphism}"
 
 
+# TODO: The whole composite setup is not great yet. The special handling of
+# contravariant induced maps in call is a hack.
+# TODO: We should reverse the order of _morphisms.
 class CompositionMorphism(SurfaceMorphism):
     r"""
     The formal composition of two morphisms between surfaces.
@@ -2024,6 +2284,16 @@ class CompositionMorphism(SurfaceMorphism):
         return self._image_homology(
             self.domain().homology()((label, edge)), codomain=codomain
         )
+
+    def _image_line_segment(self, x):
+        for morphism in self._morphisms:
+            x = morphism._image_line_segment(x)
+        return x
+
+    def _section_line_segment(self, y):
+        for morphism in self._morphisms[::-1]:
+            y = morphism._section_line_segment(y)
+        return y
 
     def _repr_type(self):
         r"""
@@ -2542,6 +2812,12 @@ class SurfaceMorphism_factorization(SurfaceMorphism):
         """
         return self._factorization()._section_point(q)
 
+    def _image_line_segment(self, x):
+        return self._factorization()._image_line_segment(x)
+
+    def _section_line_segment(self, y):
+        return self._factorization()._section_line_segment(y)
+
     def _factorization(self):
         r"""
         Return the morphism underlying this morphism.
@@ -2870,7 +3146,27 @@ class NamedFactorizationMorphism(SurfaceMorphism_factorization):
         return hash((self.__factorization, self._name))
 
 
-class TriangulationMorphism_base(SurfaceMorphism):
+class RepolygonizationMorphism(SurfaceMorphism):
+    def _image_line_segment(self, s):
+        raise NotImplementedError
+
+    def _section_line_segment(self, t):
+        from flatsurf.geometry.voronoi import SurfaceLineSegment
+
+        if not self.domain().is_translation_surface():
+            raise NotImplementedError
+
+        if t.start().angle() != 1:
+            raise NotImplementedError
+
+        start = self.section()(t.start())
+
+        assert start.angle() == 1, "preimage of a regular point must be regular"
+
+        return SurfaceLineSegment(self.domain(), *start.representative(), t.holonomy())
+
+
+class TriangulationMorphism_base(RepolygonizationMorphism):
     r"""
     Abstract base class for morphisms from a surface to its triangulation.
 
@@ -2950,6 +3246,53 @@ class TriangulationMorphism_base(SurfaceMorphism):
                     return preimage_label, None
 
         assert False, "triangle must come from a polygon before triangulation"
+
+    def _image_saddle_connection(self, connection):
+        (label, edge) = connection.start()
+
+        label, edge = self._image_edge(label, edge)
+
+        from flatsurf.geometry.euclidean import ccw
+
+        while (
+            ccw(
+                connection.direction().vector(),
+                -self.codomain()
+                .polygon(label)
+                .edges()[(edge - 1) % len(self.codomain().polygon(label).edges())],
+            )
+            <= 0
+        ):
+            (label, edge) = self.codomain().opposite_edge(
+                label, (edge - 1) % len(self.codomain().polygon(label).edges())
+            )
+
+        # TODO: This is extremely slow.
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        return SaddleConnection.from_vertex(
+            self.codomain(), label, edge, connection.direction().vector()
+        )
+
+    def _section_saddle_connection(self, connection):
+        (label, edge) = connection.start()
+
+        domain_label = self.codomain()._reference_label(label)
+        triangulation = self.codomain()._triangulation(domain_label)[1].inverse
+
+        while (label, edge) not in triangulation:
+            label, edge = self.codomain().opposite_edge(label, edge)
+            edge = (edge + 1) % len(self.codomain().polygon(label).edges())
+
+        # TODO: This is extremely slow.
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        return SaddleConnection.from_vertex(
+            self.domain(),
+            domain_label,
+            triangulation[(label, edge)],
+            connection.direction(),
+        )
 
     def _image_homology_edge(self, label, edge, codomain):
         r"""
@@ -3224,7 +3567,7 @@ class DelaunayTriangulationMorphism_delaunay_decomposition(TriangulationMorphism
         return hash(self.parent())
 
 
-class DelaunayTriangulationMorphism(SurfaceMorphism):
+class DelaunayTriangulationMorphism(RepolygonizationMorphism):
     r"""
     A morphism from a triangulated surface to its Delaunay triangulation.
 
@@ -3869,6 +4212,36 @@ class GL2RMorphism(SurfaceMorphism):
 
         self._matrix = matrix(self.domain().base_ring(), m, immutable=True)
 
+    def change(self, domain=None, codomain=None, check=True):
+        return type(self)._create_morphism(
+            domain=domain or self.domain(),
+            codomain=codomain or self.codomain(),
+            m=self._matrix,
+            category=self.category_for(),
+        )
+
+    def _image_tangent_vector(self, t):
+        return self.codomain().tangent_vector(
+            t.polygon_label(), self._matrix * t.point(), self._matrix * t.vector()
+        )
+
+    def _image_saddle_connection(self, connection):
+        if self._matrix.det() <= 0:
+            raise NotImplementedError(
+                "cannot compute the image of a saddle connection for this matrix yet"
+            )
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        return SaddleConnection(
+            surface=self.codomain(),
+            start=connection.start(),
+            end=connection.end(),
+            holonomy=self._matrix * connection.holonomy(),
+            end_holonomy=self._matrix * connection.end_holonomy(),
+            check=False,
+        )
+
     def section(self):
         r"""
         Return an inverse of this morphism.
@@ -4129,3 +4502,289 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
         """
         return hash(self._parts)
+
+    def _image_saddle_connection(self, c):
+        start = c.start()
+        end = c.end()
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        return SaddleConnection(
+            surface=self.codomain(),
+            start=(start[0], start[1] * self._parts),
+            end=(end[0], end[1] * self._parts),
+            holonomy=c.holonomy(),
+            end_holonomy=c.end_holonomy(),
+            check=False,
+        )
+
+    def _section_saddle_connection(self, c):
+        start = c.start()
+        if start[1] % self._parts != 0:
+            # TODO: This is not true. Straight line trajectories are built of such segments.
+            raise NotImplementedError(
+                "cannot represent segments not starting at a vertex yet"
+            )
+
+        end = c.end()
+        if end[1] % self._parts != 0:
+            # TODO: This is not true. Straight line trajectories are built of such segments.
+            raise NotImplementedError(
+                "cannot represent segments not terminating at a vertex yet"
+            )
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        return SaddleConnection(
+            surface=self.domain(),
+            start=(start[0], start[1] // self._parts),
+            end=(end[0], end[1] // self._parts),
+            holonomy=c.holonomy(),
+            end_holonomy=c.end_holonomy(),
+            check=False,
+        )
+
+    def _image_tangent_vector(self, t):
+        return self.codomain().tangent_vector(t.polygon_label(), t.point(), t.vector())
+
+    def _section_tangent_vector(self, t):
+        return self.domain().tangent_vector(t.polygon_label(), t.point(), t.vector())
+
+
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class InsertMarkedPointsInFaceMorphism(RepolygonizationMorphism):
+    def __init__(self, parent, subdivisions, category=None):
+        self._subdivisions = subdivisions
+
+        super().__init__(parent, category=category)
+
+    # TODO: docstring
+    def _image_point(self, p):
+        # TODO: docstring
+        from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+
+        to_pyflatsurf = FlatTriangulationConversion.to_pyflatsurf(
+            domain=self.codomain()
+        )
+
+        label = next(iter(p.labels()))
+        coordinates = next(iter(p.coordinates(label))) - self.domain().polygon(
+            label
+        ).vertex(0)
+
+        coordinates = next(iter(p.coordinates(label)))
+        coordinates -= self.domain().polygon(label).vertex(0)
+
+        if len(self._subdivisions[label]) == 1:
+            # No point was inserted into this polygon.
+            coordinates += self.codomain().polygon(label).vertex(0)
+            return self.codomain()(label, coordinates)
+
+        # We take the translation of the point from a nearby vertex and then
+        # translate from the image of that vertex by the same amount.
+        # Since that translation is currently only implemented in libflatsurf,
+        # we leave the heavy lifting to libflatsurf here.
+        from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+
+        to_pyflatsurf_vector = VectorSpaceConversion.to_pyflatsurf(coordinates.parent())
+
+        def ccw(v, w):
+            r"""
+            Return whether v->w describe a non-clockwise turn.
+            """
+            return v[0] * w[1] >= w[0] * v[1]
+
+        initial_edge = ((label, 0), 0)
+        mid_edge = (
+            (
+                label,
+                len(self.codomain().polygons()) // len(self.domain().polygons()) - 1,
+            ),
+            1,
+        )
+
+        face = (
+            mid_edge
+            if ccw(self.codomain().polygon(mid_edge[0]).edge(mid_edge[1]), coordinates)
+            else initial_edge
+        )
+        face = to_pyflatsurf(face)
+        coordinates = to_pyflatsurf_vector(coordinates)
+
+        import pyflatsurf
+
+        p = pyflatsurf.flatsurf.Point[type(to_pyflatsurf.codomain())](
+            to_pyflatsurf.codomain(), face, coordinates
+        )
+
+        return to_pyflatsurf.section(p)
+
+    def _image_homology_edge(self, label, edge):
+        return [(1, (label, edge), 0)]
+
+    def __eq__(self, other):
+        if not isinstance(other, InsertMarkedPointsInFaceMorphism):
+            return False
+
+        return (
+            self.domain() == other.domain()
+            and self.codomain() == other.codomain()
+            and self._subdivisions == other._subdivisions
+        )
+
+    def _repr_type(self):
+        return "Marked-Point-Insertion"
+
+
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class InsertMarkedPointsOnEdgeMorphism(RepolygonizationMorphism):
+    def __init__(self, parent, points, category=None):
+        super().__init__(parent, category=category)
+        self._points = points
+
+    def _image_point(self, p):
+        return self.codomain()(*p.representative())
+
+    def _repr_type(self):
+        return "InsertMarkedPoint"
+
+class PolygonStandardizationMorphism(SurfaceMorphism):
+    def __init__(self, parent, vertex_zero, category=None):
+        super().__init__(parent, category=category)
+        self._vertex_zero = vertex_zero
+
+    def change(self, domain=None, codomain=None, check=True):
+        # TODO: Check compatibility
+        return type(self)._create_morphism(
+            domain=domain or self.domain(),
+            codomain=codomain or self.codomain(),
+            vertex_zero=self._vertex_zero,
+            category=self.category_for(),
+        )
+
+    def __eq__(self, other):
+        if not isinstance(other, PolygonStandardizationMorphism):
+            return False
+
+        return (
+            self.parent() == other.parent() and self._vertex_zero == other._vertex_zero
+        )
+
+    def _repr_type(self):
+        return "Polygon Standardization"
+
+
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class RelabelingMorphism(RepolygonizationMorphism):
+    def __init__(self, parent, relabeling, category=None):
+        super().__init__(parent, category=category)
+        # TODO: Compactify relabeling and make it frozen and hashable.
+        self._relabeling = relabeling
+
+    def change(self, domain=None, codomain=None, check=True):
+        # TODO: Check compatibility
+        return type(self)._create_morphism(
+            domain=domain or self.domain(),
+            codomain=codomain or self.codomain(),
+            relabeling=self._relabeling,
+            category=self.category_for(),
+        )
+
+    def __eq__(self, other):
+        if not isinstance(other, RelabelingMorphism):
+            return False
+
+        return self.parent() == other.parent() and self._relabeling == other._relabeling
+
+    def _repr_type(self):
+        return "Relabeling"
+
+
+class PolygonIsometryMorphism(SurfaceMorphism):
+    r"""
+    A morphism that maps each polygon to an isometric polygon.
+
+    The morphism is encoded as the mapping on polygon labels and an isometry
+    for each polygon.
+
+    # TODO: Currently, there is no isometry, so we encode things very explicitly.
+
+    EXAMPLES:
+
+    A rotation of a regular octagon::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.regular_octagon()
+
+        sage: from flatsurf.geometry.morphism import PolygonIsometryMorphism
+        sage: f = PolygonIsometryMorphism._create_morphism(S, S, {0: (0, 1)})
+        sage: f
+        Polygon Isometry endomorphism of Translation Surface in H_2(2) built from a regular octagon
+
+    The morphism can be applied to homology classes::
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: a, b, c, d = H.gens()
+        sage: a, b, c, d
+        (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
+        sage: f(a), f(b), f(c), f(d)
+        (B[(0, 2)], B[(0, 3)], -B[(0, 0)], B[(0, 1)])
+
+    A rotation of a triangle unfolding::
+
+        sage: from flatsurf import similarity_surfaces, Polygon
+        sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
+        sage: # TODO: complete example
+
+    """
+
+    def __init__(self, parent, polygon_mapping, category=None):
+        super().__init__(parent, category=category)
+        self._polygon_mapping = polygon_mapping
+
+        for source_label in self.domain().labels():
+            target_label, shift = self._polygon_mapping[source_label]
+
+            source_polygon = self.domain().polygon(source_label)
+            target_polygon = self.codomain().polygon(target_label)
+
+            if len(source_polygon.vertices()) != len(target_polygon.vertices()):
+                raise ValueError("isomorphism must map n-gons to n-gons")
+
+            for source_edge in range(len(source_polygon.vertices())):
+                (
+                    source_opposite_label,
+                    source_opposite_edge,
+                ) = self.domain().opposite_edge(source_label, source_edge)
+
+                target_edge = (source_edge + shift) % len(target_polygon.vertices())
+
+                (
+                    target_opposite_label,
+                    target_opposite_edge,
+                ) = self.codomain().opposite_edge(target_label, target_edge)
+
+                source_opposite_label_image, other_shift = self._polygon_mapping[
+                    source_opposite_label
+                ]
+                if target_opposite_label != source_opposite_label_image:
+                    raise ValueError(
+                        "gluings are not compatible with the provided isometries"
+                    )
+
+                if target_opposite_edge != (source_opposite_edge + other_shift) % len(
+                    self.codomain().polygon(target_opposite_label).vertices()
+                ):
+                    raise ValueError(
+                        "gluings are not compatible with the provided isometries"
+                    )
+
+    def _repr_type(self):
+        return "Polygon Isometry"
+
+    def _image_homology_edge(self, label, edge):
+        label, shift = self._polygon_mapping[label]
+        return [
+            (1, label, (edge + shift) % len(self.codomain().polygon(label).vertices()))
+        ]

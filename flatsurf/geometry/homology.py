@@ -426,6 +426,39 @@ class SimplicialHomologyClass(Element):
         """
         return self.parent().surface()
 
+    def path(self):
+        edges = []
+
+        for (label, edge), multiplicity in dict(self._chain).items():
+            from sage.all import ZZ
+
+            if multiplicity not in ZZ:
+                raise NotImplementedError("cannot lift this homology class to a path")
+
+            if multiplicity < 0:
+                multiplicity *= -1
+                label, edge = self.surface().opposite_edge(label, edge)
+
+            edges.extend([(label, edge)] * multiplicity)
+
+        connected_edges = [edges.pop()]
+        while edges:
+            for edge in edges:
+                if self.surface()(
+                    connected_edges[-1][0], connected_edges[-1][1] + 1
+                ) == self.surface()(*edge):
+                    edges.remove(edge)
+                    connected_edges.append(edge)
+                    break
+            else:
+                assert False, "path not connected"
+
+        assert self.surface()(
+            connected_edges[-1][0], connected_edges[-1][1] + 1
+        ) == self.surface()(*connected_edges[0]), "path not looping"
+
+        return connected_edges
+
     def __bool__(self):
         r"""
         Return whether this class is non-trivial.
@@ -756,6 +789,61 @@ class SimplicialHomologyGroup(Parent):
             return boundary
 
         return self.change(k=self._k - 1).chain_module().zero()
+
+    def _boundary_segment(self, gen):
+        if self._generators == "edge":
+            C0 = self.chain_module(dimension=0)
+            label, edge = gen
+            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+            return C0(
+                self._surface.point(
+                    opposite_label,
+                    self._surface.polygon(opposite_label).vertex(opposite_edge),
+                )
+            ) - C0(
+                self._surface.point(label, self._surface.polygon(label).vertex(edge))
+            )
+
+        if self._generators == "voronoi":
+            C0 = self.chain_module(dimension=0)
+            label, edge = gen
+            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+
+            return C0(opposite_label) - C0(label)
+
+        raise NotImplementedError
+
+    def _boundary_polygon(self, gen):
+        if self._generators == "edge":
+            C1 = self.chain_module(dimension=1)
+            boundary = C1.zero()
+            face = gen
+            for edge in range(len(self._surface.polygon(face).vertices())):
+                if (face, edge) in C1.indices():
+                    boundary += C1((face, edge))
+                else:
+                    boundary -= C1(self._surface.opposite_edge(face, edge))
+            return boundary
+
+        if self._generators == "voronoi":
+            C1 = self.chain_module(dimension=1)
+            boundary = C1.zero()
+            label, vertex = gen
+            # The counterclockwise walk around "vertex" is a boundary.
+            while True:
+                edge = (vertex - 1) % len(self._surface.polygon(label).vertices())
+                opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+                if (label, edge) in C1.indices():
+                    boundary += C1((label, edge))
+                else:
+                    boundary -= C1((opposite_label, opposite_edge))
+
+                if (opposite_label, opposite_edge) == gen:
+                    return boundary
+
+                label, vertex = opposite_label, opposite_edge
+
+        raise NotImplementedError
 
     @cached_method
     def _chain_complex(self):

@@ -1270,6 +1270,10 @@ class PolygonalSurfaces(SurfaceCategory):
                     False
 
                 """
+                if "WithoutBoundary" in self.category().axioms():
+                    return False
+                if "WithBoundary" in self.category().axioms():
+                    return True
                 for label in self.labels():
                     for edge in range(len(self.polygon(label).vertices())):
                         cross = self.opposite_edge(label, edge)
@@ -1319,6 +1323,45 @@ class PolygonalSurfaces(SurfaceCategory):
                 tester = self._tester(**options)
 
                 tester.assertEqual(len(list(self.labels())), len(self.labels()))
+
+            def some_elements(self):
+                r"""
+                Return some points in this surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: list(S.some_elements())
+                    [Vertex 0 of polygon 0,
+                     Point (3/4, 9/4) of polygon 0,
+                     Point (2/3, 0) of polygon 0,
+                     Point (4/3, 8/3) of polygon 0,
+                     Point (1/3, 14/3) of polygon 0,
+                     Point (0, 10/3) of polygon 0]
+
+                """
+                for vertex in self.vertices():
+                    yield vertex
+
+                from sage.categories.all import Fields
+
+                if self.base_ring() in Fields():
+                    for label in self.labels():
+                        polygon = self.polygon(label)
+                        vertices = polygon.vertices()
+
+                        yield self(label, sum(vertices) / len(vertices))
+                        for vertex in range(len(vertices)):
+                            yield self(
+                                label,
+                                (
+                                    polygon.vertex(vertex)
+                                    + 2 * polygon.vertex(vertex + 1)
+                                )
+                                / 3,
+                            )
 
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""

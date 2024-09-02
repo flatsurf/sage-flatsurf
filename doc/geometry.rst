@@ -19,6 +19,7 @@ The flatsurf.geometry Package
    geometry/interval_exchange_transformation
    geometry/l_infinity_delaunay_cells
    geometry/lazy
+   geometry/lazy
    geometry/mappings
    geometry/mega_wollmilchsau
    geometry/minimal_cover

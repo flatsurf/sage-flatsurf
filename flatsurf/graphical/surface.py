@@ -1,3 +1,8 @@
+# TODO: It is annoying that the zero flag is not normally shown when plotting.
+# Whenever polygon labels are shown, the default should be to show the zero
+# flag. Also, there should be an option to enable it with a zero_flags=True or
+# something like that. Finally, it would be nice to not show edge gluings if
+# there is only one possible translation gluing.
 r"""
 .. jupyter-execute::
     :hide-code:
@@ -34,6 +39,8 @@ EXAMPLES:
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
+
+from sage.misc.cachefunc import cached_function
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -134,18 +141,10 @@ class GraphicalSurface:
 
         - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
 
-    - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-      adjacencies of polygons.
-
     - ``default_position_function`` -- a function mapping polygon labels to
       similarities describing the position of the corresponding polygon.
 
-    If adjacencies is not defined and the surface is finite, make_all_visible()
-    is called to make all polygons visible.
-
-    EXAMPLES:
-
-    .. jupyter-execute::
+    EXAMPLES::
 
         sage: from flatsurf import similarity_surfaces
         sage: from flatsurf.graphical.surface import GraphicalSurface
@@ -180,9 +179,11 @@ class GraphicalSurface:
         self,
         surface,
         adjacencies=None,
+        polygon_transformations=None,
         polygon_labels=True,
         edge_labels="gluings",
         default_position_function=None,
+        zero_flags=None,
     ):
         self._ss = surface
         self._default_position_function = default_position_function
@@ -193,9 +194,14 @@ class GraphicalSurface:
 
         self._visible = set(self._ss.roots())
 
-        if adjacencies is None:
-            if self._ss.is_finite_type():
-                self.make_all_visible()
+        if adjacencies is not None:
+            # TODO: This is not implemented anymore. We should just revamp this whole interface.
+            for root in surface.roots():
+                self.make_visible(root)
+        else:
+            if polygon_transformations is None:
+                if self._ss.is_finite_type():
+                    self.layout()
         self._edge_labels = None
 
         self.will_plot_polygons = True
@@ -275,17 +281,19 @@ class GraphicalSurface:
         r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag."""
 
         self.process_options(
-            adjacencies=adjacencies,
+            polygon_transformations=polygon_transformations,
             polygon_labels=polygon_labels,
             edge_labels=edge_labels,
+            zero_flags=zero_flags,
         )
 
     def process_options(
         self,
-        adjacencies=None,
+        polygon_transformations=None,
         polygon_labels=None,
         edge_labels=None,
         default_position_function=None,
+        zero_flags=None,
     ):
         r"""
         Process the options listed as if the graphical_surface was first
@@ -306,9 +314,13 @@ class GraphicalSurface:
             ...
             ValueError: invalid value for edge_labels (='hey')
         """
-        if adjacencies is not None:
-            for p, e in adjacencies:
-                self.make_adjacent(p, e)
+        for label, transformation in (polygon_transformations or {}).items():
+            from flatsurf.graphical.polygon import GraphicalPolygon
+
+            self._polygons[label] = GraphicalPolygon(
+                self._ss.polygon(label), transformation=transformation
+            )
+            self.make_visible(label)
 
         if polygon_labels is not None:
             if not isinstance(polygon_labels, bool):
@@ -329,6 +341,12 @@ class GraphicalSurface:
                 raise ValueError(
                     "invalid value for edge_labels (={!r})".format(edge_labels)
                 )
+
+        if zero_flags is not None:
+            if not isinstance(zero_flags, bool):
+                raise ValueError("zero_flags must be True, False or None")
+
+            self.will_plot_zero_flags = zero_flags
 
         if default_position_function is not None:
             self._default_position_function = default_position_function
@@ -361,6 +379,10 @@ class GraphicalSurface:
         """
         gs = GraphicalSurface(
             self.get_surface(),
+            polygon_transformations={
+                label: polygon.transformation()
+                for (label, polygon) in self._polygons.items()
+            },
             default_position_function=self._default_position_function,
         )
 
@@ -517,6 +539,131 @@ class GraphicalSurface:
                         i = i + 1
                         if i >= limit:
                             return
+
+    def layout(self):
+        surface = self._ss
+
+        self.make_all_visible()
+
+        for label in surface.labels():
+            if label not in surface.roots():
+                self.hide(label)
+
+        @cached_function
+        def polygon_after_glue(label, edge):
+            assert not self.is_visible(label)
+            opposite_label, opposite_edge = surface.opposite_edge(label, edge)
+            assert self.is_visible(opposite_label)
+            self.make_adjacent(opposite_label, opposite_edge, visible=False)
+            assert self.is_adjacent(label, edge)
+            return self.graphical_polygon(label).copy()
+
+        @cached_function
+        def transformed_vertex_after_glue(label, edge, vertex):
+            return polygon_after_glue(label, edge).transformed_vertex(vertex)
+
+        @cached_function
+        def transformed_vertex(label, vertex):
+            assert self.is_visible(label)
+            return self.graphical_polygon(label).transformed_vertex(vertex)
+
+        while True:
+            invisible_labels = [
+                label for label in surface.labels() if not self.is_visible(label)
+            ]
+            if not invisible_labels:
+                break
+
+            def edge_score(label, edge):
+                polygon = surface.polygon(label)
+
+                opposite_edge = surface.opposite_edge(label, edge)
+                if opposite_edge is None:
+                    return -1e9
+                opposite_label, opposite_edge = opposite_edge
+
+                if not self.is_visible(opposite_label):
+                    return -1e9
+
+                score = 0
+
+                adjacents = []
+
+                for e in range(len(polygon.vertices())):
+                    opposite_edge = surface.opposite_edge(label, e)
+                    if opposite_edge is None:
+                        continue
+                    opposite_label, opposite_edge = opposite_edge
+
+                    if not self.is_visible(opposite_label):
+                        continue
+
+                    if transformed_vertex_after_glue(
+                        label, edge, e
+                    ) == transformed_vertex(
+                        opposite_label, opposite_edge + 1
+                    ) and transformed_vertex_after_glue(
+                        label, edge, e + 1
+                    ) == transformed_vertex(
+                        opposite_label, opposite_edge
+                    ):
+                        adjacents.append(opposite_label)
+
+                score += len(adjacents)
+
+                assert score >= 1
+
+                for visible in self.visible():
+                    if visible in adjacents:
+                        continue
+
+                    visible_polygon = surface.polygon(visible)
+
+                    intersections = 0
+                    for e in range(len(polygon.vertices())):
+                        for f in range(len(visible_polygon.vertices())):
+                            from flatsurf.geometry.euclidean import (
+                                is_segment_intersecting,
+                            )
+
+                            intersection = is_segment_intersecting(
+                                (
+                                    transformed_vertex_after_glue(label, edge, e),
+                                    transformed_vertex_after_glue(label, edge, e + 1),
+                                ),
+                                (
+                                    transformed_vertex(visible, f),
+                                    transformed_vertex(visible, f + 1),
+                                ),
+                            )
+                            if intersection == 2:
+                                intersections += 1
+
+                    score -= intersections * 100
+
+                return score
+
+            def label_score(label):
+                assert not self.is_visible(label)
+
+                polygon = surface.polygon(label)
+
+                return max(
+                    edge_score(label, edge) for edge in range(len(polygon.vertices()))
+                )
+
+            label = max(invisible_labels, key=label_score)
+            polygon = surface.polygon(label)
+
+            edge = max(
+                range(len(polygon.vertices())), key=lambda edge: edge_score(label, edge)
+            )
+            self.make_adjacent(*surface.opposite_edge(label, edge))
+            assert self.is_adjacent(label, edge)
+            assert (
+                polygon_after_glue(label, edge).transformation()
+                == self.graphical_polygon(label).transformation()
+            )
 
     def get_surface(self):
         r"""
@@ -676,6 +823,7 @@ class GraphicalSurface:
             return False
         pp, ee = opposite_edge
         if not self.is_visible(pp):
+            # TODO: Why does this only check visibility on pp? (and not also on p.)
             return False
         g = self.graphical_polygon(p)
         gg = self.graphical_polygon(pp)
@@ -742,10 +890,10 @@ class GraphicalSurface:
             sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
-            sage: gs.to_surface((1,-2))
+            sage: gs.to_surface((1,1/2))
             Point (1, 1/2) of polygon 1
-            sage: gs.to_surface((1,-2), v=(1,0))
-            SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
+            sage: gs.to_surface((1,1/2), v=(1,0))
+            SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, 0)
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.infinite_staircase()

@@ -436,7 +436,12 @@ class MutablePolygonalSurface(Surface_base):
              'area',
              'canonicalize',
              'canonicalize_mapping',
+             'cluster_points',
+             'distance_matrix_points',
+             'distance_matrix_vertices',
              'erase_marked_points',
+             'flow_decomposition',
+             'flow_decompositions',
              'holonomy_field',
              'is_veering_triangulated',
              'j_invariant',
@@ -445,6 +450,7 @@ class MutablePolygonalSurface(Surface_base):
              'normalized_coordinates',
              'pyflatsurf',
              'rel_deformation',
+             'singularities',
              'stratum',
              'veech_group',
              'veering_triangulation'}
@@ -487,6 +493,9 @@ class MutablePolygonalSurface(Surface_base):
 
         """
         return self._mutable
+
+    def __hash__(self):
+        return super().__hash__()
 
     def __eq__(self, other):
         r"""
@@ -1103,13 +1112,14 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
     def standardize_polygons(self, in_place=False):
         r"""
-        Replace each polygon with a new polygon which differs by
-        translation and reindexing. The new polygon will have the property
-        that vertex zero is the origin, and all vertices lie either in the
-        upper half plane, or on the x-axis with non-negative x-coordinate.
+        Return a morphism to a surface with each polygon replaced with a new
+        polygon which differs by translation and reindexing. The new polygon
+        will have the property that vertex zero is the origin, and each vertex
+        lies in the upper half plane or on the x-axis with non-negative
+        x-coordinate.
 
-        This is done to the current surface if in_place=True. A mutable
-        copy is created and returned if in_place=False (as default).
+        This is done to the current surface if in_place=True, otherwise an
+        immutable copy is created and returned.
 
         This overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons`
@@ -1127,32 +1137,27 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             sage: s.set_root(0)
             sage: s.set_immutable()
 
-            sage: s.standardize_polygons().polygon(0)
+            sage: s.standardize_polygons().codomain().polygon(0)
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         if not in_place:
             S = MutableOrientedSimilaritySurface.from_surface(self)
-            S.standardize_polygons(in_place=True)
-            return S
+            morphism = S.standardize_polygons(in_place=True)
+            S.set_immutable()
+            return morphism.change(domain=self, codomain=S)
 
-        cv = {}  # dictionary for non-zero canonical vertices
-        for label, polygon in zip(self.labels(), self.polygons()):
-            best = 0
-            best_pt = polygon.vertex(best)
-            for v in range(1, len(polygon.vertices())):
-                pt = polygon.vertex(v)
-                if (pt[1] < best_pt[1]) or (pt[1] == best_pt[1] and pt[0] < best_pt[0]):
-                    best = v
-                    best_pt = pt
-            # We replace the polygon if the best vertex is not the zero vertex, or
-            # if the coordinates of the best vertex differs from the origin.
-            if not (best == 0 and best_pt.is_zero()):
-                cv[label] = best
-        for label, v in cv.items():
-            self.set_vertex_zero(label, v, in_place=True)
+        vertex_zero = {}
+        for label in self.labels():
+            vertices = self.polygon(label).vertices()
+            vertex_zero[label] = min(
+                range(len(vertices)), key=lambda v: (vertices[v][1], vertices[v][0])
+            )
+            self.set_vertex_zero(label, vertex_zero[label], in_place=True)
 
-        return self
+        from flatsurf.geometry.morphism import PolygonStandardizationMorphism
+
+        return PolygonStandardizationMorphism._create_morphism(None, self, vertex_zero)
 
 
 class MutableOrientedSimilaritySurface(
@@ -1625,6 +1630,67 @@ class MutableOrientedSimilaritySurface(
 
         self._polygons[label] = polygon
 
+    def apply_matrix(self, m, in_place=None):
+        r"""
+        Apply the 2×2 matrix ``m`` to the polygons of this surface.
+
+        INPUT:
+
+        - ``m`` -- a 2×2 matrix
+
+        - ``in_place`` -- a boolean (default: ``True``); whether to modify
+          this surface itself or return a modified copy of this surface
+          instead.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+            sage: deformation = S.apply_matrix(matrix([[1, 2], [3, 4]]), in_place=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: apply_matrix(in_place=True) not supported with negative determinant yet
+
+            sage: deformation = S.apply_matrix(matrix([[1, 2], [3, 4]]), in_place=False)
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: deformation.codomain().polygon(0)
+            Polygon(vertices=[(0, 0), (2, 4), (3, 7), (1, 3)])
+
+        """
+        if in_place is None:
+            import warnings
+
+            warnings.warn(
+                "The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly."
+            )
+
+            in_place = True
+
+        if not in_place:
+            return super().apply_matrix(m, in_place=in_place)
+
+        if not m.det():
+            raise ValueError("matrix must not be degenerate")
+
+        if m.det() < 0:
+            raise NotImplementedError(
+                "apply_matrix(in_place=True) not supported with negative determinant yet"
+            )
+
+        for label in self.labels():
+            self.replace_polygon(label, m * self.polygon(label))
+
+        from flatsurf.geometry.morphism import GL2RMorphism
+
+        return GL2RMorphism._create_morphism(None, self, m)
+
     def opposite_edge(self, label, edge=None):
         r"""
         Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.
@@ -1713,14 +1779,6 @@ class MutableOrientedSimilaritySurface(
         return self
 
     def relabel(self, relabeling=None, in_place=False):
-        r"""
-        Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
-        to allow relabeling in-place.
-        """
-        if not in_place:
-            return super().relabel(relabeling=relabeling, in_place=in_place)
-
         if relabeling is None:
             relabeling = {label: l for (l, label) in enumerate(self.labels())}
 
@@ -2059,6 +2117,7 @@ class MutableOrientedSimilaritySurface(
 
         return triangulation, edge_to_edge
 
+    # TODO: Deprecate?
     def delaunay_single_flip(self):
         r"""
         Perform a single in place flip of a triangulated mutable surface
@@ -2166,6 +2225,9 @@ class MutableOrientedSimilaritySurface(
                         break
                     count += 1
                 return 0
+
+    def __hash__(self):
+        return super().__hash__()
 
     def __eq__(self, other):
         r"""
@@ -2437,6 +2499,10 @@ class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
             (0, 1)
 
         """
+        # TODO: This is very inefficient (and wont work on infinite surfaces?) But otherwise, any label is in surface.roots().
+        if root not in list(self):
+            raise KeyError
+
         return self._surface.component(root)
 
     def __iter__(self):
@@ -2909,6 +2975,13 @@ class LabelsFromView(Labels, LabeledView):
         True
 
     """
+
+    def __eq__(self, other):
+        if isinstance(other, LabelsFromView):
+            if self._view == other._view:
+                return True
+
+        return super().__eq__(other)
 
 
 class Polygons(LabeledCollection):

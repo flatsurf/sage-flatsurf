@@ -59,6 +59,8 @@ a rotation, this is a cone surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
+from sage.misc.cachefunc import cached_in_parent_method, cached_method
+
 from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
@@ -319,6 +321,133 @@ class ConeSurfaces(SurfaceCategory):
                     True
 
                 """
+                class ElementMethods:
+                    # TODO: Only cache for vertices in parent, everything else, cache only in the point.
+                    @cached_in_parent_method
+                    def radius_of_convergence(self):
+                        r"""
+                        Return the distance of this point to the closest
+                        (other) singularity.
+
+                        EXAMPLES::
+
+                            sage: from flatsurf import translation_surfaces
+                            sage: S = translation_surfaces.regular_octagon()
+                            sage: S(0, S.polygon(0).centroid()).radius_of_convergence()
+                            √1/2*a + 1
+                            sage: next(iter(S.vertices())).radius_of_convergence()
+                            1
+                            sage: S(0, (1/2, 1/2)).radius_of_convergence()
+                            √1/2
+                            sage: S(0, (1/2, 0)).radius_of_convergence()
+                            1/2
+                            sage: S(0, (1/4, 0)).radius_of_convergence()
+                            1/4
+
+                        """
+                        # TODO: Require immutable for caching.
+
+                        surface = self.parent()
+
+                        norm = surface.euclidean_plane().norm()
+
+                        if all(vertex.angle() == 1 for vertex in surface.vertices()):
+                            return norm.infinite()
+
+                        erase_marked_points = surface.erase_marked_points()
+                        center = erase_marked_points(self)
+
+                        if not center.is_vertex():
+                            insert_marked_points = (
+                                center.surface().insert_marked_points(center)
+                            )
+                            center = insert_marked_points(center)
+
+                        surface = center.parent()
+
+                        for connection in surface.saddle_connections(
+                            initial_vertex=center
+                        ):
+                            end = surface(*connection.end())
+                            if end.angle() != 1:
+                                return norm.from_vector(connection.holonomy())
+
+                        assert False
+
+                class ParentMethods:
+                    r"""
+                    Provides methods available to all oriented cone surfaces
+                    without boundary.
+
+                    If you want to add functionality for such surfaces you most
+                    likely want to put it here.
+                    """
+
+                    def angles(self, numerical=False, return_adjacent_edges=False):
+                        r"""
+                        Return the set of angles around the vertices of the surface.
+
+                        EXAMPLES::
+
+                            sage: from flatsurf import polygons, similarity_surfaces
+                            sage: T = polygons.triangle(3, 4, 5)
+                            sage: S = similarity_surfaces.billiard(T)
+                            sage: S.angles()
+                            [1/3, 1/4, 5/12]
+                            sage: S.angles(numerical=True)   # abs tol 1e-14
+                            [0.333333333333333, 0.250000000000000, 0.416666666666667]
+
+                            sage: S.angles(return_adjacent_edges=True)
+                            [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
+
+                        """
+                        if not numerical and any(
+                            not p.is_rational() for p in self.polygons()
+                        ):
+                            raise NotImplementedError(
+                                "cannot compute exact angles in this surface built from non-rational polygons yet"
+                            )
+
+                        edges = list(self.edges())
+                        edges = set(edges)
+                        angles = []
+
+                        if return_adjacent_edges:
+                            while edges:
+                                p, e = edges.pop()
+                                adjacent_edges = [(p, e)]
+                                angle = self.polygon(p).angle(e, numerical=numerical)
+                                pp, ee = self.opposite_edge(
+                                    p, (e - 1) % len(self.polygon(p).vertices())
+                                )
+                                while pp != p or ee != e:
+                                    edges.remove((pp, ee))
+                                    adjacent_edges.append((pp, ee))
+                                    angle += self.polygon(pp).angle(
+                                        ee, numerical=numerical
+                                    )
+                                    pp, ee = self.opposite_edge(
+                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
+                                    )
+                                angles.append((angle, adjacent_edges))
+                        else:
+                            while edges:
+                                p, e = edges.pop()
+                                angle = self.polygon(p).angle(e, numerical=numerical)
+                                pp, ee = self.opposite_edge(
+                                    p, (e - 1) % len(self.polygon(p).vertices())
+                                )
+                                while pp != p or ee != e:
+                                    edges.remove((pp, ee))
+                                    angle += self.polygon(pp).angle(
+                                        ee, numerical=numerical
+                                    )
+                                    pp, ee = self.opposite_edge(
+                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
+                                    )
+                                angles.append(angle)
+
+                        return angles
 
                 class Connected(SurfaceCategoryWithAxiom):
                     r"""
@@ -344,6 +473,190 @@ class ConeSurfaces(SurfaceCategory):
                         If you want to add functionality for such surfaces you
                         most likely want to put it here.
                         """
+
+                        @cached_method(key=lambda self, distances: None)
+                        def distance_matrix_vertices(self, distance=lambda v, w: None):
+                            vertices = list(self.vertices())
+
+                            A = [
+                                [
+                                    0.0 if n == m else (distance(v, w) or float("inf"))
+                                    for n, w in enumerate(vertices)
+                                ]
+                                for m, v in enumerate(vertices)
+                            ]
+
+                            done = [[a != float("inf") for a in row] for row in A]
+
+                            def floyd():
+                                for k in range(len(vertices)):
+                                    for i in range(len(vertices)):
+                                        for j in range(len(vertices)):
+                                            A[i][j] = min(A[i][j], A[i][k] + A[k][j])
+
+                            for label in self.labels():
+                                polygon = self.polygon(label)
+                                for e, edge in enumerate(polygon.edges()):
+                                    start = self(label, e)
+                                    start = vertices.index(start)
+
+                                    end = self(label, (e + 1) % len(polygon.vertices()))
+                                    end = vertices.index(end)
+
+                                    from sage.all import RDF
+
+                                    A[start][end] = A[end][start] = min(
+                                        A[start][end], edge.change_ring(RDF).norm()
+                                    )
+
+                            floyd()
+
+                            todo = list(range(len(vertices)))
+
+                            while todo:
+                                v = max(
+                                    todo,
+                                    key=lambda v: (
+                                        len([not d for d in done[v]]),
+                                        -max(A[v]),
+                                    ),
+                                )
+
+                                todo.remove(v)
+
+                                if all(
+                                    d or i not in todo for (i, d) in enumerate(done[v])
+                                ):
+                                    continue
+
+                                vertex = vertices[v]
+
+                                for connection in self.saddle_connections(
+                                    initial_vertex=vertex,
+                                    squared_length_bound=max(A[v]) ** 2,
+                                ):
+                                    # TODO: Strangely, all this trickery is needed here since otherwise the symbolic machinery is confused.
+                                    from sage.all import RDF
+
+                                    length = float(
+                                        abs(
+                                            connection.holonomy()
+                                            .change_ring(RDF)
+                                            .norm()
+                                        )
+                                    )
+
+                                    if length >= max(A[v]):
+                                        break
+
+                                    w = vertices.index(self(*connection.end()))
+
+                                    if length < A[v][w]:
+                                        assert length < A[w][v]
+                                        A[v][w] = A[w][v] = length
+
+                                        floyd()
+
+                            from sage.all import matrix
+
+                            return matrix(A)
+
+                        def distance_matrix_points(
+                            self, points, distance=lambda v, w: None
+                        ):
+                            insertion = self.insert_marked_points(
+                                *[p for p in points if not p.is_vertex()]
+                            )
+
+                            V = list(insertion.codomain().vertices())
+
+                            inserted_points = [insertion(p) for p in points]
+
+                            def inserted_distance(v, w):
+                                if v in inserted_points and w in inserted_points:
+                                    return distance(
+                                        points[inserted_points.index(v)],
+                                        points[inserted_points.index(w)],
+                                    )
+
+                                return None
+
+                            D = insertion.codomain().distance_matrix_vertices(
+                                distance=inserted_distance
+                            )
+
+                            index = {
+                                p: V.index(q) for p, q in zip(points, inserted_points)
+                            }
+
+                            from sage.all import matrix
+
+                            return matrix(
+                                [
+                                    [D[index[p]][index[q]] for q in points]
+                                    for p in points
+                                ]
+                            )
+
+                        def cluster_points(self, points):
+                            points = tuple(points)
+                            D = self.distance_matrix_points(points)
+
+                            nclusters = len(points)
+                            for radius in sorted(set(D.list())):
+                                from sage.all import matrix
+
+                                adjacency = matrix(
+                                    [
+                                        [
+                                            d <= radius and i != j
+                                            for j, d in enumerate(row)
+                                        ]
+                                        for i, row in enumerate(D.rows())
+                                    ]
+                                )
+                                # print(radius)
+                                # print(adjacency)
+
+                                clusters = []
+                                ids = list(range(len(points)))
+                                while adjacency:
+                                    from sage.all import Graph
+
+                                    G = Graph(adjacency)
+
+                                    import sage.graphs.cliquer
+
+                                    clique = sage.graphs.cliquer.max_clique(G)
+                                    adjacency = matrix(
+                                        [
+                                            [
+                                                a
+                                                for j, a in enumerate(row)
+                                                if j not in clique
+                                            ]
+                                            for i, row in enumerate(adjacency.rows())
+                                            if i not in clique
+                                        ]
+                                    )
+                                    # print(adjacency)
+
+                                    clique = [ids[c] for c in clique]
+                                    # print("clique", clique)
+                                    clusters.append(clique)
+
+                                    ids = [id for id in ids if id not in clique]
+
+                                for p in range(len(points)):
+                                    if not any(p in cluster for cluster in clusters):
+                                        clusters.append([p])
+                                # print(clusters)
+                                if len(clusters) < nclusters:
+                                    nclusters = len(clusters)
+                                    # TODO: Actually it's not a ball of that radius.
+                                    print(
+                                        f"Identifying roots contained in a {radius:.3} ball, there are {nclusters} roots of orders {tuple(len(cluster) for cluster in clusters)}"
+                                    )
 
                         def _test_genus(self, **options):
                             r"""
@@ -378,6 +691,27 @@ class ConeSurfaces(SurfaceCategory):
 
                             tester.assertAlmostEqual(
                                 self.genus(),
-                                sum(a - 1 for a in self.angles(numerical=True)) / 2.0
-                                + 1,
+                                float(
+                                    sum(a - 1 for a in self.angles(numerical=True))
+                                    / 2.0
+                                    + 1
+                                ),
                             )
+
+                    class ElementMethods:
+                        def distance(self, other):
+                            raise NotImplementedError
+
+                        def closest(self, points):
+                            return next(iter(self.nclosest()))[1]
+
+                        def nclosest(self, points, distance=None):
+                            distances = self.parent().distance_matrix_points(
+                                [self] + list(points), distance=distance
+                            )[0][1:]
+                            distances = [
+                                (distance, i) for (i, distance) in enumerate(distances)
+                            ]
+
+                            for (distance, i) in sorted(distances):
+                                yield distance, points[i]

@@ -403,6 +403,48 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         return opposite_label, opposite_label.index(opposite_half_edge.id())
 
+    def flow_decomposition(self, direction):
+        direction = self._vector_space_conversion.domain()(direction)
+        direction = self._vector_space_conversion(direction)
+
+        import pyflatsurf
+
+        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
+            self._flat_triangulation,
+            direction,
+        )
+
+        from flatsurf.geometry.pyflatsurf.flow_decomposition import (
+            FlowDecomposition_pyflatsurf,
+        )
+
+        return FlowDecomposition_pyflatsurf(decomposition, surface=self)
+
+    def _flow_decompositions_slopes_bfs(self, bound):
+        return self._flow_decompositions_slopes_from_connections(
+            self._flat_triangulation.connections().bound(int(bound)).byLength()
+        )
+
+    def _flow_decompositions_slopes_dfs(self, bound):
+        return self._flow_decompositions_slopes_from_connections(
+            self._flat_triangulation.connections().bound(int(bound))
+        )
+
+    def _flow_decompositions_slopes_from_connections(self, connections):
+        import cppyy
+
+        slopes = cppyy.gbl.std.set[
+            self._vector_space_conversion.codomain(),
+            self._vector_space_conversion.codomain().CompareSlope,
+        ]()
+
+        for connection in connections:
+            slope = connection.vector()
+            if slopes.find(slope) != slopes.end():
+                continue
+            slopes.insert(slope)
+            yield self._vector_space_conversion.section(slope)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.

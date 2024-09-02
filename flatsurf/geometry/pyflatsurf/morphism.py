@@ -146,6 +146,15 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         """
         return "pyflatsurf conversion"
 
+    def _image_saddle_connection(self, connection):
+        from flatsurf.geometry.pyflatsurf.saddle_connection import (
+            SaddleConnection_pyflatsurf,
+        )
+
+        return SaddleConnection_pyflatsurf(
+            self._pyflatsurf_conversion(connection), self.codomain()
+        )
+
     def _test_section_point(self, **options):
         r"""
         Do not verify that :meth:`_section_point` has been implemented

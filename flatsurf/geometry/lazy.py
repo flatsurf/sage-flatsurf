@@ -1184,6 +1184,53 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             category=category or self._surface.category(),
         )
 
+    def _image_edge(self, label, edge):
+        r"""
+        Return the saddle connection in this surface that is identical to the
+        one given by the oriented ``edge`` in the polygon with ``label`` in the
+        original reference surface.
+        """
+        # Ensure that polygon with label is final in self._surface.
+        self.polygon(label)
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        saddle_connection = SaddleConnection.from_half_edge(
+            self._reference, label, edge
+        )
+
+        for flip in self._flips:
+            saddle_connection = flip(saddle_connection)
+
+        return SaddleConnection(
+            self,
+            start=saddle_connection.start(),
+            end=saddle_connection.end(),
+            holonomy=saddle_connection.holonomy(),
+            end_holonomy=saddle_connection.end_holonomy(),
+            check=False,
+        )
+
+    def _preimage_edge(self, label, edge):
+        # Ensure that polygon with label is final in self._surface.
+        self.polygon(label)
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        saddle_connection = SaddleConnection.from_half_edge(self._surface, label, edge)
+
+        for flip in self._flips[::-1]:
+            saddle_connection = flip.section()(saddle_connection)
+
+        return SaddleConnection(
+            self._reference,
+            start=saddle_connection.start(),
+            end=saddle_connection.end(),
+            holonomy=saddle_connection.holonomy(),
+            end_holonomy=saddle_connection.end_holonomy(),
+            check=False,
+        )
+
     def is_mutable(self):
         r"""
         Return whether this surface is mutable, i.e., return ``False``.

@@ -2146,6 +2146,71 @@ class FlatTriangulationConversion(Conversion):
         """
         return self._half_edge_to_label[half_edge.id()]
 
+    def _image_saddle_connection(self, saddle_connection):
+        r"""
+        Return the image of the ``saddle_connection``.
+
+        This is a helper method for :meth:`__call__`.
+
+        INPUT:
+
+        - ``saddle_connection`` -- a saddle connection defined in the :meth:`domain`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: conversion._image_saddle_connection(next(iter(S.saddle_connections(1))))
+            5
+
+        """
+        import pyflatsurf
+
+        return pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())].inSector(
+            self.codomain(),
+            self._image_half_edge(*saddle_connection.start()),
+            self.vector_space_conversion()(saddle_connection.holonomy()),
+        )
+
+    def _preimage_saddle_connection(self, saddle_connection):
+        r"""
+        Return the preimage of the ``saddle_connection`` in the domain of this
+        conversion.
+
+        This is a helper method for :meth:`section`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: connection = next(iter(conversion.codomain().connections()))
+            sage: connection
+            1
+
+            sage: preimage = conversion._preimage_saddle_connection(connection)
+            sage: preimage
+            Saddle connection (1, 0) from vertex 0 of polygon (0, 0) to vertex 0 of polygon (1, 0)
+
+            sage: conversion(preimage)
+            1
+
+        """
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        # TODO: Speed this up!
+        return SaddleConnection.from_vertex(
+            self.domain(),
+            *self._preimage_half_edge(saddle_connection.source()),
+            self.vector_space_conversion().section(saddle_connection.vector()),
+        )
     def __eq__(self, other):
         r"""
         Return whether this conversion is indistinguishable from ``other``.
