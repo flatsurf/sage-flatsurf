@@ -7,25 +7,33 @@ name: flatsurf
 channels:
   - conda-forge
 dependencies:
+  # Older versions of sage-flatsurf do not require bidict yet. Once this is a
+  # requirement it can be removed here (like several other things.)
+  - bidict
+  # SageMath uses maxima to compute roots of algebraic integers. This is used,
+  # e.,g, when computing with the hyperbolic plane over AA.
+  - maxima
   - gap-defaults
   - ipywidgets
   # Some parts of surface-dynamics use latte-integrale
   - latte-integrale>=1.7.6,<2
-  - notebook>=7,<8
   # Required to make symbolic computations functional in SageMath (we don't use them but using SageMath you run into this all the time.)
   - maxima
   - matplotlib-base
+  - more-itertools
   - pip
-  - pyeantic>=1.2.1,<2
-  - pyexactreal>=3.1.0,<4
-  - pyflatsurf>=3.13.3,<4
-  - python=3.9
+  - pyintervalxt>=3,<4
+  - pyeantic>=2,<3
+  - pyexactreal>=4,<5
+  - pyflatsurf>=3.15.0,<4
+  - python=3.11
   - ruamel.yaml
   - sage-flatsurf=0.5.2
   - sagemath-db-conway-polynomials
-  - sagelib=9.7
+  - sagelib=10.3
   - scipy
-  - surface-dynamics>=0.4.7,<0.5
+  - surface-dynamics>=0.6.0,<0.7
+  - veerer>=0.2.0,<0.3.0
   - pip:
     - jupyter_ui_poll >=0.2.1,<0.3
     - flipper

@@ -44,11 +44,13 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
+from sage.categories.category_with_axiom import all_axioms
+
+from flatsurf.cache import cached_surface_method
 from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
 )
-from sage.categories.category_with_axiom import all_axioms
 
 
 class DilationSurfaces(SurfaceCategory):
@@ -129,7 +131,11 @@ class DilationSurfaces(SurfaceCategory):
                 limit = None
 
                 if not self.is_finite_type():
-                    limit = 32
+                    from flatsurf import MutableOrientedSimilaritySurface
+
+                    self = MutableOrientedSimilaritySurface.from_surface(
+                        self, labels=self.labels()[:32]
+                    )
 
                 tester.assertTrue(
                     DilationSurfaces.ParentMethods._is_dilation_surface(
@@ -211,11 +217,16 @@ class DilationSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import translation_surfaces
+                sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
                 sage: S = translation_surfaces.infinite_staircase()
 
                 sage: from flatsurf.geometry.categories import DilationSurfaces
                 sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, limit=8)
+                doctest:warning
+                ...
+                UserWarning: limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; ...
+                True
+                sage: DilationSurfaces.ParentMethods._is_dilation_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
 
             ::
@@ -233,6 +244,14 @@ class DilationSurfaces(SurfaceCategory):
             if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError(
                     "cannot decide whether a non-oriented surface is dilation surface yet"
+                )
+
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
                 )
 
             labels = surface.labels()
@@ -275,98 +294,11 @@ class DilationSurfaces(SurfaceCategory):
 
             return True
 
-        def apply_matrix(self, m, in_place=True, mapping=False):
-            r"""
-            Carry out the GL(2,R) action of m on this surface and return the result.
-
-            If in_place=True, then this is done in place and changes the surface.
-            This can only be carried out if the surface is finite and mutable.
-
-            If mapping=True, then we return a GL2RMapping between this surface and its image.
-            In this case in_place must be False.
-
-            If in_place=False, then a copy is made before the deformation.
-
-            TESTS::
-
-                sage: from flatsurf import translation_surfaces
-                sage: S = translation_surfaces.square_torus()
-                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False)
-
-                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False, mapping=True)
-
-            """
-            if mapping is True:
-                if in_place:
-                    raise NotImplementedError(
-                        "can not modify in place and return a mapping"
-                    )
-                from flatsurf.geometry.half_dilation_surface import GL2RMapping
-
-                return GL2RMapping(self, m)
-            if not in_place:
-                if self.is_finite_type():
-                    from sage.structure.element import get_coercion_model
-
-                    cm = get_coercion_model()
-                    field = cm.common_parent(self.base_ring(), m.base_ring())
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
-                    )
-
-                    s = MutableOrientedSimilaritySurface.from_surface(
-                        self.change_ring(field),
-                        category=DilationSurfaces(),
-                    )
-                    s.apply_matrix(m, in_place=True)
-                    s.set_immutable()
-                    return s
-                else:
-                    return m * self
-            else:
-                # Make sure m is in the right state
-                from sage.matrix.constructor import Matrix
-
-                m = Matrix(self.base_ring(), 2, 2, m)
-                if m.det() == self.base_ring().zero():
-                    raise ValueError("can not deform by degenerate matrix")
-                if not self.is_finite_type():
-                    raise NotImplementedError(
-                        "in-place GL(2,R) action only works for finite surfaces"
-                    )
-                us = self
-                if not us.is_mutable():
-                    raise ValueError("in-place changes only work for mutable surfaces")
-                for label in self.labels():
-                    us.replace_polygon(label, m * self.polygon(label))
-                if m.det() < self.base_ring().zero():
-                    # Polygons were all reversed orientation. Need to redo gluings.
-
-                    # First pass record new gluings in a dictionary.
-                    new_glue = {}
-                    seen_labels = set()
-                    for p1 in self.labels():
-                        n1 = len(self.polygon(p1).vertices())
-                        for e1 in range(n1):
-                            p2, e2 = self.opposite_edge(p1, e1)
-                            n2 = len(self.polygon(p2).vertices())
-                            if p2 in seen_labels:
-                                pass
-                            elif p1 == p2 and e1 > e2:
-                                pass
-                            else:
-                                new_glue[(p1, n1 - 1 - e1)] = (p2, n2 - 1 - e2)
-                        seen_labels.add(p1)
-                    # Second pass: reassign gluings
-                    for (p1, e1), (p2, e2) in new_glue.items():
-                        us.glue((p1, e1), (p2, e2))
-                return self
-
         def is_veering_triangulated(self, certificate=False):
             r"""
             Return whether this dilation surface is given by a veering triangulation.
 
-            A triangulation is *veering* if none of its triangle are made of
+            A triangulation is *veering* if none of its triangles are made of
             three edges of the same slope (positive or negative).
 
             EXAMPLES::
@@ -536,13 +468,78 @@ class DilationSurfaces(SurfaceCategory):
             limit = None
 
             if not self.is_finite_type():
-                limit = 32
+                from flatsurf import MutableOrientedSimilaritySurface
+
+                self = MutableOrientedSimilaritySurface.from_surface(
+                    self, labels=self.labels()[:32]
+                )
 
             tester.assertTrue(
                 DilationSurfaces.ParentMethods._is_dilation_surface(
-                    self, positive=False, limit=limit
+                    self, positive=False
                 )
             )
+
+        @cached_surface_method
+        def affine_automorphism_group(self):
+            r"""
+            Return the group of affine automorphisms of this surface, i.e., the
+            group of homeomorphisms that can be locally expressed as affine
+            transformations.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: A = S.affine_automorphism_group(); A
+                AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            TESTS:
+
+            This group is uniquely attached to a surface::
+
+                sage: A is S.affine_automorphism_group()
+                True
+
+            """
+            if self.is_mutable():
+                raise NotImplementedError(
+                    "affine automorphism group only implemented for immutable surfaces"
+                )
+
+            from flatsurf.geometry.veech_group import AffineAutomorphismGroup_generic
+
+            return AffineAutomorphismGroup_generic(self)
+
+        @cached_surface_method
+        def veech_group(self):
+            r"""
+            Return the Veech group of this surface, i.e., the group of matrices
+            that fix the vertices of this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: V = S.veech_group(); V
+                VeechGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            TESTS:
+
+            This group is uniquely attached to a surface::
+
+                sage: V is S.veech_group()
+                True
+
+            """
+            if self.is_mutable():
+                raise NotImplementedError(
+                    "affine automorphism group only implemented for immutable surfaces"
+                )
+
+            from flatsurf.geometry.veech_group import VeechGroup_generic
+
+            return VeechGroup_generic(self)
 
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
@@ -600,7 +597,7 @@ class DilationSurfaces(SurfaceCategory):
                     sage: field = s0.base_ring()
                     sage: a = field.gen()
                     sage: m = matrix(field, 2, [2,a,1,1])
-                    sage: for _ in range(5): assert s0.triangulate().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
+                    sage: for _ in range(5): assert s0.triangulate().codomain().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
 
                     sage: s = m*s0
                     sage: s = s.l_infinity_delaunay_triangulation()
@@ -620,7 +617,7 @@ class DilationSurfaces(SurfaceCategory):
                 The octagon which has horizontal and vertical edges::
 
                     sage: t0 = translation_surfaces.regular_octagon()
-                    sage: for _ in range(5): assert t0.triangulate().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
+                    sage: for _ in range(5): assert t0.triangulate().codomain().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
                     sage: r = matrix(t0.base_ring(), [
                     ....:    [ sqrt(2)/2, -sqrt(2)/2 ],
                     ....:    [ sqrt(2)/2, sqrt(2)/2 ]])
@@ -676,9 +673,14 @@ class DilationSurfaces(SurfaceCategory):
                         "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
                     )
 
-                return self.veering_triangulation(
-                    l_infinity=True, limit=limit, direction=direction
-                )
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of l_infinity_delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
+                return self.veering_triangulation(l_infinity=True, limit=limit)
 
             def veering_triangulation(
                 self, l_infinity=False, limit=None, direction=None
@@ -710,7 +712,7 @@ class DilationSurfaces(SurfaceCategory):
                     sage: field = s0.base_ring()
                     sage: a = field.gen()
                     sage: m = matrix(field, 2, [2,a,1,1])
-                    sage: for _ in range(5): assert s0.triangulate().random_flip(5).veering_triangulation().is_veering_triangulated()
+                    sage: for _ in range(5): assert s0.triangulate().codomain().random_flip(5).veering_triangulation().is_veering_triangulated()
 
                     sage: s = m*s0
                     sage: s = s.veering_triangulation()
@@ -729,7 +731,7 @@ class DilationSurfaces(SurfaceCategory):
 
                 The octagon which has horizontal and vertical edges::
 
-                    sage: t0 = translation_surfaces.regular_octagon().triangulate()
+                    sage: t0 = translation_surfaces.regular_octagon().triangulate().codomain()
                     sage: t0.is_veering_triangulated()
                     False
                     sage: t0.veering_triangulation().is_veering_triangulated()
@@ -747,20 +749,20 @@ class DilationSurfaces(SurfaceCategory):
                     sage: t = (r**4 * p * r**5 * p**2 * r * t0).veering_triangulation()
                     sage: assert t.is_veering_triangulated()
                 """
-                self = self.triangulate()
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of veering_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
+                self = self.triangulate().codomain()
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
                 self = MutableOrientedSimilaritySurface.from_surface(
                     self, category=DilationSurfaces()
                 )
-
-                if direction is None:
-                    base_ring = self.base_ring()
-                    direction = (base_ring**2)((base_ring.zero(), base_ring.one()))
-
-                if direction.is_zero():
-                    raise ValueError("direction must be non-zero")
 
                 flip_bound = 1 if l_infinity else 2
 
@@ -777,9 +779,7 @@ class DilationSurfaces(SurfaceCategory):
                             p1, e1, p2, e2
                         )
                         if needs_flip >= flip_bound:
-                            self.triangle_flip(
-                                p1, e1, in_place=True, direction=direction
-                            )
+                            self.triangle_flip(p1, e1, in_place=True)
                             triangles.add(p1)
                             triangles.add(p2)
                             limit -= 1

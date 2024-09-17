@@ -23,7 +23,7 @@ with open("README.md") as f:
     long_description = f.read()
 
 setup(
-    name="sage_flatsurf",
+    name="sage-flatsurf",
     author="Vincent Delecroix, W. Patrick Hooper, and Julian Rüth",
     author_email="contact@flatsurf.org",
     description="Flat surfaces in SageMath",
@@ -36,9 +36,10 @@ setup(
         "flatsurf",
         "flatsurf.geometry",
         "flatsurf.geometry.categories",
+        "flatsurf.geometry.pyflatsurf",
         "flatsurf.graphical",
     ],
-    install_requires=["surface-dynamics"],
+    install_requires=["bidict", "surface-dynamics>=0.6.0,<0.7.0"],
     setup_requires=["wheel"],
     include_package_data=True,
     classifiers=[

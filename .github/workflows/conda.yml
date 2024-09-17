@@ -10,6 +10,9 @@ concurrency:
 jobs:
   conda-build:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -28,7 +31,6 @@ jobs:
         python-version: "3.7.12"
       }
     - name: Install package like binder would
-      shell: bash -l {0}
       run: |
         wget -O repo2docker.yml https://github.com/jupyterhub/repo2docker/raw/main/repo2docker/buildpacks/conda/environment.yml
         mamba install -n test --quiet -y pytest pytest-xdist
@@ -39,17 +41,14 @@ jobs:
         mamba env update -n test --quiet -f environment.binder.yml
         conda list
     - name: Initialize cppyy
-      shell: bash -l {0}
       run: |
         # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
         python -c 'import cppyy' || true
     - name: Run SageMath doctests
-      shell: bash -l {0}
       run: |
         export PYTHONPATH=test/disable-pytest:$PYTHONPATH
         sage -tp --force-lib --long --optional=sage,flipper,eantic,exactreal,pyflatsurf flatsurf doc
     - name: Run pytest
-      shell: bash -l {0}
       run: pytest -n auto
     - uses: actions/upload-artifact@v2
       with:
@@ -116,5 +115,5 @@ jobs:
           TMPDIR=$PWD/tmp/ makeself --complevel 6 --target ./flatsurf-0.5.2 pack/ flatsurf.install flatsurf ./unpack.sh
 
 env:
-  MAKEFLAGS: -j2
-  SAGE_NUM_THREADS: 2
+  MAKEFLAGS: -j4
+  SAGE_NUM_THREADS: 4

@@ -1,3 +1,10 @@
+r"""
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+"""
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -441,7 +448,7 @@ class SimilaritySurfaceTangentVector:
                 )
         else:
             raise NotImplementedError(
-                "Rotating tangent vectors is only implemnted when at a singularity"
+                "Rotating tangent vectors is only implemented when at a singularity"
             )
 
     def counterclockwise_to(self, w, code=False):
@@ -527,14 +534,16 @@ class SimilaritySurfaceTangentVector:
                 )
         else:
             raise NotImplementedError(
-                "Rotating tangent vectors is only implemnted when at a singularity"
+                "Rotating tangent vectors is only implemented when at a singularity"
             )
 
     def plot(self, **kwargs):
         r"""
         Return a plot of this tangent vector.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: import flatsurf
             sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
@@ -542,7 +551,9 @@ class SimilaritySurfaceTangentVector:
             sage: S.plot() + v.plot()
             Graphics object consisting of 22 graphics primitives
 
-        Any keyword arguments are passed on to the underlying plot method from SageMath::
+        Any keyword arguments are passed on to the underlying plot method from SageMath:
+
+        .. jupyter-execute::
 
             sage: S.plot() + v.plot(color="red")
             Graphics object consisting of 22 graphics primitives

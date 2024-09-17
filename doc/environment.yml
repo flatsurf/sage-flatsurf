@@ -1,4 +1,4 @@
-# This file lists the minimial dependencies needed to build the documentation
+# This file lists the minimal dependencies needed to build the documentation
 # for sage-flatsurf. Create a conda environment with these dependencies
 # preinstalled with:
 # conda env create -n sage-flatsurf-docbuild -f ../environment.yml
@@ -6,9 +6,12 @@
 name: sage-flatsurf-docbuild
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - sphinx
+  - sphinx>=7,<8
+  - jupyter_sphinx
   - myst-nb
   - tachyon
   - furo
+  - pip
+  - pip:
+    - sage-docbuild==10.3

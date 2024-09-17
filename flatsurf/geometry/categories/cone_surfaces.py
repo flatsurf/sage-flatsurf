@@ -43,7 +43,7 @@ a rotation, this is a cone surface::
 #
 #        Copyright (C) 2013-2019 Vincent Delecroix
 #                      2013-2019 W. Patrick Hooper
-#                           2023 Julian Rüth
+#                      2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -144,11 +144,16 @@ class ConeSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import translation_surfaces
+                sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
                 sage: S = translation_surfaces.infinite_staircase()
 
                 sage: from flatsurf.geometry.categories import ConeSurfaces
                 sage: ConeSurfaces.ParentMethods._is_cone_surface(S, limit=8)
+                doctest:warning
+                ...
+                UserWarning: limit has been deprecated as a keyword argument for _is_cone_surface() and will be removed from a future version of sage-flatsurf; ...
+                True
+                sage: ConeSurfaces.ParentMethods._is_cone_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
 
             ::
@@ -161,6 +166,14 @@ class ConeSurfaces(SurfaceCategory):
                 True
 
             """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for _is_cone_surface() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
             if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError(
                     "cannot check whether a non-oriented surface is a cone surface yet"
@@ -306,81 +319,6 @@ class ConeSurfaces(SurfaceCategory):
                     True
 
                 """
-
-                class ParentMethods:
-                    r"""
-                    Provides methods available to all oriented cone surfaces
-                    without boundary.
-
-                    If you want to add functionality for such surfaces you most
-                    likely want to put it here.
-                    """
-
-                    def angles(self, numerical=False, return_adjacent_edges=False):
-                        r"""
-                        Return the set of angles around the vertices of the surface.
-
-                        EXAMPLES::
-
-                            sage: from flatsurf import polygons, similarity_surfaces
-                            sage: T = polygons.triangle(3, 4, 5)
-                            sage: S = similarity_surfaces.billiard(T)
-                            sage: S.angles()
-                            [1/3, 1/4, 5/12]
-                            sage: S.angles(numerical=True)   # abs tol 1e-14
-                            [0.333333333333333, 0.250000000000000, 0.416666666666667]
-
-                            sage: S.angles(return_adjacent_edges=True)
-                            [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
-
-                        """
-                        if not numerical and any(
-                            not p.is_rational() for p in self.polygons()
-                        ):
-                            raise NotImplementedError(
-                                "cannot compute exact angles in this surface built from non-rational polygons yet"
-                            )
-
-                        edges = list(self.edges())
-                        edges = set(edges)
-                        angles = []
-
-                        if return_adjacent_edges:
-                            while edges:
-                                p, e = edges.pop()
-                                adjacent_edges = [(p, e)]
-                                angle = self.polygon(p).angle(e, numerical=numerical)
-                                pp, ee = self.opposite_edge(
-                                    p, (e - 1) % len(self.polygon(p).vertices())
-                                )
-                                while pp != p or ee != e:
-                                    edges.remove((pp, ee))
-                                    adjacent_edges.append((pp, ee))
-                                    angle += self.polygon(pp).angle(
-                                        ee, numerical=numerical
-                                    )
-                                    pp, ee = self.opposite_edge(
-                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
-                                    )
-                                angles.append((angle, adjacent_edges))
-                        else:
-                            while edges:
-                                p, e = edges.pop()
-                                angle = self.polygon(p).angle(e, numerical=numerical)
-                                pp, ee = self.opposite_edge(
-                                    p, (e - 1) % len(self.polygon(p).vertices())
-                                )
-                                while pp != p or ee != e:
-                                    edges.remove((pp, ee))
-                                    angle += self.polygon(pp).angle(
-                                        ee, numerical=numerical
-                                    )
-                                    pp, ee = self.opposite_edge(
-                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
-                                    )
-                                angles.append(angle)
-
-                        return angles
 
                 class Connected(SurfaceCategoryWithAxiom):
                     r"""

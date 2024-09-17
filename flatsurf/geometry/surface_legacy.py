@@ -38,6 +38,12 @@ We built a torus by gluing the opposite sides of a square::
     sage: S.opposite_edge(0, 0)
     (0, 2)
 
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
 """
 # ********************************************************************
 #  This file is part of sage-flatsurf.
@@ -219,9 +225,17 @@ class Surface(OrientedSimilaritySurface):
             sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: S.is_triangulated()
             False
-            sage: S.triangulate().is_triangulated()
+            sage: S.triangulate().codomain().is_triangulated()
             True
         """
+        if limit is not None:
+            import warnings
+
+            warnings.warn(
+                "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+            )
+
         it = self.label_iterator()
         if not self.is_finite_type():
             if limit is None:
@@ -763,13 +777,18 @@ class Surface(OrientedSimilaritySurface):
 
         EXAMPLES:
 
-        Test the difference between the cached graphical_surface and the uncached version::
+        Test the difference between the cached graphical_surface and the uncached version:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.octagon_and_squares()
             sage: s.plot()
             ...Graphics object consisting of 32 graphics primitives
-            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
+
+        .. jupyter-execute::
+
+            sage: s.graphical_surface(adjacencies=[]).plot()
             ...Graphics object consisting of 18 graphics primitives
 
         """
@@ -795,7 +814,9 @@ class Surface(OrientedSimilaritySurface):
         :meth:`flatsurf.graphical.surface.GraphicalSurface.plot`. Consult their
         documentation for details.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: import flatsurf
             sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
@@ -803,13 +824,17 @@ class Surface(OrientedSimilaritySurface):
             ...Graphics object consisting of 21 graphics primitives
 
         Keywords are passed on to the underlying plotting routines, see
-        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details:
+
+        .. jupyter-execute::
 
             sage: S.plot(fill=None)
             ...Graphics object consisting of 21 graphics primitives
 
         Note that some keywords mutate the underlying cached graphical surface,
-        see :meth:`graphical_surface`::
+        see :meth:`graphical_surface`:
+
+        .. jupyter-execute::
 
             sage: S.plot(edge_labels='gluings and number')
             ...Graphics object consisting of 23 graphics primitives
@@ -2054,7 +2079,7 @@ class LabelWalker:
                     return self._label_edge_back[label]
         # Maybe the surface is not connected?
         raise KeyError(
-            "Unable to find label %s. Are you sure the surface is connected?" % (label)
+            f"Unable to find label {label}. Are you sure the surface is connected?"
         )
 
     def __iter__(self):
