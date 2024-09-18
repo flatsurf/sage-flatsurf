@@ -271,7 +271,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
         sage: isinstance(A, AffineAutomorphismGroup_generic)
         True
 
-        sage: import cppyy  # random output due to cppyy deprecation warnings
+        sage: import cppyy  # optional: pyflatsurf  # random output due to cppyy deprecation warnings
         sage: TestSuite(A).run()  # optional: pyflatsurf
 
     """

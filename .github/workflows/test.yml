@@ -10,114 +10,39 @@ concurrency:
 jobs:
   test:
     runs-on: "${{ matrix.on }}"
-    defaults:
-      run:
-        shell: bash -el {0}
     strategy:
       matrix:
         include:
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic"
-            sagelib: "9.4"
-            environment: "environment.yml"
-            python: "3.9.15"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic"
-            sagelib: "9.5"
-            environment: "environment.yml"
-            python: "3.9.15"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
-            sagelib: "9.6"
-            environment: "environment.yml"
-            python: "3.10.8"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
-            sagelib: "9.7"
-            environment: "environment.yml"
-            python: "3.10.8"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
-            sagelib: "9.8"
-            environment: "environment.yml"
-            python: "3.10.8"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
-            sagelib: "10.0"
-            environment: "environment.yml"
-            python: "3.10.8"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
-            sagelib: "10.1"
-            environment: "environment.yml"
-            python: "3.10.8"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
-            sagelib: "10.2"
-            environment: "environment.yml"
-            python: "3.11"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
-            sagelib: "10.3"
-            environment: "environment.yml"
-            python: "3.10.8"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
-            environment: "flatsurf.yml"
-            python: "3.10.8"
-          - on: macos-13
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
-            environment: "flatsurf.yml"
-            python: "3.10.8"
+        - on: ubuntu-24.04
+          environment: sagemath-94
+        - on: ubuntu-24.04
+          environment: sagemath-95
+        - on: ubuntu-24.04
+          environment: sagemath-96
+        - on: ubuntu-24.04
+          environment: sagemath-97
+        - on: ubuntu-24.04
+          environment: sagemath-98
+        - on: ubuntu-24.04
+          environment: sagemath-100
+        - on: ubuntu-24.04
+          environment: sagemath-101
+        - on: ubuntu-24.04
+          environment: sagemath-102
+        - on: ubuntu-24.04
+          environment: dev
+        - on: macos-13
+          environment: dev
     steps:
-      - uses: actions/checkout@v2
-        with: { submodules: recursive }
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest", python-version: "${{ matrix.python }}" }
-      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
-      - name: Fix cppyy dependencies on macOS
-        run: |
-          mamba install -y libcxx=17
-          echo "libcxx 17.*" >> $CONDA_PREFIX/conda-meta/pinned
-        if: ${{ matrix.on == 'macos-13' }}
-      - name: Install dependencies
-        run: |
-          mamba install -n test sagelib=${{ matrix.sagelib }}
-          echo "sagelib ==${{ matrix.sagelib }}" >> $CONDA_PREFIX/conda-meta/pinned
-          while read; do
-            optional=$(echo "$REPLY" | grep -o '# optional: [^ ]*' | awk '{ print $3; }') || true
-            (test "$optional" == '' || (echo "${{ matrix.optionals }}" | grep -E '\b'"$optional"'\b') > /dev/null) && echo "$REPLY" || true
-          done < environment.yml > environment.test.yml
-          mamba env update -n test --quiet -f environment.test.yml
-          conda list
-        if: ${{ matrix.environment == 'environment.yml' }}
-      - name: Install dependencies (flatsurf stack)
-        run: |
-          # This can fail when a new version of sage-flatsurf is released but
-          # the package has not been built on conda-forge yet.
-          mamba env update -n test --quiet -f flatsurf.yml
-          # sage-flatsurf 0.5.2 does not depend on bidict yet but current
-          # sage-flatsurf needs it, so this line can be removed once 0.6.0 has
-          # been released.
-          mamba install -y bidict
-          conda list
-        if: ${{ matrix.environment == 'flatsurf.yml' }}
-      - name: Install sage-flatsurf
-        run: |
-          pip install --verbose --no-index .
-      - name: Initialize cppyy
-        run: |
-          # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
-          python -c 'import cppyy' || true
-      - name: Run SageMath doctests
-        run: |
-          export PYTHONPATH=test/disable-pytest:$PYTHONPATH
-          sage -tp --force-lib --long --optional=${{ matrix.optionals }} flatsurf doc
-      - name: Run pytest
-        run: pytest -n auto
-        if: ${{ matrix.environment == 'environment.yml' }}
-      - uses: flatsurf/actions/show-logs@main
-        if: ${{ always() }}
+    - uses: actions/checkout@v2
+      with: { submodules: recursive }
+    - uses: prefix-dev/setup-pixi@v0.8.1
+      with: { pixi-version: v0.28.2 }
+    - name: Run doctests
+      run: pixi run -e ${{ matrix.environment }} doctest-long
+    - name: Run pytest tests
+      run: pixi run -e ${{ matrix.environment }} pytest
+      if: ${{ matrix.environment == 'dev' }}
 
 env:
   MAKEFLAGS: -j4

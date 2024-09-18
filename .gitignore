@@ -9,3 +9,6 @@ MANIFEST
 /rever
 .DS_Store
 /.asv
+# pixi environments
+.pixi
+*.egg-info

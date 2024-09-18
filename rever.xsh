@@ -49,6 +49,7 @@ $VERSION_BUMP_PATTERNS = [
     ('README.md', r'\[!\[Binder\]', r'[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples)'),
     ('doc/index.rst', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples'),
     ('doc/conf.py', r'copyright = ', "copyright = \"2016-$RELEASE_YEAR, the sage-flatsurf authors\""),
+    ('pixi.toml', r'version = ', 'version = "$VERSION"'),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'

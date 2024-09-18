@@ -1,0 +1,174 @@
+[project]
+name = "sage-flatsurf"
+version = "0.5.2"
+authors = [
+  {name = "Vincent Delecroix"},
+  {name = "W. Patrick Hooper"},
+  {name = "Julian Rüth"},
+]
+# TODO: Add a CI test that sage-flatsurf can be pip installed on SageMath and tests pass, i.e., the list of dependencies here is correct.
+dependencies = [
+  "bidict",
+  "more-itertools",
+  "surface-dynamics>=0.6.0,<0.7.0",
+  "matplotlib",
+]
+description = "Flat surfaces in SageMath"
+requires-python = ">= 3.9"
+readme = "README.md"
+keywords = ["surfaces", "dynamics", "geometry", "flat surfaces", "Abelian differentials", "quadratic differentials", "Riemann surfaces"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Topic :: Scientific/Engineering :: Mathematics",
+]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["flatsurf"]
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64"]
+
+[tool.pixi.environments]
+sagemath-94 = ["sagemath-94", "flipper", "gmpxxyy", "pyeantic", "test"]
+sagemath-95 = ["sagemath-95", "flipper", "gmpxxyy", "pyeantic", "test"]
+sagemath-96 = ["sagemath-96", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+sagemath-97 = ["sagemath-97", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+sagemath-98 = ["sagemath-98", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+sagemath-100 = ["sagemath-100", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+sagemath-101 = ["sagemath-101", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+sagemath-102 = ["sagemath-102", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+doc = ["doc", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf"]
+dev = ["dev", "sagemath-103", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf", "ipyvue-flatsurf", "test", "lint"]
+
+# Shared dependencies for all features below.
+[tool.pixi.dependencies]
+bidict = "*"
+matplotlib-base = "*"
+more-itertools = "*"
+numpy = "*"
+surface-dynamics = ">=0.6.0,<0.7"
+sagelib = ">=9.4"
+
+[tool.pixi.pypi-dependencies]
+sage-flatsurf = { path = ".", editable = true }
+
+[tool.pixi.feature.test.dependencies]
+# sage's run_doctest needs ipywidgets
+ipywidgets = "*"
+pytest = "*"
+pytest-xdist = "*"
+pytest-repeat = "*"
+
+[tool.pixi.feature.test.tasks]
+doctest = "sage -tp --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF flatsurf doc"
+doctest-long = "sage -tp --long --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF flatsurf doc"
+
+[tool.pixi.feature.flipper]
+activation.env.SAGE_OPTIONALS_FLIPPER = ",flipper"
+pypi-dependencies.flipper = "*"
+
+[tool.pixi.feature.gmpxxyy]
+activation.env.SAGE_OPTIONALS_GMPXXYY = ",gmpxxyy"
+dependencies.gmpxxyy = "*"
+
+[tool.pixi.feature.pyeantic]
+activation.env.SAGE_OPTIONALS_PYEANTIC = ",pyeantic"
+dependencies.pyeantic = ">=1,<3"
+
+[tool.pixi.feature.pyexactreal]
+activation.env.SAGE_OPTIONALS_PYEXACTREAL = ",pyexactreal"
+dependencies.pyexactreal = ">=3.1.0,<5"
+
+[tool.pixi.feature.pyflatsurf]
+activation.env.SAGE_OPTIONALS_PYFLATSURF = ",pyflatsurf"
+dependencies.pyflatsurf = ">=3.15.0,<4"
+
+[tool.pixi.feature.ipyvue-flatsurf.pypi-dependencies]
+ipyvue-flatsurf = ">=0.6.0,<0.7.0"
+
+[tool.pixi.feature.lint.dependencies]
+black = "*"
+codespell = "*"
+pylint = "*"
+ruff = "*"
+pycodestyle = "*"
+
+[tool.pixi.feature.lint.tasks]
+# We run our notebooks through black to make sure everything is nicely formatted in our examples.
+# Consequently, we cannot use SageMath syntax in the notebooks. (But presently we do not need it anyway.)
+black = "black flatsurf/**/*.py && jupytext --sync --pipe black doc/examples/*.md"
+codespell = "codespell flatsurf"
+# We ignore warnings in pycodestyle that are incompatible with black's formatting rules
+pycodestyle = "pycodestyle --ignore=E203,W503 --max-line-length=256 flatsurf/ test/"
+ruff = "ruff check --select C4,UP008,UP031,UP034 ."
+# A lot of linters are disabled, see .pylintrc. We should enable most of them eventually.
+pylint = "pylint flatsurf"
+lint = { depends-on = ["black", "codespell", "pycodestyle", "ruff", "pylint"] }
+
+[tool.pixi.feature.dev.dependencies]
+jupyterlab = "*"
+jupytext = "*"
+
+[tool.pixi.feature.dev.tasks]
+sage = "sage"
+jupyter = "jupyter lab"
+pytest = "pytest -n auto"
+test = "pixi run doctest-long && pixi run pytest"
+
+[tool.pixi.feature.doc.dependencies]
+sphinx = ">=7,<8"
+jupyter_sphinx = "*"
+myst-nb = "*"
+tachyon = "*"
+furo = "*"
+
+[tool.pixi.feature.doc.pypi-dependencies]
+sage-docbuild = "==10.3"
+
+[tool.pixi.feature.doc.tasks]
+doc = "cd doc && make html SPHINXOPTS='-W -n --keep-going'"
+
+[tool.pixi.feature.sagemath-94.dependencies]
+sagelib = "9.4"
+python = "~=3.9.0"
+
+[tool.pixi.feature.sagemath-95.dependencies]
+sagelib = "9.5"
+python = "~=3.9.0"
+
+[tool.pixi.feature.sagemath-96.dependencies]
+sagelib = "9.6"
+python = "~=3.10.0"
+
+[tool.pixi.feature.sagemath-97.dependencies]
+sagelib = "9.7"
+python = "~=3.10.0"
+
+[tool.pixi.feature.sagemath-98.dependencies]
+sagelib = "9.8"
+python = "~=3.10.0"
+
+[tool.pixi.feature.sagemath-100.dependencies]
+sagelib = "10.0"
+python = "~=3.10.0"
+
+[tool.pixi.feature.sagemath-101.dependencies]
+sagelib = "10.1"
+python = "~=3.10.0"
+
+[tool.pixi.feature.sagemath-102.dependencies]
+sagelib = "10.2"
+python = "~=3.11.0"
+
+[tool.pixi.feature.sagemath-103.dependencies]
+sagelib = "10.3"
+python = "~=3.11.0"

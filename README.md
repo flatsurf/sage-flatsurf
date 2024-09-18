@@ -29,12 +29,6 @@ please don't hesitate to [contact us](https://flatsurf.github.io#contact).
 See [our documentation](https://flatsurf.github.io/sage-flatsurf/#installation)
 for detailed installation instructions.
 
-## Run with Binder in the Cloud
-
-You can try out sage-flatsurf in an environment online; unfortunately it might
-take a long time for this environment to start:
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/0.5.2?filepath=doc%2Fexamples)
-
 ## Developing sage-flatsurf
 
 Please consult our [Developer's
