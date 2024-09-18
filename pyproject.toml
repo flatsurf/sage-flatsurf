@@ -57,6 +57,7 @@ more-itertools = "*"
 numpy = "*"
 surface-dynamics = ">=0.6.0,<0.7"
 sagelib = ">=9.4"
+gap-defaults = "*"
 
 [tool.pixi.pypi-dependencies]
 sage-flatsurf = { path = ".", editable = true }
