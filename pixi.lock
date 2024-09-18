@@ -45,6 +45,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.12.2-he9a28a4_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.12.2-ha770c72_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gf2x-1.3.0-ha476b99_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/giac-1.9.0.21-h673759e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/givaro-4.1.1-h192cbe9_1.tar.bz2
@@ -211,6 +212,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.12.2-hc16eb5f_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.12.2-h694c41f_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -422,6 +424,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.12.2-he9a28a4_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.12.2-ha770c72_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -759,6 +762,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.12.2-hc16eb5f_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.12.2-h694c41f_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -1084,6 +1088,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/furo-2024.8.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.12.2-he9a28a4_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.12.2-ha770c72_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -1385,6 +1390,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/furo-2024.8.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.12.2-hc16eb5f_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.12.2-h694c41f_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -1670,6 +1676,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.12.2-he9a28a4_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.12.2-ha770c72_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -1896,6 +1903,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.12.2-hc16eb5f_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.12.2-h694c41f_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -2119,6 +2127,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.12.2-he9a28a4_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.12.2-ha770c72_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -2345,6 +2354,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.12.2-hc16eb5f_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.12.2-h694c41f_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -2568,6 +2578,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.12.2-he9a28a4_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.12.2-ha770c72_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -2793,6 +2804,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.12.2-hc16eb5f_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.12.2-h694c41f_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -3015,6 +3027,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.11.1-he9a28a4_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.11.1-ha770c72_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -3239,6 +3252,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.11.1-hc16eb5f_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.11.1-h694c41f_5.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -3459,6 +3473,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.11.1-he9a28a4_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.11.1-ha770c72_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -3687,6 +3702,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.11.1-hc16eb5f_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.11.1-h694c41f_5.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -3910,6 +3926,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.11.1-he9a28a4_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.11.1-ha770c72_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -4137,6 +4154,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.11.1-hc16eb5f_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.11.1-h694c41f_5.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -4361,6 +4379,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.11.1-he9a28a4_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.11.1-ha770c72_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -4590,6 +4609,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.11.1-hc16eb5f_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.11.1-h694c41f_5.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -4816,6 +4836,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-core-4.11.1-he9a28a4_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.11.1-ha770c72_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc-13.3.0-h9576a4e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_impl_linux-64-13.3.0-hfea6d02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gcc_linux-64-13.3.0-hc28eda2_2.conda
@@ -5042,6 +5063,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/freetype-2.12.1-h60636b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/future-1.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-core-4.11.1-hc16eb5f_5.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.11.1-h694c41f_5.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gettext-tools-0.22.5-hdfe23c8_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/gf2x-1.3.0-hb2a7efb_2.tar.bz2
@@ -9216,6 +9238,70 @@ packages:
   purls: []
   size: 108712791
   timestamp: 1681404234234
+- kind: conda
+  name: gap-defaults
+  version: 4.11.1
+  build: h694c41f_5
+  build_number: 5
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.11.1-h694c41f_5.conda
+  sha256: 87da78c85a55eb60adbc2f7c2c43979af08e0f5964ee8f583b0de525e41c6646
+  md5: 51acd5baba4e8008509ec1d074d910b6
+  depends:
+  - gap-core 4.11.1 hc16eb5f_5
+  license: GPL-2.0-or-later
+  license_family: GPL
+  purls: []
+  size: 91632634
+  timestamp: 1676590406968
+- kind: conda
+  name: gap-defaults
+  version: 4.11.1
+  build: ha770c72_5
+  build_number: 5
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.11.1-ha770c72_5.conda
+  sha256: 3555a0cb66a6e80f86271843c935335eca50b1ad63630d989c1bde1edcdf5cad
+  md5: 9cfb17814785025176f4f17c4579d5a6
+  depends:
+  - gap-core 4.11.1 he9a28a4_5
+  license: GPL-2.0-or-later
+  license_family: GPL
+  purls: []
+  size: 91531465
+  timestamp: 1676589420705
+- kind: conda
+  name: gap-defaults
+  version: 4.12.2
+  build: h694c41f_3
+  build_number: 3
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/gap-defaults-4.12.2-h694c41f_3.conda
+  sha256: ac9670fe6d4e4025517f42deefef68d4d310698ef860e0d287509c77d6f70995
+  md5: 28be7801c7080c0a218c664171d1e49d
+  depends:
+  - gap-core 4.12.2 hc16eb5f_3
+  license: GPL-2.0-or-later
+  license_family: GPL
+  purls: []
+  size: 96746324
+  timestamp: 1681407147343
+- kind: conda
+  name: gap-defaults
+  version: 4.12.2
+  build: ha770c72_3
+  build_number: 3
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/gap-defaults-4.12.2-ha770c72_3.conda
+  sha256: e1f02fd58701cb6105332420a733a390110155faaa5795405cb112adfc772038
+  md5: f31ffbc2bedc086b0646baeb0f1b359f
+  depends:
+  - gap-core 4.12.2 he9a28a4_3
+  license: GPL-2.0-or-later
+  license_family: GPL
+  purls: []
+  size: 96738909
+  timestamp: 1681404516742
 - kind: conda
   name: gcc
   version: 13.3.0
@@ -20451,7 +20537,7 @@ packages:
   name: sage-flatsurf
   version: 0.5.2
   path: .
-  sha256: e406136669956cef6f52ba76e44cc37c263f56596586d2545cb99a45aa9b9513
+  sha256: a3c5ded9dbcbd56bf8aee31f28c9cfd218c6bbd47a869010d9b56f644d1c4814
   requires_dist:
   - bidict
   - more-itertools
