@@ -2083,7 +2083,7 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
             True
 
         """
-        if type(self) != type(other):
+        if type(self) is not type(other):
             # Since we encourage subclassing this surface, we are very strict here.
             return False
 

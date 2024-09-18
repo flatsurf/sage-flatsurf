@@ -372,7 +372,7 @@ class Similarity(MultiplicativeGroupElement):
         """
         if other is None:
             return False
-        if type(other) == int:
+        if isinstance(other, int):
             return False
         if self.parent() != other.parent():
             return False
