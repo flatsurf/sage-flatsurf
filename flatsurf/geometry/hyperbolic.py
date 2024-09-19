@@ -194,6 +194,7 @@ We can also intersect objects that are not half spaces::
     using any symbolic expressions, and tries to produce better plots.
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

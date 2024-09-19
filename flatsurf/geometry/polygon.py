@@ -18,6 +18,7 @@ EXAMPLES::
     sage: m * p
     Polygon(vertices=[(0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)])
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -175,6 +176,7 @@ class PolygonPosition:
     r"""
     Describes the position of a point within or outside of a polygon.
     """
+
     # Position Types:
     OUTSIDE = 0
     INTERIOR = 1
@@ -272,6 +274,7 @@ class EuclideanPolygon(Parent):
         sage: TestSuite(s).run()
 
     """
+
     Element = EuclideanPolygonPoint
 
     def __init__(self, base_ring, vertices, category=None):

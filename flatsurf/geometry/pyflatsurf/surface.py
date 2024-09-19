@@ -24,6 +24,7 @@ directly, but it can be accessed with
     FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #

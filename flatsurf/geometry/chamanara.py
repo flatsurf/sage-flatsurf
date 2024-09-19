@@ -22,6 +22,7 @@ EXAMPLES:
     ...Graphics object consisting of 129 graphics primitives
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #

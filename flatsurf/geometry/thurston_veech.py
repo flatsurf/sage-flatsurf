@@ -20,6 +20,7 @@ REFERENCES:
 - Pascal Hubert, Erwan Lanneau
   "Veech groups without parabolic elements"
 """
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #

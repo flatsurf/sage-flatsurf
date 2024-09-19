@@ -69,6 +69,7 @@ A non-singular point::
     Point (1, 1) of polygon (0, 7)
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -1507,7 +1508,7 @@ class SurfaceMorphism(Morphism):
 
         domain = self.codomain().homology()
 
-        for (l, e) in self.domain().edges():
+        for l, e in self.domain().edges():
             if self._image_homology_edge(l, e, codomain=domain) == domain(
                 (label, edge)
             ):

@@ -31,6 +31,7 @@ hyperbolic sets internally uses these primitives::
     import jupyter_doctest_tweaks
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -768,6 +769,7 @@ class HyperbolicPathPlotCommand:
         HyperbolicPathPlotCommand(code='MOVETO', target=0)
 
     """
+
     code: str  # Literal["MOVETO", "LINETO"] requires Python 3.8
     target: HyperbolicPoint
 
@@ -1222,6 +1224,7 @@ class CartesianPathPlotCommand:
         of such commands from a sequence of plot commands in the hyperbolic plane.
 
     """
+
     code: str  # Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"] requires Python 3.8
     args: tuple
 

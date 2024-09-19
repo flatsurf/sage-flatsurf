@@ -11,6 +11,7 @@ References
     Pages 259--266.
     DOI: http://dx.doi.org/10.1145/2755996.2756664
 """
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #

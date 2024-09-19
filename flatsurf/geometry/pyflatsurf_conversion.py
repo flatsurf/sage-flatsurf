@@ -10,6 +10,7 @@ EXAMPLES::
     Note that you might also want to call .pyflatsurf().codomain().flat_triangulation() on your surface now to convert a surface to the pyflatsurf FlatTriangulation
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #

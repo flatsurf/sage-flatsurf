@@ -1,4 +1,5 @@
 r"""Mappings between translation surfaces."""
+
 # *********************************************************************
 #  This file is part of sage-flatsurf.
 #

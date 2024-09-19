@@ -26,6 +26,7 @@ caching is enabled for this method::
     True
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

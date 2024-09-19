@@ -76,6 +76,7 @@ integers modulo N are a field::
     Join of Category of finite enumerated fields and Category of subquotients of monoids and Category of quotients of semigroups
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

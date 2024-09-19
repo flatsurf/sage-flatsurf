@@ -66,6 +66,7 @@ https://github.com/flatsurf/sage-flatsurf/issues/166)::
     972725347814111665129717*B[((0, -1/2*c0, -1/2*c0^2 + 3/2), 2)] + 587352809047576581321682*B[((0, -1/2*c0^2 + 1, -1/2*c0^3 + 3/2*c0), 2)] + 60771110563809382932401*B[((0, -1/2*c0^2 + 1, 1/2*c0^3 - 3/2*c0), 2)] ...
 
 """
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
@@ -496,6 +497,7 @@ class SimplicialHomologyGroup(Parent):
         sage: TestSuite(H).run()
 
     """
+
     Element = SimplicialHomologyClass
 
     def __init__(self, surface, k, coefficients, relative, implementation, category):

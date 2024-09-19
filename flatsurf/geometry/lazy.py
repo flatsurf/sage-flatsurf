@@ -19,6 +19,7 @@ by invoking methods on the underlying surfaces::
     Delaunay cell decomposition of The infinite staircase
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -1969,9 +1970,11 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
             )
 
         for label in islice(
-            range(30)
-            if not self.is_finite_type()
-            else range(len(self._reference.labels())),
+            (
+                range(30)
+                if not self.is_finite_type()
+                else range(len(self._reference.labels()))
+            ),
             30,
         ):
             tester.assertEqual(

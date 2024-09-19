@@ -6,6 +6,7 @@ marked triangulation. The marking corresponds to the position of the horizontal
 and vertical separatrices. Each triangle hence get one of the following types:
 bottom-left, bottom-right, top-left, top-right.
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

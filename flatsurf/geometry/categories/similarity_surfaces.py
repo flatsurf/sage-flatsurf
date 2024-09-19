@@ -95,6 +95,7 @@ If we don't glue all the edges, we get a surface with boundary::
     sage: TestSuite(S).run()
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

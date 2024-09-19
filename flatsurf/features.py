@@ -1,6 +1,7 @@
 r"""
 Tests for optional packages used by sage-flatsurf.
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #

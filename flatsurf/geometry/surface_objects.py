@@ -9,6 +9,7 @@ This includes singularities, saddle connections and cylinders.
     # Allow jupyter-execute blocks in this module to contain doctests
     import jupyter_doctest_tweaks
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

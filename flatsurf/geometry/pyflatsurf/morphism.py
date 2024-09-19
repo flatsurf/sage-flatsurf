@@ -27,6 +27,7 @@ EXAMPLES::
     machinery.
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #

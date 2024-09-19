@@ -4,6 +4,7 @@ This class contains methods useful for working with circles.
 This will be used to build a LazyDelaunayTriangulation class which will compute the
 Delaunay decomposition for infinite surfaces.
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

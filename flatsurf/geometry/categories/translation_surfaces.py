@@ -22,6 +22,7 @@ EXAMPLES::
     True
 
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #
@@ -62,6 +63,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
         Category of translation surfaces
 
     """
+
     # The category of translation surfaces is identical to the category of
     # half-translation surfaces with the positive axiom.
     _base_category_class_and_axiom = (HalfTranslationSurfaces, "Positive")

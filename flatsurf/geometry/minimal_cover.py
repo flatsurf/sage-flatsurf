@@ -15,6 +15,7 @@ Usually, you do not interact with the types in this module directly but call
     Minimal Planar Cover of Genus 0 Rational Cone Surface built from 2 right triangles
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #

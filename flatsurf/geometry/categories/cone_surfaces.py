@@ -38,6 +38,7 @@ a rotation, this is a cone surface::
     True
 
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #

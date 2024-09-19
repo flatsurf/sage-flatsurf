@@ -18,6 +18,7 @@ EXAMPLES::
     Conversion from Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons to FlatTriangulationCombinatorial(...) with vectors ...
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -1855,7 +1856,7 @@ class FlatTriangulationConversion(Conversion):
 
         half_edge_to_polygon_edge = bidict()
 
-        for (a, b, c) in codomain.faces():
+        for a, b, c in codomain.faces():
             label = (a.id(), b.id(), c.id())
 
             half_edge_to_polygon_edge[a] = (label, 0)
@@ -1877,7 +1878,7 @@ class FlatTriangulationConversion(Conversion):
                 VectorSpace(ring_conversion.domain(), 2)
             )
 
-            for (a, b, c) in codomain.faces():
+            for a, b, c in codomain.faces():
                 vectors = [
                     codomain.fromHalfEdge(a),
                     codomain.fromHalfEdge(b),

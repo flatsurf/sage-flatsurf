@@ -21,6 +21,7 @@ We write an element of the Veech group as an action on homology::
                     [0 1]
 
 """
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #

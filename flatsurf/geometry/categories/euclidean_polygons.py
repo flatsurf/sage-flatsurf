@@ -23,6 +23,7 @@ EXAMPLES::
     import jupyter_doctest_tweaks
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -1575,7 +1576,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 outer_edges = {}
 
-                for (a, b) in edges:
+                for a, b in edges:
                     glued = (b, a) in edges
                     assert not glued == (
                         b == (a + 1) % nvertices or a == (b + 1) % nvertices

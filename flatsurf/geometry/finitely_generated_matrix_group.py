@@ -21,6 +21,7 @@ EXAMPLES::
 
     sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

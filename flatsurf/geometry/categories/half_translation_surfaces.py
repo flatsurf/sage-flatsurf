@@ -28,6 +28,7 @@ rotation of π, this is a half-translation surface::
     True
 
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #
