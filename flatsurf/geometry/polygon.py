@@ -1497,13 +1497,10 @@ def EuclideanPolygonsWithAngles(*angles):
 
         sage: from pyeantic import RealEmbeddedNumberField # optional: pyeantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: pyeantic
-        sage: P(K(1)) # optional: pyeantic
-        doctest:warning
-        ...
-        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
-        To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+        sage: p = P(K(1)) # optional: pyeantic  # random output due to deprecation warnings
+        sage: p
         Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-        sage: _.base_ring() # optional: pyeantic
+        sage: p.base_ring() # optional: pyeantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
     However, specific instances of such polygons might be defined over another ring::
@@ -1522,7 +1519,7 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: R = ExactReals(P.base_ring()) # optional: pyexactreal
         sage: P(R(1)) # optional: pyexactreal
         Polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
-        sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: pyexactreal
+        sage: P(R(R.random_element([0.2, 0.3]))) # random output including some deprecation warnings, optional: pyexactreal
         Polygon(vertices=[(0, 0),])
                  (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
                  (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
