@@ -1508,11 +1508,11 @@ class SurfaceMorphism(Morphism):
 
         domain = self.codomain().homology()
 
-        for l, e in self.domain().edges():
-            if self._image_homology_edge(l, e, codomain=domain) == domain(
+        for lab, e in self.domain().edges():
+            if self._image_homology_edge(lab, e, codomain=domain) == domain(
                 (label, edge)
             ):
-                return codomain((l, e))
+                return codomain((lab, e))
 
         raise NotImplementedError(
             "not a single edge maps to this edge, cannot implement preimage of this edge yet"
