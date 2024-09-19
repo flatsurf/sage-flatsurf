@@ -1012,17 +1012,6 @@ class HyperbolicPathPlotCommand:
         if model == "half_plane":
             from sage.all import RR
 
-            if start != start.parent().infinity():
-                start_x, start_y = start.change_ring(RR).coordinates(model="half_plane")
-
-            if end != end.parent().infinity():
-                end_x, end_y = end.change_ring(RR).coordinates(model="half_plane")
-
-            if start == start.parent().infinity():
-                return [
-                    CartesianPathPlotCommand("LINETO", (end_x, end_y)),
-                ]
-
             if end == end.parent().infinity():
                 return [
                     CartesianPathPlotCommand(
@@ -1030,6 +1019,15 @@ class HyperbolicPathPlotCommand:
                         (0, 1),
                     )
                 ]
+
+            end_x, end_y = end.change_ring(RR).coordinates(model="half_plane")
+
+            if start == start.parent().infinity():
+                return [
+                    CartesianPathPlotCommand("LINETO", (end_x, end_y)),
+                ]
+
+            start_x, start_y = start.change_ring(RR).coordinates(model="half_plane")
 
             # We should probably be more careful here and not just use a random
             # epsilon.

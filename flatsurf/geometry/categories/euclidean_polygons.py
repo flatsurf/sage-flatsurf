@@ -1889,6 +1889,11 @@ class EuclideanPolygons(Category_over_base_ring):
                     else:
                         ring = P.base_ring()
 
+                    rt = None
+                    lt = None
+                    lb = None
+                    rb = None
+
                     # first compute the transversal length of each edge
                     t = P([direction[1], -direction[0]])
                     lengths = [t.dot_product(e) for e in self.edges()]
@@ -1905,6 +1910,11 @@ class EuclideanPolygons(Category_over_base_ring):
                             lb = j
                         if l0 < 0 and l1 >= 0:
                             lt = j
+
+                    assert rt is not None
+                    assert lt is not None
+                    assert lb is not None
+                    assert rb is not None
 
                     if rt < lt:
                         top_lengths = lengths[rt:lt]
