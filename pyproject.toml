@@ -126,11 +126,13 @@ pytest = "pytest -n auto"
 test = "pixi run doctest-long && pixi run pytest"
 
 [tool.pixi.feature.doc.dependencies]
-sphinx = ">=7,<8"
+furo = "*"
 jupyter_sphinx = "*"
 myst-nb = "*"
+scipy = "*"
+sphinx = ">=7,<8"
 tachyon = "*"
-furo = "*"
+veerer = "*"
 
 [tool.pixi.feature.doc.pypi-dependencies]
 sage-docbuild = "==10.3"
