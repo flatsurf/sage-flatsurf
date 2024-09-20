@@ -7,7 +7,7 @@ set -euo pipefail
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if [ $# -eq 0 ]; then
-  NAME=`git describe --tags --abbrev=0`
+  NAME=sage-flatsurf-`git describe --tags --abbrev=0`
   POST=`git rev-list --count $(git describe --tags --abbrev=0)..HEAD`
   if [ $POST != "0" ]; then
     NAME=$NAME.post$POST
@@ -19,8 +19,23 @@ else
   exit 1
 fi
 
-TARBALL="$NAME.tar.gz"
+TARBALL="$NAME.pixi.tar.gz"
 
 echo "Generating $TARBALL in $SCRIPT_DIR"
 
-( cd "$SCRIPT_DIR" && tar --transform "s?^?$NAME/?;s?..?sage-flatsurf?" -chzf "$TARBALL" .. LICENSE sage shell jupyterlab .ensure-pixi.sh .pixi-install.sh )
+tmp=$(mktemp -d)
+
+trap 'rm -rf "$tmp"' EXIT
+
+mkdir -p "$tmp/$NAME"
+
+git clone ../../ "$tmp/$NAME/sage-flatsurf"
+
+rm -rf "$tmp/$NAME/sage-flatsurf/.git"
+
+cp LICENSE sage shell jupyterlab .ensure-pixi.sh "$tmp/$NAME"
+curl -fsSL https://pixi.sh/install.sh > "$tmp/$NAME/.pixi-install.sh"
+
+( cd "$tmp" && tar czf "$TARBALL" "$NAME")
+
+mv "$tmp/$TARBALL" .
