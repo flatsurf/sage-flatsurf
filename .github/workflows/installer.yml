@@ -36,7 +36,21 @@ jobs:
         tar zxf *.tar.gz
     - name: Test that SageMath REPL is functional
       run: ./sage-flatsurf*/sage -c '1 + 1'
-
-
-  # TODO: windows
-  # TODO: test unix installer
+  windows:
+    runs-on: windows-latest
+    needs: [ unix ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: unix-installer
+      - name: Compile .iss to .exe installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: installer/win/installer.iss
+          options: /O+
+    - name: Provide installer as a build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-installer
+        path: ./installer/win/Output/*.exe
