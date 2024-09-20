@@ -7,11 +7,8 @@ set -euo pipefail
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if [ $# -eq 0 ]; then
-  NAME=sage-flatsurf-`git describe --tags --abbrev=0`
-  POST=`git rev-list --count $(git describe --tags --abbrev=0)..HEAD`
-  if [ $POST != "0" ]; then
-    NAME=$NAME.post$POST
-  fi
+  source "$SCRIPT_DIR/version.sh"
+  NAME=sage-flatsurf-$VERSION
 elif [ $# -eq 1]; then
   NAME=$1
 else

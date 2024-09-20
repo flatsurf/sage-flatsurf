@@ -1,12 +1,12 @@
 [Setup]
 AppName=flatsurf
-AppVersion=0.5.2
+AppVersion=VERSION
 WizardStyle=modern
-DefaultDirName={autopf}\sage-flatsurf-0.5.2
-DefaultGroupName=sage-flatsurf-0.5.2
-OutputBaseFilename=sage-flatsurf-0.5.2
-SetupIconFile=sage-flatsurf-0.5.2.ico
-UninstallDisplayIcon=sage-flatsurf-0.5.2.ico
+DefaultDirName={autopf}\sage-flatsurf-VERSION
+DefaultGroupName=sage-flatsurf-VERSION
+OutputBaseFilename=sage-flatsurf-VERSION
+SetupIconFile=sage-flatsurf-VERSION.ico
+UninstallDisplayIcon=sage-flatsurf-VERSION.ico
 ; TODO
 ;UninstallDisplayIcon={app}\MyProg.exe
 
@@ -15,23 +15,22 @@ UninstallDisplayIcon=sage-flatsurf-0.5.2.ico
 ; TODO: Have a look at all the [Setup] section directives in inno setup documentation.
 
 [Files]
-Source: "sage-flatsurf-0.5.2.exe"; DestDir: "{app}";
-Source: "sage-flatsurf-0.5.2.ico"; DestDir: "{app}";
-Source: "sage-flatsurf-0.5.2.tar.gz"; DestDir: "{app}";
+Source: "sage-flatsurf-VERSION.ico"; DestDir: "{app}";
+Source: "sage-flatsurf-VERSION.tar.gz"; DestDir: "{app}";
 Source: "preset.json"; DestDir: "{app}";
 Source: "launch.ps1"; DestDir: "{app}";
 Source: "launch.vbs"; DestDir: "{app}";
 Source: "UpdateWSLKernel.ps1"; DestDir: "{app}";
 
 [Icons]
-Name: "{commondesktop}\SageMath (sage-flatsurf 0.5.2)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"; Tasks: desktopicon
-Name: "{commondesktop}\JupyterLab (sage-flatsurf 0.5.2)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"; Tasks: desktopicon
-Name: "{commondesktop}\Shell (sage-flatsurf 0.5.2)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"; Tasks: desktopicon
-Name: "{commonprograms}\sage-flatsurf 0.5.2\SageMath"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"
-Name: "{commonprograms}\sage-flatsurf 0.5.2\JupyterLab"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"
-Name: "{commonprograms}\sage-flatsurf 0.5.2\Shell"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"
-Name: "{commonprograms}\sage-flatsurf 0.5.2\Uninstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --uninstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"
-Name: "{commonprograms}\sage-flatsurf 0.5.2\Reinstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --reinstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-0.5.2.ico"
+Name: "{commondesktop}\SageMath (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"; Tasks: desktopicon
+Name: "{commondesktop}\JupyterLab (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"; Tasks: desktopicon
+Name: "{commondesktop}\Shell (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"; Tasks: desktopicon
+Name: "{commonprograms}\sage-flatsurf VERSION\SageMath"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\JupyterLab"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\Shell"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\Uninstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --uninstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\Reinstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --reinstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
 
 
 [Tasks]
@@ -42,7 +41,7 @@ Filename: "powershell.exe"; Description: "Update Linux Kernel (often required)";
 
 [Code]
 const
-  RunOnceName = 'sage-flatsurf-0.5.2 restart';
+  RunOnceName = 'sage-flatsurf-VERSION restart';
 
   QuitMessageError = 'Error. Cannot continue.';
 

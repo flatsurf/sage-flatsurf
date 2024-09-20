@@ -2,8 +2,8 @@
 $ErrorActionPreference = "Stop"
 
 $appDataDir = [System.Environment]::GetFolderPath("LocalApplicationData")
-$localDir = Join-Path -Path $appDataDir -ChildPath "sage-flatsurf-0.5.2"
-$wsldlExe = Join-Path -Path $localDir -ChildPath "sage-flatsurf-0.5.2.exe"
+$localDir = Join-Path -Path $appDataDir -ChildPath "sage-flatsurf-VERSION"
+$wsldlExe = Join-Path -Path $localDir -ChildPath "sage-flatsurf-VERSION.exe"
 
 Push-Location $appDataDir
 $winHome = $(wsl wslpath -a ($HOME -replace '\\', '/')).Trim()
@@ -25,7 +25,7 @@ function EnsureInstalled {
 
 function Install {
   New-Item -ItemType Directory -Path $localDir -Force > $null
-  foreach ($fileName in @("sage-flatsurf-0.5.2.exe", "preset.json")) {
+  foreach ($fileName in @("sage-flatsurf-VERSION.exe", "preset.json")) {
     $sourceDir = $PSScriptRoot
     $sourceFile = Join-Path -Path $sourceDir -ChildPath $fileName
     $destFile = Join-Path -Path $localDir -ChildPath $fileName
@@ -47,7 +47,7 @@ function Install {
 
   Write-Output "Setting hostname"
 
-  & "$wsldlExe" "run" "hostnamectl" "set-hostname" "sage-flatsurf-0.5.2"
+  & "$wsldlExe" "run" "hostnamectl" "set-hostname" "sage-flatsurf-VERSION"
 
   Write-Output "Setting up wsl user"
 
@@ -56,32 +56,32 @@ function Install {
 
   Write-Output "Preparing pixi installer"
 
-  $tarball = Join-Path -Path $sourceDir -ChildPath "sage-flatsurf-0.5.2.tar.gz"
-  Copy-Item -Path $tarball -Destination "\\wsl$\sage-flatsurf-0.5.2\home\wsl\sage-flatsurf-0.5.2.tar.gz"
+  $tarball = Join-Path -Path $sourceDir -ChildPath "sage-flatsurf-VERSION.tar.gz"
+  Copy-Item -Path $tarball -Destination "\\wsl$\sage-flatsurf-VERSION\home\wsl\sage-flatsurf-VERSION.tar.gz"
 
-  & "$wsldlExe" "run" "sh" "-c" "cd ~ && tar zxf sage-flatsurf-0.5.2.tar.gz"
+  & "$wsldlExe" "run" "sh" "-c" "cd ~ && tar zxf sage-flatsurf-VERSION.tar.gz"
   Pop-Location
 }
 
 function JupyterLab {
   EnsureInstalled
 
-  Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "sh", "-c", "`"JUPYTERLAB_HOME=$winHome /home/wsl/sage-flatsurf-0.5.2/jupyterlab`""
+  Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "sh", "-c", "`"JUPYTERLAB_HOME=$winHome /home/wsl/sage-flatsurf-VERSION/jupyterlab`""
 }
 
 function REPL {
   EnsureInstalled
-  Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "/home/wsl/sage-flatsurf-0.5.2/sage"
+  Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "/home/wsl/sage-flatsurf-VERSION/sage"
 }
 
 function Shell {
   EnsureInstalled
-  Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "/home/wsl/sage-flatsurf-0.5.2/shell"
+  Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "/home/wsl/sage-flatsurf-VERSION/shell"
 }
 
 function Uninstall {
   try {
-    & wsl --unregister sage-flatsurf-0.5.2
+    & wsl --unregister sage-flatsurf-VERSION
   } catch {
     Write-Output "Ignoring failed unregister of VM, it is probably not registered yet."
   }
