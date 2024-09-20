@@ -23,4 +23,4 @@ TARBALL="$NAME.tar.gz"
 
 echo "Generating $TARBALL in $SCRIPT_DIR"
 
-( cd "$SCRIPT_DIR" && tar --transform "s?^?$NAME/?" -chzf "$TARBALL" sage-flatsurf LICENSE sage shell jupyterlab .ensure-pixi.sh .pixi-install.sh )
+( cd "$SCRIPT_DIR" && tar --transform "s?^?$NAME/?;s?..?sage-flatsurf?" -chzf "$TARBALL" .. LICENSE sage shell jupyterlab .ensure-pixi.sh .pixi-install.sh )
