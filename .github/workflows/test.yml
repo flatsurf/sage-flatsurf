@@ -16,7 +16,6 @@ jobs:
         on: [ ubuntu-24.04, macos-13, macos-14 ]
     steps:
     - uses: actions/checkout@v2
-      with: { submodules: recursive }
     - uses: prefix-dev/setup-pixi@v0.8.1
       with:
         pixi-version: v0.28.2
