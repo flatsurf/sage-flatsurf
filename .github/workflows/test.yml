@@ -12,27 +12,8 @@ jobs:
     runs-on: "${{ matrix.on }}"
     strategy:
       matrix:
-        include:
-        - on: ubuntu-24.04
-          environment: sagemath-94
-        - on: ubuntu-24.04
-          environment: sagemath-95
-        - on: ubuntu-24.04
-          environment: sagemath-96
-        - on: ubuntu-24.04
-          environment: sagemath-97
-        - on: ubuntu-24.04
-          environment: sagemath-98
-        - on: ubuntu-24.04
-          environment: sagemath-100
-        - on: ubuntu-24.04
-          environment: sagemath-101
-        - on: ubuntu-24.04
-          environment: sagemath-102
-        - on: ubuntu-24.04
-          environment: dev
-        - on: macos-13
-          environment: dev
+        environment: [ sagemath-94, sagemath-95, sagemath-96, sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, dev]
+        on: [ ubuntu-24.04, macos-13, macos-14 ]
     steps:
     - uses: actions/checkout@v2
       with: { submodules: recursive }
