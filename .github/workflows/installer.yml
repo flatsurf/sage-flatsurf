@@ -11,7 +11,7 @@ jobs:
   unix:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Include pixi installer
       run: curl -fsSL https://pixi.sh/install.sh > installer/unix/.pixi-install.sh
     - name: Create installer
