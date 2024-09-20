@@ -7,7 +7,6 @@
   "repo": ".",
   "environment_type": "mamba",
   "conda_channels": ["conda-forge"],
-  "install_command": ["pip install ."],
   "matrix": {
     "wheel": [],
     "bidict": [],
