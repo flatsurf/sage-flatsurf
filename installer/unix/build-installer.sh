@@ -29,7 +29,7 @@ trap 'rm -rf "$tmp"' EXIT
 
 mkdir -p "$tmp/$NAME"
 
-git clone ../../ "$tmp/$NAME/sage-flatsurf"
+git clone ${SCRIPT_DIR}/../../ "$tmp/$NAME/sage-flatsurf"
 
 rm -rf "$tmp/$NAME/sage-flatsurf/.git"
 
