@@ -23,9 +23,11 @@ jobs:
   unix-test:
     runs-on: ${{ matrix.on }}
     needs: [ unix ]
-    matrix:
-      on: [ ubuntu-24.04, macos-13, macos-14 ]
-    - name: actions/download-artifact@v4
+    strategy:
+      matrix:
+        on: [ ubuntu-24.04, macos-13, macos-14 ]
+    steps:
+    - uses: actions/download-artifact@v4
       with:
         name: unix-installer
     - name: Test that SageMath REPL is functional
