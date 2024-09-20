@@ -46,6 +46,7 @@ sagemath-98 = ["sagemath-98", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "
 sagemath-100 = ["sagemath-100", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 sagemath-101 = ["sagemath-101", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 sagemath-102 = ["sagemath-102", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+asv = ["asv"]
 doc = ["doc", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf"]
 dev = ["dev", "sagemath-103", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf", "ipyvue-flatsurf", "test", "lint"]
 
@@ -175,3 +176,6 @@ python = "~=3.11.0"
 [tool.pixi.feature.sagemath-103.dependencies]
 sagelib = "10.3"
 python = "~=3.11.0"
+
+[tool.pixi.feature.asv.dependencies]
+asv = "*"
