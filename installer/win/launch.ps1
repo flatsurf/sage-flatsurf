@@ -56,10 +56,10 @@ function Install {
 
   Write-Output "Preparing pixi installer"
 
-  $tarball = Join-Path -Path $sourceDir -ChildPath "sage-flatsurf-VERSION.tar.gz"
-  Copy-Item -Path $tarball -Destination "\\wsl$\sage-flatsurf-VERSION\home\wsl\sage-flatsurf-VERSION.tar.gz"
+  $tarball = Join-Path -Path $sourceDir -ChildPath "sage-flatsurf-VERSION.pixi.tar.gz"
+  Copy-Item -Path $tarball -Destination "\\wsl$\sage-flatsurf-VERSION\home\wsl\sage-flatsurf-VERSION.pixi.tar.gz"
 
-  & "$wsldlExe" "run" "sh" "-c" "cd ~ && tar zxf sage-flatsurf-VERSION.tar.gz"
+  & "$wsldlExe" "run" "sh" "-c" "cd ~ && tar zxf sage-flatsurf-VERSION.pixi.tar.gz"
   Pop-Location
 }
 

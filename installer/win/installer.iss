@@ -16,7 +16,7 @@ UninstallDisplayIcon=sage-flatsurf.ico
 
 [Files]
 Source: "sage-flatsurf.ico"; DestDir: "{app}";
-Source: "sage-flatsurf-VERSION.tar.gz"; DestDir: "{app}";
+Source: "sage-flatsurf-VERSION.pixi.tar.gz"; DestDir: "{app}";
 Source: "preset.json"; DestDir: "{app}";
 Source: "launch.ps1"; DestDir: "{app}";
 Source: "launch.vbs"; DestDir: "{app}";
