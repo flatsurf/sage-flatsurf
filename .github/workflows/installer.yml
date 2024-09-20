@@ -40,15 +40,15 @@ jobs:
     runs-on: windows-latest
     needs: [ unix ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: unix-installer
-      - name: Compile .iss to .exe installer
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
-        with:
-          path: installer/win/installer.iss
-          options: /O+
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v4
+      with:
+        name: unix-installer
+    - name: Compile .iss to .exe installer
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: installer/win/installer.iss
+        options: /O+
     - name: Provide installer as a build artifact
       uses: actions/upload-artifact@v4
       with:
