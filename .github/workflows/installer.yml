@@ -16,10 +16,21 @@ jobs:
     - name: Create installer
       run: ./installer/unix/build-installer.sh
     - name: Provide installer as a build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: unix-installer
         path: ./*.pixi.tar.gz
+  unix-test:
+    runs-on: ${{ matrix.on }}
+    needs: [ unix ]
+    matrix:
+      on: [ ubuntu-24.04, macos-13, macos-14 ]
+    - name: actions/download-artifact@v4
+      with:
+        name: unix-installer
+    - name: Test that SageMath REPL is functional
+      run: ./sage-flatsurf*/sage -c '1 + 1'
+
 
   # TODO: windows
   # TODO: test unix installer

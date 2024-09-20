@@ -35,6 +35,7 @@ rm -rf "$tmp/$NAME/sage-flatsurf/.git"
 
 ( cd "$SCRIPT_DIR" && cp LICENSE sage shell jupyterlab .ensure-pixi.sh "$tmp/$NAME" )
 curl -fsSL https://pixi.sh/install.sh > "$tmp/$NAME/.pixi-install.sh"
+chmod +x "$tmp/$NAME/.pixi-install.sh"
 
 ( cd "$tmp" && tar czf "$TARBALL" "$NAME")
 
