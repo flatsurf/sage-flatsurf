@@ -19,7 +19,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: unix-installer
-        path: installer/unix/sage-flatsurf*.pixi.tar.gz
+        path: ./*.pixi.tar.gz
 
   # TODO: windows
   # TODO: test unix installer
