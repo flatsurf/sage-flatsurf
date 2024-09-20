@@ -6,13 +6,21 @@ set -euo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 name"
+if [ $# -eq 0 ]; then
+  NAME=`git describe --tags --abbrev=0`
+  POST=`git rev-list --count $(git describe --tags --abbrev=0)..HEAD`
+  if [ $POST != "0" ]; then
+    NAME=$NAME.post$POST
+  fi
+elif [ $# -eq 1]; then
+  NAME=$1
+else
+  echo "Usage: $0 [NAME]"
   exit 1
 fi
 
-TARBALL="$1.tar.gz"
+TARBALL="$NAME.tar.gz"
 
 echo "Generating $TARBALL in $SCRIPT_DIR"
 
-( cd "$SCRIPT_DIR" && tar --transform "s?^?$1/?" -czf "$TARBALL" pixi.lock pixi.toml sage shell jupyterlab .ensure-pixi.sh .pixi-install.sh )
+( cd "$SCRIPT_DIR" && tar --transform "s?^?$NAME/?" -chzf "$TARBALL" sage-flatsurf LICENSE sage shell jupyterlab .ensure-pixi.sh .pixi-install.sh )

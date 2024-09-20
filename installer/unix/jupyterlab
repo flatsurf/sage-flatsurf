@@ -20,4 +20,4 @@ if [ $# -ne 0 ]; then
   exit 1
 fi
 
-"$PIXI" run --manifest-path "${SCRIPT_DIR}"/pixi.toml jupyter lab
+"$PIXI" run --manifest-path "${SCRIPT_DIR}"/sage-flatsurf/pyrpoject.toml jupyter lab

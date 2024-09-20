@@ -1,0 +1,20 @@
+name: Build Installer
+on:
+  push: { branches: [ "master" ] }
+  pull_request: { branches: [ "master" ] }
+
+concurrency:
+  group: installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unix:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Include pixi installer
+      run: curl -fsSL https://pixi.sh/install.sh > installer/unix/.pixi-install.sh
+    - name: Create installer
+      run: ./installer/unix/build-installer.sh
+  # TODO: windows
+  # TODO: test unix installer

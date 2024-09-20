@@ -10,4 +10,4 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source "${SCRIPT_DIR}"/.ensure-pixi.sh
 
 # The env is necessary so this script does not just call itself.
-"$PIXI" run --manifest-path "${SCRIPT_DIR}"/pixi.toml env sage "$@"
+"$PIXI" run --manifest-path "${SCRIPT_DIR}"/sage-flatsurf/pyproject.toml env sage "$@"

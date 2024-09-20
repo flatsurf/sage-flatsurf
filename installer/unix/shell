@@ -15,4 +15,4 @@ if [ $# -ne 0 ]; then
   exit 1
 fi
 
-"$PIXI" shell --manifest-path "${SCRIPT_DIR}"/pixi.toml
+"$PIXI" shell --manifest-path "${SCRIPT_DIR}"/sage-flatsurf/pyproject.toml

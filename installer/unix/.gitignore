@@ -1,4 +1,3 @@
-# pixi environments
-.pixi
-.pixi-home
+.pixi-install.sh
 *.egg-info
+.pixi-home
