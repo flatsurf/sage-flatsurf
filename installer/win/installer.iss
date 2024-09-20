@@ -15,6 +15,7 @@ UninstallDisplayIcon=sage-flatsurf.ico
 ; TODO: Have a look at all the [Setup] section directives in inno setup documentation.
 
 [Files]
+Source: "sage-flatsurf-VERSION.exe"; DestDir: "{app}";
 Source: "sage-flatsurf.ico"; DestDir: "{app}";
 Source: "sage-flatsurf-VERSION.pixi.tar.gz"; DestDir: "{app}";
 Source: "preset.json"; DestDir: "{app}";
