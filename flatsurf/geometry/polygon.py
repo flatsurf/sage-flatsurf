@@ -1498,7 +1498,7 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: from pyeantic import RealEmbeddedNumberField # optional: pyeantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: pyeantic
         sage: p = P(K(1)) # optional: pyeantic  # random output due to deprecation warnings
-        sage: p
+        sage: p  # optional: pyeantic
         Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: p.base_ring() # optional: pyeantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
