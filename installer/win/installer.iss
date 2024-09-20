@@ -5,8 +5,8 @@ WizardStyle=modern
 DefaultDirName={autopf}\sage-flatsurf-VERSION
 DefaultGroupName=sage-flatsurf-VERSION
 OutputBaseFilename=sage-flatsurf-VERSION
-SetupIconFile=sage-flatsurf-VERSION.ico
-UninstallDisplayIcon=sage-flatsurf-VERSION.ico
+SetupIconFile=sage-flatsurf.ico
+UninstallDisplayIcon=sage-flatsurf.ico
 ; TODO
 ;UninstallDisplayIcon={app}\MyProg.exe
 
@@ -15,7 +15,7 @@ UninstallDisplayIcon=sage-flatsurf-VERSION.ico
 ; TODO: Have a look at all the [Setup] section directives in inno setup documentation.
 
 [Files]
-Source: "sage-flatsurf-VERSION.ico"; DestDir: "{app}";
+Source: "sage-flatsurf.ico"; DestDir: "{app}";
 Source: "sage-flatsurf-VERSION.tar.gz"; DestDir: "{app}";
 Source: "preset.json"; DestDir: "{app}";
 Source: "launch.ps1"; DestDir: "{app}";
@@ -23,14 +23,14 @@ Source: "launch.vbs"; DestDir: "{app}";
 Source: "UpdateWSLKernel.ps1"; DestDir: "{app}";
 
 [Icons]
-Name: "{commondesktop}\SageMath (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"; Tasks: desktopicon
-Name: "{commondesktop}\JupyterLab (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"; Tasks: desktopicon
-Name: "{commondesktop}\Shell (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"; Tasks: desktopicon
-Name: "{commonprograms}\sage-flatsurf VERSION\SageMath"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
-Name: "{commonprograms}\sage-flatsurf VERSION\JupyterLab"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
-Name: "{commonprograms}\sage-flatsurf VERSION\Shell"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
-Name: "{commonprograms}\sage-flatsurf VERSION\Uninstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --uninstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
-Name: "{commonprograms}\sage-flatsurf VERSION\Reinstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --reinstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf-VERSION.ico"
+Name: "{commondesktop}\SageMath (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"; Tasks: desktopicon
+Name: "{commondesktop}\JupyterLab (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"; Tasks: desktopicon
+Name: "{commondesktop}\Shell (sage-flatsurf VERSION)"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"; Tasks: desktopicon
+Name: "{commonprograms}\sage-flatsurf VERSION\SageMath"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --repl --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\JupyterLab"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --jupyterlab --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\Shell"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --shell --quiet"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\Uninstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --uninstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"
+Name: "{commonprograms}\sage-flatsurf VERSION\Reinstall Virtual Machine"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --reinstall"; WorkingDir: "{app}"; IconFilename: "{app}\sage-flatsurf.ico"
 
 
 [Tasks]
