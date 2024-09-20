@@ -8,14 +8,16 @@
   "environment_type": "mamba",
   "conda_channels": ["conda-forge"],
   "matrix": {
-    "wheel": [],
-    "bidict": [],
-    "matplotlib-base": [],
-    "more-itertools": [],
-    "numpy": [],
-    "surface-dynamics": [],
-    "sagelib": [],
-    "gap-defaults": []
+    "req": {
+      "wheel": [],
+      "bidict": [],
+      "matplotlib-base": [],
+      "more-itertools": [],
+      "numpy": [],
+      "surface-dynamics": [],
+      "sagelib": [],
+      "gap-defaults": []
+    }
   },
   "benchmark_dir": "benchmark",
   "env_dir": ".asv/env",
