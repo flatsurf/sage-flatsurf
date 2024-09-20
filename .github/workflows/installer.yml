@@ -35,7 +35,7 @@ jobs:
         ls
         tar zxf *.tar.gz
     - name: Test that SageMath REPL is functional
-      run: ./sage-flatsurf*/sage -c '1 + 1'
+      run: ./sage-flatsurf*/sage -c 'print(1 + 1)'
   windows:
     runs-on: windows-latest
     needs: [ unix ]
