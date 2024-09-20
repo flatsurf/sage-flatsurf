@@ -41,7 +41,10 @@ jobs:
         pixi-version: v0.28.2
         environments: ${{ matrix.environment }}
     - name: Run doctests
-      run: pixi run -e ${{ matrix.environment }} doctest-long
+      run: |
+        # Disable pytest in old versions of SageMath
+        export PYTHONPATH=test/disable-pytest:$PYTHONPATH
+        pixi run -e ${{ matrix.environment }} doctest-long
     - name: Run pytest tests
       run: pixi run -e ${{ matrix.environment }} pytest
       if: ${{ matrix.environment == 'dev' }}
