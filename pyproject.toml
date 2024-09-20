@@ -178,4 +178,6 @@ sagelib = "10.3"
 python = "~=3.11.0"
 
 [tool.pixi.feature.asv.dependencies]
-asv = "*"
+asv = ">=0.6.4,<0.7"
+libmambapy = "*"
+conda-build = "*"

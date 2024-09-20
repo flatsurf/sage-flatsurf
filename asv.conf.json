@@ -6,9 +6,17 @@
   "show_commit_url": "https://github.com/flatsurf/sage-flatsurf/commit/",
   "repo": ".",
   "environment_type": "mamba",
-  "build_command": ["pip install ."],
+  "conda_channels": ["conda-forge"],
+  "install_command": ["pip install ."],
   "matrix": {
-    "wheel": []
+    "wheel": [],
+    "bidict": [],
+    "matplotlib-base": [],
+    "more-itertools": [],
+    "numpy": [],
+    "surface-dynamics": [],
+    "sagelib": [],
+    "gap-defaults": []
   },
   "benchmark_dir": "benchmark",
   "env_dir": ".asv/env",
