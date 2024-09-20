@@ -48,6 +48,7 @@ jobs:
     - name: Set version number
       shell: bash
       run: |
+        ls
         source installer/unix/version.sh
         sed -i -e 's/VERSION/'$VERSION'/g' installer/win/installer.iss installer/win/launch.ps1
     - name: Compile .iss to .exe installer
