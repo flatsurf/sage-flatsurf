@@ -776,7 +776,7 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import EuclideanPolygonsWithAngles
             sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-            sage: from pyexactreal import ExactReals # optional: pyexactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal  # random output due to cppyy deprecation warnings
             sage: R = ExactReals(E.base_ring()) # optional: pyexactreal
             sage: angles = (3, 3, 5)
             sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
