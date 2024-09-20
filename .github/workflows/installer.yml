@@ -30,6 +30,10 @@ jobs:
     - uses: actions/download-artifact@v4
       with:
         name: unix-installer
+    - name: Extract installer
+      run: |
+        ls
+        tar zxf *.tar.gz
     - name: Test that SageMath REPL is functional
       run: ./sage-flatsurf*/sage -c '1 + 1'
 
