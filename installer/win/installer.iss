@@ -1,6 +1,7 @@
 [Setup]
 AppName=flatsurf-VERSION
 AppVersion=VERSION
+AppVerName=flatsurf-VERSION
 WizardStyle=modern
 DefaultDirName={autopf}\sage-flatsurf-VERSION
 DefaultGroupName=sage-flatsurf-VERSION
