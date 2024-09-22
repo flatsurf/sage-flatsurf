@@ -1,3 +1,7 @@
+# Builds Linux/macOS and Windows installers and stores them as artifacts that
+# can be downloaded from the workflow run.
+# Currently, we need to manually these artifacts to each release manually so
+# that the installers are available from our "Release" page on GitHub.
 name: Build Installer
 on:
   push: { branches: [ "master" ] }
