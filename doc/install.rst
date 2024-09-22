@@ -1,14 +1,56 @@
 Installing sage-flatsurf
 ========================
 
-Currently, sage-flatsurf is not widely available in package managers. We
-therefore recommend to use mamba to install sage-flatsurf. This should work
-nicely, if you are on Linux or macOS. If you are using Windows, you could try
-to install sage-flatsurf with mamba in Windows Subsystem for Linux (WSL). If
-you are having trouble with this or are on another operating system, please
-`contact us <https://flatsurf.github.io>`_. We're thrilled about any new user of
-sage-flatsurf and we're very happy to help and in the process improve these
+There are several different ways to install sage-flatsurf on your machine. You can
+
+* extract `our pixi tarball <installation-tarball>`_ for Linux and macOS (recommended),
+* use `our executable installer <installation-installer>`_ on Windows (recommended),
+* create a `conda environment <installation-mamba>`_ on Linux and macOS,
+* install sage-flatsurf `into an existing source build of SageMath <installation-sagemath`_,
+* or `pip install <installation-pip>`_ sage-flatsurf.
+
+If you are having trouble with this or are on another operating system, please
+`contact us <https://flatsurf.github.io>`_. We're thrilled about any new user
+of sage-flatsurf and we're very happy to help and in the process improve these
 installation instructions.
+
+.. _installation-tarball:
+
+Install with the pixi tarball
+-----------------------------
+
+Open a terminal and run the following command:
+
+  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/0.5.2/sage-flatsurf-0.5.2.pixi.tar.gz | tar zxf -
+
+This will download the latest pixi tarball from our `Releases Page
+<https://github.com/flatsurf/sage-flatsurf/releases/>`_ and extract it into a
+subdirectory of the directory where you opened the terminal.
+
+The entire installation of sage-flatsurf and its dependencies are going to
+reside in this subdirectory. This is not making any changes to your system. If
+you later change your mind, you can safely delete that directory, or move or
+rename it.
+
+You can use sage-flatsurf in a terminal or using Jupyter notebooks. To use
+sage-flatsurf in the terminal, run:
+
+  ./sage-flatsurf-0.5.2/sage
+
+To launch a browser with Jupyter Lab instead, run:
+
+  ./sage-flatsurf-0.5.2/jupyterlabe
+
+The first time you run either of these commands, the installer downloads a copy
+of SageMath and some other dependencies (in total this is going to use about
+7GB of disk space.)
+
+.. _installation-installer:
+
+Install with the Windows Installer
+----------------------------------
+
+TODO
 
 .. _installation-mamba:
 
