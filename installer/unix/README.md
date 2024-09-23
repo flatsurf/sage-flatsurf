@@ -22,3 +22,13 @@ cd sage-flatsurf-0.5.2
 
 This only works for the platforms for which sage-flatsurf and its dependencies
 are available, i.e., at the time of this writing, Linux and macOS on x86\_64.
+
+## Graphical Installer for Linux
+
+Linux users do not expect programs to have graphical installers. Rather they
+expect things to be present in their distribution directly. Eventually we
+should bring sage-flatsurf downstream to the distributions. In the meantime, we
+included a few .desktop files which (at least on a standard Ubuntu and Mint)
+lets you launch things from a file explorer.
+
+For a graphical macOS installer, see the README in ../macos.
