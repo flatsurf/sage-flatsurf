@@ -40,8 +40,6 @@ $ACTIVITIES = [
 
 $RELEASE_YEAR = $RELEASE_DATE.year
 
-# TODO: Replace version numbers in the installation instructions.
-
 $VERSION_BUMP_PATTERNS = [
     ('recipe/meta.yaml', r"\{% set version =", "{% set version = \"$VERSION\" %}"),
     ('recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
