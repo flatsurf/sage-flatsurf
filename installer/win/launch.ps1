@@ -25,7 +25,7 @@ function EnsureInstalled {
     Install
   } else {
     # Restart script in a visible terminal
-    Start-Process powershell.exe -ArgumentList @("-File", "`"$PSCommandPath`"", $args[0]) -Wait
+    Start-Process powershell.exe -ArgumentList @("-File", "`"$PSCommandPath`"", $commandArgs[0]) -Wait
   }
 }
 
@@ -103,6 +103,8 @@ if ($args.Count -ne 1) {
   Usage
   exit 1
 }
+
+$commandArgs = $args
 
 switch ($args[0]) {
   '--jupyterlab' {
