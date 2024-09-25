@@ -19,8 +19,13 @@ function EnsureInstalled {
     return
   }
 
-  # Restart script in a visible terminal
-  Start-Process powershell.exe -ArgumentList "-File `"$PSCommandPath`" --install" -Wait
+  if ($Host.UI.RawUI.WindowTitle) {
+    Install
+  } else {
+    # Restart script in a visible terminal
+    $allArgs = $args -join ' '
+    Start-Process powershell.exe -ArgumentList "-File `"$PSCommandPath`" $allArgs" -Wait
+  }
 }
 
 function Install {
@@ -65,7 +70,6 @@ function Install {
 
 function JupyterLab {
   EnsureInstalled
-
   Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "sh", "-c", "`"JUPYTERLAB_HOME=$winHome /home/wsl/sage-flatsurf-VERSION/jupyterlab`""
 }
 
