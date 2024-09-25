@@ -14,18 +14,19 @@ function Usage {
 }
 
 function EnsureInstalled {
-  if (Test-Path $wsldlExe) {
-    Write-Output "Not installing, wsldl executable already exists"
-    return
-  }
-
   $consoleHandle = (Get-Process -Id $PID).MainWindowHandle
 
   if ($consoleHandle -ne 0) {
+    if (Test-Path $wsldlExe) {
+      Write-Output "Not installing, wsldl executable already exists"
+      return
+    }
+
     Install
   } else {
     # Restart script in a visible terminal
     Start-Process powershell.exe -ArgumentList @("-File", "`"$PSCommandPath`"", $commandArgs[0]) -Wait
+    exit
   }
 }
 
