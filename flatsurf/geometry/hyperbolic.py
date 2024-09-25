@@ -194,6 +194,7 @@ We can also intersect objects that are not half spaces::
     using any symbolic expressions, and tries to produce better plots.
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -4481,7 +4482,7 @@ class HyperbolicConvexSet(SageObject):
 
         for vertex in self.vertices():
             try:
-                tester.assertIn(vertex, self)
+                tester.assertIn(vertex, self)  # codespell:ignore assertin
             except ValueError:
                 # Currently, containment can often not be decided when points
                 # do not have coordinates over the base ring.
@@ -5403,7 +5404,7 @@ class HyperbolicConvexSet(SageObject):
 
         tester.assertEqual(dimension.parent(), ZZ)
 
-        tester.assertIn(dimension, [-1, 0, 1, 2])
+        tester.assertIn(dimension, [-1, 0, 1, 2])  # codespell:ignore assertin
 
         tester.assertEqual(self.unoriented().dimension(), dimension)
         tester.assertEqual(self.is_point(), dimension == 0)
@@ -13833,7 +13834,7 @@ class OrderedSet(collections.abc.Set):
             True
 
         """
-        if type(other) != type(self):
+        if type(other) is not type(self):
             other = type(self)(other)
 
         return self._entries == other._entries

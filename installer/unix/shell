@@ -1,0 +1,18 @@
+#!/bin/bash
+###############################################################################
+# This scripts makes sure that a pixi binary is available, then runs pixi shell
+# to spawn a shell with all packages installed and environment variables set.
+###############################################################################
+set -euo pipefail
+
+# from https://stackoverflow.com/a/246128/812379
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+source "${SCRIPT_DIR}"/.ensure-pixi.sh
+
+if [ $# -ne 0 ]; then
+  echo "'shell' does not accept any parameters use \`$PIXI run --manifest-path '$SCRIPT_DIR/pixi.toml' yourcommandhere\` to execute arbitrary commands in the context of this environment"
+  exit 1
+fi
+
+"$PIXI" shell --manifest-path "${SCRIPT_DIR}"/sage-flatsurf/pyproject.toml -e dev

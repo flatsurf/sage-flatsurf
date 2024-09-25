@@ -45,6 +45,7 @@ We built a torus by gluing the opposite sides of a square::
     import jupyter_doctest_tweaks
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -2182,6 +2183,7 @@ class ExtraLabel:
     r"""
     Used to spit out new labels.
     """
+
     _next = int(0)
 
     def __init__(self, value=None):

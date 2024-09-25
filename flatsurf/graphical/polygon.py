@@ -225,7 +225,7 @@ class GraphicalPolygon:
         """
         return line2d(
             [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]],
-            **options
+            **options,
         )
 
     def plot_edge_label(self, i, label, **options):
@@ -340,7 +340,7 @@ class GraphicalPolygon:
 
         return line2d(
             [self._v[0], self._v[0] + t * (sum(self._v) / len(self._v) - self._v[0])],
-            **options
+            **options,
         )
 
     def plot_points(self, points, **options):

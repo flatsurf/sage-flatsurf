@@ -23,6 +23,7 @@ EXAMPLES::
     import jupyter_doctest_tweaks
 
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #

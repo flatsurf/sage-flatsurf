@@ -1,0 +1,11 @@
+# Automatically propose to upgrade GitHub actions when new versions become available.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dependencies:
+        patterns:
+          - "*"

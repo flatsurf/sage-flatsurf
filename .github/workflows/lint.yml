@@ -9,92 +9,39 @@ concurrency:
 
 jobs:
   codespell:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        shell: bash -el {0}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-        with: { submodules: recursive }
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
-      - name: Install dependencies
-        run: |
-          mamba install codespell=2.2.2
-      - name: Run codespell
-        run: codespell flatsurf
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with: { pixi-version: v0.28.2 }
+      - run: pixi run codespell
   pycodestyle:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        shell: bash -el {0}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-        with: { submodules: recursive }
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
-      - name: Install dependencies
-        run: |
-          mamba install pycodestyle=2.9.1
-      - name: Run pycodestyle
-        run: |
-          # We ignore warnings that are incompatible with black's formatting rules
-          pycodestyle --ignore=E203,W503 --max-line-length=256 flatsurf/ test/
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with: { pixi-version: v0.28.2 }
+      - run: pixi run pycodestyle
   pylint:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        shell: bash -el {0}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-        with: { submodules: recursive }
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
-      - name: Install dependencies
-        run: |
-          mamba env update -n test --quiet -f environment.yml
-      - name: Install sage-flatsurf
-        run: |
-          pip install -e .
-      - name: Run pylint
-        run: |
-          # A lot of linters are disabled, see .pylintrc. We should enable most of them eventually.
-          pylint flatsurf
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with: { pixi-version: v0.28.2 }
+      - run: pixi run pylint
   ruff:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        shell: bash -el {0}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-        with: { submodules: recursive }
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
-      - name: Install dependencies
-        run: |
-          mamba env update -n test --quiet -f environment.yml
-      - name: Run ruff
-        run: |
-          ruff check --select C4,UP008,UP031,UP034 .
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with: { pixi-version: v0.28.2 }
+      - run: pixi run ruff
   black:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        shell: bash -el {0}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-        with: { submodules: recursive }
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
-      - name: Install dependencies
-        run: |
-          mamba env update -n test --quiet -f environment.yml
-          mamba install black=22.12
-      - name: Run black
-        run: |
-          black `find flatsurf -name '*.py'`
-          # We run our notebooks through black to make sure everything is nicely formatted in our examples.
-          # Consequently, we cannot use SageMath syntax in the notebooks. (But presently we do not need it anyway.)
-          jupytext --sync --pipe black doc/examples/*.md
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with: { pixi-version: v0.28.2 }
+      - run: pixi run black
       - name: Detect changes
         run: git diff --exit-code

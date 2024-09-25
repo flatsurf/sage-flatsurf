@@ -20,13 +20,14 @@ The preferred way to install software should be to use your package manager
 etc). However, as of this writing, sage-flatsurf has not been picked up by `any
 of the major distributions yet <https://repology.org/project/python:sage-flatsurf/packages>`_.
 
-We therefore recommend to install sage-flatsurf with the `Mamba
-<https://github.com/mamba-org/mamba>`_ package manager.
+We therefore recommend to install sage-flatsurf using our installers from the
+`Releases Page <https://github.com/flatsurf/sage-flatsurf/releases>`_.
 
 Detailed installation instructions:
 
-* :ref:`Install with Mamba <installation-mamba>` and :ref:`Upgrade an existing
-  installation with Mamba <upgrade-mamba>`
+* :ref:`Install with the pixi tarball <installation-tarball>` for Linux and macOS (recommended)
+* :ref:`Install with the installer <installation-installer>` for Windows (recommended)
+* :ref:`Install with Mamba <installation-mamba>`
 * :ref:`Install into an existing SageMath source build <installation-sagemath>`
 * :ref:`Install with pip <installation-pip>`
 

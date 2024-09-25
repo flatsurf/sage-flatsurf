@@ -1,0 +1,15 @@
+# This environment is used to perform the benchmarks with asv, see
+# asv.conf.json.
+name: asv-flatsurf
+channels:
+  - conda-forge
+dependencies:
+  - bidict
+  - gap-defaults
+  - matplotlib-base
+  - more-itertools
+  - numpy
+  - pip
+  - sagelib
+  - surface-dynamics
+  - wheel

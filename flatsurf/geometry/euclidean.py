@@ -6,6 +6,7 @@ A loose collection of tools for Euclidean geometry in the plane.
     :mod:`flatsurf.geometry.circle` for everything specific to circles in the plane
 
 """
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #

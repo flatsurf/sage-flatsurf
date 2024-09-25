@@ -506,68 +506,69 @@ class TFractalSurface(OrientedSimilaritySurface):
         i = int(i)
         e = int(e)
 
-        if e == 0:
-            f = 2
-        elif e == 1:
-            f = 3
-        elif e == 2:
-            f = 0
-        elif e == 3:
-            f = 1
-        else:
+        def f():
+            if e == 0:
+                return 2
+            if e == 1:
+                return 3
+            if e == 2:
+                return 0
+            if e == 3:
+                return 1
+
             raise ValueError("e (={!r}) must be either 0,1,2 or 3".format(e))
 
-        if i == 0:
-            if e == 0:
-                if w.is_empty():
-                    lab = (w, 2)
-                elif w[-1] == "L":
-                    lab = (w[:-1], 1)
-                elif w[-1] == "R":
-                    lab = (w[:-1], 3)
-            if e == 1:
-                lab = (w, 0)
-            if e == 2:
-                lab = (w, 2)
-            if e == 3:
-                lab = (w, 0)
-        elif i == 1:
-            if e == 0:
-                lab = (w + self._wL, 2)
-            if e == 1:
-                lab = (w, 2)
-            if e == 2:
-                lab = (w + self._wL, 0)
-            if e == 3:
-                lab = (w, 3)
-        elif i == 2:
-            if e == 0:
-                lab = (w, 0)
-            if e == 1:
-                lab = (w, 3)
-            if e == 2:
-                if w.is_empty():
-                    lab = (w, 0)
-                elif w[-1] == "L":
-                    lab = (w[:-1], 1)
-                elif w[-1] == "R":
-                    lab = (w[:-1], 3)
-            if e == 3:
-                lab = (w, 1)
-        elif i == 3:
-            if e == 0:
-                lab = (w + self._wR, 2)
-            if e == 1:
-                lab = (w, 1)
-            if e == 2:
-                lab = (w + self._wR, 0)
-            if e == 3:
-                lab = (w, 2)
-        else:
+        def label():
+            if i == 0:
+                if e == 0:
+                    if w.is_empty():
+                        return (w, 2)
+                    elif w[-1] == "L":
+                        return (w[:-1], 1)
+                    elif w[-1] == "R":
+                        return (w[:-1], 3)
+                if e == 1:
+                    return (w, 0)
+                if e == 2:
+                    return (w, 2)
+                if e == 3:
+                    return (w, 0)
+            elif i == 1:
+                if e == 0:
+                    return (w + self._wL, 2)
+                if e == 1:
+                    return (w, 2)
+                if e == 2:
+                    return (w + self._wL, 0)
+                if e == 3:
+                    return (w, 3)
+            elif i == 2:
+                if e == 0:
+                    return (w, 0)
+                if e == 1:
+                    return (w, 3)
+                if e == 2:
+                    if w.is_empty():
+                        return (w, 0)
+                    if w[-1] == "L":
+                        return (w[:-1], 1)
+                    if w[-1] == "R":
+                        return (w[:-1], 3)
+                if e == 3:
+                    return (w, 1)
+            elif i == 3:
+                if e == 0:
+                    return (w + self._wR, 2)
+                if e == 1:
+                    return (w, 1)
+                if e == 2:
+                    return (w + self._wR, 0)
+                if e == 3:
+                    return (w, 2)
+
             raise ValueError("i (={!r}) must be either 0,1,2 or 3".format(i))
 
-        # the fastest label constructor
-        return lab, f
+        return label(), f()
 
     def polygon(self, lab):
         r"""
@@ -599,12 +600,15 @@ class TFractalSurface(OrientedSimilaritySurface):
         if i == 0:
             w = self._w
             h = self._h1
-        if i == 1 or i == 3:
+        elif i == 1 or i == 3:
             w = self._w / self._r
             h = self._h2
-        if i == 2:
+        elif i == 2:
             w = self._w
             h = self._h2
+        else:
+            raise ValueError("i must be one of 0, 1, 2, 3")
+
         return Polygon(
             base_ring=self.base_ring(), edges=[(w, 0), (0, h), (-w, 0), (0, -h)]
         )
@@ -772,7 +776,7 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import EuclideanPolygonsWithAngles
             sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-            sage: from pyexactreal import ExactReals # optional: pyexactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal  # random output due to cppyy deprecation warnings
             sage: R = ExactReals(E.base_ring()) # optional: pyexactreal
             sage: angles = (3, 3, 5)
             sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()

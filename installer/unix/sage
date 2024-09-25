@@ -1,0 +1,14 @@
+#!/bin/bash
+################################################################################
+# This scripts makes sure that a pixi binary is available and then starts the
+# SageMath CLI.
+################################################################################
+set -euo pipefail
+
+# from https://stackoverflow.com/a/246128/812379
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+source "${SCRIPT_DIR}"/.ensure-pixi.sh
+
+# The env is necessary so this script does not just call itself.
+"$PIXI" run --manifest-path "${SCRIPT_DIR}"/sage-flatsurf/pyproject.toml -e dev env sage "$@"

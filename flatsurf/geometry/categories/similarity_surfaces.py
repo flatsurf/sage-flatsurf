@@ -95,6 +95,7 @@ If we don't glue all the edges, we get a surface with boundary::
     sage: TestSuite(S).run()
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -420,9 +421,9 @@ class SimilaritySurfaces(SurfaceCategory):
             if not switch_sides:
                 raise NotImplementedError
 
-            from sage.structure.element import is_Matrix
+            from sage.structure.element import Matrix
 
-            if not is_Matrix(matrix):
+            if not isinstance(matrix, Matrix):
                 raise NotImplementedError("only implemented for matrices")
             if not matrix.dimensions != (2, 2):
                 raise NotImplementedError("only implemented for 2x2 matrices")

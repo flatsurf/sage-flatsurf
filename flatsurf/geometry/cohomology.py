@@ -31,6 +31,7 @@ The relative cohomology, relative to the vertices::
     17
 
 """
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
@@ -211,6 +212,7 @@ class SimplicialCohomologyGroup(Parent):
         H¹(Translation Surface in H_1(0) built from a square)
 
     """
+
     Element = SimplicialCohomologyClass
 
     def __init__(self, surface, k, coefficients, relative, implementation, category):

@@ -21,6 +21,7 @@ We write an element of the Veech group as an action on homology::
                     [0 1]
 
 """
+
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
@@ -271,7 +272,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
         sage: isinstance(A, AffineAutomorphismGroup_generic)
         True
 
-        sage: import cppyy  # random output due to cppyy deprecation warnings
+        sage: import cppyy  # optional: pyflatsurf  # random output due to cppyy deprecation warnings
         sage: TestSuite(A).run()  # optional: pyflatsurf
 
     """

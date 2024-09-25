@@ -60,6 +60,7 @@ they are generally not parabolic::
     sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
     True
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #

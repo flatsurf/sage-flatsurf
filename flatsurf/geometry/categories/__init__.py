@@ -146,6 +146,7 @@ with the above to work::
     H_1(0)
 
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #

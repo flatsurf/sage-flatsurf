@@ -38,6 +38,7 @@ surface and makes more functionality available::
     Translation Surface in H_2(1^2) built from 2 regular hexagons
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -920,6 +921,7 @@ class OrientedSimilaritySurface(Surface_base):
         True
 
     """
+
     Element = SurfacePoint
 
     def __init__(self, base, category=None):
@@ -1572,7 +1574,7 @@ class MutableOrientedSimilaritySurface(
         for a, b in surface.gluings():
             self.glue(a, b)
 
-        for (edge, opposite) in gluings.items():
+        for edge, opposite in gluings.items():
             if old_gluings[edge][0] == label:
                 self.glue(gluings[old_gluings[edge][1]], opposite)
             else:
