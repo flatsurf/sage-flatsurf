@@ -12,4 +12,4 @@
 
 **Removed:**
 
-* Removed support for SageMath 9.4 (things might still work but we are not testing for it automatically anymore.)
+* Removed support for SageMath 9.4, 9.5 (things might still work but we are not testing for it automatically anymore.)
