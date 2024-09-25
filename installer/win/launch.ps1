@@ -25,8 +25,7 @@ function EnsureInstalled {
     Install
   } else {
     # Restart script in a visible terminal
-    $allArgs = $args -join ' '
-    Start-Process powershell.exe -ArgumentList "-File `"$PSCommandPath`" $allArgs" -Wait
+    Start-Process powershell.exe -ArgumentList @("-File", "`"$PSCommandPath`"", $args[0]) -Wait
   }
 }
 
