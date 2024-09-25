@@ -1,4 +1,4 @@
-# Launch or Reinstall SageMath
+# Launch, Reinstall, or Uninstall SageMath
 $ErrorActionPreference = "Stop"
 
 $appDataDir = [System.Environment]::GetFolderPath("LocalApplicationData")
@@ -14,22 +14,19 @@ function Usage {
 }
 
 function EnsureInstalled {
-  $consoleHandle = (Get-Process -Id $PID).MainWindowHandle
-
-  if ($consoleHandle -ne 0) {
-    if (Test-Path $wsldlExe) {
-      Write-Output "Not installing, wsldl executable already exists"
-      return
-    }
-
-    Install
-  } else {
-    # Restart script in a visible terminal
-    Start-Process powershell.exe -ArgumentList @("-File", "`"$PSCommandPath`"", $commandArgs[0]) -Wait
-    exit
+  if (Test-Path $wsldlExe) {
+    Write-Output "Not installing, wsldl executable already exists"
+    return
   }
+
+  # Run installer in a visible terminal.
+  Start-Process powershell.exe -ArgumentList @("-File", "`"$PSCommandPath`"", "--install") -Wait
 }
 
+# Creates a VM and installs sage-flatsurf.
+# Strangely, this breaks the surrounding PowerShell process.
+# It's unclear what's the problem but once this finishes, the actual
+# sage-flatsurf won't be able to launch anymore.
 function Install {
   New-Item -ItemType Directory -Path $localDir -Force > $null
   foreach ($fileName in @("sage-flatsurf-VERSION.exe", "preset.json")) {
@@ -68,6 +65,8 @@ function Install {
 
   & "$wsldlExe" "run" "sh" "-c" "cd ~ && tar zxf sage-flatsurf-VERSION.unix.tar.gz"
   Pop-Location
+
+  sleep 2
 }
 
 function JupyterLab {
@@ -104,8 +103,6 @@ if ($args.Count -ne 1) {
   Usage
   exit 1
 }
-
-$commandArgs = $args
 
 switch ($args[0]) {
   '--jupyterlab' {
