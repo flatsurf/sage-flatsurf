@@ -16,7 +16,7 @@ jobs:
       with: { pixi-version: v0.28.2, environments: asv, activate-environment: true }
     - name: Checkout historic performance data
       uses: actions/checkout@v4
-      with: { path: ./asv/results, ref: asv }
+      with: { path: .asv/results, ref: asv }
     - name: Run benchmarks
       uses: flatsurf/actions/asv@main
       with: { packages: pixi }
