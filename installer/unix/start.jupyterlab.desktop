@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=0.5.2
+Name=Launch JupyterLab (sage-flatsurf)
+GenericName=Notebook Server
+Comment="Start a JupyterLab server and open it in a browser window"
+Icon=application-mathematics
+Exec=sh -c '`dirname "%k"`/jupyterlab'
+Terminal=true
+Type=Application
+SingleMainWindow=true

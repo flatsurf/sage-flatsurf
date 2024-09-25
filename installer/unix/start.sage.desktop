@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=0.5.2
+Name=Launch SageMath (sage-flatsurf)
+GenericName=Console Application
+Comment="Start the SageMath REPL"
+Icon=terminal
+Exec=sh -c '`dirname "%k"`/sage'
+Terminal=true
+Type=Application
