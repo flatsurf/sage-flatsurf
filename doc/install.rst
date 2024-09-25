@@ -6,7 +6,7 @@ There are several different ways to install sage-flatsurf on your machine. You c
 * extract `our pixi tarball <installation-tarball>`_ for Linux and macOS (recommended),
 * use `our executable installer <installation-installer>`_ on Windows (recommended),
 * create a `conda environment <installation-mamba>`_ on Linux and macOS,
-* install sage-flatsurf `into an existing source build of SageMath <installation-sagemath`_,
+* install sage-flatsurf `into an existing source build of SageMath <installation-sagemath>`_,
 * or `pip install <installation-pip>`_ sage-flatsurf.
 
 If you are having trouble with this or are on another operating system, please
