@@ -33,13 +33,17 @@ $PROJECT = 'sage-flatsurf'
 
 command('pixi', 'pixi install --manifest-path pyproject.toml')
 
+command('build', 'python -m build')
+command('twine', 'twine upload dist/sage_flatsurf-' + $VERSION + '.tar.gz dist/sage_flatsurf-' + $VERSION + '-py3-none-any.whl')
+
 $ACTIVITIES = [
     'version_bump',
     'pixi',
     'changelog',
     'tag',
     'push_tag',
-    'pypi',
+    'build',
+    'twine',
     'ghrelease',
 ]
 
