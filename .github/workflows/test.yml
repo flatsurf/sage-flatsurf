@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         environment: [ sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, sagemath-103, dev]
-        on: [ ubuntu-24.04, macos-13, macos-14 ]
+        on: [ ubuntu-24.04, macos-13 ] # we do not test macos-14 yet since we don't have osx-arm64 in our pyproject.toml
     steps:
     - uses: actions/checkout@v2
     - uses: prefix-dev/setup-pixi@v0.8.1
