@@ -27,7 +27,7 @@ This will download the latest pixi tarball from our `Releases Page
 <https://github.com/flatsurf/sage-flatsurf/releases/>`_ and extract it into a
 subdirectory of the directory where you opened the terminal.
 
-Due to conda limitations[1]_, this only works if the current directory does not
+Due to conda limitations [1]_, this only works if the current directory does not
 contain any spaces. Run `pwd` to double check that your absolute path is free
 of whitespace.
 
