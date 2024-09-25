@@ -41,11 +41,7 @@ $ACTIVITIES = [
 $RELEASE_YEAR = $RELEASE_DATE.year
 
 $VERSION_BUMP_PATTERNS = [
-    ('recipe/meta.yaml', r"\{% set version =", "{% set version = \"$VERSION\" %}"),
-    ('recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
     ('flatsurf/version.py', r"version =", "version = \"$VERSION\""),
-    ('setup.py', r"    version=", "    version=\"$VERSION\","),
-    ('flatsurf.yml', r"  - sage-flatsurf=", r"  - sage-flatsurf=$VERSION"),
     ('README.md', r"tar zxf sage-flatsurf-.*.unix.tar.gz", "tar zxf sage-flatsurf-$VERSION.unix.tar.gz"),
     ('README.md', r"./sage-flatsurf-.*/jupyterlab  # or", "./sage-flatsurf-$VERSION/jupyterlab  # or"),
     ('README.md', r"./sage-flatsurf-.*/sage", "./sage-flatsurf-$VERSION/sage"),

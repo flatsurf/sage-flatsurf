@@ -182,7 +182,7 @@ begin
   if Result = 'Disabled' then begin
     // To get into this code path again run either of:
     // Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
-    // Disable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart  
+    // Disable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart
     if MsgBox('Windows Subsystem for Linux is required but not configured (correctly) on your system. Do you want me to reconfigure it?', mbConfirmation, MB_YESNO) = IDNO then begin
       Result := 'Cannot finish installation without Windows Subsystem for Linux 2';
       Exit;
