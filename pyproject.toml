@@ -123,7 +123,7 @@ jupytext = "*"
 [tool.pixi.feature.dev.tasks]
 sage = "sage"
 jupyter = "jupyter lab"
-pytest = "pytest -n auto"
+pytest = "pytest -n auto test"
 test = "pixi run doctest-long && pixi run pytest"
 
 [tool.pixi.feature.doc.dependencies]
