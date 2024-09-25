@@ -12,43 +12,38 @@ don't hesitate to `reach out to us <https://flatsurf.github.io>`_, create an
 `issue <https://github.com/flatsurf/sage-flatsurf/issues>`_, or contribute a
 `pull request <https://github.com/flatsurf/sage-flatsurf/pulls>`_.
 
-We recommend to work on sage-flatsurf in a conda environment since currently
-that is the easiest way to make sure that all optional dependencies of
-sage-flatsurf are satisfied.
+We recommend to work on sage-flatsurf with a pixi environment which guarantees
+that you are using dependencies that are known to work.
 
-To setup a conda environment, it's maybe best to first install sage-flatsurf
-with mamba, as explained in our `installation guide <installation-mamba>`_.
+Once you intalled `pixi <https://pixi.sh>`_, you can enter a shell with your
+version of sage-flatsurf installed by typing::
 
-If that worked, you should create a separate environment to work on
-sage-flatsurf::
+  pixi shell -e dev
 
-        mamba env create -n sage-flatsurf-build -f https://github.com/flatsurf/sage-flatsurf/raw/master/environment.yml
+You can then start SageMath normally, by typing ``sage``.
 
-This environment has all the dependencies of sage-flatsurf installed, but not
-sage-flatsurf itself::
+You can also run SageMath directly with::
 
-        mamba activate sage-flatsurf-build
+  pixi run sage
 
-`Clone <https://swcarpentry.github.io/git-novice/>`_ the sage-flatsurf
-repository::
+To run the test suite, you can use ``sage -tp flatsurf`` and ``pytest``
+directly or just run::
 
-        git clone https://github.com/flatsurf/sage-flatsurf.git
+  pixi run -e dev doctest
+  pixi run -e dev doctest-long  # to run the tests with the --long flag
+  pixi run -e dev pytest
 
-You can now install an editable version of sage-flatsurf inside the ``sage-flatsurf-build`` environment, so any changes you make to ``sage-flatsurf/`` are going to be available immediately in this environment::
+Or to just run all tests and doctests::
 
-        pip install -e ./sage-flatsurf
+  pixi run test
 
-You can now run our doctests, and run our test suite::
+To check your code for style errors::
 
-        sage -tp --initial --optional=sage,flipper,eantic,exactreal,pyflatsurf flatsurf doc
-        pytest -n auto
+  pixi run lint
 
-Note that you can use ``mamba upgrade -n sage-flatsurf-build --all`` to update all of sage-flatsurf's dependencies. You can also recreate the environment to make sure that it's identical to the one that is used in our automated tests::
+And to rebuild the documentation::
 
-        conda deactivate
-        mamba uninstall -n sage-flatsurf-build --all
-        mamba env create -n sage-flatsurf-build -f ./sage-flatsurf/environment.yml
-        mamba activate sage-flatsurf-build
+  pixi run doc
 
 This should cover the very basics of development but there are certainly lots
 of things that we missed here, so don't hesitate to `contact us
