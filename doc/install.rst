@@ -112,6 +112,8 @@ them as well run::
   mamba activate flatsurf
   pip install ipyvue-flatsurf flipper realalg veerer
 
+.. _installation-sagemath:
+
 Install into SageMath
 ---------------------
 
