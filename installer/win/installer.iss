@@ -1,4 +1,5 @@
 [Setup]
+; Against the recommendations of InnoSetup, we include the VERSION into the AppName so that all versions of sage-flatsurf are separate from each other.
 AppName=flatsurf-VERSION
 AppVersion=VERSION
 AppVerName=flatsurf-VERSION
@@ -8,12 +9,13 @@ DefaultGroupName=sage-flatsurf-VERSION
 OutputBaseFilename=sage-flatsurf-VERSION
 SetupIconFile=sage-flatsurf.ico
 UninstallDisplayIcon=sage-flatsurf.ico
-; TODO
-;UninstallDisplayIcon={app}\MyProg.exe
-
-; TODO autostart after install, see https://stackoverflow.com/q/3767227/812379
-
-; TODO: Have a look at all the [Setup] section directives in inno setup documentation.
+AppPublisher=the sage-flatsurf authors
+AppPublisherURL=https://flatsurf.github.io/
+AppSupportURL=https://flatsurf.github.io/sage-flatsurf/
+AppUpdatesURL=https://github.com/flatsurf/sage-flatsurf/releases
+; The entire distribution of sage-flatsurf + SageMath is licensed under GPLv3+.
+LicenseFile=license.txt
+AppId=sage-flatsurf-VERSION
 
 [Files]
 Source: "sage-flatsurf-VERSION.exe"; DestDir: "{app}";

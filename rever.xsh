@@ -57,6 +57,7 @@ $VERSION_BUMP_PATTERNS = [
     ('doc/install.rst', r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/", r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/$VERSION/sage-flatsurf-$VERSION.unix.tar.gz | tar zxf -"),
     ('doc/install.rst', r"  ./sage-flatsurf-.*/sage", r"  ./sage-flatsurf-$VERSION/sage"),
     ('doc/install.rst', r"  ./sage-flatsurf-.*/jupyterlab", r"  ./sage-flatsurf-$VERSION/jupyterlab"),
+    ('installer/win/installer.iss', r"AppCopyright=", "AppCopyright=Copyright (C) 2016-$RELEASE_YEAR the sage-flatsurf authors"),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'
