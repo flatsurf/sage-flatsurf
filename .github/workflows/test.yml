@@ -12,7 +12,7 @@ jobs:
     runs-on: "${{ matrix.on }}"
     strategy:
       matrix:
-        environment: [ sagemath-96, sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, sagemath-103, dev]
+        environment: [ sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, sagemath-103, dev]
         on: [ ubuntu-24.04, macos-13, macos-14 ]
     steps:
     - uses: actions/checkout@v2
