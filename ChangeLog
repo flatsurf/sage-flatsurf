@@ -4,6 +4,99 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.6.0
+====================
+
+**Added:**
+
+* Added methods ``angle()``, ``edges()``, ``edges_ccw()``, and ``turns()`` for points of a surface.
+* Added methods ``angles()`` for similarity surfaces and surfaces with boundary.
+* Added ``is_in_edge_interior()`` and ``is_in_polygon_interior()`` for points of a surface.
+* Added `README` to point out that our benchmarks are published at https://flatsurf.github.io/sage-flatsurf/asv/.
+* Added installers for Linux, macOS, and Windows.
+* Added ``homology()`` and ``cohomology()`` for surfaces; also exposed as ``SimplicialHomology()`` and ``SimplicialCohomology()``.
+* Added ``area()`` for hyperbolic convex sets.
+* Added ``angle()`` between hyperbolic geodesics.
+* Added ``is_convex()`` for similarity surfaces to decide whether joining two polygons in a surface would lead to a convex polygon.
+* Added ``join()`` for polygons, to glue two adjacent polygons into a single polygon.
+* Added ``triangulate()`` method to Euclidean polygons.
+* Added ``__getitem__()`` to all ``labels()`` so that accessing ``surface.labels()[i]`` is possible.
+* Added ``is_triangulated()``, ``is_delaunay_triangulated()``, and ``is_delaunay_decomposed()`` for the infinite staircase.
+* Added ``labels`` parameter to ``MutableOrientedSimilaritySurface.from_surface()`` to only copy part of an existing surface.
+* Added a Tour of flatsurf to the documentation.
+* Added ``VeechGroup`` and ``AffineAutomorphismGroup`` (also accessible as ``veech_gruop()`` and ``affine_automorphism_group()`` on surfaces.)
+* Added ``apply_matrix()`` to all oriented similarity surfaces. (We apply the matrix to all polygons and keep the gluings intact. Probably not the most meaningful operation for non-dilation surfaces but it can be useful while building surfaces.)
+* Added ``delaunay_triangulate()`` to similarity surfaces which returns a morphisms to a Delaunay triangulation of the surface.
+* Added ``delaunay_decompose()`` to similarity surfaces which returns a morphisms to a Delaunay cell decomposition of the surface. This method always has an optional parameter ``codomain`` which can be an existing cell decomposition, this effectively exposes the ``isomorphism()`` function of a ``FlatTriangulation`` in libflatsurf.
+* Added ``ngens()`` to homology to get the Betti number of homology.
+* Added ``hom()`` for homology to produce the morphism in homology induced by a morphism of a surface or the morphism in homology given by a matrix.
+* Added ``pyflatsurf()`` to translation surfaces to produce an isomorphic surface that is backed by libflatsurf (and exposes the underlying libflatsurf object in its ``flat_triangulation()`` method.)
+* construction and test for veering triangulation of dilation surfaces
+* random_flip for triangulated similarity surfaces
+
+**Changed:**
+
+* Changed the default development workflow. While you may still use conda/mamba for development, we recommend to use pixi instead, see the README for details.
+* Renamed ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``. (If for some reason you used this module directly, you need to update your imports.)
+* Moved ``GL2RImageSurface`` from ``flatsurf.geometry.half_dilation_surface`` to ``flatsurf.geometry.lazy``. (If for some reason you used this class directly, you need to update your imports.)
+* Changed ``labels()`` and ``polygons()`` not to inherit from ``collections.abc.Set`` anymore. These are not just sets because their order matter, in particular, their order is compatible. However, ``edges()`` and ``gluings()`` are still ``collections.abc.Set``.
+* Changed ``relabel()`` on surfaces to default to relabeling to integer labels. Also the keyword parameter ``relabeling_map`` is now called ``relabeling``.
+* Changed ``apply_matrix()``, it now returns a morphism to the deformed surface. To recover the old behavior, use ``apply_matrix().codomain()``.
+* Changed ``triangle_flip()`` to now always turn the diagonal counterclockwise from the perspetive of ``label``.
+* Changed ``subdivide_edges()``, it now returns a morphism to the surface with inserted vertices. To recover the old behavior, use ``subdivide_edges().codomain()``.
+
+**Deprecated:**
+
+* Deprecated ``return_adjacent_edges`` as a keyword argument to ``angles()`` since we do not want the type of a return value to fundamentally depend on the arguments.
+* Deprecated triangulation with ``triangulate(in_place=True)``. There is no performance advantage in such a triangulation and it complicates future work on morphisms.
+* Deprecated the ``limit`` keywords for ``is_triangulated``, ``is_delaunay_triangulated``, ``_is_*_surface``, ``cmp``. Querying infinite surfaces for properties up to a limit is often not very useful and at the same time the question can be answered trivially with knowledge of the surfaces. Also, this was implemented very inconsistently.
+* Deprecated the ``singularity_limit`` keywords for ``to_surface``. There is no replacement planned for this feature.
+* Deprecated ``circumscribing_circle()`` of a polygon in favor of ``circumscribed_circle()``.
+* Deprecated the ``test`` keyword of ``triangle_flip`` since there is already ``is_convex(strict=True)``.
+* Deprecated ``delaunay_triangulation()`` in favor of ``delaunay_triangulate()``.
+* Deprecated ``delaunay_decomposition()`` in favor of ``delaunay_decompose()``.
+* Deprecated ``flatsurf.geometry.pyflatsurf_conversion`` module in favor of ``flatsurf.geometry.pyflatsurf.conversion``.
+
+**Removed:**
+
+* Removed support for SageMath 9.4, 9.5, 9.6 (things might still work but we are not testing for it automatically anymore.)
+* Removed the old ``flatsurf.geometry.relative_homology`` without prior deprecation (since it was not exposed publicly anywhere.) The new implementation should cover all the relevant features.
+* Removed the ``ring`` keyword argument from ``GL2RImageSurface`` and ``GL2RMapping``, the ring is now always the common parent of the surface base ring and the matrix base ring. (Use ``change_ring`` if you want the surface to live over another ring.)
+* Removed the option ``in_place=True`` from ``delaunay_triangulation()`` and ``delaunay_decomposition()``. There is no asymptotic runtime advantage in performing this operation in place (and we need to maintain two very different copies of the same functionality.)
+* Removed the option ``triangulated=True`` from ``delaunay_triangulation()`` and ``delaunay_decomposition()`` since there is no significant runtime advantage in practice.
+* Removed the option ``delaunay_triangulated=True`` from ``delaunay_decomposition()`` since there is no significant runtime advantage in practice.
+* Removed the ``direction`` keyword from ``delaunay_triangulation()`` and ``delaunay_decomposition()``. The claimed behavior about separatrices does not actually hold so the behavior here was somewhat random. Instead, we now always turn each edge counterclockwise when flipping.
+* Removed ``local`` and ``limit`` parameters from ``rel_deformation()``. The method is now backed by libflatsurf and should be much faster in practice.
+* Removed the ``direction`` keyword of ``triangle_flip``, ``veering_triangulation``, ``l_infinity_delaunay_triangulation``, ``delaunay_triangulation``, and ``delaunay_decomposition`` since it was not clear what it actually did in general, instead the diagonal is now always turned counterclockwise.
+* Removed support for SageMath 9.2 and 9.3. Virtually all of sage-flatsurf should still work with these versions but there are some inconsistencies in some homology outputs and we do not want to worry about it in our automated testing.
+
+**Fixed:**
+
+* Fixed ``an_element()`` and ``some_elements()`` of mutable surfaces.
+* Fixed creation of points on the boundary of a surface.
+* Fixed plotting of surfaces with boundary.
+* Fixed caching of methods on mutable surfaces. Before ``edge_matrix()`` on a mutable surfaces was cached which could lead to wrong results.
+* Fixed compatibility with SageMath 10.4.
+* Fixed plotting in the reference manual. The module documentation now contain plots (when wrapped with jupyter-execute) instead of just saying ``Graphics object consisting of 18 graphics primitives``.
+* Fixed ``edges()`` of a hyperbolic polygon. The reported edges do now take into account marked vertices.
+* Fixed rendering of formulas in documentation.
+* Fixed ipyvue-flatsurf version installed with the flatsurf.yml environment so it is actually compatible with sage-flatsurf.
+* Fixed installation instructions to include the Jupyter notebook which is mentioned there.
+* Fixed comparison of infinite sets of labels. Labels can now be compared and hashed in some very limited cases.
+* Fixed ``j_invariant()`` and ``erase_marked_points()`` they are now not available for infinite type surfaces anymore (where they failed before.)
+* Fixed ``subdivide()`` and ``subdivide_polygons()``; they now return immutable surfaces in the correct category.
+* Fixed failing installation on macOS from flatsurf.yml.
+* Fixed documentation on how to upgrade a mamba install of flatsurf.
+* Fixed some rare compatibility issues when packages from conda-forge and anaconda get mixed up.
+* Fixed name of project in setup.py. It's now `sage-flatsurf` instead of `sage_flatsurf`.
+* Fixed documentation build to be compatible with SageMath 10.2 themeing.
+* Fixed notification when docbuild is ready so it is less noisy, see https://github.com/sagemath/sage/pull/37740.
+* Fixed some pins in the flatsurf.yml that defines the flatsurf stack; upgraded SageMath to 10.2 and added pyintervalxt that had been missing.
+* Fixed ``is_convex()`` for edges of surfaces. It does now allow this check for self-glued polygons.
+* Fixed ``==`` and hashing for circles. Circles can now be used in dicts and sets.
+* Fixed L^oo-Delaunay triangulation of dilation surfaces
+
+
 v0.5.2
 ====================
 

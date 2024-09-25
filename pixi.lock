@@ -1169,7 +1169,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: https://files.pythonhosted.org/packages/a2/30/2e2b1a1eed38422244c8ba53d39f7a1eb6b012c5bd8070749d8268ef9726/flipper-0.15.4.tar.gz
       - pypi: https://files.pythonhosted.org/packages/a6/c3/8e15930be6d745641d39a70ba1d530242d81c31dd6a45cdd464d5eab0ef9/ipymuvue-0.6.0-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/02/fe/6045100d260e1893eb8aadc9a04226cbae878ab9d409d0c340db78d0bc56/ipyvue_flatsurf-0.6.1-py2.py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/2c/71/7cb6702f1a2d42ac30fcb09d0da57e7a7b1d6fe6c2a7479f3c210e596cbb/ipyvue_flatsurf-0.6.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/33/91/ea05ffe48f204df100bd3103d07d003e08f20825d38276d3f89552dfa6a4/jupyter_ui_poll-0.2.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/e9/5f72929373e1a0e8d142a130f3f97e6ff920070f87f91c4e13e40e0fba5a/networkx-3.3-py3-none-any.whl
@@ -1503,7 +1503,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zstd-1.5.6-h915ae27_0.conda
       - pypi: https://files.pythonhosted.org/packages/a2/30/2e2b1a1eed38422244c8ba53d39f7a1eb6b012c5bd8070749d8268ef9726/flipper-0.15.4.tar.gz
       - pypi: https://files.pythonhosted.org/packages/a6/c3/8e15930be6d745641d39a70ba1d530242d81c31dd6a45cdd464d5eab0ef9/ipymuvue-0.6.0-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/02/fe/6045100d260e1893eb8aadc9a04226cbae878ab9d409d0c340db78d0bc56/ipyvue_flatsurf-0.6.1-py2.py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/2c/71/7cb6702f1a2d42ac30fcb09d0da57e7a7b1d6fe6c2a7479f3c210e596cbb/ipyvue_flatsurf-0.6.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/33/91/ea05ffe48f204df100bd3103d07d003e08f20825d38276d3f89552dfa6a4/jupyter_ui_poll-0.2.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/38/e9/5f72929373e1a0e8d142a130f3f97e6ff920070f87f91c4e13e40e0fba5a/networkx-3.3-py3-none-any.whl
@@ -10176,12 +10176,12 @@ packages:
   timestamp: 1725050237172
 - kind: pypi
   name: ipyvue-flatsurf
-  version: 0.6.1
-  url: https://files.pythonhosted.org/packages/02/fe/6045100d260e1893eb8aadc9a04226cbae878ab9d409d0c340db78d0bc56/ipyvue_flatsurf-0.6.1-py2.py3-none-any.whl
-  sha256: b7f9e4ba90b309c895f02abb89ac05477dba982db32562d227bfbccc2f1ff695
+  version: 0.6.2
+  url: https://files.pythonhosted.org/packages/2c/71/7cb6702f1a2d42ac30fcb09d0da57e7a7b1d6fe6c2a7479f3c210e596cbb/ipyvue_flatsurf-0.6.2-py2.py3-none-any.whl
+  sha256: a1755e92224f3e26fc2f434ca4da06b51b334e2d3b537d57912c2990cae7b05c
   requires_dist:
   - ruamel-yaml<0.18,>=0.17.10
-  - sage-flatsurf<0.6,>=0.5
+  - sage-flatsurf<0.7,>=0.5
   - pyflatsurf<4,>=3.9.0
   - jupyter-ui-poll<0.3,>=0.2.1
   - ipymuvue<0.7.0,>=0.3.0
@@ -19222,9 +19222,9 @@ packages:
   - sphinx
 - kind: pypi
   name: sage-flatsurf
-  version: 0.5.2
+  version: 0.6.0
   path: .
-  sha256: be13f357dd6a4ed3b8fa4ce623a487a1d88bdfb23e5cc82a11851f1b9db92e1d
+  sha256: 41fa27732eee5ff6f939b5635320be9d75ab5b8bc7d87eccc6fd64b3899bde4a
   requires_dist:
   - bidict
   - more-itertools
