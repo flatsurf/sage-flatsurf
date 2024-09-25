@@ -13,7 +13,7 @@ launch things through pixi.
 ## Installation
 
 ```sh
-tar zxf sage-flatsurf-*.unixtar.gz
+tar zxf sage-flatsurf-*.unix.tar.gz
 cd sage-flatsurf-*
 ./sage or ./jupyterlab
 ```
