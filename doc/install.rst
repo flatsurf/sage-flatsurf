@@ -19,7 +19,7 @@ installation instructions.
 Install with the pixi tarball
 -----------------------------
 
-Open a terminal and run the following command:
+Open a terminal and run the following command::
 
   curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/0.6.0/sage-flatsurf-0.6.0.unix.tar.gz | tar zxf -
 
@@ -37,11 +37,11 @@ you later change your mind, you can safely delete that directory, or move or
 rename it.
 
 You can now use sage-flatsurf in a terminal or through Jupyter notebooks. To
-launch sage-flatsurf in the terminal, run:
+launch sage-flatsurf in the terminal, run::
 
   ./sage-flatsurf-0.6.0/sage
 
-To launch a browser with Jupyter Lab instead, run:
+To launch a browser with Jupyter Lab instead, run::
 
   ./sage-flatsurf-0.6.0/jupyterlab
 
