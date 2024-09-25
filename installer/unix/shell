@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
-# This scripts makes sure that a pixi binary is available, then runs pixi shell to
-# spawn a shell with all packages installed and environment variables set.
+# This scripts makes sure that a pixi binary is available, then runs pixi shell
+# to spawn a shell with all packages installed and environment variables set.
 ###############################################################################
 set -euo pipefail
 
@@ -15,4 +15,4 @@ if [ $# -ne 0 ]; then
   exit 1
 fi
 
-"$PIXI" shell --manifest-path "${SCRIPT_DIR}"/sage-flatsurf/pyproject.toml
+"$PIXI" shell --manifest-path "${SCRIPT_DIR}"/sage-flatsurf/pyproject.toml -e dev

@@ -1,7 +1,8 @@
 #!/bin/bash
-###################################################################
-# Creates a tarball containing a pixi environment and launcher scripts for sage-flatsurf.
-###################################################################
+###########################################################################
+# Creates a tarball containing a pixi environment and launcher scripts for
+# sage-flatsurf.
+###########################################################################
 set -euo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
