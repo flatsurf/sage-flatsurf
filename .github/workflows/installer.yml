@@ -58,7 +58,8 @@ jobs:
       shell: bash
       run: |
         source installer/unix/version.sh
-        curl -fsSL https://github.com/yuk7/wsldl/releases/download/23051400/wsldl.exe > installer/win/sage-flatsurf-$VERSION.exe
+        curl -fsSL https://github.com/yuk7/wsldl/releases/download/23051400/wsldl.exe | tee wsldl.exe | sha256sum -c wsldl.exe.sha256
+        mv wsldl.exe installer/win/saeg-flatsurf-$VERSION.exe
     - name: Compile .iss to .exe installer
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
       with:
