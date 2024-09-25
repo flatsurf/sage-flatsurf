@@ -4,6 +4,15 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.6.1
+====================
+
+**Fixed:**
+
+* Fixed startup of SageMath on first invocation on Windows.
+
+
+
 v0.6.0
 ====================
 
