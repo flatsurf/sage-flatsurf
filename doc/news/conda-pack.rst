@@ -9,3 +9,7 @@
 **Fixed:**
 
 * Fixed compatibility with SageMath 10.4.
+
+**Removed:**
+
+* Removed support for SageMath 9.4 (things might still work but we are not testing for it automatically anymore.)

@@ -37,7 +37,6 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64"]
 
 [tool.pixi.environments]
-sagemath-94 = ["sagemath-94", "flipper", "gmpxxyy", "pyeantic", "test"]
 sagemath-95 = ["sagemath-95", "flipper", "gmpxxyy", "pyeantic", "test"]
 sagemath-96 = ["sagemath-96", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 sagemath-97 = ["sagemath-97", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
@@ -140,10 +139,6 @@ sage-docbuild = "==10.3"
 
 [tool.pixi.feature.doc.tasks]
 doc = "cd doc && make html SPHINXOPTS='-W -n --keep-going'"
-
-[tool.pixi.feature.sagemath-94.dependencies]
-sagelib = "9.4"
-python = "~=3.9.0"
 
 [tool.pixi.feature.sagemath-95.dependencies]
 sagelib = "9.5"
