@@ -1,6 +1,6 @@
 #!/bin/bash
 ################################################################################
-# This scripts makes sure ./pixi binary is available, then starts the sage CLI #
+# This scripts makes sure that a pixi binary is available and then starts the SageMath CLI.
 ################################################################################
 set -euo pipefail
 

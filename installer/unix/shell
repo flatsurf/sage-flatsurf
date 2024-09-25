@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
-# This scripts makes sure ./pixi binary is available, then runs pixi shell to #
-# spawn a shell with all packages installed and environment variables set.    #
+# This scripts makes sure that a pixi binary is available, then runs pixi shell to
+# spawn a shell with all packages installed and environment variables set.
 ###############################################################################
 set -euo pipefail
 

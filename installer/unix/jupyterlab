@@ -1,6 +1,6 @@
 #!/bin/bash
 ##############################################################################
-# This scripts makes sure ./pixi binary is available, then starts JupyterLab #
+# This scripts makes sure that the pixi binary is available and then starts JupyterLab.
 ##############################################################################
 set -euo pipefail
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 ###################################################################
-# 
+# Creates a tarball containing a pixi environment and launcher scripts for sage-flatsurf.
 ###################################################################
 set -euo pipefail
 

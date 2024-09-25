@@ -1,8 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# This script downloads pixi if it's not present in the current directory yet #
-# essentially, we just run the official pixi script which we copied over into #
-# this repository.                                                            #
+# This script downloads pixi if it's not present here yet by running the official pixi installer script.
 ###############################################################################
 set -euo pipefail
 

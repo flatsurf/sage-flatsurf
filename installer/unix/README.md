@@ -8,7 +8,7 @@ This packages a directory with:
 * launcher scripts: ./sage ./shell ./jupyterlab
 
 The launchers download pixi if it's not present in the directory and then
-launches things through pixi.
+launch things through pixi.
 
 ## Installation
 
@@ -27,8 +27,6 @@ are available, i.e., at the time of this writing, Linux and macOS on x86\_64.
 
 Linux users do not expect programs to have graphical installers. Rather they
 expect things to be present in their distribution directly. Eventually we
-should bring sage-flatsurf downstream to the distributions. In the meantime, we
-included a few .desktop files which (at least on a standard Ubuntu and Mint)
-lets you launch things from a file explorer.
+should bring sage-flatsurf downstream to the distributions.
 
 For a graphical macOS installer, see the README in ../macos.
