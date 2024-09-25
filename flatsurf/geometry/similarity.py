@@ -32,7 +32,7 @@ from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.modules.free_module_element import FreeModuleElement
 
-from sage.structure.element import is_Matrix
+from sage.structure.element import Matrix
 
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
@@ -515,7 +515,7 @@ class SimilarityGroup(UniqueRepresentation, Group):
                         len(x)
                     )
                 )
-        elif is_Matrix(x):
+        elif isinstance(x, Matrix):
             #   a -sb
             #   b sa
             if x.nrows() == x.ncols() == 2:

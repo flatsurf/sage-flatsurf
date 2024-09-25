@@ -309,7 +309,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         from sage.all import matrix
 
-        m = matrix(m, ring=self.base_ring())
+        m = matrix(m, base_ring=self.base_ring())
         m = [self._ring_conversion(x) for x in m.list()]
 
         deformation = self._flat_triangulation.applyMatrix(*m)
