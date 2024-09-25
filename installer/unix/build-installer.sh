@@ -30,7 +30,7 @@ git clone ${SCRIPT_DIR}/../../ "$tmp/$NAME/sage-flatsurf"
 
 rm -rf "$tmp/$NAME/sage-flatsurf/.git"
 
-( cd "$SCRIPT_DIR" && cp LICENSE sage shell jupyterlab .ensure-pixi.sh start.sage.desktop start.jupyterlab.desktop "$tmp/$NAME" )
+( cd "$SCRIPT_DIR" && cp LICENSE sage shell jupyterlab .ensure-pixi.sh "$tmp/$NAME" )
 curl -fsSL https://pixi.sh/install.sh > "$tmp/$NAME/.pixi-install.sh"
 chmod +x "$tmp/$NAME/.pixi-install.sh"
 
