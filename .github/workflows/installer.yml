@@ -23,7 +23,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: unix-installer
-        path: ./*.pixi.tar.gz
+        path: ./*.unix.tar.gz
   unix-test:
     runs-on: ${{ matrix.on }}
     needs: [ unix ]

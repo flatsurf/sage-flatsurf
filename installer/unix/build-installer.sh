@@ -17,7 +17,7 @@ else
   exit 1
 fi
 
-TARBALL="$NAME.pixi.tar.gz"
+TARBALL="$NAME.unix.tar.gz"
 
 echo "Generating $TARBALL in $SCRIPT_DIR"
 

@@ -48,10 +48,15 @@ $VERSION_BUMP_PATTERNS = [
     ('flatsurf/version.py', r"version =", "version = \"$VERSION\""),
     ('setup.py', r"    version=", "    version=\"$VERSION\","),
     ('flatsurf.yml', r"  - sage-flatsurf=", r"  - sage-flatsurf=$VERSION"),
-    ('README.md', r'\[!\[Binder\]', r'[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples)'),
+    ('README.md', r"tar zxf sage-flatsurf-.*.unix.tar.gz", "tar zxf sage-flatsurf-$VERSION.unix.tar.gz"),
+    ('README.md', r"./sage-flatsurf-.*/jupyterlab  # or", "./sage-flatsurf-$VERSION/jupyterlab  # or"),
+    ('README.md', r"./sage-flatsurf-.*/sage", "./sage-flatsurf-$VERSION/sage"),
     ('doc/index.rst', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples'),
     ('doc/conf.py', r'copyright = ', "copyright = \"2016-$RELEASE_YEAR, the sage-flatsurf authors\""),
-    ('pixi.toml', r'version = ', 'version = "$VERSION"'),
+    ('pyproject.toml', r'version = ', 'version = "$VERSION"'),
+    ('doc/install.rst', r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/", r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/$VERSION/sage-flatsurf-$VERSION.unix.tar.gz | tar zxf -"),
+    ('doc/install.rst', r"  ./sage-flatsurf-.*/sage", r"  ./sage-flatsurf-$VERSION/sage"),
+    ('doc/install.rst', r"  ./sage-flatsurf-.*/jupyterlab", r"  ./sage-flatsurf-$VERSION/jupyterlab"),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'
