@@ -19,7 +19,9 @@ function EnsureInstalled {
     return
   }
 
-  if ($Host.UI.RawUI.WindowTitle) {
+  $consoleHandle = (Get-Process -Id $PID).MainWindowHandle
+
+  if ($consoleHandle -ne 0) {
     Install
   } else {
     # Restart script in a visible terminal
