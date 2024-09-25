@@ -9,7 +9,7 @@ entrypoint (sage, shell, jupyterlab) and embed the unix installer tarball in
 each of them as a `Resources/`. in `MacOS`, we can then put a launcher script
 that unpacks the tarball to `$HOME/sage-flatsurf-whatever` and runs the
 launcher script from the unix installer with `open -a Console`. Finally, these
-three apps can be triviall packaged up into a .pkg with pkgbuild. To make this
+three apps can be trivially packaged up into a .pkg with pkgbuild. To make this
 useful, they need to be signed and notarized (not sure if Apple will notarize
 something like that.)
 
