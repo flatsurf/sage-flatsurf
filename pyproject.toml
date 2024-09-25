@@ -6,7 +6,6 @@ authors = [
   {name = "W. Patrick Hooper"},
   {name = "Julian Rüth"},
 ]
-# TODO: Add a CI test that sage-flatsurf can be pip installed on SageMath and tests pass, i.e., the list of dependencies here is correct.
 dependencies = [
   "bidict",
   "more-itertools",
