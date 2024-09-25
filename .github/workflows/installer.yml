@@ -1,7 +1,7 @@
 # Builds Linux/macOS and Windows installers and stores them as artifacts that
 # can be downloaded from the workflow run.
-# Currently, we need to manually these artifacts to each release manually so
-# that the installers are available from our "Release" page on GitHub.
+# Currently, we need to manually attach these artifacts to each release
+# so that the installers are available from our "Release" page on GitHub.
 name: Build Installer
 on:
   push: { branches: [ "master" ] }
@@ -59,7 +59,7 @@ jobs:
       run: |
         source installer/unix/version.sh
         curl -fsSL https://github.com/yuk7/wsldl/releases/download/23051400/wsldl.exe | tee wsldl.exe | sha256sum -c wsldl.exe.sha256
-        mv wsldl.exe installer/win/saeg-flatsurf-$VERSION.exe
+        mv wsldl.exe installer/win/sage-flatsurf-$VERSION.exe
     - name: Compile .iss to .exe installer
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
       with:
