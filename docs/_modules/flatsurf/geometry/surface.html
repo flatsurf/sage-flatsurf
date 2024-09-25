@@ -384,6 +384,7 @@
 <span class="sd">    Translation Surface in H_2(1^2) built from 2 regular hexagons</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="c1"># ********************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
@@ -1328,6 +1329,7 @@
 <span class="sd">        True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">Element</span> <span class="o">=</span> <span class="n">SurfacePoint</span>
 
 <div class="viewcode-block" id="OrientedSimilaritySurface.__init__">
@@ -2027,7 +2029,7 @@
         <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">gluings</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">glue</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">opposite</span><span class="p">)</span> <span class="ow">in</span> <span class="n">gluings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">opposite</span> <span class="ow">in</span> <span class="n">gluings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">old_gluings</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">label</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">glue</span><span class="p">(</span><span class="n">gluings</span><span class="p">[</span><span class="n">old_gluings</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="mi">1</span><span class="p">]],</span> <span class="n">opposite</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>

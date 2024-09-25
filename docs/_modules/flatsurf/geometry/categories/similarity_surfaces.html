@@ -441,6 +441,7 @@
 <span class="sd">    sage: TestSuite(S).run()</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="c1"># ****************************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
@@ -788,9 +789,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">switch_sides</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-            <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">is_Matrix</span>
+            <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">Matrix</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_Matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;only implemented for matrices&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">matrix</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;only implemented for 2x2 matrices&quot;</span><span class="p">)</span>

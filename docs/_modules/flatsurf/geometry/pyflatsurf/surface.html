@@ -370,6 +370,7 @@
 <span class="sd">    FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="c1"># ********************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
@@ -676,7 +677,7 @@
 
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
 
-        <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
         <span class="n">m</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring_conversion</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">list</span><span class="p">()]</span>
 
         <span class="n">deformation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flat_triangulation</span><span class="o">.</span><span class="n">applyMatrix</span><span class="p">(</span><span class="o">*</span><span class="n">m</span><span class="p">)</span>

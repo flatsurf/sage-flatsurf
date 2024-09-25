@@ -377,6 +377,7 @@
 <span class="sd">    import jupyter_doctest_tweaks</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="c1"># ****************************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
@@ -1122,6 +1123,7 @@
 <span class="sd">        HyperbolicPathPlotCommand(code=&#39;MOVETO&#39;, target=0)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Literal[&quot;MOVETO&quot;, &quot;LINETO&quot;] requires Python 3.8</span>
     <span class="n">target</span><span class="p">:</span> <span class="n">HyperbolicPoint</span>
 
@@ -1374,17 +1376,6 @@
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;half_plane&quot;</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
 
-            <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="n">start</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
-                <span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">end</span> <span class="o">!=</span> <span class="n">end</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
-                <span class="n">end_x</span><span class="p">,</span> <span class="n">end_y</span> <span class="o">=</span> <span class="n">end</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="n">start</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
-                <span class="k">return</span> <span class="p">[</span>
-                    <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">end_x</span><span class="p">,</span> <span class="n">end_y</span><span class="p">)),</span>
-                <span class="p">]</span>
-
             <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
                 <span class="k">return</span> <span class="p">[</span>
                     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span>
@@ -1392,6 +1383,15 @@
                         <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                     <span class="p">)</span>
                 <span class="p">]</span>
+
+            <span class="n">end_x</span><span class="p">,</span> <span class="n">end_y</span> <span class="o">=</span> <span class="n">end</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="n">start</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;LINETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">end_x</span><span class="p">,</span> <span class="n">end_y</span><span class="p">)),</span>
+                <span class="p">]</span>
+
+            <span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
 
             <span class="c1"># We should probably be more careful here and not just use a random</span>
             <span class="c1"># epsilon.</span>
@@ -1593,6 +1593,7 @@
 <span class="sd">        of such commands from a sequence of plot commands in the hyperbolic plane.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Literal[&quot;MOVETO&quot;, &quot;MOVETOINFINITY&quot;, &quot;LINETO&quot;, &quot;RAYTO&quot;, &quot;ARCTO&quot;, &quot;RARCTO&quot;] requires Python 3.8</span>
     <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span></div>
 

@@ -367,6 +367,7 @@
 <span class="sd">                    [0 1]</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="c1">######################################################################</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
@@ -640,7 +641,7 @@
 <span class="sd">        sage: isinstance(A, AffineAutomorphismGroup_generic)</span>
 <span class="sd">        True</span>
 
-<span class="sd">        sage: import cppyy  # random output due to cppyy deprecation warnings</span>
+<span class="sd">        sage: import cppyy  # optional: pyflatsurf  # random output due to cppyy deprecation warnings</span>
 <span class="sd">        sage: TestSuite(A).run()  # optional: pyflatsurf</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

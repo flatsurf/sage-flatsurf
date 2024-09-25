@@ -365,6 +365,7 @@
 <span class="sd">    Delaunay cell decomposition of The infinite staircase</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="c1"># ********************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
@@ -2449,9 +2450,11 @@
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">islice</span><span class="p">(</span>
-            <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span>
-            <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference</span><span class="o">.</span><span class="n">labels</span><span class="p">())),</span>
+            <span class="p">(</span>
+                <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span>
+                <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference</span><span class="o">.</span><span class="n">labels</span><span class="p">()))</span>
+            <span class="p">),</span>
             <span class="mi">30</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
@@ -2575,7 +2578,7 @@
 <span class="sd">            True</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="c1"># Since we encourage subclassing this surface, we are very strict here.</span>
             <span class="k">return</span> <span class="kc">False</span>
 
