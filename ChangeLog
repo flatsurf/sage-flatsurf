@@ -4,6 +4,15 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.6.2
+====================
+
+**Fixed:**
+
+* Fixed flaky behavior upon first launch of JupyterLab on Windows 11.
+
+
+
 v0.6.1
 ====================
 
