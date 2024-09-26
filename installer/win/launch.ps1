@@ -10,10 +10,10 @@ $winHome = $(wsl wslpath -a ($HOME -replace '\\', '/')).Trim()
 Pop-Location
 
 function Usage {
-  Write-Output "Usage $($MyInvocation.MyCommand.Path) --jupyterlab | --repl | --shell | --reinstall | --uninstall | --install"
+  Write-Output "Usage $($MyInvocation.MyCommand.Path) --jupyterlab | --repl | --shell | --reinstall | --uninstall | --ensure-install | --install"
 }
 
-function EnsureInstalled {
+function EnsureInstall {
   if (Test-Path $wsldlExe) {
     Write-Output "Not installing, wsldl executable already exists"
     return
@@ -70,17 +70,14 @@ function Install {
 }
 
 function JupyterLab {
-  EnsureInstalled
   Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "sh", "-c", "`"JUPYTERLAB_HOME=$winHome /home/wsl/sage-flatsurf-VERSION/jupyterlab`""
 }
 
 function REPL {
-  EnsureInstalled
   Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "/home/wsl/sage-flatsurf-VERSION/sage"
 }
 
 function Shell {
-  EnsureInstalled
   Start-Process -FilePath "$wsldlExe" -ArgumentList "run", "/home/wsl/sage-flatsurf-VERSION/shell"
 }
 
@@ -116,6 +113,10 @@ switch ($args[0]) {
   '--shell' {
     Write-Output "Launching a WSL shell..."
     Shell
+  }
+  '--ensure-install' {
+    Write-Output "Installing virtual machine if it does not exist yet..."
+    EnsureInstall
   }
   '--install' {
     Write-Output "Installing virtual machine..."
