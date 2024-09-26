@@ -1,8 +1,8 @@
 [Setup]
 ; Against the recommendations of InnoSetup, we include the VERSION into the AppName so that all versions of sage-flatsurf are separate from each other.
-AppName=flatsurf-VERSION
+AppName=sage-flatsurf-VERSION
 AppVersion=VERSION
-AppVerName=flatsurf-VERSION
+AppVerName=sage-flatsurf-VERSION
 WizardStyle=modern
 DefaultDirName={autopf}\sage-flatsurf-VERSION
 DefaultGroupName=sage-flatsurf-VERSION
