@@ -19,7 +19,12 @@ For i = 0 To objArgs.Count - 1
 Next
 
 Set objShell = CreateObject("WScript.Shell")
+objShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle " & windowStyle & " -File """ & psScriptPath & """" & " --ensure-install", windowPolicy, waitPolicy
+Set objShell = Nothing
+
+Set objShell = CreateObject("WScript.Shell")
 objShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle " & windowStyle & " -File """ & psScriptPath & """" & psArgs, windowPolicy, waitPolicy
+Set objShell = Nothing
 
 Set objFSO = Nothing
 Set objShell = Nothing
