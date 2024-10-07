@@ -21,7 +21,7 @@ jobs:
       uses: flatsurf/actions/asv@main
       with: { packages: pixi }
     - name: Update historic performance data
-      uses: EndBug/add-and-commit@v5
+      uses: EndBug/add-and-commit@v9
       with:
         author_name: asv bot
         author_email: bot@flatsurf.org
@@ -31,7 +31,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       if: ${{ github.event_name == 'push' }}
-    - uses: JamesIves/github-pages-deploy-action@v4.2.2
+    - uses: JamesIves/github-pages-deploy-action@v4.6.8
       with:
         branch: gh-pages
         folder: .asv/html
