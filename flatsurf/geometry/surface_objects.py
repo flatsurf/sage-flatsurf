@@ -1161,12 +1161,13 @@ class SaddleConnection(SageObject):
             ....:     assert hol1 == hol2, (sc, h, hol1, hol2)
         """
         from .homology import SimplicialHomologyGroup
+
         if not isinstance(H, SimplicialHomologyGroup):
-            raise TypeError('H must be a SimplicialHomologyGroup')
+            raise TypeError("H must be a SimplicialHomologyGroup")
 
         surface = self._surface
         if H._surface != surface:
-            raise ValueError('homology and surface do not match')
+            raise ValueError("homology and surface do not match")
 
         traj = self.start_tangent_vector().straight_line_trajectory()
         n = 10
