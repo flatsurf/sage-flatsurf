@@ -996,11 +996,11 @@ class SimplicialHomologyGroup(Parent):
             return self.element_class(self, x)
 
         try:
-            return x._homology_(self)
+            hom_method = x._homology_
         except AttributeError:
             pass
-        except (TypeError, ValueError):
-            raise
+        else:
+            return hom_method(self)
 
         raise NotImplementedError("cannot convert this element to a homology class yet")
 
