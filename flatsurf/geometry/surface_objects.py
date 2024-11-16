@@ -36,6 +36,7 @@ from sage.modules.free_module_element import vector
 from sage.plot.graphics import Graphics
 from sage.plot.polygon import polygon2d
 from sage.rings.qqbar import AA
+from sage.rings.infinity import Infinity
 from sage.structure.sage_object import SageObject
 from sage.structure.element import Element
 
@@ -1170,10 +1171,7 @@ class SaddleConnection(SageObject):
             raise ValueError("homology and surface do not match")
 
         traj = self.start_tangent_vector().straight_line_trajectory()
-        n = 10
-        while not traj.is_saddle_connection():
-            traj.flow(2**n)
-            n += 1
+        traj.flow(Infinity)
         segments = traj.segments()
 
         if len(segments) == 1 and segments[0].is_edge():
