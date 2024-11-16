@@ -1144,6 +1144,71 @@ class SaddleConnection(SageObject):
             check=True,
         )
 
+    def _homology_(self, H):
+        r"""
+        Return this saddle connection as a chain of edges in the homology group ``H``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
+            sage: H = S.homology()
+            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x._chain).items())
+            sage: for sc in S.saddle_connections(5):
+            ....:     h = H(sc)
+            ....:     hol1 = holonomy(h)
+            ....:     hol2 = sc.holonomy()
+            ....:     assert hol1 == hol2, (sc, h, hol1, hol2)
+        """
+        from .homology import SimplicialHomologyGroup
+        if not isinstance(H, SimplicialHomologyGroup):
+            raise TypeError('H must be a SimplicialHomologyGroup')
+
+        surface = self._surface
+        if H._surface != surface:
+            raise ValueError('homology and surface do not match')
+
+        l = self.start_tangent_vector().straight_line_trajectory()
+        n = 10
+        while not l.is_saddle_connection():
+            l.flow(2**n)
+            n += 1
+
+        segments = l.segments()
+        if len(segments) == 1 and segments[0].is_edge():
+            label = segments[0].polygon_label()
+            e = segments[0].edge()
+            return H((label, e))
+
+        h = H.zero()
+        for s in segments:
+            label = s.polygon_label()
+            n = len(surface.polygon(label).vertices())
+
+            start = s.start()
+            if start.position().is_in_edge_interior():
+                # pick the next vertex clockwise
+                i = (start.position().get_edge() + 1) % n
+            else:
+                assert start.position().is_vertex()
+                i = start.vertex()
+
+            end = s.end()
+            if end.position().is_in_edge_interior():
+                # pick the previous vertex clockwise
+                j = end.position().get_edge()
+            else:
+                assert end.position().is_vertex()
+                j = end.vertex()
+
+            if i < j:
+                h += sum(H((label, e)) for e in range(i, j))
+            else:
+                h += sum(H((label, e)) for e in range(i, n))
+                h += sum(H((label, e)) for e in range(j))
+
+        return h
+
 
 class Cylinder(SageObject):
     r"""

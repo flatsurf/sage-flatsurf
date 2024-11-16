@@ -995,6 +995,13 @@ class SimplicialHomologyGroup(Parent):
         if x.parent() is self.chain_module():
             return self.element_class(self, x)
 
+        try:
+            return x._homology_(self)
+        except AttributeError:
+            pass
+        except (TypeError, ValueError):
+            raise
+
         raise NotImplementedError("cannot convert this element to a homology class yet")
 
     @cached_method
