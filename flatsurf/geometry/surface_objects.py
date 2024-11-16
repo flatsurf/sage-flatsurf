@@ -1168,13 +1168,13 @@ class SaddleConnection(SageObject):
         if H._surface != surface:
             raise ValueError('homology and surface do not match')
 
-        l = self.start_tangent_vector().straight_line_trajectory()
+        traj = self.start_tangent_vector().straight_line_trajectory()
         n = 10
-        while not l.is_saddle_connection():
-            l.flow(2**n)
+        while not traj.is_saddle_connection():
+            traj.flow(2**n)
             n += 1
+        segments = traj.segments()
 
-        segments = l.segments()
         if len(segments) == 1 and segments[0].is_edge():
             label = segments[0].polygon_label()
             e = segments[0].edge()
