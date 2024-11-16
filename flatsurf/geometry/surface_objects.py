@@ -1175,6 +1175,11 @@ class SaddleConnection(SageObject):
         segments = traj.segments()
 
         if len(segments) == 1 and segments[0].is_edge():
+            # NOTE: in the special case the saddle connection is an edge,
+            # the behavior of the corresponding segment is not appropriate
+            # to the generic code afterwards. Namely, the start and the end
+            # belongs to two different polygons. See
+            # https://github.com/flatsurf/sage-flatsurf/issues/309
             label = segments[0].polygon_label()
             e = segments[0].edge()
             return H((label, e))
