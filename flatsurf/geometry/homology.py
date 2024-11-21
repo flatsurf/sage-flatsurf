@@ -430,7 +430,10 @@ class SimplicialHomologyClass(Element):
         if self.parent().degree() != 1:
             raise NotImplementedError("cannot form holonomy in this degree")
 
-        return sum(c * self.surface().polygon(label).edge(edge) for (c, (label, edge)) in self.simplex_coefficients())
+        return sum(
+            c * self.surface().polygon(label).edge(edge)
+            for (c, (label, edge)) in self.simplex_coefficients()
+        )
 
     def _add_(self, other):
         r"""
