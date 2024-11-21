@@ -36,6 +36,7 @@ from sage.modules.free_module_element import vector
 from sage.plot.graphics import Graphics
 from sage.plot.polygon import polygon2d
 from sage.rings.qqbar import AA
+from sage.rings.infinity import Infinity
 from sage.structure.sage_object import SageObject
 from sage.structure.element import Element
 
@@ -1143,6 +1144,74 @@ class SaddleConnection(SageObject):
             self._holonomy,
             check=True,
         )
+
+    def _homology_(self, H):
+        r"""
+        Return this saddle connection as a chain of edges in the homology group ``H``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
+            sage: H = S.homology()
+            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x._chain).items())
+            sage: for sc in S.saddle_connections(5):
+            ....:     h = H(sc)
+            ....:     hol1 = holonomy(h)
+            ....:     hol2 = sc.holonomy()
+            ....:     assert hol1 == hol2, (sc, h, hol1, hol2)
+        """
+        from .homology import SimplicialHomologyGroup
+
+        if not isinstance(H, SimplicialHomologyGroup):
+            raise TypeError("H must be a SimplicialHomologyGroup")
+
+        surface = self._surface
+        if H._surface != surface:
+            raise ValueError("homology and surface do not match")
+
+        traj = self.start_tangent_vector().straight_line_trajectory()
+        traj.flow(Infinity)
+        segments = traj.segments()
+
+        if len(segments) == 1 and segments[0].is_edge():
+            # NOTE: in the special case the saddle connection is an edge,
+            # the behavior of the corresponding segment is not appropriate
+            # to the generic code afterwards. Namely, the start and the end
+            # belongs to two different polygons. See
+            # https://github.com/flatsurf/sage-flatsurf/issues/309
+            label = segments[0].polygon_label()
+            e = segments[0].edge()
+            return H((label, e))
+
+        h = H.zero()
+        for s in segments:
+            label = s.polygon_label()
+            n = len(surface.polygon(label).vertices())
+
+            start = s.start()
+            if start.position().is_in_edge_interior():
+                # pick the next vertex clockwise
+                i = (start.position().get_edge() + 1) % n
+            else:
+                assert start.position().is_vertex()
+                i = start.vertex()
+
+            end = s.end()
+            if end.position().is_in_edge_interior():
+                # pick the previous vertex clockwise
+                j = end.position().get_edge()
+            else:
+                assert end.position().is_vertex()
+                j = end.vertex()
+
+            if i < j:
+                h += sum(H((label, e)) for e in range(i, j))
+            else:
+                h += sum(H((label, e)) for e in range(i, n))
+                h += sum(H((label, e)) for e in range(j))
+
+        return h
 
 
 class Cylinder(SageObject):
