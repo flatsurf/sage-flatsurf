@@ -24,7 +24,14 @@ hyperbolic sets internally uses these primitives::
     facilities to plot infinite objects such as lines and rays. However, these are
     needed to plot subsets of the hyperbolic plane in the upper half plane model.
 
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -762,6 +769,7 @@ class HyperbolicPathPlotCommand:
         HyperbolicPathPlotCommand(code='MOVETO', target=0)
 
     """
+
     code: str  # Literal["MOVETO", "LINETO"] requires Python 3.8
     target: HyperbolicPoint
 
@@ -1006,17 +1014,6 @@ class HyperbolicPathPlotCommand:
         if model == "half_plane":
             from sage.all import RR
 
-            if start != start.parent().infinity():
-                start_x, start_y = start.change_ring(RR).coordinates(model="half_plane")
-
-            if end != end.parent().infinity():
-                end_x, end_y = end.change_ring(RR).coordinates(model="half_plane")
-
-            if start == start.parent().infinity():
-                return [
-                    CartesianPathPlotCommand("LINETO", (end_x, end_y)),
-                ]
-
             if end == end.parent().infinity():
                 return [
                     CartesianPathPlotCommand(
@@ -1024,6 +1021,15 @@ class HyperbolicPathPlotCommand:
                         (0, 1),
                     )
                 ]
+
+            end_x, end_y = end.change_ring(RR).coordinates(model="half_plane")
+
+            if start == start.parent().infinity():
+                return [
+                    CartesianPathPlotCommand("LINETO", (end_x, end_y)),
+                ]
+
+            start_x, start_y = start.change_ring(RR).coordinates(model="half_plane")
 
             # We should probably be more careful here and not just use a random
             # epsilon.
@@ -1218,6 +1224,7 @@ class CartesianPathPlotCommand:
         of such commands from a sequence of plot commands in the hyperbolic plane.
 
     """
+
     code: str  # Literal["MOVETO", "MOVETOINFINITY", "LINETO", "RAYTO", "ARCTO", "RARCTO"] requires Python 3.8
     args: tuple
 
@@ -1247,7 +1254,9 @@ def hyperbolic_path(commands, model="half_plane", **options):
     Many additional keyword arguments are understood, see
     :class:`CartesianPathPlot` for details.
 
-    EXAMPLES::
+    EXAMPLES:
+
+    .. jupyter-execute::
 
         sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand, hyperbolic_path
         sage: from flatsurf import HyperbolicPlane

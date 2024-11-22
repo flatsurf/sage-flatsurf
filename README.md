@@ -15,7 +15,7 @@ surfaces](https://en.wikipedia.org/wiki/Translation_surface) and
 [half-translation
 surfaces](https://en.wikipedia.org/wiki/Translation_surface#Half-translation_surfaces).
 
-Please consult our [documentation](https://flatsurf.github.io/sage-flatsurf/)
+Take the [Tour of flatsurf](https://flatsurf.github.io/sage-flatsurf/examples/tour)
 to see some of the capabilities of sage-flatsurf.
 
 sage-flatsurf is free software, released under the [GPL v2 (or later)](./COPYING).
@@ -26,20 +26,40 @@ please don't hesitate to [contact us](https://flatsurf.github.io#contact).
 
 ## Installation
 
-See [our documentation](https://flatsurf.github.io/sage-flatsurf/#installation)
-for detailed installation instructions.
+If you are on **Linux or macOS**, download the latest `.unix.tar.gz` file from our
+[Releases page](https://github.com/flatsurf/sage-flatsurf/releases).
 
-## Run with Binder in the Cloud
+Extract it anywhere (make sure there are no spaces in the directory name) and
+run `./sage` or `./jupyterlab`.
 
-You can try out sage-flatsurf in an environment online; unfortunately it might
-take a long time for this environment to start:
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/0.5.0?filepath=doc%2Fexamples)
+```sh
+tar zxf sage-flatsurf-0.6.2.unix.tar.gz
+./sage-flatsurf-0.6.2/jupyterlab  # or
+./sage-flatsurf-0.6.2/sage
+```
+
+If you are on **Windows**, download the latest `.exe` installer from our [Releases
+page](https://github.com/flatsurf/sage-flatsurf/releases).
+
+Please also consult [our
+documentation](https://flatsurf.github.io/sage-flatsurf/#installation) for
+other options and more detailed instructions.
 
 ## Developing sage-flatsurf
 
+We recommend you install [pixi](https://pixi.sh) to provide all the
+dependencies for sage-flatsurf. Once installed, `git clone` this repository and
+then
+
+```sh
+pixi run sage  # to run SageMath with your version of sage-flatsurf installed
+pixi run test  # to run the test suite
+pixi run lint  # to check for errors and formatting issues
+```
+
 Please consult our [Developer's
-Guide](https://flatsurf.github.io/sage-flatsurf/developer.html) to build
-sage-flaturf from source and to run our test suite.
+Guide](https://flatsurf.github.io/sage-flatsurf/developer.html) for more
+details.
 
 ## Contributors
 

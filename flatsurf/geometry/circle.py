@@ -4,6 +4,7 @@ This class contains methods useful for working with circles.
 This will be used to build a LazyDelaunayTriangulation class which will compute the
 Delaunay decomposition for infinite surfaces.
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -66,6 +67,7 @@ class Circle:
         self._V3 = VectorSpace(self._base_ring, 3)
 
         self._center = self._V2(center)
+        self._center.set_immutable()
         self._radius_squared = self._base_ring(radius_squared)
 
     def center(self):
@@ -215,7 +217,7 @@ class Circle:
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.square_torus()
-            sage: c = s.polygon(0).circumscribing_circle()
+            sage: c = s.polygon(0).circumscribed_circle()
             sage: c
             Circle((1/2, 1/2), 1/2)
             sage: s.edge_transformation(0,2)
@@ -241,3 +243,38 @@ class Circle:
 
     def __repr__(self):
         return "Circle(" + repr(self._center) + ", " + repr(self._radius_squared) + ")"
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this circle that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain().relabel()
+            sage: hash(S.polygon(0).circumscribed_circle()) == hash(S.polygon(1).circumscribed_circle())
+            True
+
+        """
+        return hash((self._center, self._radius_squared))
+
+    def __eq__(self, other):
+        r"""
+        Return whether this circle is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain().relabel()
+            sage: S.polygon(0).circumscribed_circle() == S.polygon(1).circumscribed_circle()
+            True
+
+        """
+        if not isinstance(other, Circle):
+            return False
+
+        return (
+            self._center == other._center
+            and self._radius_squared == other._radius_squared
+        )

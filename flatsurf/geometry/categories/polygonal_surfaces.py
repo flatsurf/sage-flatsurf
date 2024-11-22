@@ -21,10 +21,11 @@ EXAMPLES::
     True
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2023 Julian Rüth
+#        Copyright (C) 2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -128,7 +129,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return category
 
-        def is_triangulated(self):
+        def is_triangulated(self, limit=None):
             r"""
             Return whether this surface is built from triangles.
 
@@ -142,6 +143,14 @@ class PolygonalSurfaces(SurfaceCategory):
                 False
 
             """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
             roots = self.roots()
 
             if not roots:
@@ -315,6 +324,30 @@ class PolygonalSurfaces(SurfaceCategory):
             from flatsurf.geometry.surface import Polygons
 
             return Polygons(self)
+
+        def _test_polygons(self, **options):
+            r"""
+            Verify that polygons() has been implemented correctly.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_polygons()
+
+            """
+            tester = self._tester(**options)
+
+            polygons = self.polygons()
+
+            if not self.is_finite_type():
+                import itertools
+
+                polygons = itertools.islice(polygons, 32)
+
+            for polygon in polygons:
+                tester.assertEqual(polygon.base_ring(), self.base_ring())
 
         def _test_labels_polygons(self, **options):
             r"""
@@ -735,7 +768,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     f = self.opposite_edge(lab, k)
                     if f is None:
                         continue
-                    g = self.opposite_edge(f[0], f[1])
+                    g = self.opposite_edge(*f)
                     tester.assertEqual(
                         e,
                         g,
@@ -838,6 +871,161 @@ class PolygonalSurfaces(SurfaceCategory):
 
             tester.assertEqual(len(self.components()), len(self.roots()))
 
+    class ElementMethods:
+        r"""
+        Provides methods for all points on surfaces built from polygons.
+
+        If you want to add functionality for such surfaces, you most likely
+        want to put it here.
+        """
+
+        def is_in_edge_interior(self):
+            r"""
+            Return whether this point is on an edge (but not at a vertex) of
+            one of the polygons that make up this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+            A vertex is not contained in the interior of an edge::
+
+                sage: S(0, 0).is_in_edge_interior()
+                False
+
+            A point on the edge that is not a vertex::
+
+                sage: S(0, (1, 0)).is_in_edge_interior()
+                True
+
+            An inner point of a polygon::
+
+                sage: S(0, (1, 1)).is_in_edge_interior()
+                False
+
+            """
+            label, coordinates = self.representative()
+            return (
+                self.parent()
+                .polygon(label)(coordinates)
+                .position()
+                .is_in_edge_interior()
+            )
+
+        def is_in_polygon_interior(self):
+            r"""
+            Return whether this point is in the interior of one of the
+            polygons that make up this surface and not on an edge or at a
+            vertex.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+            A vertex is not contained in the interior of a polygon::
+
+                sage: S(0, 0).is_in_polygon_interior()
+                False
+
+            A point on an edge::
+
+                sage: S(0, (1, 0)).is_in_polygon_interior()
+                False
+
+            An inner point of a polygon::
+
+                sage: S(0, (1, 1)).is_in_polygon_interior()
+                True
+
+            """
+            label, coordinates = self.representative()
+            return self.parent().polygon(label)(coordinates).position().is_in_interior()
+
+        def edges(self):
+            r"""
+            Return the edges of the polygons that contain this point.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+            For an inner point, no edges are reported::
+
+                sage: S(0, (1, 1)).edges()
+                set()
+
+            For a point on a self-glued edge, one edge is reported::
+
+                sage: S(0, (1, 0)).edges()
+                {(0, 0)}
+
+            For a point on a non self-glued edge, two edges are reported, for
+            the two sides of the edge::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S(0, (1/2, 0)).edges()
+                {(0, 0), (0, 2)}
+
+            For a point on an unglued edge, a single edge is reported::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                0
+                sage: S(0, (1/2, 0)).edges()
+                {(0, 0)}
+
+            All edges are reported for the vertex of this square torus::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S(0, 0).edges()
+                {(0, 0), (0, 1), (0, 2), (0, 3)}
+
+            """
+            raise NotImplementedError(
+                "points on this surface cannot determine which edges they are contained in yet"
+            )
+
+        def _test_edges(self, **options):
+            r"""
+            Verify that :meth:`edges` has been implemented correctly.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S(0, 0)._test_edges()
+
+            """
+            tester = self._tester(**options)
+
+            edges = self.edges()
+
+            if not edges:
+                tester.assertTrue(self.is_in_polygon_interior())
+
+            if len(edges) == 1:
+                opposite = self.parent().opposite_edge(*edges[0])
+                tester.assertTrue(opposite is None or opposite == edges[0])
+
+            if self.is_vertex():
+                tester.assertGreaterEqual(len(edges), 2)
+
+            for edge in edges:
+                opposite = self.parent().opposite_edge(*edge)
+                if opposite is None:
+                    continue
+
+                tester.assertTrue(opposite in edges)
+
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces built from finitely many polygons.
@@ -939,7 +1127,7 @@ class PolygonalSurfaces(SurfaceCategory):
                         tester.assertEqual(type(label[0]), type(root))
 
                     if not roots:
-                        tester.assertTrue(not any([True for label in self.labels()]))
+                        tester.assertTrue(not any(True for label in self.labels()))
                     else:
                         tester.assertTrue(next(iter(self.labels())) in roots)
 
@@ -999,7 +1187,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                         union_find[find((label, edge))] = find(cross)
 
-                    V = len(set(find((label, edge)) for (label, edge) in self.edges()))
+                    V = len({find((label, edge)) for (label, edge) in self.edges()})
 
                     # Count the edges
                     from sage.all import QQ, ZZ
@@ -1043,7 +1231,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 """
                 return True
 
-            def is_triangulated(self):
+            def is_triangulated(self, limit=None):
                 r"""
                 Return whether this surfaces is built from triangles.
 
@@ -1056,6 +1244,14 @@ class PolygonalSurfaces(SurfaceCategory):
                     False
 
                 """
+                if limit is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
+
                 for p in self.polygons():
                     if len(p.vertices()) != 3:
                         return False
@@ -1102,10 +1298,11 @@ class PolygonalSurfaces(SurfaceCategory):
                     {Vertex 0 of polygon 0}
 
                 """
-                return set(
+                return {
                     # pylint: disable-next=not-callable
-                    [self(label, vertex) for (label, vertex) in self.edges()]
-                )
+                    self(label, vertex)
+                    for (label, vertex) in self.edges()
+                }
 
             def _test_labels(self, **options):
                 r"""
@@ -1122,9 +1319,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 """
                 tester = self._tester(**options)
 
-                tester.assertEqual(
-                    len([label for label in self.labels()]), len(self.labels())
-                )
+                tester.assertEqual(len(list(self.labels())), len(self.labels()))
 
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""
@@ -1257,7 +1452,7 @@ class PolygonalSurfaces(SurfaceCategory):
                             sage: S.genus()
                             Traceback (most recent call last):
                             ...
-                            AttributeError: ... has no attribute 'euler_characteristic'
+                            AttributeError: ... has no attribute 'euler_characteristic'...
 
                         """
                         return 1 - self.euler_characteristic() / 2

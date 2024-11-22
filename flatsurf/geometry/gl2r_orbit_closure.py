@@ -30,7 +30,7 @@ is set::
     sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
     sage: l = S.base_ring().gen()
     sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-    sage: dec = O.decomposition((8*l - 25, 16), 10) # optional: pyflatsurf
+    sage: dec = O.decomposition((8*l - 25, 16), 9) # optional: pyflatsurf
     sage: dec.undeterminedComponents() # optional: pyflatsurf
     [Component with perimeter [...]]
 
@@ -60,6 +60,7 @@ they are generally not parabolic::
     sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
     True
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -102,21 +103,21 @@ class GL2ROrbitClosure:
     Computing an orbit closure over an exact real ring with transcendental elements::
 
         sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
-        sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+        sage: from pyexactreal import ExactReals  # optional: pyexactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
 
         sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
-        sage: R = ExactReals(E.base_ring())  # optional: exactreal
+        sage: R = ExactReals(E.base_ring())  # optional: pyexactreal
         sage: slopes = E.slopes()
-        sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: exactreal
-        sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
-        sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
-        sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: exactreal
+        sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: pyexactreal
+        sage: S = similarity_surfaces.billiard(T)  # optional: pyexactreal
+        sage: S = S.minimal_cover(cover_type="translation")  # optional: pyexactreal
+        sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: pyexactreal
         GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
         sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-        sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: exactreal
+        sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: pyexactreal
         ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
         ....:     if O.dimension() == bound: break
-        sage: O  # long time, optional: pyflatsurf, optional: exactreal
+        sage: O  # long time, optional: pyflatsurf, optional: pyexactreal
         GL(2,R)-orbit closure of dimension at least 8 in H_7(4^3, 0) (ambient dimension 17)
 
     TESTS::
@@ -160,11 +161,9 @@ class GL2ROrbitClosure:
                 )
 
             base_ring = surface.base_ring()
-            from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-
-            self._surface = to_pyflatsurf(surface)
+            self._surface = surface.pyflatsurf().codomain().flat_triangulation()
         else:
-            from flatsurf.geometry.pyflatsurf_conversion import sage_ring
+            from flatsurf.geometry.pyflatsurf.conversion import sage_ring
 
             base_ring = sage_ring(surface)
             self._surface = surface
@@ -182,7 +181,7 @@ class GL2ROrbitClosure:
         # edges that form a basis of H_1(S, Sigma; Z)
         # It comes together with a projection matrix
         t, m = self._spanning_tree()
-        assert set(t.keys()) == set(f[2] for f in self._surface.faces())
+        assert set(t.keys()) == {f[2] for f in self._surface.faces()}
         self.spanning_set = []
         v = set(t.values())
         for e in self._surface.edges():
@@ -269,11 +268,11 @@ class GL2ROrbitClosure:
             sage: O.ambient_stratum() # optional: pyflatsurf
             H_3(4, 0^4)
         """
-        from surface_dynamics import AbelianStratum
+        from surface_dynamics import Stratum
 
         surface = self._surface
         angles = [surface.angle(v) for v in surface.vertices()]
-        return AbelianStratum([a - 1 for a in angles])
+        return Stratum([a - 1 for a in angles], 1)
 
     def base_ring(self):
         r"""
@@ -295,22 +294,22 @@ class GL2ROrbitClosure:
 
             sage: from flatsurf import Polygon, similarity_surfaces, EuclideanPolygonsWithAngles
             sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-            sage: from pyexactreal import ExactReals  # optional: exactreal
+            sage: from pyexactreal import ExactReals  # optional: pyexactreal
             sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
-            sage: R = ExactReals(E.base_ring())  # optional: exactreal
+            sage: R = ExactReals(E.base_ring())  # optional: pyexactreal
             sage: slopes = E.slopes()
-            sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: exactreal
-            sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
-            sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
-            sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: exactreal
+            sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: pyexactreal
+            sage: S = similarity_surfaces.billiard(T)  # optional: pyexactreal
+            sage: S = S.minimal_cover(cover_type="translation")  # optional: pyexactreal
+            sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: pyexactreal
             GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
-            sage: O.field_of_definition() # optional: pyflatsurf, optional: exactreal
+            sage: O.field_of_definition() # optional: pyflatsurf, optional: pyexactreal
             Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
             sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: exactreal
+            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: pyexactreal
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
-            sage: O.field_of_definition()  # long time, optional: pyflatsurf, optional: exactreal
+            sage: O.field_of_definition()  # long time, optional: pyflatsurf, optional: pyexactreal
             Rational Field
 
             sage: T = Polygon(angles=(1, 3, 5))
@@ -396,8 +395,8 @@ class GL2ROrbitClosure:
             sage: span([v0, v1])  # optional: pyflatsurf
             Vector space of degree 9 and dimension 2 over Real Embedded Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
             Basis matrix:
-            [                         1                          0                         -1                          0   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)                          0]
-            [                         0                          1                         -1                         -1    (1/8*l+7/8 ~ 1.2965352) (-1/8*l+1/8 ~ -0.29653517)   (1/8*l-1/8 ~ 0.29653517) (3/8*l-11/8 ~ -0.11039450) (-1/2*l+3/2 ~ -0.18614066)]
+            [ 1  0  -1   (1/8*l+7/8 ~ 1.2965352)  (-1/8*l+1/8 ~ -0.29653517)  -1   (5/8*l-5/8 ~ 1.4826758)  (-1/2*l+3/2 ~ -0.18614066)  (-5/8*l+13/8 ~ -0.48267583)]
+            [ 0  1  -1  (1/4*l-1/4 ~ 0.59307033)  (-1/4*l+1/4 ~ -0.59307033)   0  (1/4*l-1/4 ~ 0.59307033)                           0   (-1/4*l+1/4 ~ -0.59307033)]
 
         This can be used to deform the surface::
 
@@ -410,8 +409,8 @@ class GL2ROrbitClosure:
             ....:     if O.dimension() == 4:
             ....:         break
             sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
-            sage: dreal = d1/132 + d2/227 + d3/280 - d4/201  # long time (above), optional: pyflatsurf
-            sage: dimag = d1/141 - d2/233 + d4/230 + d4/250  # long time (above), optional: pyflatsurf
+            sage: dreal = d1/132 + d2/227 + d3/1280 - d4/13201  # long time (above), optional: pyflatsurf
+            sage: dimag = d1/141 - d2/233 + d4/1230 + d4/14250  # long time (above), optional: pyflatsurf
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
             sage: S2 = O._surface + d  # long time (6s), optional: pyflatsurf
 
@@ -493,11 +492,11 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(5, 100):  # long time (3s) optional: pyflatsurf
+            sage: for d in O.decompositions(5, 100):  # long time (3s)  # optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.dimension() == 9:
             ....:         break
-            sage: O.absolute_dimension()  # long time (above), optional: pyflatsurf
+            sage: O.absolute_dimension()  # long time (above)  # optional: pyflatsurf
             6
         """
         return (
@@ -600,7 +599,7 @@ class GL2ROrbitClosure:
         """
         d = len(spanning_set)
         h = spanning_set[0].positive()
-        all_edges = set([e.positive() for e in spanning_set])
+        all_edges = {e.positive() for e in spanning_set}
         all_edges.update([e.negative() for e in spanning_set])
         contour = []
         contour_inv = {}  # half edge -> position in contour
@@ -831,9 +830,10 @@ class GL2ROrbitClosure:
             sage: c0, c1 = dec.components() # optional: pyflatsurf
             sage: kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
             sage: O.cylinder_circumference(c0, *kz) # optional: pyflatsurf
-            (1, 0, -1, 0)
+            (1, 1, 1, -1)
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
-            (0, 0, 0, -1)
+            (0, 0, 1, 0)
+
         """
         if (
             component.cylinder() != True
@@ -880,9 +880,7 @@ class GL2ROrbitClosure:
             try:
                 return [x.parent()(x / y) for x, y in fractions]
             except (ValueError, ArithmeticError, NotImplementedError):
-                denominators = set(
-                    [denominator for numerator, denominator in fractions]
-                )
+                denominators = {denominator for numerator, denominator in fractions}
                 return [
                     numerator * prod([d for d in denominators if denominator != d])
                     for (numerator, denominator) in fractions
@@ -960,8 +958,9 @@ class GL2ROrbitClosure:
                 )
             else:
                 raise NotImplementedError(
-                    "cannot turn %s, i.e., a %s, into a rational vector yet"
-                    % (x, type(x))
+                    "cannot turn {}, i.e., a {}, into a rational vector yet".format(
+                        x, type(x)
+                    )
                 )
 
             assert all(y in QQ for y in ret)
@@ -1097,14 +1096,15 @@ class GL2ROrbitClosure:
             [ 1  0]
             [-1 -1]
             [ 2  1]
+            [-2 -1]
+            [ 3  1]
+            [-1 -1]
+            [ 3  2]
             [1 0]
             [0 1]
             [ 1  0]
             [-1  1]
-            [ 1 -1]
-            [-1  2]
-            [ 1  0]
-            [-2  1]
+
         """
         sc_pos = (
             []
@@ -1285,8 +1285,8 @@ class GL2ROrbitClosure:
             sage: T = polygons.triangle(1, 2, 5)
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: hash(O) == hash(O)
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: hash(O) == hash(O)  # optional: pyflatsurf
             True
 
         """
@@ -1305,7 +1305,7 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: loads(dumps(O)) == O  # long time (6s, #123)
+            sage: loads(dumps(O)) == O  # optional: pyflatsurf  # long time (6s, #123)
             True
         """
         return (

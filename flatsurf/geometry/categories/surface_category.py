@@ -13,6 +13,7 @@ While we do not claim to actually understand all the details here, you can
 consult ``c3_controlled.py`` in SageMath for all the (rather technical)
 details.
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #

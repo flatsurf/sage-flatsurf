@@ -296,6 +296,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         sage: t = translation_surfaces.square_torus()
         sage: TestSuite(t.fundamental_group()).run()
     """
+
     Element = Path
 
     def __init__(self, surface, base):

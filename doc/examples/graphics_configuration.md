@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.7
+    jupytext_version: 1.16.4
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -189,7 +189,7 @@ gs.plot() + spt.plot(gs, color="red") + traj.plot(gs, color="orange")
 ## Multiple graphical surfaces
 
 It is possible to have more than one graphical surface. Maybe you want to have one where things look better.
-To get a new suface, you can call `s.graphical_surface()` again.
+To get a new surface, you can call `s.graphical_surface()` again.
 
 ```{code-cell}
 pretty_gs = s.graphical_surface(polygon_labels=False, edge_labels=False)
@@ -276,7 +276,7 @@ s.plot()
 Here is an example with the edge labels centered on the edge.
 
 ```{code-cell}
-gs = s.graphical_surface(cached=False)
+gs = s.graphical_surface()
 ```
 
 ```{code-cell}
@@ -295,7 +295,7 @@ gs.plot()
 ```
 
 ```{code-cell}
-gs = s.graphical_surface(cached=False)
+gs = s.graphical_surface()
 ```
 
 ```{code-cell}

@@ -9,43 +9,34 @@ concurrency:
 
 jobs:
   asv:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest", python-version: "3.9" }
-      - name: Install dependencies
-        shell: bash -l {0}
-        run: |
-          mamba install -n test -y pip
-          conda list
-      - name: Checkout historic performance data
-        uses: actions/checkout@v2
-        with:
-          path: .asv/results
-          ref: asv
-      - name: Run benchmarks
-        uses: flatsurf/actions/asv@main
-      - name: Update historic performance data
-        uses: EndBug/add-and-commit@v5
-        with:
-          author_name: asv bot
-          author_email: bot@flatsurf.org
-          message: 'record asv run'
-          cwd: .asv/results
-          branch: asv
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ github.event_name == 'push' }}
-      - uses: JamesIves/github-pages-deploy-action@v4.2.2
-        with:
-          branch: gh-pages
-          folder: .asv/html
-          target-folder: docs/asv
-        if: ${{ github.event_name == 'push' }}
+    - uses: actions/checkout@v4
+    - uses: prefix-dev/setup-pixi@v0.8.1
+      with: { pixi-version: v0.28.2, environments: asv, activate-environment: true }
+    - name: Checkout historic performance data
+      uses: actions/checkout@v4
+      with: { path: .asv/results, ref: asv }
+    - name: Run benchmarks
+      uses: flatsurf/actions/asv@main
+      with: { packages: pixi }
+    - name: Update historic performance data
+      uses: EndBug/add-and-commit@v5
+      with:
+        author_name: asv bot
+        author_email: bot@flatsurf.org
+        message: 'record asv run'
+        cwd: .asv/results
+        branch: asv
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: ${{ github.event_name == 'push' }}
+    - uses: JamesIves/github-pages-deploy-action@v4.2.2
+      with:
+        branch: gh-pages
+        folder: .asv/html
+        target-folder: docs/asv
+      if: ${{ github.event_name == 'push' }}
 
 env:
-  MAKEFLAGS: -j2
+  MAKEFLAGS: -j4

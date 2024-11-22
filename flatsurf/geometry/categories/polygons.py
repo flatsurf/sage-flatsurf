@@ -19,6 +19,7 @@ EXAMPLES::
     True
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -100,6 +101,8 @@ class Polygons(Category_over_base_ring):
             ('a', 'regular nonagon', 'regular nonagons')
             sage: Polygons._describe_polygon(4, equiangular=False, equilateral=True)
             ('a', 'rhombus', 'rhombi')
+            sage: Polygons._describe_polygon(64, equiangular=False, equilateral=False)
+            ('a', '64-gon', '64-gons')
 
         """
         from sage.all import infinity
@@ -135,7 +138,7 @@ class Polygons(Category_over_base_ring):
             infinity: ("an", "apeirogon"),
         }
 
-        description = ngon_names.get(num_edges, f"{num_edges}-gon")
+        description = ngon_names.get(num_edges, ("a", f"{num_edges}-gon"))
         description = description + (description[1] + "s",)
 
         def augment(article, *attributes):
@@ -148,10 +151,7 @@ class Polygons(Category_over_base_ring):
 
         def augment_if(article, attribute, *properties):
             if all(
-                [
-                    kwargs.get(property, False)
-                    for property in (properties or [attribute])
-                ]
+                kwargs.get(property, False) for property in (properties or [attribute])
             ):
                 augment(article, attribute)
                 return True
@@ -159,10 +159,8 @@ class Polygons(Category_over_base_ring):
 
         def augment_if_not(article, attribute, *properties):
             if all(
-                [
-                    kwargs.get(property, True) is False
-                    for property in (properties or [attribute])
-                ]
+                kwargs.get(property, True) is False
+                for property in (properties or [attribute])
             ):
                 augment(article, attribute)
                 return True

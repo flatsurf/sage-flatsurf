@@ -67,7 +67,7 @@ It does not really make sense to ask which stratum this surface belongs to::
     sage: S.stratum()
     Traceback (most recent call last):
     ...
-    AttributeError: ... has no attribute 'stratum'
+    AttributeError: ... has no attribute 'stratum'...
 
 Once we add gluings, this turns into a square torus::
 
@@ -135,11 +135,10 @@ available::
     sage: S = MutableOrientedSimilaritySurface.from_surface(S)
 
     sage: TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum(S)
-    Traceback (most recent call last):
-    ...
-    AttributeError: ... no attribute 'angles'
+    H_1(0)
 
-So this approach is quite brittle and might need a mix with the above to work::
+While this works, this approach is quite brittle and might sometimes need a mix
+with the above to work::
 
     sage: from flatsurf.geometry.categories import ConeSurfaces
     sage: S._refine_category_(ConeSurfaces().WithoutBoundary())
@@ -147,6 +146,7 @@ So this approach is quite brittle and might need a mix with the above to work::
     H_1(0)
 
 """
+
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #

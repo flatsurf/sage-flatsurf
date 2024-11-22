@@ -15,6 +15,7 @@ Usually, you do not interact with the types in this module directly but call
     Minimal Planar Cover of Genus 0 Rational Cone Surface built from 2 right triangles
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -580,6 +581,9 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         doctest:warning
         ...
         UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
+        doctest:warning
+        ...
+        UserWarning: limit has been deprecated as a keyword argument when creating points and will be removed without replacement in a future version of sage-flatsurf
         sage: len(sing.vertex_set())
         doctest:warning
         ...

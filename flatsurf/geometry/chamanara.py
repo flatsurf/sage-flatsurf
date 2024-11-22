@@ -6,7 +6,15 @@ REFERENCES:
 - Defined as `X_\alpha` in Chamanara, Reza, "Affine automorphism groups of
   surfaces of infinite type", City University of New York, 2002.
 
-EXAMPLES::
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
+EXAMPLES:
+
+.. jupyter-execute::
 
     sage: from flatsurf import translation_surfaces
     sage: s = translation_surfaces.chamanara(1/2)
@@ -14,6 +22,7 @@ EXAMPLES::
     ...Graphics object consisting of 129 graphics primitives
 
 """
+
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -37,6 +46,7 @@ EXAMPLES::
 
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.minimal_cover import MinimalTranslationCover
+from flatsurf.geometry.lazy import LazyRelabeledSurface
 from sage.rings.integer_ring import ZZ
 
 
@@ -198,13 +208,13 @@ class ChamanaraSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.chamanara(1/2)
-            sage: C.polygon('a')
-            Traceback (most recent call last):
-            ...
-            ValueError: invalid label 'a'
+            sage: C.polygon(0)
+            Polygon(vertices=[(0, 0), (1, 0), (-1, 2), (-1, 1)])
+
         """
         if lab not in ZZ:
-            raise ValueError("invalid label {!r}".format(lab))
+            raise KeyError(lab)
+
         return self._p
 
     def opposite_edge(self, p, e):
@@ -290,10 +300,9 @@ def chamanara_half_dilation_surface(alpha, n=None):
     return ChamanaraSurface(alpha)
 
 
-class ChamanaraTranslationSurface(MinimalTranslationCover):
+class ChamanaraTranslationSurface(LazyRelabeledSurface):
     def __init__(self, alpha):
-        MinimalTranslationCover.__init__(self, ChamanaraSurface(alpha))
-        self._refine_category_(self.category().Compact())
+        super().__init__(MinimalTranslationCover(ChamanaraSurface(alpha)))
 
     def graphical_surface(self, **kwds):
         label = self.root()

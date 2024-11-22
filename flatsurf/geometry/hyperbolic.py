@@ -1,6 +1,12 @@
 r"""
 Two dimensional hyperbolic geometry.
 
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
 EXAMPLES::
 
     sage: from flatsurf import HyperbolicPlane
@@ -188,6 +194,7 @@ We can also intersect objects that are not half spaces::
     using any symbolic expressions, and tries to produce better plots.
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -376,7 +383,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         category = category or Sets()
 
-        return super(HyperbolicPlane, cls).__classcall__(
+        return super().__classcall__(
             cls, base_ring=base_ring, geometry=geometry, category=category
         )
 
@@ -2832,10 +2839,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     continue
 
                 if any(
-                    [
-                        preimage.apply_isometry(isometry, on_right=True) != image
-                        for (preimage, image) in pairs
-                    ]
+                    preimage.apply_isometry(isometry, on_right=True) != image
+                    for (preimage, image) in pairs
                 ):
                     continue
 
@@ -2990,7 +2995,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 # Actually, an ideal point is not trivial if the existing
                 # geodesic is unoriented. But it does not take a full
                 # degree of freedom away, so we ignore it here.
-                if any([preimage in existing for existing in existings]):
+                if any(preimage in existing for existing in existings):
                     return None
             return (preimage, image)
 
@@ -3310,7 +3315,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 equations = conditions(isometry, (λ0, λ1, λ2))
 
                 for λ in [λ1, λ2]:
-                    if all([equation.degree(λ) <= 0 for equation in equations]):
+                    if all(equation.degree(λ) <= 0 for equation in equations):
                         # Force the unused variable λ to be =0
                         equations.append(λ)
 
@@ -3376,7 +3381,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     equations = conditions(isometry, (λ0, λ1, λ2))
 
                     for λ in [λ1, λ2]:
-                        if all([equation.degree(λ) <= 0 for equation in equations]):
+                        if all(equation.degree(λ) <= 0 for equation in equations):
                             # Force the unused variable λ to be =0
                             equations.append(λ)
 
@@ -4477,7 +4482,7 @@ class HyperbolicConvexSet(SageObject):
 
         for vertex in self.vertices():
             try:
-                tester.assertIn(vertex, self)
+                tester.assertIn(vertex, self)  # codespell:ignore assertin
             except ValueError:
                 # Currently, containment can often not be decided when points
                 # do not have coordinates over the base ring.
@@ -4880,7 +4885,9 @@ class HyperbolicConvexSet(SageObject):
 
         - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -5269,7 +5276,9 @@ class HyperbolicConvexSet(SageObject):
 
         Currently, this adds the unit circle to plots in the Klein disk model.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -5279,6 +5288,8 @@ class HyperbolicConvexSet(SageObject):
 
             sage: type(p)._enhance_plot(plot, model="half_plane")
             ...Graphics object consisting of 0 graphics primitives
+
+        .. jupyter-execute::
 
             sage: type(p)._enhance_plot(plot, model="klein")
             ...Graphics object consisting of 1 graphics primitive
@@ -5393,7 +5404,7 @@ class HyperbolicConvexSet(SageObject):
 
         tester.assertEqual(dimension.parent(), ZZ)
 
-        tester.assertIn(dimension, [-1, 0, 1, 2])
+        tester.assertIn(dimension, [-1, 0, 1, 2])  # codespell:ignore assertin
 
         tester.assertEqual(self.unoriented().dimension(), dimension)
         tester.assertEqual(self.is_point(), dimension == 0)
@@ -5464,7 +5475,7 @@ class HyperbolicConvexSet(SageObject):
             sage: h.start()
             Traceback (most recent call last):
             ...
-            AttributeError: ... has no attribute 'start'
+            AttributeError: ... has no attribute 'start'...
 
         Segments are oriented::
 
@@ -5487,7 +5498,7 @@ class HyperbolicConvexSet(SageObject):
             sage: u.start()
             Traceback (most recent call last):
             ...
-            AttributeError: ... has no attribute 'start'
+            AttributeError: ... has no attribute 'start'...
 
         Points are not oriented as there is no choice of orientation::
 
@@ -5531,7 +5542,7 @@ class HyperbolicConvexSet(SageObject):
             # Verify that neg inverts the orientation of the set
             tester.assertEqual(self, -(-self))
 
-    def edges(self, as_segments=False):
+    def edges(self, as_segments=False, marked_vertices=True):
         r"""
         Return the :class:`segments <HyperbolicOrientedSegment>` and
         :class:`geodesics <HyperbolicOrientedGeodesic>` that bound this set.
@@ -5540,6 +5551,10 @@ class HyperbolicConvexSet(SageObject):
 
         - ``as_segments`` -- a boolean (default: ``False``); whether to also
           return the geodesics as segments with ideal end points.
+
+        - ``marked_vertices`` -- a boolean (default: ``True``); whether to
+          report segments that start or end at redundant marked vertices or
+          otherwise whether such marked vertices are completely ignored.
 
         OUTPUT:
 
@@ -5627,6 +5642,77 @@ class HyperbolicConvexSet(SageObject):
         if self.dimension() > 0:
             vertices = self.vertices()
             tester.assertEqual(endpoints, vertices)
+
+    def area(self, numerical=True):
+        r"""
+        Return the area of this convex set divided by 2π.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: p = H.polygon([H.geodesic(0, 1).left_half_space(),
+            ....:                 H.geodesic(1, Infinity).left_half_space(),
+            ....:                 H.geodesic(Infinity, 0).left_half_space()])
+            sage: p.area()
+            0.5
+            sage: p.area(numerical=False)
+            1/2
+
+        ::
+
+            sage: a = H.point(0, 1, model='half_plane')
+            sage: b = H.point(1, 1, model='half_plane')
+            sage: c = H.point(1, 2, model='half_plane')
+            sage: d = H.point(0, 2, model='half_plane')
+            sage: p = H.polygon([H.geodesic(a, b).left_half_space(),
+            ....:                H.geodesic(b, c).left_half_space(),
+            ....:                H.geodesic(c, d).left_half_space(),
+            ....:                H.geodesic(d, a).left_half_space()])
+            sage: p.area()
+            0.0696044872730639
+
+        Zero and one-dimensional objects have area zero::
+
+            sage: p = H(I)
+            sage: p.area()
+            0.0
+            sage: p.area(numerical=False)
+            0
+
+        ::
+
+            sage: g = H.geodesic(0, 1)
+            sage: g.area()
+            0.0
+            sage: g.area(numerical=False)
+            0
+
+        A half space has infinite area::
+
+            sage: h = g.left_half_space()
+            sage: h.area()
+            inf
+            sage: h.area(numerical=False)
+            +Infinity
+
+        """
+        from sage.all import QQ, Infinity
+
+        if self.dimension() < 2:
+            return 0.0 if numerical else QQ.zero()
+
+        edges = [e.geodesic() for e in self.edges()]
+        n = len(edges)
+        if len(edges) <= 2 or any(
+            edges[i].intersection(edges[(i + 1) % n]).is_empty() for i in range(n)
+        ):
+            return float("inf") if numerical else Infinity
+
+        H = self.parent()
+        return QQ((n - 2, 2)) - sum(
+            (edges[(i + 1) % n]).angle(-edges[i], numerical=numerical) for i in range(n)
+        )
 
     def __hash__(self):
         r"""
@@ -6127,13 +6213,43 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             sage: oo in h
             True
 
-        Currently, this is not implemented for points whose coordinates cannot
-        be represented over the base ring::
+        We can also check containment of ideal endpoints of geodesics::
 
-            sage: H.half_circle(0, 2).start() in h
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: cannot decide whether this ideal point is contained in the half space yet
+            sage: g = H.half_circle(0, 2)
+            sage: g.start() in h
+            True
+
+            sage: g.end() in h
+            False
+
+        ::
+
+            sage: g = H.half_circle(-3, 2)
+            sage: g.start() in h
+            True
+
+            sage: g.end() in h
+            True
+
+        ::
+
+            sage: g = H.half_circle(3, 2)
+            sage: g.start() in h
+            False
+
+            sage: g.end() in h
+            False
+
+        ::
+
+            sage: h = H.half_circle(0, 2).left_half_space()
+            sage: g = H.half_circle(0, 5)
+
+            sage: g.start() in h
+            True
+
+            sage: g.start() in -h
+            False
 
         .. NOTE::
 
@@ -6157,12 +6273,35 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             # It is the starting point of a geodesic.
             assert point.is_ideal()
 
-            if point in self.boundary():
-                return True
+            if not isinstance(point, HyperbolicPointFromGeodesic):
+                raise NotImplementedError(
+                    "cannot decide whether this ideal point is contained in the half space yet"
+                )
 
-            raise NotImplementedError(
-                "cannot decide whether this ideal point is contained in the half space yet"
-            )
+            boundary = self.boundary()
+            intersection = boundary._intersection(point._geodesic)
+
+            if intersection is None:
+                # The boundary of the half space and the geodesic defining the
+                # point do not intersect in a single point (not even in an
+                # ultra-ideal point,) i.e., they are parallel in the Klein model.
+                return point._geodesic.an_element() in self
+
+            if not intersection.is_finite():
+                # The intersection point between the geodesic defining the
+                # point and the half space boundary is ideal or ultra-ideal.
+                # Either the entire geodesic is in the half space or none of
+                # it.
+                return point._geodesic.an_element() in self
+
+            # The intersection point between the geodesic defining the point
+            # and the half space boundary is finite, i.e., inside the unit
+            # circle in the Klein model. The segment between the starting point
+            # of the geodesic and that intersection point is either completely
+            # inside the half space or completely outside.
+            ccw = boundary.ccw(point._geodesic)
+            assert ccw != 0
+            return ccw < 0
 
         a, b, c = self.equation(model="klein")
 
@@ -6970,7 +7109,9 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -8390,6 +8531,280 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         return parent.geodesic(a, b)
 
+    def ccw(self, other, euclidean=False):
+        r"""
+        Return +1, -1, or zero if the turn from this geodesic to ``other`` is
+        counterclockwise, clockwise, or if the geodesics are parallel at their
+        point of intersection, respectively.
+
+        If this geodesic and ``other`` do not intersect, a ``ValueError`` is
+        raised.
+
+        INPUT:
+
+        - ``other`` -- another geodesic intersecting this geodesic
+
+        - ``euclidean`` -- a boolean (default: ``False``); if ``True``, the
+          geodesics are treated as lines in the Euclidean plane coming from
+          their representations in the Klein model, i.e., geodesics
+          intersecting at a non-finite point are reporting their Euclidean ccw.
+          Otherwise, geodesics intersecting at an ideal point have a ``ccw`` of
+          zero, and geodesics intersecting at an ultra-ideal point, are
+          producing a ``ValueError``.
+
+        EXAMPLES:
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: v = H.vertical(0)
+            sage: g = H.half_circle(0, 2)
+
+            sage: v.ccw(g)
+            -1
+            sage: v.ccw(-g)
+            1
+
+        Two verticals meet intersect with an angle 0 at infinity::
+
+            sage: w = H.vertical(1)
+            sage: v.ccw(w)
+            0
+
+        However, we can also get the way the chords are turning in the Klein model::
+
+            sage: v.ccw(w, euclidean=True)
+            1
+
+        Geodesics that do not intersect produce an error::
+
+            sage: g = H.half_circle(2, 1)
+            sage: v.ccw(g)
+            Traceback (most recent call last):
+            ...
+            ValueError: geodesics do not intersect
+
+        However, these geodesics do intersect at an ultra-ideal point and we
+        can get their orientation at that point::
+
+            sage: v.ccw(g, euclidean=True)
+            1
+
+        """
+        if not isinstance(other, HyperbolicOrientedGeodesic):
+            raise NotImplementedError("can only compute ccw between oriented geodesics")
+
+        other = self.parent()(other)
+
+        intersection = self._intersection(other)
+
+        if intersection is None:
+            if self.unoriented() == other.unoriented():
+                return 0
+            raise ValueError("geodesics do not intersect")
+
+        if intersection.is_ideal():
+            if not euclidean:
+                return 0
+
+        if intersection.is_ultra_ideal():
+            if not euclidean:
+                raise ValueError("geodesics do not intersect")
+
+        sgn = self.parent().geometry._sgn
+
+        from flatsurf.geometry.euclidean import ccw
+
+        return sgn(ccw((self._c, -self._b), (other._c, -other._b)))
+
+    def _test_ccw(self, **options):
+        r"""
+        Verify that :meth:`ccw` has been implemented correctly
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0)._test_ccw()
+
+        """
+        tester = self._tester(**options)
+
+        for euclidean in [False, True]:
+            tester.assertEqual(self.ccw(self, euclidean=euclidean), 0)
+            tester.assertEqual(self.ccw(-self, euclidean=euclidean), 0)
+
+            for other in self.parent().some_subsets():
+                if other.dimension() != 1:
+                    continue
+
+                other = other.geodesic().change(oriented=True)
+
+                intersection = self._intersection(other)
+                if intersection is None:
+                    continue
+
+                if intersection.is_ultra_ideal() and not euclidean:
+                    continue
+
+                tester.assertEqual(
+                    self.ccw(other, euclidean=euclidean),
+                    -other.ccw(self, euclidean=euclidean),
+                )
+                tester.assertEqual(
+                    self.ccw(-other, euclidean=euclidean),
+                    other.ccw(self, euclidean=euclidean),
+                )
+
+    def angle(self, other, numerical=True):
+        r"""
+        Compute the angle between this geodesic and ``other`` divided by 2π,
+        i.e., as a number in `[0, 1)`.
+
+        If this geodesic and ``other`` do not intersect, a ``ValueError`` is
+        raised.
+
+        INPUT:
+
+        - ``other`` -- a geodesic intersecting this geodesic in a finite or
+          ideal point.
+
+        - ``numerical`` -- a boolean (default: ``True``); whether a numerical
+          approximation of the angle is returned or whether we attempt to
+          render it as a rational number.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+
+            sage: g0 = H.geodesic(-1, 1)
+            sage: g1 = H.geodesic(0, 2)
+            sage: g2 = H.geodesic(1, 2)
+
+            sage: g0.angle(g1, numerical=False)
+            1/6
+
+            sage: assert g0.angle(g1, numerical=False) == (-g0).angle(-g1, numerical=False)
+            sage: assert g1.angle(g2, numerical=False) == (-g2).angle(-g1, numerical=False)
+            sage: assert g0.angle(g1, numerical=False) + g1.angle(-g0, numerical=False) == 1/2
+            sage: assert g1.angle(g2, numerical=False) + g1.angle(-g2, numerical=False) == 1/2
+
+        ::
+
+            sage: H.geodesic(0, 1).angle(H.geodesic(1, Infinity))
+            0.5
+
+            sage: H.geodesic(0, 1).angle(H.geodesic(Infinity, 1))
+            0.0
+
+        ::
+
+            sage: m = matrix(2, [2, 1, 1, 1])
+
+            sage: g0.apply_isometry(m).angle(g1.apply_isometry(m), numerical=False)
+            1/6
+
+        ::
+
+            sage: a = H.point(0, 1, model='half_plane')
+            sage: b = H.point(1, 1, model='half_plane')
+            sage: c = H.point(1, 2, model='half_plane')
+
+            sage: H.geodesic(a, b).angle(H.geodesic(b, c))
+            0.32379180882521663
+
+            sage: H.geodesic(b, a).angle(H.geodesic(c, b))
+            0.32379180882521663
+
+            sage: H.geodesic(a, b).angle(H.geodesic(b, c)) + H.geodesic(b, c).angle(H.geodesic(b, a))
+            0.5
+
+        ::
+
+            sage: g3 = H.geodesic(2, 3)
+            sage: g0.angle(g3)
+            Traceback (most recent call last):
+            ...
+            ValueError: geodesics do not intersect
+
+        """
+        if not isinstance(other, HyperbolicOrientedGeodesic):
+            raise NotImplementedError(
+                "can only compute angle between oriented geodesics"
+            )
+
+        other = self.parent()(other)
+
+        from sage.all import QQ
+
+        ring = float if numerical else QQ
+
+        ccw = self.ccw(other)
+
+        if ccw == 0:
+            if self.start() == other.end() or self.end() == other.start():
+                return ring(0.5)
+
+            assert (
+                self.start() == other.start() or self.end() == other.end()
+            ), "geodesics whose enclosed angle is zero, must have one ideal endpoint in common"
+
+            return ring(0)
+
+        a1 = self._a
+        b1 = self._b
+        c1 = self._c
+        n1_squared = b1 * b1 + c1 * c1 - a1 * a1
+
+        a2 = other._a
+        b2 = other._b
+        c2 = other._c
+        n2_squared = b2 * b2 + c2 * c2 - a2 * a2
+
+        import math
+
+        n12 = math.sqrt(abs(n1_squared * n2_squared))
+
+        cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
+
+        from flatsurf.geometry.euclidean import acos
+
+        angle = acos(cos_angle, numerical=numerical)
+
+        return angle if ccw > 0 else 1 - angle
+
+    def _test_angle(self, **options):
+        r"""
+        Verify that :meth:`angle` has been implemented correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0)._test_angle()
+
+        """
+        tester = self._tester(**options)
+
+        tester.assertEqual(self.angle(self), 0)
+        tester.assertEqual(self.angle(-self), 0.5)
+
+        for other in self.parent().some_subsets():
+            if other.dimension() != 1:
+                continue
+
+            other = other.geodesic().change(oriented=True)
+
+            intersection = self._intersection(other)
+            if intersection is None:
+                continue
+
+            tester.assertAlmostEqual(self.angle(other), (1 - other.angle(self)) % 1)
+            tester.assertAlmostEqual(self.angle(-other), (0.5 - other.angle(self)) % 1)
+
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
     r"""
@@ -8871,7 +9286,9 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
 
         - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -9967,15 +10384,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         """
         for vertex in self._marked_vertices:
-            if not any([vertex in edge for edge in self.edges()]):
+            if not any(vertex in edge for edge in self.edges(marked_vertices=False)):
                 raise ValueError("marked vertex must be on an edge of the polygon")
 
         if require_normalized:
             if any(
-                [
-                    vertex in self.vertices(marked_vertices=False)
-                    for vertex in self._marked_vertices
-                ]
+                vertex in self.vertices(marked_vertices=False)
+                for vertex in self._marked_vertices
             ):
                 raise ValueError(
                     "marked vertex must not be a non-marked vertex of the polygon"
@@ -11037,7 +11452,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         return ZZ(2)
 
     @cached_method
-    def edges(self, as_segments=False):
+    def edges(self, as_segments=False, marked_vertices=True):
         r"""
         Return the :class:`segments <HyperbolicOrientedSegment>` and
         :class:`geodesics <HyperbolicOrientedGeodesic>` defining this polygon.
@@ -11048,6 +11463,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         - ``as_segments`` -- a boolean (default: ``False``); whether to also
           return the geodesics as segments with ideal end points.
+
+        - ``marked_vertices`` -- a boolean (default: ``True``); if set, edges
+          with end points at a marked vertex are reported, otherwise, marked
+          vertices are completely ignored.
 
         OUTPUT:
 
@@ -11081,6 +11500,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
              <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>,
              <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>,
              <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>]
+
+        The edges of a polygon with marked vertices::
+
+            sage: P = H.convex_hull(-1, 1, I, 2*I, marked_vertices=True)
+            sage: P.edges()
+            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≥ 0}}
+            sage: P.edges(marked_vertices=False)
+            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0}}
 
         """
         edges = []
@@ -11135,6 +11562,33 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                     B, start=start, end=end, assume_normalized=as_segments, check=False
                 )
             )
+
+        if marked_vertices and self._marked_vertices:
+            edges_without_marked_vertices = edges
+            edges = []
+            for edge in edges_without_marked_vertices:
+                vertices_on_edge = [
+                    vertex for vertex in self._marked_vertices if vertex in edge
+                ]
+
+                def key(vertex, geodesic=edge.geodesic()):
+                    return geodesic.parametrize(vertex, model="euclidean")
+
+                vertices_on_edge.sort(key=key)
+                vertices_on_edge.append(edge.end())
+
+                start = edge.start()
+                for vertex in vertices_on_edge:
+                    edges.append(
+                        self.parent().segment(
+                            edge.geodesic(),
+                            start=start,
+                            end=vertex,
+                            assume_normalized=as_segments,
+                            check=False,
+                        )
+                    )
+                    start = vertex
 
         return HyperbolicEdges(edges)
 
@@ -11192,7 +11646,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         """
         vertices = []
 
-        edges = self.edges()
+        edges = self.edges(marked_vertices=False)
 
         end = edges[-1].end()
         for i, edge in enumerate(edges):
@@ -11376,7 +11830,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                                CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
                                CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
 
-        Simalarly in the Klein model picture, the arc of infinite points is
+        Similarly in the Klein model picture, the arc of infinite points is
         only part of the fill, not of the stroke::
 
             sage: P.plot("klein")[1]
@@ -11421,7 +11875,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         if len(self._half_spaces) == 0:
             raise NotImplementedError("cannot plot full space")
 
-        edges = self.edges(as_segments=True)
+        edges = self.edges(as_segments=True, marked_vertices=False)
 
         pos = edges[0].start()
 
@@ -12222,7 +12676,9 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         See :func:`flatsurf.graphical.hyperbolic.hyperbolic_path` for additional keyword arguments to
         customize the plot.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
@@ -13024,7 +13480,9 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
 
         Any keyword arguments are ignored.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -13376,7 +13834,7 @@ class OrderedSet(collections.abc.Set):
             True
 
         """
-        if type(other) != type(self):
+        if type(other) is not type(self):
             other = type(self)(other)
 
         return self._entries == other._entries
@@ -14139,11 +14597,71 @@ class HyperbolicEdges(OrderedSet):
             sage: edges._lt_(edges[0], edges[1])
             True
 
+        Segments on the same edge are ordered correctly::
+
+            sage: segments = [
+            ....:   H(0).segment(H(I)),
+            ....:   H(I).segment(H(2*I)),
+            ....:   H(2*I).segment(H(oo))
+            ....: ]
+
+            sage: edges._lt_(segments[0], segments[1])
+            True
+            sage: edges._lt_(segments[0], segments[2])
+            True
+            sage: edges._lt_(segments[1], segments[2])
+            True
+
+            sage: edges._lt_(segments[2], segments[1])
+            False
+            sage: edges._lt_(segments[2], segments[0])
+            False
+            sage: edges._lt_(segments[1], segments[0])
+            False
+
         """
+        lhs_geodesic = lhs
         if isinstance(lhs, HyperbolicOrientedSegment):
-            lhs = lhs.geodesic()
+            lhs_geodesic = lhs.geodesic()
 
+        rhs_geodesic = rhs
         if isinstance(rhs, HyperbolicOrientedSegment):
-            rhs = rhs.geodesic()
+            rhs_geodesic = rhs.geodesic()
 
-        return HyperbolicHalfSpaces._lt_(lhs.left_half_space(), rhs.left_half_space())
+        if HyperbolicHalfSpaces._lt_(
+            lhs_geodesic.left_half_space(), rhs_geodesic.left_half_space()
+        ):
+            return True
+
+        if lhs_geodesic != rhs_geodesic:
+            return False
+
+        if lhs == rhs:
+            return False
+
+        # The geodesics containing the edges are the same but they are not the
+        # same segments. We compare the finite points on the segment to decide
+        # which edge comes first in counterclockwise order.
+        geodesic = lhs_geodesic
+
+        if lhs.start().is_ideal():
+            if rhs.start().is_ideal():
+                assert (
+                    not lhs.end().is_ideal() and not rhs.end().is_ideal()
+                ), "edges in a set of HyperbolicEdges must be sortable"
+                assert (
+                    lhs.end() != rhs.end()
+                ), "edges were found to be different as segments but they are actually the same"
+
+                return geodesic.parametrize(
+                    lhs.end(), model="euclidean"
+                ) < geodesic.parametrize(rhs.end(), model="euclidean")
+
+            return True
+
+        if rhs.start().is_ideal():
+            return False
+
+        return geodesic.parametrize(
+            lhs.start(), model="euclidean"
+        ) < geodesic.parametrize(rhs.start(), model="euclidean")

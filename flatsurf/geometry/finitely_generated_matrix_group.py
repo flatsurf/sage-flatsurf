@@ -21,6 +21,7 @@ EXAMPLES::
 
     sage: G = FinitelyGenerated2x2MatrixGroup([identity_matrix(2)])
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -369,7 +370,7 @@ class FinitelyGenerated2x2MatrixGroup(Group):
 
     def __iter__(self):
         yield self.one()
-        s = set([self.one()])
+        s = {self.one()}
         wait = self._generators[:]
         while wait:
             p = wait.pop(0)

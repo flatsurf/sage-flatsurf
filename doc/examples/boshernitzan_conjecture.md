@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.7
+    jupytext_version: 1.16.4
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -176,9 +176,7 @@ Internally, the preceding computation is performed on Interval Exchange Transfor
 Currently, the only way to work with such low-level objects is by invoking functions in the C++ libraries [libflatsurf](https://github.com/flatsurf/flatsurf) and [libintervalxt](https://github.com/flatsurf/intervalxt) directly. We start by passing from our translation surface to the corresponding surface in libflatsurf. (Note that these operations are not considered part of the stable interface of sage-flatsurf and subject to change.)
 
 ```{code-cell}
-from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-
-F = to_pyflatsurf(S)
+F = S.pyflatsurf().codomain().flat_triangulation()
 ```
 
 ##### A Unique Large Edge

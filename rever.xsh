@@ -1,7 +1,7 @@
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2021-2022 Julian Rüth
+#        Copyright (C) 2021-2024 Julian Rüth
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -9,10 +9,10 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,6 +22,8 @@
 # SOFTWARE.
 # ********************************************************************
 
+from rever.activities.command import command
+
 try:
   input("Are you sure you are on the master branch which is identical to origin/master? [ENTER]")
 except KeyboardInterrupt:
@@ -29,26 +31,36 @@ except KeyboardInterrupt:
 
 $PROJECT = 'sage-flatsurf'
 
+command('pixi', 'pixi install --manifest-path pyproject.toml')
+
+command('build', 'python -m build')
+command('twine', 'twine upload dist/sage_flatsurf-' + $VERSION + '.tar.gz dist/sage_flatsurf-' + $VERSION + '-py3-none-any.whl')
+
 $ACTIVITIES = [
     'version_bump',
+    'pixi',
     'changelog',
     'tag',
     'push_tag',
-    'pypi',
+    'build',
+    'twine',
     'ghrelease',
 ]
 
 $RELEASE_YEAR = $RELEASE_DATE.year
 
 $VERSION_BUMP_PATTERNS = [
-    ('recipe/meta.yaml', r"\{% set version =", r"{% set version = \"$VERSION\" %}"),
-    ('recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
-    ('flatsurf/version.py', r"version =", r"version = \"$VERSION\""),
-    ('setup.py', r"    version=", r"    version='$VERSION',"),
-    ('flatsurf.yml', r"  - sage-flatsurf=", r"  - sage-flatsurf=$VERSION"),
-    ('README.md', r'\[!\[Binder\]', r'[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples)'),
+    ('flatsurf/version.py', r"version =", "version = \"$VERSION\""),
+    ('README.md', r"tar zxf sage-flatsurf-.*.unix.tar.gz", "tar zxf sage-flatsurf-$VERSION.unix.tar.gz"),
+    ('README.md', r"./sage-flatsurf-.*/jupyterlab  # or", "./sage-flatsurf-$VERSION/jupyterlab  # or"),
+    ('README.md', r"./sage-flatsurf-.*/sage", "./sage-flatsurf-$VERSION/sage"),
     ('doc/index.rst', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf', r' :target: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples'),
-    ('doc/conf.py', r'copyright = ', r"copyright = \"2016-$RELEASE_YEAR, the sage-flatsurf authors\""),
+    ('doc/conf.py', r'copyright = ', "copyright = \"2016-$RELEASE_YEAR, the sage-flatsurf authors\""),
+    ('pyproject.toml', r'version = ', 'version = "$VERSION"'),
+    ('doc/install.rst', r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/", r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/$VERSION/sage-flatsurf-$VERSION.unix.tar.gz | tar zxf -"),
+    ('doc/install.rst', r"  ./sage-flatsurf-.*/sage", r"  ./sage-flatsurf-$VERSION/sage"),
+    ('doc/install.rst', r"  ./sage-flatsurf-.*/jupyterlab", r"  ./sage-flatsurf-$VERSION/jupyterlab"),
+    ('installer/win/installer.iss', r"AppCopyright=", "AppCopyright=Copyright (C) 2016-$RELEASE_YEAR the sage-flatsurf authors"),
 ]
 
 $CHANGELOG_FILENAME = 'ChangeLog'

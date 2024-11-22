@@ -233,7 +233,7 @@ class EInfinitySurface(OrientedSimilaritySurface):
         Return the polygon labeled by ``lab``.
         """
         if lab not in self.labels():
-            raise ValueError("lab (=%s) not a valid label" % lab)
+            raise ValueError(f"{lab=} not a valid label")
         return polygons.rectangle(2 * self.get_black(lab), self.get_white(lab))
 
     def labels(self):
@@ -436,7 +436,7 @@ class TFractalSurface(OrientedSimilaritySurface):
         return False
 
     def _repr_(self):
-        return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s" % (
+        return "The T-fractal surface with parameters w={}, r={}, h1={}, h2={}".format(
             self._w,
             self._r,
             self._h1,
@@ -506,68 +506,69 @@ class TFractalSurface(OrientedSimilaritySurface):
         i = int(i)
         e = int(e)
 
-        if e == 0:
-            f = 2
-        elif e == 1:
-            f = 3
-        elif e == 2:
-            f = 0
-        elif e == 3:
-            f = 1
-        else:
+        def f():
+            if e == 0:
+                return 2
+            if e == 1:
+                return 3
+            if e == 2:
+                return 0
+            if e == 3:
+                return 1
+
             raise ValueError("e (={!r}) must be either 0,1,2 or 3".format(e))
 
-        if i == 0:
-            if e == 0:
-                if w.is_empty():
-                    lab = (w, 2)
-                elif w[-1] == "L":
-                    lab = (w[:-1], 1)
-                elif w[-1] == "R":
-                    lab = (w[:-1], 3)
-            if e == 1:
-                lab = (w, 0)
-            if e == 2:
-                lab = (w, 2)
-            if e == 3:
-                lab = (w, 0)
-        elif i == 1:
-            if e == 0:
-                lab = (w + self._wL, 2)
-            if e == 1:
-                lab = (w, 2)
-            if e == 2:
-                lab = (w + self._wL, 0)
-            if e == 3:
-                lab = (w, 3)
-        elif i == 2:
-            if e == 0:
-                lab = (w, 0)
-            if e == 1:
-                lab = (w, 3)
-            if e == 2:
-                if w.is_empty():
-                    lab = (w, 0)
-                elif w[-1] == "L":
-                    lab = (w[:-1], 1)
-                elif w[-1] == "R":
-                    lab = (w[:-1], 3)
-            if e == 3:
-                lab = (w, 1)
-        elif i == 3:
-            if e == 0:
-                lab = (w + self._wR, 2)
-            if e == 1:
-                lab = (w, 1)
-            if e == 2:
-                lab = (w + self._wR, 0)
-            if e == 3:
-                lab = (w, 2)
-        else:
+        def label():
+            if i == 0:
+                if e == 0:
+                    if w.is_empty():
+                        return (w, 2)
+                    elif w[-1] == "L":
+                        return (w[:-1], 1)
+                    elif w[-1] == "R":
+                        return (w[:-1], 3)
+                if e == 1:
+                    return (w, 0)
+                if e == 2:
+                    return (w, 2)
+                if e == 3:
+                    return (w, 0)
+            elif i == 1:
+                if e == 0:
+                    return (w + self._wL, 2)
+                if e == 1:
+                    return (w, 2)
+                if e == 2:
+                    return (w + self._wL, 0)
+                if e == 3:
+                    return (w, 3)
+            elif i == 2:
+                if e == 0:
+                    return (w, 0)
+                if e == 1:
+                    return (w, 3)
+                if e == 2:
+                    if w.is_empty():
+                        return (w, 0)
+                    if w[-1] == "L":
+                        return (w[:-1], 1)
+                    if w[-1] == "R":
+                        return (w[:-1], 3)
+                if e == 3:
+                    return (w, 1)
+            elif i == 3:
+                if e == 0:
+                    return (w + self._wR, 2)
+                if e == 1:
+                    return (w, 1)
+                if e == 2:
+                    return (w + self._wR, 0)
+                if e == 3:
+                    return (w, 2)
+
             raise ValueError("i (={!r}) must be either 0,1,2 or 3".format(i))
 
-        # the fastest label constructor
-        return lab, f
+        return label(), f()
 
     def polygon(self, lab):
         r"""
@@ -599,12 +600,15 @@ class TFractalSurface(OrientedSimilaritySurface):
         if i == 0:
             w = self._w
             h = self._h1
-        if i == 1 or i == 3:
+        elif i == 1 or i == 3:
             w = self._w / self._r
             h = self._h2
-        if i == 2:
+        elif i == 2:
             w = self._w
             h = self._h2
+        else:
+            raise ValueError("i must be one of 0, 1, 2, 3")
+
         return Polygon(
             base_ring=self.base_ring(), edges=[(w, 0), (0, h), (-w, 0), (0, -h)]
         )
@@ -772,14 +776,14 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import EuclideanPolygonsWithAngles
             sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-            sage: from pyexactreal import ExactReals # optional: exactreal
-            sage: R = ExactReals(E.base_ring()) # optional: exactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal  # random output due to cppyy deprecation warnings
+            sage: R = ExactReals(E.base_ring()) # optional: pyexactreal
             sage: angles = (3, 3, 5)
             sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
-            sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
-            sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
+            sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: pyexactreal
+            sage: S = similarity_surfaces.billiard(P); S # optional: pyexactreal
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
-            sage: TestSuite(S).run() # long time (6s), optional: exactreal
+            sage: TestSuite(S).run() # long time (6s), optional: pyexactreal
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: S in ConeSurfaces()
             True
@@ -1151,8 +1155,9 @@ class HalfTranslationSurfaceGenerators:
 
         S = MutableOrientedSimilaritySurface(base_ring)
         S.rename(
-            "StepBilliard(w=[%s], h=[%s])"
-            % (", ".join(map(str, w)), ", ".join(map(str, h)))
+            "StepBilliard(w=[{}], h=[{}])".format(
+                ", ".join(map(str, w)), ", ".join(map(str, h))
+            )
         )
         for p in P:
             S.add_polygon(p)  # get labels 0, ..., n-1
@@ -1340,7 +1345,7 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: from surface_dynamics import AbelianStratum
+            sage: from surface_dynamics import Stratum
 
             sage: prototypes = {
             ....:      5: [(1,1,0,-1)],
@@ -1358,7 +1363,7 @@ class TranslationSurfaceGenerators:
             sage: for D in sorted(prototypes):  # long time (.5s)
             ....:     for w,h,t,e in prototypes[D]:
             ....:          T = translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
-            ....:          assert T.stratum() == AbelianStratum(2)
+            ....:          assert T.stratum() == Stratum([2], 1)
             ....:          assert (D.is_square() and T.base_ring() is QQ) or (T.base_ring().polynomial().discriminant() == D)
 
         An example with some relative homology::
@@ -1864,15 +1869,15 @@ class TranslationSurfaceGenerators:
             Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
             sage: TestSuite(C).run()
 
-            sage: from pyexactreal import ExactReals # optional: exactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal
             sage: K = QuadraticField(5, embedding=AA(5).sqrt())
-            sage: R = ExactReals(K) # optional: exactreal
-            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: exactreal
-            sage: C  # optional: exactreal
+            sage: R = ExactReals(K) # optional: pyexactreal
+            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: pyexactreal
+            sage: C  # optional: pyexactreal
             Translation Surface in H_4(2^3) built from 2 rectangles, a hexagon with 4 marked vertices and an octagon
-            sage: C.stratum() # optional: exactreal
+            sage: C.stratum() # optional: pyexactreal
             H_4(2^3)
-            sage: TestSuite(C).run() # long time (6s), optional: exactreal
+            sage: TestSuite(C).run() # long time (6s), optional: pyexactreal
         """
         ring = Sequence([a, b]).universe()
         if isinstance(ring, type):
@@ -2249,6 +2254,72 @@ class TranslationSurfaceGenerators:
             )
             graphical_surface.make_all_visible(limit=10)
             return graphical_surface
+
+        def is_triangulated(self, limit=None):
+            r"""
+            Return whether this surface is triangulated, which it is not.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_triangulated()
+                False
+
+            """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
+            return False
+
+        def is_delaunay_triangulated(self, limit=None):
+            r"""
+            Return whether this surface is Delaunay triangulated, which it is not.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_delaunay_triangulated()
+                False
+
+            """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
+            return False
+
+        def is_delaunay_decomposed(self, limit=None):
+            r"""
+            Return whether this surface is made from Delaunay cells.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_delaunay_decomposed()
+                True
+
+            """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
+            return True
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):

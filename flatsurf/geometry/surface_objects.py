@@ -2,7 +2,14 @@ r"""
 Geometric objects on surfaces.
 
 This includes singularities, saddle connections and cylinders.
+
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -29,6 +36,7 @@ from sage.modules.free_module_element import vector
 from sage.plot.graphics import Graphics
 from sage.plot.polygon import polygon2d
 from sage.rings.qqbar import AA
+from sage.rings.infinity import Infinity
 from sage.structure.sage_object import SageObject
 from sage.structure.element import Element
 
@@ -118,9 +126,39 @@ class SurfacePoint(Element):
         sage: S.point(1, (0, 0))
         Vertex 0 of polygon 1
 
+    TESTS:
+
+    Verify that #275 has been resolved, i.e., points on the boundary can be
+    created::
+
+        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+        sage: S.add_polygon(Polygon(vertices=[(0,0), (-1, -1), (1,0)]))
+        0
+        sage: S.add_polygon(Polygon(vertices=[(0,0), (0, 1), (-1,-1)]))
+        1
+        sage: S.glue((0, 0), (1, 2))
+        sage: S.set_immutable()
+        sage: S
+        Translation Surface with boundary built from 2 triangles
+
+        sage: S(0, (0, 0))
+        Vertex 0 of polygon 0
+        sage: S(0, (1/2, 0))
+        Point (1/2, 0) of polygon 0
+        sage: S(0, (1, 0))
+        Vertex 2 of polygon 0
+
     """
 
     def __init__(self, surface, label, point, ring=None, limit=None):
+        if limit is not None:
+            import warnings
+
+            warnings.warn(
+                "limit has been deprecated as a keyword argument when creating points and will be removed without replacement in a future version of sage-flatsurf"
+            )
+
         self._surface = surface
 
         if ring is None:
@@ -155,26 +193,60 @@ class SurfacePoint(Element):
         elif position.is_in_edge_interior():
             self._representatives = {(label, point)}
 
-            cross_label, cross_edge = surface.opposite_edge(label, position.get_edge())
-            cross_point = surface.edge_transformation(label, position.get_edge())(point)
-            cross_point.set_immutable()
+            opposite_edge = surface.opposite_edge(label, position.get_edge())
+            if opposite_edge is not None:
+                cross_label, cross_edge = opposite_edge
+                cross_point = surface.edge_transformation(label, position.get_edge())(
+                    point
+                )
+                cross_point.set_immutable()
 
-            self._representatives.add((cross_label, cross_point))
+                self._representatives.add((cross_label, cross_point))
         elif position.is_vertex():
             self._representatives = set()
 
             source_edge = position.get_vertex()
-            while (label, source_edge) not in self._representatives:
-                self._representatives.add((label, source_edge))
 
-                # Rotate to the next edge that is leaving at the vertex
-                label, source_edge = surface.opposite_edge(label, source_edge)
-                source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
+            def collect_representatives(label, source_edge, direction, limit):
+                def rotate(label, source_edge, direction):
+                    if direction == -1:
+                        source_edge = (source_edge - 1) % len(
+                            surface.polygon(label).vertices()
+                        )
+                    opposite_edge = surface.opposite_edge(label, source_edge)
+                    if opposite_edge is None:
+                        return None
+                    label, source_edge = opposite_edge
+                    if direction == 1:
+                        source_edge = (source_edge + 1) % len(
+                            surface.polygon(label).vertices()
+                        )
+                    return label, source_edge
 
-                if limit is not None:
-                    limit -= 1
-                    if limit < 0:
-                        raise ValueError("number of edges at singularity exceeds limit")
+                while True:
+                    self._representatives.add((label, source_edge))
+
+                    # Rotate to the next edge that is leaving at the vertex
+                    rotated = rotate(label, source_edge, direction)
+                    if rotated is None:
+                        # Surface is disconnected
+                        return
+
+                    label, source_edge = rotated
+
+                    if limit is not None:
+                        limit -= 1
+                        if limit < 0:
+                            raise ValueError(
+                                "number of edges at singularity exceeds limit"
+                            )
+
+                    if (label, source_edge) in self._representatives:
+                        break
+
+            # Collect respresentatives of edge walking clockwise and counterclockwise
+            collect_representatives(label, source_edge, 1, limit)
+            collect_representatives(label, source_edge, -1, limit)
 
             self._representatives = {
                 (label, surface.polygon(label).vertex(vertex))
@@ -415,7 +487,7 @@ class SurfacePoint(Element):
             {0, 1, 2}
 
         """
-        return set(label for (label, _) in self._representatives)
+        return {label for (label, _) in self._representatives}
 
     def coordinates(self, label):
         r"""
@@ -457,13 +529,17 @@ class SurfacePoint(Element):
         r"""
         Return a plot of this point.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import half_translation_surfaces
             sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
             sage: p = S.point(0, (0, 0))
             sage: p.plot()
             ...Graphics object consisting of 1 graphics primitive
+
+        .. jupyter-execute::
 
             sage: p = S.point(0, (0, 25/12))
             sage: p.plot()
@@ -1068,6 +1144,74 @@ class SaddleConnection(SageObject):
             self._holonomy,
             check=True,
         )
+
+    def _homology_(self, H):
+        r"""
+        Return this saddle connection as a chain of edges in the homology group ``H``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
+            sage: H = S.homology()
+            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x._chain).items())
+            sage: for sc in S.saddle_connections(5):
+            ....:     h = H(sc)
+            ....:     hol1 = holonomy(h)
+            ....:     hol2 = sc.holonomy()
+            ....:     assert hol1 == hol2, (sc, h, hol1, hol2)
+        """
+        from .homology import SimplicialHomologyGroup
+
+        if not isinstance(H, SimplicialHomologyGroup):
+            raise TypeError("H must be a SimplicialHomologyGroup")
+
+        surface = self._surface
+        if H._surface != surface:
+            raise ValueError("homology and surface do not match")
+
+        traj = self.start_tangent_vector().straight_line_trajectory()
+        traj.flow(Infinity)
+        segments = traj.segments()
+
+        if len(segments) == 1 and segments[0].is_edge():
+            # NOTE: in the special case the saddle connection is an edge,
+            # the behavior of the corresponding segment is not appropriate
+            # to the generic code afterwards. Namely, the start and the end
+            # belongs to two different polygons. See
+            # https://github.com/flatsurf/sage-flatsurf/issues/309
+            label = segments[0].polygon_label()
+            e = segments[0].edge()
+            return H((label, e))
+
+        h = H.zero()
+        for s in segments:
+            label = s.polygon_label()
+            n = len(surface.polygon(label).vertices())
+
+            start = s.start()
+            if start.position().is_in_edge_interior():
+                # pick the next vertex clockwise
+                i = (start.position().get_edge() + 1) % n
+            else:
+                assert start.position().is_vertex()
+                i = start.vertex()
+
+            end = s.end()
+            if end.position().is_in_edge_interior():
+                # pick the previous vertex clockwise
+                j = end.position().get_edge()
+            else:
+                assert end.position().is_vertex()
+                j = end.vertex()
+
+            if i < j:
+                h += sum(H((label, e)) for e in range(i, j))
+            else:
+                h += sum(H((label, e)) for e in range(i, n))
+                h += sum(H((label, e)) for e in range(j))
+
+        return h
 
 
 class Cylinder(SageObject):

@@ -1,3 +1,11 @@
+r"""
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+"""
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -53,7 +61,9 @@ class GraphicalSegmentInPolygon:
 
     def plot(self, **options):
         r"""
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
@@ -64,8 +74,12 @@ class GraphicalSegmentInPolygon:
             sage: gseg = GraphicalSegmentInPolygon(seg, s.graphical_surface())
             sage: gseg.plot()
             ...Graphics object consisting of 1 graphics primitive
+
+        .. jupyter-execute::
+
             sage: gseg.plot(color='red')
             ...Graphics object consisting of 1 graphics primitive
+
         """
         if self._gs.is_visible(self.polygon_label()):
             from sage.plot.line import line2d
@@ -96,7 +110,9 @@ class GraphicalStraightLineTrajectory:
 
     def plot(self, **options):
         r"""
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
@@ -109,6 +125,7 @@ class GraphicalStraightLineTrajectory:
             sage: gtraj = traj.graphical_trajectory(gs)
             sage: gs.plot() + gtraj.plot()
             ...Graphics object consisting of 119 graphics primitives
+
         """
         from sage.plot.graphics import Graphics
 

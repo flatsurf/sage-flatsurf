@@ -1,0 +1,73 @@
+# Builds Linux/macOS and Windows installers and stores them as artifacts that
+# can be downloaded from the workflow run.
+# Currently, we need to manually attach these artifacts to each release
+# so that the installers are available from our "Release" page on GitHub.
+name: Build Installer
+on:
+  push: { branches: [ "master" ] }
+  pull_request: { branches: [ "master" ] }
+
+concurrency:
+  group: installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unix:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+      with: { fetch-depth: 0 }
+    - name: Create installer
+      run: ./installer/unix/build-installer.sh
+    - name: Provide installer as a build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: unix-installer
+        path: ./*.unix.tar.gz
+  unix-test:
+    runs-on: ${{ matrix.on }}
+    needs: [ unix ]
+    strategy:
+      matrix:
+        on: [ ubuntu-24.04, macos-13, macos-14 ]
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: unix-installer
+    - name: Extract installer
+      run: |
+        tar zxf *.tar.gz
+    - name: Test that SageMath REPL is functional
+      run: ./sage-flatsurf*/sage -c 'print(1 + 1)'
+  windows:
+    runs-on: windows-latest
+    needs: [ unix ]
+    steps:
+    - uses: actions/checkout@v4
+      with: { fetch-depth: 0 }
+    - uses: actions/download-artifact@v4
+      with:
+        name: unix-installer
+        path: installer/win/
+    - name: Set version number
+      shell: bash
+      run: |
+        source installer/unix/version.sh
+        sed -i -e 's/VERSION/'$VERSION'/g' installer/win/installer.iss installer/win/launch.ps1
+    - name: Download wsldl executable
+      shell: bash
+      run: |
+        dos2unix installer/win/wsldl.exe.sha256
+        curl -fsSL https://github.com/yuk7/wsldl/releases/download/23051400/wsldl.exe | tee wsldl.exe | sha256sum -c installer/win/wsldl.exe.sha256
+        source installer/unix/version.sh
+        mv wsldl.exe installer/win/sage-flatsurf-$VERSION.exe
+    - name: Compile .iss to .exe installer
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: installer/win/installer.iss
+        options: /O+
+    - name: Provide installer as a build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-installer
+        path: ./installer/win/Output/*.exe
