@@ -510,6 +510,35 @@ the homology group is chosen automatically depending on
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyClass.chain">
+<span class="sig-name descname"><span class="pre">chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.chain" title="Link to this definition">¶</a></dt>
+<dd><p>Return a lift of this element to the
+<a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module" title="flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.chain_module()</span></code></a>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">chain</span><span class="p">()</span>
+<span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>We can use the chain representation to write a homology class as
+simplices, i.e., edges, with multiplicities:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">coeffs</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">chain</span><span class="p">()</span><span class="o">.</span><span class="n">monomial_coefficients</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">coeffs</span>  <span class="c1"># random output due to random ordering of edges</span>
+<span class="p">{(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>From this representation, we determine the holonomy vector that a chain
+encodes on a translation surface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">T</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="n">coeffs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+<span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyClass.coefficient">
 <span class="sig-name descname"><span class="pre">coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient" title="Link to this definition">¶</a></dt>
 <dd><p>Return the multiplicity of this class at a generator of homology.</p>
@@ -517,7 +546,7 @@ the homology group is chosen automatically depending on
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">coefficient</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 <span class="mi">1</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">coefficient</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
@@ -1113,6 +1142,7 @@ Generic morphism:
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomology"><code class="docutils literal notranslate"><span class="pre">SimplicialHomology()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyClass</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyClass.algebraic_intersection()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass.chain"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyClass.chain()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyClass.coefficient()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass.coefficients"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyClass.coefficients()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass.surface"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyClass.surface()</span></code></a></li>

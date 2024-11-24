@@ -682,6 +682,39 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">)</span>
 
+<div class="viewcode-block" id="SimplicialHomologyClass.chain">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.chain">[docs]</a>
+    <span class="k">def</span> <span class="nf">chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a lift of this element to the</span>
+<span class="sd">        :meth:`SimplicialHomologyGroup.chain_module`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
+<span class="sd">            sage: T = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: H = SimplicialHomology(T)</span>
+<span class="sd">            sage: a, b = H.gens()</span>
+<span class="sd">            sage: a.chain()</span>
+<span class="sd">            B[(0, 1)]</span>
+
+<span class="sd">        We can use the chain representation to write a homology class as</span>
+<span class="sd">        simplices, i.e., edges, with multiplicities::</span>
+
+<span class="sd">            sage: coeffs = (a - b).chain().monomial_coefficients()</span>
+<span class="sd">            sage: coeffs  # random output due to random ordering of edges</span>
+<span class="sd">            {(0, 1): 1, (0, 0): -1}</span>
+
+<span class="sd">        From this representation, we determine the holonomy vector that a chain</span>
+<span class="sd">        encodes on a translation surface::</span>
+
+<span class="sd">            sage: sum(c * T.polygon(label).edge(edge) for ((label, edge), c) in coeffs.items())</span>
+<span class="sd">            (-1, 1)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span></div>
+
+
 <div class="viewcode-block" id="SimplicialHomologyClass.coefficient">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient">[docs]</a>
     <span class="k">def</span> <span class="nf">coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">):</span>
@@ -693,7 +726,7 @@
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
-<span class="sd">            sage: a,b = H.gens()</span>
+<span class="sd">            sage: a, b = H.gens()</span>
 <span class="sd">            sage: a.coefficient(a)</span>
 <span class="sd">            1</span>
 <span class="sd">            sage: a.coefficient(b)</span>
