@@ -346,7 +346,7 @@ class SimplicialHomologyClass(Element):
         simplices, i.e., edges, with multiplicities::
 
             sage: coeffs = (a - b).chain().monomial_coefficients()
-            sage: coeffs
+            sage: coeffs  # random output due to random ordering of edges
             {(0, 1): 1, (0, 0): -1}
 
         From this representation, we determine the holonomy vector that a chain
