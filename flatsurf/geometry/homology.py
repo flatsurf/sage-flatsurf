@@ -328,6 +328,36 @@ class SimplicialHomologyClass(Element):
         """
         return repr(self._chain)
 
+    def chain(self):
+        r"""
+        Return a lift of this element to the
+        :meth:`SimplicialHomologyGroup.chain_module`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.square_torus()
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: a.chain()
+            B[(0, 1)]
+
+        We can use the chain representation to write a homology class as
+        simplices, i.e., edges, with multiplicities::
+
+            sage: coeffs = (a - b).chain().monomial_coefficients()
+            sage: coeffs  # random output due to random ordering of edges
+            {(0, 1): 1, (0, 0): -1}
+
+        From this representation, we determine the holonomy vector that a chain
+        encodes on a translation surface::
+
+            sage: sum(c * T.polygon(label).edge(edge) for ((label, edge), c) in coeffs.items())
+            (-1, 1)
+
+        """
+        return self._chain
+
     def coefficient(self, gen):
         r"""
         Return the multiplicity of this class at a generator of homology.
@@ -337,7 +367,7 @@ class SimplicialHomologyClass(Element):
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.square_torus()
             sage: H = SimplicialHomology(T)
-            sage: a,b = H.gens()
+            sage: a, b = H.gens()
             sage: a.coefficient(a)
             1
             sage: a.coefficient(b)
