@@ -1,3 +1,3 @@
 **Added:**
 
-* Added methods ``chain()``, ``simplex_coefficients()``, and ``holonomy()`` to make it easier to interact with the chain underlying a homology class.
+* Added methods ``SimplicialHomologyClass.chain()`` and added examples that show how to rewrite a homology class into edges with multiplicities or into a holonomy vector.
