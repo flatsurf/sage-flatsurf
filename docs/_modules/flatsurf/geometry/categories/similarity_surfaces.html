@@ -3548,11 +3548,40 @@
 <span class="sd">                If check==True it uses the checks in the SaddleConnection class to sanity check our results.</span>
 
 <span class="sd">                EXAMPLES::</span>
+
 <span class="sd">                    sage: from flatsurf import translation_surfaces</span>
 <span class="sd">                    sage: s = translation_surfaces.square_torus()</span>
 <span class="sd">                    sage: sc_list = s.saddle_connections(13, check=True)</span>
 <span class="sd">                    sage: len(sc_list)</span>
 <span class="sd">                    32</span>
+
+<span class="sd">                TESTS:</span>
+
+<span class="sd">                Verify that #255 has been resolved::</span>
+
+<span class="sd">                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon</span>
+
+<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (64, 0), (1, 1)])</span>
+<span class="sd">                    sage: Q = Polygon(vertices=[(0, 0), (64, 0), (32, 1)])</span>
+
+<span class="sd">                    sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+
+<span class="sd">                    sage: S.add_polygon(P)</span>
+<span class="sd">                    0</span>
+<span class="sd">                    sage: S.add_polygon(Q)</span>
+<span class="sd">                    1</span>
+
+<span class="sd">                    sage: S.glue((1, 2), (1, 2))</span>
+<span class="sd">                    sage: S.glue((1, 1), (1, 1))</span>
+<span class="sd">                    sage: S.glue((0, 2), (0, 2))</span>
+<span class="sd">                    sage: S.glue((0, 0), (0, 0))</span>
+<span class="sd">                    sage: S.glue((0, 1), (1, 0))</span>
+
+<span class="sd">                    sage: S.set_immutable()</span>
+
+<span class="sd">                    sage: len(S.saddle_connections(63**2, initial_label=0, initial_vertex=0))</span>
+<span class="sd">                    19</span>
+
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">squared_length_bound</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span>
@@ -3645,6 +3674,8 @@
                         <span class="ow">and</span> <span class="n">vert_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">vert_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
                         <span class="o">&lt;=</span> <span class="n">squared_length_bound</span>
                     <span class="p">):</span>
+                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SaddleConnection</span>
+
                         <span class="n">sc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                             <span class="n">SaddleConnection</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="p">,</span>

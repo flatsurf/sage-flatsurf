@@ -1478,14 +1478,14 @@ vertex of a polygon. If only initial_label is provided, the added saddle connect
 corresponding polygon.</p>
 <p>If sc_list is provided the found saddle connections are appended to this list and the resulting list is returned.</p>
 <p>If check==True it uses the checks in the SaddleConnection class to sanity check our results.</p>
-<dl class="simple">
-<dt>EXAMPLES::</dt><dd><p>sage: from flatsurf import translation_surfaces
-sage: s = translation_surfaces.square_torus()
-sage: sc_list = s.saddle_connections(13, check=True)
-sage: len(sc_list)
-32</p>
-</dd>
-</dl>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">sc_list</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">saddle_connections</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">sc_list</span><span class="p">)</span>
+<span class="mi">32</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
