@@ -3062,11 +3062,40 @@ class SimilaritySurfaces(SurfaceCategory):
                 If check==True it uses the checks in the SaddleConnection class to sanity check our results.
 
                 EXAMPLES::
+
                     sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.square_torus()
                     sage: sc_list = s.saddle_connections(13, check=True)
                     sage: len(sc_list)
                     32
+
+                TESTS:
+
+                Verify that #255 has been resolved::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+
+                    sage: P = Polygon(vertices=[(0, 0), (64, 0), (1, 1)])
+                    sage: Q = Polygon(vertices=[(0, 0), (64, 0), (32, 1)])
+
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+
+                    sage: S.add_polygon(P)
+                    0
+                    sage: S.add_polygon(Q)
+                    1
+
+                    sage: S.glue((1, 2), (1, 2))
+                    sage: S.glue((1, 1), (1, 1))
+                    sage: S.glue((0, 2), (0, 2))
+                    sage: S.glue((0, 0), (0, 0))
+                    sage: S.glue((0, 1), (1, 0))
+
+                    sage: S.set_immutable()
+
+                    sage: len(S.saddle_connections(63**2, initial_label=0, initial_vertex=0))
+                    19
+
                 """
                 if squared_length_bound <= 0:
                     raise ValueError
@@ -3159,6 +3188,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         and vert_position[0] ** 2 + vert_position[1] ** 2
                         <= squared_length_bound
                     ):
+                        from flatsurf.geometry.surface_objects import SaddleConnection
+
                         sc_list.append(
                             SaddleConnection(
                                 self,

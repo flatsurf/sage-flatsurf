@@ -21231,7 +21231,7 @@ packages:
   name: sage-flatsurf
   version: 0.6.2
   path: .
-  sha256: bf8217feb475f59b53c213857b0d9a129b99db28162fafad48c30cecf57de755
+  sha256: 7fe05dbdc18db88b42a6bd215f29c81af007c2c56ac5ec40c8232dd02d8c7cbf
   requires_dist:
   - bidict
   - more-itertools
