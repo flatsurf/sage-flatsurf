@@ -1909,8 +1909,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         the number of half spaces. The limiting factor is sorting the half
         spaces by :meth:`HyperbolicHalfSpaces._lt_`. If we know that the
         half spaces are already sorted like that, we can make the process run
-        in linear time by setting ``assume_sorted``, see e.g.,
-        https://www2.cs.arizona.edu/classes/cs437/spring21/Lecture4.pdf.
+        in linear time by setting ``assume_sorted``.
 
             sage: H.polygon(H.infinity().half_spaces(), assume_sorted=True)
             ∞
@@ -11098,7 +11097,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         We use a relatively standard randomized optimization approach to find a
         point in the intersection: we randomly shuffle the half spaces and then
         optimize a segment on some boundary of the half spaces. The
-        randomization makes this a linear time algorithm.
+        randomization makes this a linear time algorithm, see e.g.,
+        https://www2.cs.arizona.edu/classes/cs437/spring21/Lecture4.pdf.
 
         If the only segment we can construct is a point, then the intersection
         is a single point in the Euclidean plane. The intersection in the
