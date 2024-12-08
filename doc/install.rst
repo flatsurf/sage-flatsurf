@@ -94,7 +94,7 @@ sage-flatsurf anymore, just uninstall it.
 
 .. _installation-conda:
 
-Install with Mamba
+Install with Conda
 ------------------
 
 Almost the entire flatsurf stack is available at `conda-forge
