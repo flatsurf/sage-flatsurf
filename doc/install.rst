@@ -5,7 +5,7 @@ There are several different ways to install sage-flatsurf on your machine. You c
 
 * extract `our pixi tarball <#installation-tarball>`_ for Linux and macOS (recommended),
 * use `our executable installer <#installation-installer>`_ on Windows (recommended),
-* create a `conda environment <#installation-mamba>`_ on Linux and macOS,
+* create a `conda environment <#installation-conda>`_ on Linux and macOS,
 * install sage-flatsurf `into an existing source build of SageMath <#installation-sagemath>`_,
 * or `pip install <#installation-pip>`_ sage-flatsurf.
 
@@ -92,7 +92,7 @@ download the latest installer and run it. The two versions of sage-flatsurf do
 not interfere with each other. If you do not need the old version of
 sage-flatsurf anymore, just uninstall it.
 
-.. _installation-mamba:
+.. _installation-conda:
 
 Install with Mamba
 ------------------
@@ -100,16 +100,16 @@ Install with Mamba
 Almost the entire flatsurf stack is available at `conda-forge
 <https://conda-forge.org>`_.
 
-If you already have `mambaforge
-<https://github.com/conda-forge/miniforge#mambaforge>`_ installed, you can
+If you already have `miniforge
+<https://github.com/conda-forge/miniforge>`_ installed, you can
 create an environment with the entire flatsurf stack by running::
 
-  mamba create -n flatsurf sage-flatsurf pyflatsurf pyexactreal sage pip
+  conda create -n flatsurf sage-flatsurf pyflatsurf pyexactreal sage pip
 
 Some optional bits of the flatsurf stack are only available on PyPI, to install
 them as well run::
 
-  mamba activate flatsurf
+  conda activate flatsurf
   pip install ipyvue-flatsurf flipper realalg veerer
 
 .. _installation-sagemath:

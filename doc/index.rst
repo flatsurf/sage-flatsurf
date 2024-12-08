@@ -27,7 +27,7 @@ Detailed installation instructions:
 
 * :ref:`Install with the pixi tarball <installation-tarball>` for Linux and macOS (recommended)
 * :ref:`Install with the installer <installation-installer>` for Windows (recommended)
-* :ref:`Install with Mamba <installation-mamba>`
+* :ref:`Install with Mamba <installation-conda>`
 * :ref:`Install into an existing SageMath source build <installation-sagemath>`
 * :ref:`Install with pip <installation-pip>`
 
