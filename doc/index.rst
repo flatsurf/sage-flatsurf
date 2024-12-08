@@ -61,13 +61,6 @@ Demos of some of the capabilities of sage-flatsurf:
    examples/warwick-2017
    examples/boshernitzan_conjecture
 
-These examples can also be explored interactively by clicking |binder|_. The
-interactive session might take a moment to start. Once ready, press Shift +
-Enter to execute the cells, starting from the top.
-
-.. |binder| image:: https://mybinder.org/badge_logo.svg
-.. _binder: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/0.4.6?filepath=doc%2Fexamples
-
 Module Reference
 ================
 
