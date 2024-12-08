@@ -11097,8 +11097,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         We use a relatively standard randomized optimization approach to find a
         point in the intersection: we randomly shuffle the half spaces and then
         optimize a segment on some boundary of the half spaces. The
-        randomization makes this a linear time algorithm, see e.g.,
-        https://www2.cs.arizona.edu/classes/cs437/fall07/Lecture4.prn.pdf
+        randomization makes this a linear time algorithm.
 
         If the only segment we can construct is a point, then the intersection
         is a single point in the Euclidean plane. The intersection in the
