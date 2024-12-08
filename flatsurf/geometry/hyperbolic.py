@@ -1909,7 +1909,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         the number of half spaces. The limiting factor is sorting the half
         spaces by :meth:`HyperbolicHalfSpaces._lt_`. If we know that the
         half spaces are already sorted like that, we can make the process run
-        in linear time by setting ``assume_sorted``.
+        in linear time by setting ``assume_sorted``, see e.g.,
+        https://www2.cs.arizona.edu/classes/cs437/spring21/Lecture4.pdf.
 
             sage: H.polygon(H.infinity().half_spaces(), assume_sorted=True)
             ∞
