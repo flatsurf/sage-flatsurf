@@ -16,9 +16,11 @@ jobs:
         with: { pixi-version: v0.28.2 }
       - name: build documentation
         run: |
-          pixi run doc
+          pixi run build-doc
           # Do not run Jekyll to create GitHub Pages but take HTML files as they are.
           touch doc/_build/html/.nojekyll
+      - name: detect broken links
+        run: pixi run doc-linkcheck
       - name: provide documentation as artifact for netlify workflow
         uses: actions/upload-artifact@v3
         with:
@@ -33,7 +35,3 @@ jobs:
         if: ${{ github.event_name == 'push' }}
       - uses: flatsurf/actions/show-logs@main
         if: ${{ always() }}
-
-env:
-  MAKEFLAGS: -j4
-  SAGE_NUM_THREADS: 4
