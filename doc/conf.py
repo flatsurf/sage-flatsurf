@@ -68,5 +68,12 @@ jupyter_execute_default_kernel = "sagemath"
 # Only rerender example notebooks when the cache is stale.
 nb_execution_mode = "cache"
 
+linkcheck_ignore = [
+    # Zulip channel requires signing up first.
+    r'https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650',
+    # PyPI seems to have temporarily vanished from repology
+    'https://repology.org/project/python:sage-flatsurf/packages',
+]
+
 def setup(app):
     app.connect('autodoc-process-docstring', skip_TESTS_block)

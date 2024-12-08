@@ -28,7 +28,3 @@ jobs:
     - name: Run pytest tests
       run: pixi run -e ${{ matrix.environment }} pytest
       if: ${{ matrix.environment == 'dev' }}
-
-env:
-  MAKEFLAGS: -j4
-  SAGE_NUM_THREADS: 4

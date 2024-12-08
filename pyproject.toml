@@ -147,12 +147,38 @@ scipy = "*"
 sphinx = ">=7,<8"
 tachyon = "*"
 veerer = "*"
+linkchecker = "*"
 
 [tool.pixi.feature.doc.pypi-dependencies]
 sage-docbuild = "==10.3"
 
-[tool.pixi.feature.doc.tasks]
-doc = "cd doc && make html SPHINXOPTS='-W -n --keep-going'"
+[tool.pixi.feature.doc.tasks.doc-build]
+cwd = "doc"
+cmd = "make html SPHINXOPTS='-W -n --keep-going'"
+
+[tool.pixi.feature.doc.tasks.doc]
+cmd = """
+sh -c '
+python -m http.server $PORT --bind localhost --directory _build/html &
+SERVER_PID=$!
+trap "kill $SERVER_PID" EXIT
+
+sleep 1
+
+echo "Preview the documentation at http://localhost:$PORT/"
+echo "Press Ctrl-C to continue"
+
+wait $SERVER_PID
+'
+"""
+env = { PORT = "8880" }
+depends-on = ["doc-build"]
+cwd = "doc"
+
+[tool.pixi.feature.doc.tasks.doc-linkcheck]
+cmd = "make linkcheck"
+depends-on = ["doc-build"]
+cwd = "doc"
 
 [tool.pixi.feature.sagemath-97.dependencies]
 sagelib = "9.7"
@@ -186,3 +212,7 @@ python = "~=3.12.0"
 asv = ">=0.6.4,<0.7"
 libmambapy = "*"
 conda-build = "*"
+
+[activation.env]
+MAKEFLAGS = "-j$(nproc)"
+SAGE_NUM_THREADS = "$(nproc)"

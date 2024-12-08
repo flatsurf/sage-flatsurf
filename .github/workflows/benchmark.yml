@@ -37,6 +37,3 @@ jobs:
         folder: .asv/html
         target-folder: docs/asv
       if: ${{ github.event_name == 'push' }}
-
-env:
-  MAKEFLAGS: -j4
