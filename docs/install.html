@@ -354,11 +354,11 @@
 <h1>Installing sage-flatsurf<a class="headerlink" href="#installing-sage-flatsurf" title="Link to this heading">¶</a></h1>
 <p>There are several different ways to install sage-flatsurf on your machine. You can</p>
 <ul class="simple">
-<li><p>extract <a class="reference external" href="installation-tarball">our pixi tarball</a> for Linux and macOS (recommended),</p></li>
-<li><p>use <a class="reference external" href="installation-installer">our executable installer</a> on Windows (recommended),</p></li>
-<li><p>create a <a class="reference external" href="installation-mamba">conda environment</a> on Linux and macOS,</p></li>
-<li><p>install sage-flatsurf <a class="reference external" href="installation-sagemath">into an existing source build of SageMath</a>,</p></li>
-<li><p>or <a class="reference external" href="installation-pip">pip install</a> sage-flatsurf.</p></li>
+<li><p>extract <a class="reference external" href="#installation-tarball">our pixi tarball</a> for Linux and macOS (recommended),</p></li>
+<li><p>use <a class="reference external" href="#installation-installer">our executable installer</a> on Windows (recommended),</p></li>
+<li><p>create a <a class="reference external" href="#installation-conda">conda environment</a> on Linux and macOS,</p></li>
+<li><p>install sage-flatsurf <a class="reference external" href="#installation-sagemath">into an existing source build of SageMath</a>,</p></li>
+<li><p>or <a class="reference external" href="#installation-pip">pip install</a> sage-flatsurf.</p></li>
 </ul>
 <p>If you are having trouble with this or are on another operating system, please
 <a class="reference external" href="https://flatsurf.github.io">contact us</a>. We’re thrilled about any new user
@@ -424,16 +424,16 @@ not interfere with each other. If you do not need the old version of
 sage-flatsurf anymore, just uninstall it.</p>
 </section>
 <section id="install-with-mamba">
-<span id="installation-mamba"></span><h2>Install with Mamba<a class="headerlink" href="#install-with-mamba" title="Link to this heading">¶</a></h2>
+<span id="installation-conda"></span><h2>Install with Mamba<a class="headerlink" href="#install-with-mamba" title="Link to this heading">¶</a></h2>
 <p>Almost the entire flatsurf stack is available at <a class="reference external" href="https://conda-forge.org">conda-forge</a>.</p>
-<p>If you already have <a class="reference external" href="https://github.com/conda-forge/miniforge#mambaforge">mambaforge</a> installed, you can
+<p>If you already have <a class="reference external" href="https://github.com/conda-forge/miniforge">miniforge</a> installed, you can
 create an environment with the entire flatsurf stack by running:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">flatsurf</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span> <span class="n">pyflatsurf</span> <span class="n">pyexactreal</span> <span class="n">sage</span> <span class="n">pip</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">flatsurf</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span> <span class="n">pyflatsurf</span> <span class="n">pyexactreal</span> <span class="n">sage</span> <span class="n">pip</span>
 </pre></div>
 </div>
 <p>Some optional bits of the flatsurf stack are only available on PyPI, to install
 them as well run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">activate</span> <span class="n">flatsurf</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">flatsurf</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">ipyvue</span><span class="o">-</span><span class="n">flatsurf</span> <span class="n">flipper</span> <span class="n">realalg</span> <span class="n">veerer</span>
 </pre></div>
 </div>

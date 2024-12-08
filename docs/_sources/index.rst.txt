@@ -16,7 +16,7 @@ Installation
 ============
 
 The preferred way to install software should be to use your package manager
-(e.g. `apt-get` on Debian or Ubuntu, `pacman` on Arch Linux, `brew` on MacOS,
+(e.g. ``apt-get`` on Debian or Ubuntu, ``pacman`` on Arch Linux, ``brew`` on MacOS,
 etc). However, as of this writing, sage-flatsurf has not been picked up by `any
 of the major distributions yet <https://repology.org/project/python:sage-flatsurf/packages>`_.
 
@@ -27,7 +27,7 @@ Detailed installation instructions:
 
 * :ref:`Install with the pixi tarball <installation-tarball>` for Linux and macOS (recommended)
 * :ref:`Install with the installer <installation-installer>` for Windows (recommended)
-* :ref:`Install with Mamba <installation-mamba>`
+* :ref:`Install with Mamba <installation-conda>`
 * :ref:`Install into an existing SageMath source build <installation-sagemath>`
 * :ref:`Install with pip <installation-pip>`
 
@@ -60,13 +60,6 @@ Demos of some of the capabilities of sage-flatsurf:
    examples/straight_line_flow
    examples/warwick-2017
    examples/boshernitzan_conjecture
-
-These examples can also be explored interactively by clicking |binder|_. The
-interactive session might take a moment to start. Once ready, press Shift +
-Enter to execute the cells, starting from the top.
-
-.. |binder| image:: https://mybinder.org/badge_logo.svg
-.. _binder: https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/0.4.6?filepath=doc%2Fexamples
 
 Module Reference
 ================

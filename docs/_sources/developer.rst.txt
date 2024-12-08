@@ -41,7 +41,7 @@ To check your code for style errors::
 
   pixi run lint
 
-And to rebuild the documentation::
+And to preview the documentation::
 
   pixi run doc
 
