@@ -892,6 +892,13 @@
 <span class="sd">        sage: H = SimplicialHomology(T, implementation=&quot;generic&quot;)</span>
 <span class="sd">        sage: TestSuite(H).run()</span>
 
+<span class="sd">    Verify that #310 has been resolved::</span>
+
+<span class="sd">        sage: S = translation_surfaces.mcmullen_L(1,1,1,1)</span>
+<span class="sd">        sage: H = S.homology(coefficients=QQ)</span>
+<span class="sd">        sage: H.gens()</span>
+<span class="sd">        (B[(0, 1)], B[(0, 0)], B[(1, 1)], B[(2, 0)])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">Element</span> <span class="o">=</span> <span class="n">SimplicialHomologyClass</span>
@@ -1269,10 +1276,18 @@
 
             <span class="n">F</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_module</span><span class="p">()</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+            <span class="k">def</span> <span class="nf">lift</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">homology</span><span class="p">,</span> <span class="s2">&quot;lift&quot;</span><span class="p">):</span>
+                    <span class="c1"># Available for quotients of vector spaces</span>
+                    <span class="k">return</span> <span class="n">homology</span><span class="o">.</span><span class="n">lift</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+
+                <span class="c1"># Available on quotients of other modules</span>
+                <span class="k">return</span> <span class="n">vector</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lift</span><span class="p">()</span><span class="o">.</span><span class="n">lift</span><span class="p">())</span>
 
             <span class="n">from_homology</span> <span class="o">=</span> <span class="n">homology</span><span class="o">.</span><span class="n">module_morphism</span><span class="p">(</span>
-                <span class="n">function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lift</span><span class="p">()</span><span class="o">.</span><span class="n">lift</span><span class="p">()))),</span>
+                <span class="n">function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">lift</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
                 <span class="n">codomain</span><span class="o">=</span><span class="n">F</span><span class="p">,</span>
             <span class="p">)</span>
 
