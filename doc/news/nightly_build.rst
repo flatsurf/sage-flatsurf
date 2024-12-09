@@ -1,3 +1,3 @@
-**Changed:**
+**Fixed:**
 
-* Changed download instructions for "nightly build" installer.
+* Fixed download instructions for "nightly build" installer.
