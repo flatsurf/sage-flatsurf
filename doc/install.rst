@@ -57,10 +57,10 @@ not interfere with each other and you can just delete the old version if you do
 not need it anymore.
 
 There is also a "nightly" build of sage-flatsurf that contains the latest
-development version. To download it, go to `the latest installer workflow run
-<https://github.com/flatsurf/flatsurf/actions/workflows/installer.yml>`_ select
-`unix` or `windows` and find the file in the section "Provide installer as a
-build artifact". (You need to be logged in at GitHub for this to work.)
+development version. To download it, go to `installer workflow runs
+<https://github.com/flatsurf/sage-flatsurf/actions/workflows/installer.yml>`_
+and click on the latest run, then from the Artifacts section download the
+Unix or Windows installer. (This requires being signed in at GitHub.)
 
 .. _installation-installer:
 
