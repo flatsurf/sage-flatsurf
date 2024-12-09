@@ -526,6 +526,13 @@ class SimplicialHomologyGroup(Parent):
         sage: H = SimplicialHomology(T, implementation="generic")
         sage: TestSuite(H).run()
 
+    Verify that #310 has been resolved::
+
+        sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
+        sage: H = S.homology(coefficients=QQ)
+        sage: H.gens()
+        (B[(0, 1)], B[(0, 0)], B[(1, 1)], B[(2, 0)])
+
     """
 
     Element = SimplicialHomologyClass
@@ -879,10 +886,18 @@ class SimplicialHomologyGroup(Parent):
 
             F = self.chain_module()
 
-            from sage.all import vector
+            def lift(x):
+                if hasattr(homology, "lift"):
+                    # Available for quotients of vector spaces
+                    return homology.lift(x)
+
+                from sage.all import vector
+
+                # Available on quotients of other modules
+                return vector(x.lift().lift())
 
             from_homology = homology.module_morphism(
-                function=lambda x: F.from_vector(vector(list(x.lift().lift()))),
+                function=lambda x: F.from_vector(lift(x)),
                 codomain=F,
             )
 
