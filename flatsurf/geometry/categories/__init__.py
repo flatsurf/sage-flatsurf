@@ -11,7 +11,7 @@ hierarchy by allowing us to dynamically change the category (and methods) of a
 surface as we learn more about it.
 
 Note that you normally don't have to create categories explicitly. Categories
-are deduced automatically (at least for surfaces of finite type.) You should
+are deduced automatically (at least for surfaces of finite type). You should
 think of categories as an implementation detail. As a user of sage-flatsurf,
 you don't need to know about them. As a developer of sage-flatsurf, they
 provide entry points to place your code; e.g., to add a method to all

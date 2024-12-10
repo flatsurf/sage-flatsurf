@@ -129,7 +129,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             - ``positive`` -- a boolean (default: ``True``); whether the
               transformation must be a translation or is allowed to be a
               half-translation, i.e., a translation followed by a reflection in
-              a point (equivalently, a rotation by π.)
+              a point (equivalently, a rotation by π).
 
             - ``limit`` -- an integer or ``None`` (default: ``None``); if set, only
               the first ``limit`` polygons are checked

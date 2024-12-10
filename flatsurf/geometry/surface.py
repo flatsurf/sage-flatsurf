@@ -165,7 +165,7 @@ class MutablePolygonalSurface(Surface_base):
     def _test_refined_category(self, **options):
         r"""
         Test that this surface has been refined to its best possible
-        subcategory (that can be computed cheaply.)
+        subcategory (that can be computed cheaply).
 
         We override this method here to disable this check for mutable
         surfaces. Mutable surfaces have not been refined yet since changes in
@@ -276,7 +276,7 @@ class MutablePolygonalSurface(Surface_base):
     def remove_polygon(self, label):
         r"""
         Remove the polygon with label ``label`` from this surface (and all data
-        associated to it.)
+        associated to it).
 
         EXAMPLES::
 
@@ -1639,7 +1639,7 @@ class MutableOrientedSimilaritySurface(
         - ``label`` -- one of the labels included in :meth:`~.MutablePolygonalSurface.labels`
 
         - ``edge`` -- a non-negative integer to specify an edge (the edges
-          of a polygon are numbered starting from zero.)
+          of a polygon are numbered starting from zero).
 
         EXAMPLES::
 
@@ -2531,7 +2531,7 @@ class LabeledCollection(collections.abc.Collection):
     - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
       a finite set; if ``None``, it is not known whether the set is finite
       (some operations might not be supported in that case or not terminate if
-      the set is actually infinite.)
+      the set is actually infinite).
 
     EXAMPLES::
 
@@ -2666,7 +2666,7 @@ class LabeledView(LabeledCollection):
     - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
       a finite set; if ``None``, it is not known whether the set is finite
       (some operations might not be supported in that case or not terminate if
-      the set is actually infinite.)
+      the set is actually infinite).
 
     EXAMPLES::
 
@@ -2765,7 +2765,7 @@ class ComponentLabels(LabeledCollection):
     - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
       a finite component; if ``None``, it is not known whether the component is
       finite (some operations might not be supported in that case or not
-      terminate if the component is actually infinite.)
+      terminate if the component is actually infinite).
 
     EXAMPLES::
 
@@ -2828,7 +2828,7 @@ class Labels(LabeledCollection, collections.abc.Sequence):
 
         This implementation makes no assumption on the surface and can be very
         slow to answer, e.g., containment or compute the number of labels in
-        the surface (because it needs to iterate over the entire surface.)
+        the surface (because it needs to iterate over the entire surface).
 
         When possible, a faster implementation should be used such as
         :class:`LabelsFromView`.
@@ -2989,7 +2989,7 @@ class Polygons_MutableOrientedSimilaritySurface(Polygons):
     """
 
     def __init__(self, surface):
-        # This hack makes __len__ 20% faster (it saves one attribute lookup.)
+        # This hack makes __len__ 20% faster (it saves one attribute lookup).
         self._polygons = surface._polygons
         super().__init__(surface)
 

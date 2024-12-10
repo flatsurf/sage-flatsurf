@@ -173,7 +173,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             The result of this method can be fed to ``_refine_category_`` to
             change the category of the surface (and enable functionality
-            specific to the smaller classes of surfaces.)
+            specific to the smaller classes of surfaces).
 
 
             .. NOTE::
@@ -281,7 +281,7 @@ class SimilaritySurfaces(SurfaceCategory):
             r"""
             Return whether this surface is a dilation surface, i.e., whether
             glued edges can be transformed into each other by translation
-            followed by a dilation (multiplication by a diagonal matrix.)
+            followed by a dilation (multiplication by a diagonal matrix).
 
             .. NOTE::
 
@@ -339,8 +339,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             - ``positive`` -- a boolean (default: ``True``); whether the
               transformation must be a translation or is allowed to be a
-              half-translation, i.e., a translation followed by a reflection in
-              a point (equivalently, a rotation by π.)
+              half-translation, i.e., a reflection about a point (equivalently,
+              a rotation by π).
 
             EXAMPLES::
 
@@ -864,7 +864,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     from flatsurf.geometry.euclidean import ccw, is_parallel
 
                     # This is a vertex at a concave vertex of a polygon (with
-                    # angle <2π.) So at least one π turn must have happened.
+                    # angle < 2π). So at least one π turn must have happened.
                     if ccw(previous, vector) < 0:
                         half_turns += 1
 

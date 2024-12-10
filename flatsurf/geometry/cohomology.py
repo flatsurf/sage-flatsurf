@@ -262,7 +262,7 @@ class SimplicialCohomologyGroup(Parent):
 
     def is_absolute(self):
         r"""
-        Return whether this is an absolute cohomology (and not a relative one.)
+        Return whether this is an absolute cohomology (and not a relative one).
 
         EXAMPLES::
 
@@ -367,7 +367,7 @@ class SimplicialCohomologyGroup(Parent):
     def homology(self):
         r"""
         Return the homology of the underlying space (with integer
-        coefficients.)
+        coefficients).
 
         EXAMPLES::
 

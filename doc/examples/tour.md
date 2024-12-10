@@ -147,7 +147,7 @@ Note that on a finite type surface, we can compute a `FlowDecomposition` (see be
 
 +++
 
-We can also determine all the saddle connections up to a certain length bound (on finite type surfaces.)
+We can also determine all the saddle connections up to a certain length bound (on finite type surfaces).
 
 ```{code-cell}
 from flatsurf import translation_surfaces
@@ -272,7 +272,7 @@ O.decomposition(direction, limit=0).components()[0R].intervalExchangeTransformat
 
 Square-tiled surfaces (also called origamis) are translation surfaces built from unit squares. Many properties of their $GL_2(\mathbb{R})$-orbit closures can be computed easily.
 
-Note that the `Origami` object that we manipulate below are different from all other translation surfaces that were built above (that were using `sage-flatsurf`.)
+Note that the `Origami` object that we manipulate below are different from all other translation surfaces that were built above (that were using `sage-flatsurf`).
 
 ```{code-cell}
 from surface_dynamics import Origami
@@ -407,7 +407,7 @@ g.plot(color="red") + h.plot(color="blue")
 g.plot(model="klein", color="red") + h.plot(model="klein", color="blue")
 ```
 
-We determine the point of intersection of these geodesics. Note that that point has no coordinates in the upper half plane (without going to a quadratic extension.)
+We determine the point of intersection of these geodesics. Note that that point has no coordinates in the upper half plane (without going to a quadratic extension).
 
 ```{code-cell}
 P = g.intersection(h)
@@ -554,7 +554,7 @@ We compute the cone of $L^\infty$-Delaunay data for the given Veering triangulat
 
 Each point in the cone corresponds to a geometric flat structure given as $(x_0, \ldots, x_8, y_0, \ldots, y_8)$ where $(x_i, y_i)$ is the holonomy of the $i$-th edge.
 
-The geometric structure is a polytope. Here the ambient dimension 18 corresponds to the fact that we have 9 edges (each edge has an $x$ and a $y$ coordinate.) The dimension 8 is the real dimension of the stratum ($\dim_\mathbb{C} H_2(2) = 4$.)
+The geometric structure is a polytope. Here the ambient dimension 18 corresponds to the fact that we have 9 edges (each edge has an $x$ and a $y$ coordinate). The dimension 8 is the real dimension of the stratum ($\dim_\mathbb{C} H_2(2) = 4$).
 
 ```{code-cell}
 geometric_structures = VT.geometric_polytope()
@@ -576,7 +576,7 @@ xy = rays[0] + rays[12] + rays[5] + 10 * rays[6] + rays[10] + rays[16]
 xy
 ```
 
-Construct the associated flat structure (note that x and y are inverted.)
+Construct the associated flat structure (note that x and y are inverted).
 
 ```{code-cell}
 flat_veering = VT._flat_structure_from_train_track_lengths(xy[9:], xy[:9])

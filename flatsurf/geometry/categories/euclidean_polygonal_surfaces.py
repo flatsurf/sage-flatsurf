@@ -50,7 +50,7 @@ from flatsurf.geometry.categories.surface_category import SurfaceCategory
 class EuclideanPolygonalSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing Euclidean polygons (or more
-    generally, polygons in two-dimensional real space.)
+    generally, polygons in two-dimensional real space).
 
     EXAMPLES::
 

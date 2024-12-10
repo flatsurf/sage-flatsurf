@@ -365,7 +365,7 @@ class Polygons(Category_over_base_ring):
                 tester.assertTrue("Simple" in self.category().axioms())
 
             # We do not test for Rational and WithAngles since these are only
-            # determined on demand (computing angles can be very costly.)
+            # determined on demand (computing angles can be very costly).
 
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""

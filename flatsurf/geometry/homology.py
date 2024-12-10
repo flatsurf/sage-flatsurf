@@ -584,7 +584,7 @@ class SimplicialHomologyGroup(Parent):
     def is_absolute(self):
         r"""
         Return whether this is absolute homology (and not relative to some set
-        of points.)
+        of points).
 
         EXAMPLES::
 
@@ -599,7 +599,7 @@ class SimplicialHomologyGroup(Parent):
 
     def some_elements(self):
         r"""
-        Return some typical homology classes (for testing.)
+        Return some typical homology classes (for testing).
 
         EXAMPLES::
 
@@ -800,7 +800,7 @@ class SimplicialHomologyGroup(Parent):
     def _chain_complex(self):
         r"""
         Return the chain complex of vector spaces that is implementing this
-        homology (if the ``"generic"`` implementation has been selected.)
+        homology (if the ``"generic"`` implementation has been selected).
 
         EXAMPLES::
 
@@ -860,7 +860,7 @@ class SimplicialHomologyGroup(Parent):
     def _homology(self):
         r"""
         Return the free module isomorphic to homology, a lift from that
-        module to the chain module, and an inverse (modulo boundaries.)
+        module to the chain module, and an inverse (modulo boundaries).
 
         EXAMPLES::
 
@@ -1429,7 +1429,7 @@ class SimplicialHomologyMorphismSpace(MorphismSpace):
 
     def identity(self):
         r"""
-        Return the identity homomorphism in this space (if it exists.)
+        Return the identity homomorphism in this space (if it exists).
 
         EXAMPLES::
 
@@ -1568,7 +1568,7 @@ class SimplicialHomologyMorphism_base(Morphism):
     def matrix(self):
         r"""
         Return the matrix describing this homomorphism on the generators of
-        homology (as a multiplication from the left.)
+        homology (as a multiplication from the left).
 
         EXAMPLES::
 

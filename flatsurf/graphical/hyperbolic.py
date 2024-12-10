@@ -942,7 +942,7 @@ class HyperbolicPathPlotCommand:
         Return a sequence of :class:`CartesianPathPlotCommand` that represent
         the closed boundary of a
         :class:`~flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon`, namely
-        the segment to ``end`` (from the previous position ``start``.)
+        the segment to ``end`` (from the previous position ``start``).
 
         This is a helper function for :meth:`cartesian`.
 

@@ -207,6 +207,6 @@ procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usUninstall then
   begin
-    MsgBox('Make sure to run the "Uninstall Virtual Machine" entry from the Start menu before uninstalling sage-flatsurf. Otherwise, there might be a leftover virtual machine in your %LOCALAPPDATA% directory (which you can delete safely.)', mbConfirmation, MB_OK);
+    MsgBox('Make sure to run the "Uninstall Virtual Machine" entry from the Start menu before uninstalling sage-flatsurf. Otherwise, there might be a leftover virtual machine in your %LOCALAPPDATA% directory (which you can delete safely).', mbConfirmation, MB_OK);
   end;
 end;

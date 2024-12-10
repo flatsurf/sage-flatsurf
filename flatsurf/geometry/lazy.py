@@ -1670,7 +1670,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         r"""
         Return the labels of the Delaunay triangles that form the Delaunay cell
         that contains the Delaunay triangle ``label``, together with the
-        exterior edges in that cell (in a counterclockwise order.)
+        exterior edges in that cell (in a counterclockwise order).
 
         EXAMPLES::
 

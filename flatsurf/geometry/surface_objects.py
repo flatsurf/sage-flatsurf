@@ -857,7 +857,7 @@ class SaddleConnection(SageObject):
                     )
 
             if traj.segments()[0].is_edge():
-                # Special case (The below method causes error if the trajectory is just an edge.)
+                # Special case (the method below fails if the trajectory is just an edge).
                 self._holonomy = self._surface.polygon(start_data[0]).edge(
                     start_data[1]
                 )
