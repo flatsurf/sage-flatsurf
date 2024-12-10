@@ -90,7 +90,7 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
 
         The underlying ``sage.misc.cachefunc.CachedMethodCaller`` is written in
         Cython and highly optimized. This method is much slower (by about 250ns
-        per call.) However, once the surface is immutable, this method is
+        per call). However, once the surface is immutable, this method is
         replaced with the underlying caching one, so the overhead is only paid
         once.
         """
@@ -114,7 +114,7 @@ class CachedSurfaceMethodCallerNoArgs(CachedMethodCallerNoArgs):
 
         The underlying ``sage.misc.cachefunc.CachedMethodCallerNoArgs`` is written in
         Cython and highly optimized. This method is much slower (by about 250ns
-        per call.) However, once the surface is immutable, this method is
+        per call). However, once the surface is immutable, this method is
         replaced with the underlying caching one, so the overhead is only paid
         once.
         """
@@ -145,7 +145,7 @@ class CachedSurfaceMethod(CachedMethod):
             if inst is not None and inst.is_mutable():
                 # If the surface is mutable, we replace the default cached caller
                 # with a caller that considers mutability (since the surface might
-                # later become immutable.)
+                # later become immutable).
                 if isinstance(caller, CachedMethodCallerNoArgs):
                     caller = CachedSurfaceMethodCallerNoArgs(
                         caller,

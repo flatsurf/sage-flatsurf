@@ -5,7 +5,7 @@ There should be no need to create such surfaces directly, not even for authors
 of sage-flatsurf. Instead just call
 :meth:`~flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf`
 on a surface which returns such a surface (or rather, a morphism to such a
-surface.)
+surface).
 
 EXAMPLES::
 

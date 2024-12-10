@@ -163,7 +163,7 @@ def acos(cos_angle, numerical=False):
 
     - ``numerical`` -- a boolean (default: ``False``); whether to return a
       numerical approximation of the arccosine or try to reconstruct an exact
-      rational value for the arccosine (in radians.)
+      rational value for the arccosine (in radians).
 
     EXAMPLES::
 
@@ -325,7 +325,7 @@ def ccw(v, w):
 def is_parallel(v, w):
     r"""
     Return whether the vectors ``v`` and ``w`` are parallel (but not
-    anti-parallel.)
+    anti-parallel).
 
     EXAMPLES::
 

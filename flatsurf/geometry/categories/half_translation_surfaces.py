@@ -2,8 +2,8 @@ r"""
 The category of half-translation surfaces.
 
 A half-translation surface is a surface built by gluing Euclidean polygons. The
-sides of the polygons can be glued with translations or half-translations
-(translation followed by a rotation of angle π.)
+sides of the polygons can be glued by translations or half-translations
+(rotations by angle π).
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -14,7 +14,7 @@ category is automatically determined for immutable surfaces.
 EXAMPLES:
 
 We glue all the sides of a square to themselves. Since each gluing is just a
-rotation of π, this is a half-translation surface::
+rotation by π, this is a half-translation surface::
 
     sage: from flatsurf import Polygon, similarity_surfaces
     sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
@@ -61,8 +61,7 @@ from sage.all import QQ, AA
 class HalfTranslationSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing (Euclidean) polygons with
-    translations and half-translations (translations followed by rotations
-    among an angle π.)
+    translations and half-translations (rotations by angle π).
 
     EXAMPLES::
 

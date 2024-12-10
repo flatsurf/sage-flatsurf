@@ -160,7 +160,7 @@ We can also intersect objects that are not half spaces::
     be expressed as the latter. The advantage of this approach is that we can
     provide a more natural user interface, e.g., a segment has a single
     underlying geodesic whereas the corresponding convex polygon would have
-    four (or three.) Similarly, an oriented geodesic (which cannot really be
+    four (or three). Similarly, an oriented geodesic (which cannot really be
     expressed as a convex polygon due to the orientation) has a left and a
     right associated half spaces.
 
@@ -506,7 +506,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         parent = sage.structure.element.parent(x)
         # pylint: enable=c-extension-no-member
 
-        # Note that in old versions of SageMath (9.1 e.g.), I is not a number field element but a symbolic ring element.
+        # Note that in old versions of SageMath (e.g. Sage 9.1), I
+        # is not a number field element but a symbolic ring element.
         # The "parent is SR" part can probably removed at some point.
         if isinstance(parent, Parent) and parent in NumberFields() or parent is SR:
             if (
@@ -578,7 +579,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def _an_element_(self):
         r"""
-        Return an element of the hyperbolic plane (mostly for testing.)
+        Return an element of the hyperbolic plane (mostly for testing).
 
         EXAMPLES::
 
@@ -2222,7 +2223,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         for the hacky Gröbner basis bit.
 
         There are a lot of problems with this approach (apart from it being
-        extremely slow.)
+        extremely slow).
 
         Usually, we do not have access to meaningful points (the ideal end
         points of a geodesic do not typically live in the :meth:`base_ring`) so
@@ -2639,7 +2640,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # points. For example, when presented with an unoriented geodesic, we
         # can map its endpoints two possible ways (apart from that, an isometry
         # can swap the end points of a geodesic but map an oriented geodesic to
-        # itself at the same time.) Similarly, when mapping a polygon, we can
+        # itself at the same time). Similarly, when mapping a polygon, we can
         # permute the edges cyclically.
 
         # We need a mild form of backtracking to collect all possible triples
@@ -4504,7 +4505,7 @@ class HyperbolicConvexSet(SageObject):
 
         A set of points, namely :class:`HyperbolicVertices`. Iteration of this
         set happens incounterclockwise order (as seen from the inside of the
-        convex set.)
+        convex set).
 
         EXAMPLES::
 
@@ -4647,7 +4648,7 @@ class HyperbolicConvexSet(SageObject):
         correspond to points outside the Klein disk.
 
         Note that it is normally not possible to create ultra ideal sets
-        (except for the actual empty set.) They only exist internally during
+        (except for the actual empty set). They only exist internally during
         geometric constructions in the Euclidean plane containing the Klein
         disk.
 
@@ -6624,7 +6625,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
     Note that due to this representation we can always compute intersection
     points of geodesics but we cannot always get the coordinates of the ideal
     end points of a geodesic (since we would have to take a square root to
-    solve for the points on the unit circle.)
+    solve for the points on the unit circle).
 
     It might be beneficial to store geodesics differently, see
     https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650
@@ -7352,7 +7353,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         transformation sending z to `-1/z` has the imaginary unit as its fixed
         point. For a half circle centered at the origin its point on the
         imaginary axis must be the fixed point (due to symmetry or a direct
-        computation.) All other geodesics, are just translated versions of
+        computation). All other geodesics, are just translated versions of
         these so we can just conjugate with a translation to determine the
         fixed point, i.e., the fixed point is a translate of one of the above.
 
@@ -7532,7 +7533,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             raise TypeError("point must be a point in the hyperbolic plane")
 
         if isinstance(point, HyperbolicPointFromGeodesic):
-            # Short cut the most common case (that intersection cannot handle.)
+            # Shortcut the most common case (that intersection cannot handle).
             if point._geodesic.unoriented() == self.unoriented():
                 return True
 
@@ -12716,7 +12717,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
     def __eq__(self, other):
         r"""
         Return whether this segment is indistinguishable from ``other`` (except
-        for scaling in the defining geodesic's equation.)
+        for scaling in the defining geodesic's equation).
 
         EXAMPLES::
 
@@ -13404,7 +13405,7 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
     def _test_an_element(self, **options):
         r"""
         Do not run tests on an element of this empty set (disabling the generic
-        tests run by all parents otherwise.)
+        tests run by all parents otherwise).
 
         EXAMPLES::
 
@@ -13417,7 +13418,7 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
     def _test_elements(self, **options):
         r"""
         Do not run any tests on the elements of this empty set (disabling the
-        generic tests run by all parents otherwise.)
+        generic tests run by all parents otherwise).
 
         EXAMPLES::
 
@@ -14086,7 +14087,7 @@ class HyperbolicVertices(OrderedSet):
     ALGORITHM:
 
     We keep vertices sorted in counterclockwise order relative to a fixed
-    reference vertex (the leftmost and bottommost in the Klein model.)
+    reference vertex (the leftmost and bottommost in the Klein model).
 
     EXAMPLES::
 
@@ -14181,7 +14182,7 @@ class HyperbolicVertices(OrderedSet):
         Return the merge of sorted lists of ``sets``.
 
         Note that this set itself is not part of the merge (but its reference
-        point is used.)
+        point is used).
 
         INPUT:
 

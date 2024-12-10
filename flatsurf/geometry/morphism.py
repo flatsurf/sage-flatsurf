@@ -20,7 +20,7 @@ Morphisms between Surfaces
     SageMath machinery work. The fundamental problem that we are facing is that
     our parents (surfaces) are not unique representations. However, surfaces do
     implement equality if they are indistinguishable (and this is a good idea
-    to make pickling work.) SageMath has the assumption that if S == T (which
+    to make pickling work). SageMath has the assumption that if S == T (which
     in SageMath normally implies S is T) that then Hom(S) is Hom(T). We could
     implement this, but then Hom(T).domain() is not T but S. Instead, we opted
     for tricking the coercion machinery into allowing our non-unique homsets.
@@ -523,7 +523,7 @@ class MorphismSpace(Homset):
 
     def _an_element_(self):
         r"""
-        Return a morphism in this set (for testing.)
+        Return a morphism in this set (for testing).
 
         EXAMPLES::
 
@@ -560,7 +560,7 @@ class MorphismSpace(Homset):
     def _structure_preserving(self):
         r"""
         Return whether morphisms in this space are preserving all structure
-        (that can be preserved.)
+        (that can be preserved).
 
         EXAMPLES::
 
@@ -953,7 +953,7 @@ class SurfaceMorphism(Morphism):
         This is a helper method for :meth:`_create_morphism`.
 
         Morphisms most override this method if they do not preserve structure
-        (of the join of the domain and codomain.)
+        (of the join of the domain and codomain).
 
         EXAMPLES::
 
@@ -1875,7 +1875,7 @@ class CompositionMorphism(SurfaceMorphism):
     def __init__(self, parent, lhs, rhs):
         super().__init__(parent)
 
-        # The morphisms as they are executed (in chronological order.)
+        # The morphisms as they are executed (in chronological order).
         self._morphisms = []
         for morphism in [rhs, lhs]:
             if isinstance(morphism, CompositionMorphism):

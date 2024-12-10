@@ -386,7 +386,7 @@ class SimilaritySurfaceTangentVector:
 
         On an infinite surface, this is potentially an infinite calculation
         so we impose a limit (representing the maximal number of polygons
-        that must be rotated through.) This is the variable rotate_limit
+        that must be rotated through). This is the variable rotate_limit
         in this package.
 
         If code is True, we compute the sequences of numbers associated to edges
@@ -397,8 +397,8 @@ class SimilaritySurfaceTangentVector:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: s=translation_surfaces.regular_octagon()
-            sage: v=s.tangent_vector(0,(0,0),(1,1))
+            sage: s = translation_surfaces.regular_octagon()
+            sage: v = s.tangent_vector(0, (0,0), (1,1))
             sage: v.clockwise_to((-1,-1))
             SimilaritySurfaceTangentVector in polygon 0 based at (0, a + 1) with vector (-1, -1)
             sage: v.clockwise_to((1,1))
@@ -465,7 +465,7 @@ class SimilaritySurfaceTangentVector:
 
         On an infinite surface, this is potentially an infinite calculation
         so we impose a limit (representing the maximal number of polygons
-        that must be rotated through.) This is the variable rotate_limit
+        that must be rotated through). This is the variable rotate_limit
         in this package.
 
         If code is True, we compute the sequences of numbers associated to edges

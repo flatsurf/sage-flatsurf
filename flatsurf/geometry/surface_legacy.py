@@ -178,7 +178,7 @@ class Surface(OrientedSimilaritySurface):
         # Previously, all surfaces were assumed to be connected and without
         # boundary (even though it was possible to construct non-connected
         # surfaces but only the base_label component was really functional
-        # then.)
+        # then).
         category &= SimilaritySurfaces().Oriented().WithoutBoundary().Connected()
 
         if finite:

@@ -889,7 +889,7 @@ def Polygon(
 
     - ``category`` -- a category or ``None`` (default: ``None``); the category
       the polygon will be in (further refined from the features of the polygon
-      that are found during the construction.)
+      that are found during the construction).
 
     - ``check`` -- a boolean (default: ``True``); whether to check the
       consistency of the parameters or blindly trust them. Setting this to
@@ -1337,12 +1337,12 @@ def _Polygon_complete_vertices(n, vertices, angles, choice):
     if len(vertices) == n - 1:
         # We do not use category.slopes() since the matrix formed by such
         # slopes might not be invertible (because exact-reals do not have a
-        # fraction field implemented.)
+        # fraction field implemented).
         slopes = EuclideanPolygonsWithAngles(angles).slopes()
 
         # We do not use solve_left() because the vertices might not live in
         # a ring that has a fraction field implemented (such as an
-        # exact-real ring.)
+        # exact-real ring).
         s, t = (vertices[0] - vertices[n - 2]) * matrix(
             [slopes[-1], slopes[n - 2]]
         ).inverse()

@@ -16,7 +16,7 @@ Installation
 ============
 
 The preferred way to install software should be to use your package manager
-(e.g. ``apt-get`` on Debian or Ubuntu, ``pacman`` on Arch Linux, ``brew`` on MacOS,
+(e.g. ``apt`` on Debian or Ubuntu, ``pacman`` on Arch Linux, ``brew`` on macOS,
 etc). However, as of this writing, sage-flatsurf has not been picked up by `any
 of the major distributions yet <https://repology.org/project/python:sage-flatsurf/packages>`_.
 

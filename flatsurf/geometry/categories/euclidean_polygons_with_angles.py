@@ -49,7 +49,7 @@ The category of polygons is automatically determined when using
     Category of convex simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
 However, it can be very costly to determine that a polygon is rational and what
-its actual angles are (the "equilateral" in the previous example.) Therefore,
+its actual angles are (the "equilateral" in the previous example). Therefore,
 the category might get refined once these aspects have been determined::
 
     sage: p = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)])
