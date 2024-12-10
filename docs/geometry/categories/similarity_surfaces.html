@@ -2059,7 +2059,7 @@ considerations.</p>
 <span class="sig-name descname"><span class="pre">is_dilation_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.ParentMethods.is_dilation_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is a dilation surface, i.e., whether
 glued edges can be transformed into each other by translation
-followed by a dilation (multiplication by a diagonal matrix.)</p>
+followed by a dilation (multiplication by a diagonal matrix).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This method is used to determine whether this surface is in the
@@ -2130,8 +2130,8 @@ considerations.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">positive</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>); whether the
 transformation must be a translation or is allowed to be a
-half-translation, i.e., a translation followed by a reflection in
-a point (equivalently, a rotation by π.)</p></li>
+half-translation, i.e., a reflection about a point (equivalently,
+a rotation by π).</p></li>
 </ul>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
@@ -2158,7 +2158,7 @@ a point (equivalently, a rotation by π.)</p></li>
 how its edges are glued.</p>
 <p>The result of this method can be fed to <code class="docutils literal notranslate"><span class="pre">_refine_category_</span></code> to
 change the category of the surface (and enable functionality
-specific to the smaller classes of surfaces.)</p>
+specific to the smaller classes of surfaces).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If a surface cannot implement the various <code class="docutils literal notranslate"><span class="pre">is_</span></code> methods used in

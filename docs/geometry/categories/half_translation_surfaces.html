@@ -354,15 +354,15 @@
 <span id="half-translation-surfaces"></span><h1><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code><a class="headerlink" href="#module-flatsurf.geometry.categories.half_translation_surfaces" title="Link to this heading">¶</a></h1>
 <p>The category of half-translation surfaces.</p>
 <p>A half-translation surface is a surface built by gluing Euclidean polygons. The
-sides of the polygons can be glued with translations or half-translations
-(translation followed by a rotation of angle π.)</p>
+sides of the polygons can be glued by translations or half-translations
+(rotations by angle π).</p>
 <p>See <a class="reference internal" href="../categories.html#module-flatsurf.geometry.categories" title="flatsurf.geometry.categories"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flatsurf.geometry.categories</span></code></a> for a general description of the
 category framework in sage-flatsurf.</p>
 <p>Normally, you won’t create this (or any other) category directly. The correct
 category is automatically determined for immutable surfaces.</p>
 <p>EXAMPLES:</p>
 <p>We glue all the sides of a square to themselves. Since each gluing is just a
-rotation of π, this is a half-translation surface:</p>
+rotation by π, this is a half-translation surface:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
@@ -379,8 +379,7 @@ rotation of π, this is a half-translation surface:</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.categories.half_translation_surfaces.</span></span><span class="sig-name descname"><span class="pre">HalfTranslationSurfaces</span></span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/half_translation_surfaces.html#HalfTranslationSurfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces" title="Link to this definition">¶</a></dt>
 <dd><p>The category of surfaces built by gluing (Euclidean) polygons with
-translations and half-translations (translations followed by rotations
-among an angle π.)</p>
+translations and half-translations (rotations by angle π).</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">HalfTranslationSurfaces</span><span class="p">()</span>

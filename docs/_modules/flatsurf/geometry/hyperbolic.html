@@ -506,7 +506,7 @@
 <span class="sd">    be expressed as the latter. The advantage of this approach is that we can</span>
 <span class="sd">    provide a more natural user interface, e.g., a segment has a single</span>
 <span class="sd">    underlying geodesic whereas the corresponding convex polygon would have</span>
-<span class="sd">    four (or three.) Similarly, an oriented geodesic (which cannot really be</span>
+<span class="sd">    four (or three). Similarly, an oriented geodesic (which cannot really be</span>
 <span class="sd">    expressed as a convex polygon due to the orientation) has a left and a</span>
 <span class="sd">    right associated half spaces.</span>
 
@@ -862,7 +862,8 @@
         <span class="n">parent</span> <span class="o">=</span> <span class="n">sage</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="c1"># pylint: enable=c-extension-no-member</span>
 
-        <span class="c1"># Note that in old versions of SageMath (9.1 e.g.), I is not a number field element but a symbolic ring element.</span>
+        <span class="c1"># Note that in old versions of SageMath (e.g. Sage 9.1), I</span>
+        <span class="c1"># is not a number field element but a symbolic ring element.</span>
         <span class="c1"># The &quot;parent is SR&quot; part can probably removed at some point.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">Parent</span><span class="p">)</span> <span class="ow">and</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">NumberFields</span><span class="p">()</span> <span class="ow">or</span> <span class="n">parent</span> <span class="ow">is</span> <span class="n">SR</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
@@ -938,7 +939,7 @@
 
     <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return an element of the hyperbolic plane (mostly for testing.)</span>
+<span class="sd">        Return an element of the hyperbolic plane (mostly for testing).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -2644,7 +2645,7 @@
 <span class="sd">        for the hacky Gröbner basis bit.</span>
 
 <span class="sd">        There are a lot of problems with this approach (apart from it being</span>
-<span class="sd">        extremely slow.)</span>
+<span class="sd">        extremely slow).</span>
 
 <span class="sd">        Usually, we do not have access to meaningful points (the ideal end</span>
 <span class="sd">        points of a geodesic do not typically live in the :meth:`base_ring`) so</span>
@@ -3061,7 +3062,7 @@
         <span class="c1"># points. For example, when presented with an unoriented geodesic, we</span>
         <span class="c1"># can map its endpoints two possible ways (apart from that, an isometry</span>
         <span class="c1"># can swap the end points of a geodesic but map an oriented geodesic to</span>
-        <span class="c1"># itself at the same time.) Similarly, when mapping a polygon, we can</span>
+        <span class="c1"># itself at the same time). Similarly, when mapping a polygon, we can</span>
         <span class="c1"># permute the edges cyclically.</span>
 
         <span class="c1"># We need a mild form of backtracking to collect all possible triples</span>
@@ -5019,7 +5020,7 @@
 
 <span class="sd">        A set of points, namely :class:`HyperbolicVertices`. Iteration of this</span>
 <span class="sd">        set happens incounterclockwise order (as seen from the inside of the</span>
-<span class="sd">        convex set.)</span>
+<span class="sd">        convex set).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -5171,7 +5172,7 @@
 <span class="sd">        correspond to points outside the Klein disk.</span>
 
 <span class="sd">        Note that it is normally not possible to create ultra ideal sets</span>
-<span class="sd">        (except for the actual empty set.) They only exist internally during</span>
+<span class="sd">        (except for the actual empty set). They only exist internally during</span>
 <span class="sd">        geometric constructions in the Euclidean plane containing the Klein</span>
 <span class="sd">        disk.</span>
 
@@ -7257,7 +7258,7 @@
 <span class="sd">    Note that due to this representation we can always compute intersection</span>
 <span class="sd">    points of geodesics but we cannot always get the coordinates of the ideal</span>
 <span class="sd">    end points of a geodesic (since we would have to take a square root to</span>
-<span class="sd">    solve for the points on the unit circle.)</span>
+<span class="sd">    solve for the points on the unit circle).</span>
 
 <span class="sd">    It might be beneficial to store geodesics differently, see</span>
 <span class="sd">    https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650</span>
@@ -8011,7 +8012,7 @@
 <span class="sd">        transformation sending z to `-1/z` has the imaginary unit as its fixed</span>
 <span class="sd">        point. For a half circle centered at the origin its point on the</span>
 <span class="sd">        imaginary axis must be the fixed point (due to symmetry or a direct</span>
-<span class="sd">        computation.) All other geodesics, are just translated versions of</span>
+<span class="sd">        computation). All other geodesics, are just translated versions of</span>
 <span class="sd">        these so we can just conjugate with a translation to determine the</span>
 <span class="sd">        fixed point, i.e., the fixed point is a translate of one of the above.</span>
 
@@ -8203,7 +8204,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;point must be a point in the hyperbolic plane&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">HyperbolicPointFromGeodesic</span><span class="p">):</span>
-            <span class="c1"># Short cut the most common case (that intersection cannot handle.)</span>
+            <span class="c1"># Shortcut the most common case (that intersection cannot handle).</span>
             <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">_geodesic</span><span class="o">.</span><span class="n">unoriented</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoriented</span><span class="p">():</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
@@ -13591,7 +13592,7 @@
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this segment is indistinguishable from ``other`` (except</span>
-<span class="sd">        for scaling in the defining geodesic&#39;s equation.)</span>
+<span class="sd">        for scaling in the defining geodesic&#39;s equation).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -14340,7 +14341,7 @@
     <span class="k">def</span> <span class="nf">_test_an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not run tests on an element of this empty set (disabling the generic</span>
-<span class="sd">        tests run by all parents otherwise.)</span>
+<span class="sd">        tests run by all parents otherwise).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -14353,7 +14354,7 @@
     <span class="k">def</span> <span class="nf">_test_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not run any tests on the elements of this empty set (disabling the</span>
-<span class="sd">        generic tests run by all parents otherwise.)</span>
+<span class="sd">        generic tests run by all parents otherwise).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -15091,7 +15092,7 @@
 <span class="sd">    ALGORITHM:</span>
 
 <span class="sd">    We keep vertices sorted in counterclockwise order relative to a fixed</span>
-<span class="sd">    reference vertex (the leftmost and bottommost in the Klein model.)</span>
+<span class="sd">    reference vertex (the leftmost and bottommost in the Klein model).</span>
 
 <span class="sd">    EXAMPLES::</span>
 
@@ -15191,7 +15192,7 @@
 <span class="sd">        Return the merge of sorted lists of ``sets``.</span>
 
 <span class="sd">        Note that this set itself is not part of the merge (but its reference</span>
-<span class="sd">        point is used.)</span>
+<span class="sd">        point is used).</span>
 
 <span class="sd">        INPUT:</span>
 

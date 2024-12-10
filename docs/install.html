@@ -373,7 +373,7 @@ installation instructions.</p>
 <p>This will download the latest pixi tarball from our <a class="reference external" href="https://github.com/flatsurf/sage-flatsurf/releases/">Releases Page</a> and extract it into a
 subdirectory of the directory where you opened the terminal.</p>
 <p>Due to conda limitations <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, this only works if the current directory does not
-contain any spaces. Run <span class="math notranslate nohighlight">\(pwd\)</span> to double check that your absolute path is free
+contain any spaces. Run <code class="docutils literal notranslate"><span class="pre">pwd</span></code> to double check that your absolute path is free
 of whitespace.</p>
 <p>The entire installation of sage-flatsurf and its dependencies are going to
 reside in this subdirectory. This is not making any changes to your system. If
@@ -390,7 +390,7 @@ launch sage-flatsurf in the terminal, run:</p>
 </div>
 <p>The first time you run either of these commands, the installer downloads a copy
 of SageMath and some other dependencies (in total this is going to use about
-7GB of disk space.) In particular on macOS this can take a very long time on
+7GB of disk space). In particular on macOS this can take a very long time on
 the first launch (probably due to security measures in the operating system),
 please be patient.</p>
 <p>When a new version of sage-flatsurf is released and you want to upgrade, just
@@ -410,14 +410,14 @@ normally. The installer is going to configure your system to be able to run
 ask for administrator privileges to install the necessary dependencies on your
 system and a reboot might be required during the installation process.</p>
 <p>Upon first launch of sage-flatsurf from your Start menu, a virtual machine
-running Ubuntu is created in your <span class="math notranslate nohighlight">\(%LOCALAPPDATA%\)</span>. This machine won’t
+running Ubuntu is created in your <code class="docutils literal notranslate"><span class="pre">%LOCALAPPDATA%</span></code>. This machine won’t
 interfere with any other WSL machines you might have set up on your system.</p>
 <p>This Ubuntu system is then going to download all the dependencies of
-sage-flatsurf (about 7GB once extracted.) The first time, this might take some
+sage-flatsurf (about 7GB once extracted). The first time, this might take some
 time, please be patient.</p>
 <p>To remove sage-flatsurf again, please use the provided “Uninstall Virtual
 Machine” link from your Start menu, or just delete the sage-flatsurf directory
-from <span class="math notranslate nohighlight">\(%LOCALAPPDATA\)</span>.</p>
+from <code class="docutils literal notranslate"><span class="pre">%LOCALAPPDATA%</span></code>.</p>
 <p>When a new version of sage-flatsurf is released and you want to upgrade, just
 download the latest installer and run it. The two versions of sage-flatsurf do
 not interfere with each other. If you do not need the old version of
@@ -554,7 +554,5 @@ work around this limitation.</p>
     <script src="_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "dist": "\\mathrm{dist}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

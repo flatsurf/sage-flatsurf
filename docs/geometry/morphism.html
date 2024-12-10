@@ -371,7 +371,7 @@ topological space but just meaningful in some other context.</p>
 SageMath machinery work. The fundamental problem that we are facing is that
 our parents (surfaces) are not unique representations. However, surfaces do
 implement equality if they are indistinguishable (and this is a good idea
-to make pickling work.) SageMath has the assumption that if S == T (which
+to make pickling work). SageMath has the assumption that if S == T (which
 in SageMath normally implies S is T) that then Hom(S) is Hom(T). We could
 implement this, but then Hom(T).domain() is not T but S. Instead, we opted
 for tricking the coercion machinery into allowing our non-unique homsets.

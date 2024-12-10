@@ -441,7 +441,7 @@
 
 <span class="sd">        The underlying ``sage.misc.cachefunc.CachedMethodCaller`` is written in</span>
 <span class="sd">        Cython and highly optimized. This method is much slower (by about 250ns</span>
-<span class="sd">        per call.) However, once the surface is immutable, this method is</span>
+<span class="sd">        per call). However, once the surface is immutable, this method is</span>
 <span class="sd">        replaced with the underlying caching one, so the overhead is only paid</span>
 <span class="sd">        once.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -468,7 +468,7 @@
 
 <span class="sd">        The underlying ``sage.misc.cachefunc.CachedMethodCallerNoArgs`` is written in</span>
 <span class="sd">        Cython and highly optimized. This method is much slower (by about 250ns</span>
-<span class="sd">        per call.) However, once the surface is immutable, this method is</span>
+<span class="sd">        per call). However, once the surface is immutable, this method is</span>
 <span class="sd">        replaced with the underlying caching one, so the overhead is only paid</span>
 <span class="sd">        once.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -502,7 +502,7 @@
             <span class="k">if</span> <span class="n">inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">inst</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
                 <span class="c1"># If the surface is mutable, we replace the default cached caller</span>
                 <span class="c1"># with a caller that considers mutability (since the surface might</span>
-                <span class="c1"># later become immutable.)</span>
+                <span class="c1"># later become immutable).</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">CachedMethodCallerNoArgs</span><span class="p">):</span>
                     <span class="n">caller</span> <span class="o">=</span> <span class="n">CachedSurfaceMethodCallerNoArgs</span><span class="p">(</span>
                         <span class="n">caller</span><span class="p">,</span>

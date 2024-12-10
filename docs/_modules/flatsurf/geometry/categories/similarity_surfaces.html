@@ -528,7 +528,7 @@
 
 <span class="sd">            The result of this method can be fed to ``_refine_category_`` to</span>
 <span class="sd">            change the category of the surface (and enable functionality</span>
-<span class="sd">            specific to the smaller classes of surfaces.)</span>
+<span class="sd">            specific to the smaller classes of surfaces).</span>
 
 
 <span class="sd">            .. NOTE::</span>
@@ -642,7 +642,7 @@
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a dilation surface, i.e., whether</span>
 <span class="sd">            glued edges can be transformed into each other by translation</span>
-<span class="sd">            followed by a dilation (multiplication by a diagonal matrix.)</span>
+<span class="sd">            followed by a dilation (multiplication by a diagonal matrix).</span>
 
 <span class="sd">            .. NOTE::</span>
 
@@ -703,8 +703,8 @@
 
 <span class="sd">            - ``positive`` -- a boolean (default: ``True``); whether the</span>
 <span class="sd">              transformation must be a translation or is allowed to be a</span>
-<span class="sd">              half-translation, i.e., a translation followed by a reflection in</span>
-<span class="sd">              a point (equivalently, a rotation by π.)</span>
+<span class="sd">              half-translation, i.e., a reflection about a point (equivalently,</span>
+<span class="sd">              a rotation by π).</span>
 
 <span class="sd">            EXAMPLES::</span>
 
@@ -1251,7 +1251,7 @@
                     <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span><span class="p">,</span> <span class="n">is_parallel</span>
 
                     <span class="c1"># This is a vertex at a concave vertex of a polygon (with</span>
-                    <span class="c1"># angle &lt;2π.) So at least one π turn must have happened.</span>
+                    <span class="c1"># angle &lt; 2π). So at least one π turn must have happened.</span>
                     <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">previous</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">half_turns</span> <span class="o">+=</span> <span class="mi">1</span>
 

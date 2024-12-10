@@ -495,7 +495,7 @@ that of w.</p>
 <p>The vector w must be nonzero.</p>
 <p>On an infinite surface, this is potentially an infinite calculation
 so we impose a limit (representing the maximal number of polygons
-that must be rotated through.) This is the variable rotate_limit
+that must be rotated through). This is the variable rotate_limit
 in this package.</p>
 <p>If code is True, we compute the sequences of numbers associated to edges
 crossed as a list. We return a pair consisting of the newly computing
@@ -503,8 +503,8 @@ tangent vector an this code. This is currently only implemented when
 based at a singularity.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">v</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">clockwise_to</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">0</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">clockwise_to</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
@@ -526,7 +526,7 @@ that of w.</p>
 <p>The vector w must be nonzero.</p>
 <p>On an infinite surface, this is potentially an infinite calculation
 so we impose a limit (representing the maximal number of polygons
-that must be rotated through.) This is the variable rotate_limit
+that must be rotated through). This is the variable rotate_limit
 in this package.</p>
 <p>If code is True, we compute the sequences of numbers associated to edges
 crossed as a list. We return a pair consisting of the newly computing

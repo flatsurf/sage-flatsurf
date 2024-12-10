@@ -522,7 +522,7 @@
     <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that this surface has been refined to its best possible</span>
-<span class="sd">        subcategory (that can be computed cheaply.)</span>
+<span class="sd">        subcategory (that can be computed cheaply).</span>
 
 <span class="sd">        We override this method here to disable this check for mutable</span>
 <span class="sd">        surfaces. Mutable surfaces have not been refined yet since changes in</span>
@@ -644,7 +644,7 @@
     <span class="k">def</span> <span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove the polygon with label ``label`` from this surface (and all data</span>
-<span class="sd">        associated to it.)</span>
+<span class="sd">        associated to it).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -2100,7 +2100,7 @@
 <span class="sd">        - ``label`` -- one of the labels included in :meth:`~.MutablePolygonalSurface.labels`</span>
 
 <span class="sd">        - ``edge`` -- a non-negative integer to specify an edge (the edges</span>
-<span class="sd">          of a polygon are numbered starting from zero.)</span>
+<span class="sd">          of a polygon are numbered starting from zero).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -3068,7 +3068,7 @@
 <span class="sd">    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is</span>
 <span class="sd">      a finite set; if ``None``, it is not known whether the set is finite</span>
 <span class="sd">      (some operations might not be supported in that case or not terminate if</span>
-<span class="sd">      the set is actually infinite.)</span>
+<span class="sd">      the set is actually infinite).</span>
 
 <span class="sd">    EXAMPLES::</span>
 
@@ -3221,7 +3221,7 @@
 <span class="sd">    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is</span>
 <span class="sd">      a finite set; if ``None``, it is not known whether the set is finite</span>
 <span class="sd">      (some operations might not be supported in that case or not terminate if</span>
-<span class="sd">      the set is actually infinite.)</span>
+<span class="sd">      the set is actually infinite).</span>
 
 <span class="sd">    EXAMPLES::</span>
 
@@ -3338,7 +3338,7 @@
 <span class="sd">    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is</span>
 <span class="sd">      a finite component; if ``None``, it is not known whether the component is</span>
 <span class="sd">      finite (some operations might not be supported in that case or not</span>
-<span class="sd">      terminate if the component is actually infinite.)</span>
+<span class="sd">      terminate if the component is actually infinite).</span>
 
 <span class="sd">    EXAMPLES::</span>
 
@@ -3410,7 +3410,7 @@
 
 <span class="sd">        This implementation makes no assumption on the surface and can be very</span>
 <span class="sd">        slow to answer, e.g., containment or compute the number of labels in</span>
-<span class="sd">        the surface (because it needs to iterate over the entire surface.)</span>
+<span class="sd">        the surface (because it needs to iterate over the entire surface).</span>
 
 <span class="sd">        When possible, a faster implementation should be used such as</span>
 <span class="sd">        :class:`LabelsFromView`.</span>
@@ -3594,7 +3594,7 @@
 <div class="viewcode-block" id="Polygons_MutableOrientedSimilaritySurface.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Polygons_MutableOrientedSimilaritySurface.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
-        <span class="c1"># This hack makes __len__ 20% faster (it saves one attribute lookup.)</span>
+        <span class="c1"># This hack makes __len__ 20% faster (it saves one attribute lookup).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">_polygons</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span></div>
 

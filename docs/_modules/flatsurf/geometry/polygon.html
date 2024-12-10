@@ -1318,7 +1318,7 @@
 
 <span class="sd">    - ``category`` -- a category or ``None`` (default: ``None``); the category</span>
 <span class="sd">      the polygon will be in (further refined from the features of the polygon</span>
-<span class="sd">      that are found during the construction.)</span>
+<span class="sd">      that are found during the construction).</span>
 
 <span class="sd">    - ``check`` -- a boolean (default: ``True``); whether to check the</span>
 <span class="sd">      consistency of the parameters or blindly trust them. Setting this to</span>
@@ -1767,12 +1767,12 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># We do not use category.slopes() since the matrix formed by such</span>
         <span class="c1"># slopes might not be invertible (because exact-reals do not have a</span>
-        <span class="c1"># fraction field implemented.)</span>
+        <span class="c1"># fraction field implemented).</span>
         <span class="n">slopes</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span><span class="o">.</span><span class="n">slopes</span><span class="p">()</span>
 
         <span class="c1"># We do not use solve_left() because the vertices might not live in</span>
         <span class="c1"># a ring that has a fraction field implemented (such as an</span>
-        <span class="c1"># exact-real ring.)</span>
+        <span class="c1"># exact-real ring).</span>
         <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="n">matrix</span><span class="p">(</span>
             <span class="p">[</span><span class="n">slopes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">slopes</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]]</span>
         <span class="p">)</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span>

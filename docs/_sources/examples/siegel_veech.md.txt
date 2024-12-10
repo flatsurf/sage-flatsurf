@@ -41,7 +41,7 @@ S = S.pyflatsurf().codomain().flat_triangulation()
 S = S.eliminateMarkedPoints().surface()
 ```
 
-We will iterate over all directions coming from saddle connections of length at most L (ignoring connections that have the same slope.)
+We will iterate over all directions coming from saddle connections of length at most L (ignoring connections that have the same slope).
 
 ```{code-cell}
 L = int(16)
@@ -69,10 +69,8 @@ def target(component):
     # general rings…)
     from pyflatsurf import flatsurf
 
-    bound = (height * height) / flatsurf.Bound.upper(
-        component.vertical().vertical()
-    ).squared()
-    return bound > L
+    denom = flatsurf.Bound.upper(component.vertical().vertical()).squared()
+    return (height * height) / denom > L
 ```
 
 Now we perform the actual decomposition and collect the cylinders of circumference $≤L$:
@@ -93,7 +91,7 @@ for direction in directions:
             circumferences.append(circumference)
 ```
 
-We will plot a histogram of all the cylinders that we found ordered by their length. It would be easy to plot this differently, weighted by the area, …
+We plot a histogram of all the cylinders we found, ordered by length. It would be easy to plot this differently, weighted by the area, …
 
 ```{code-cell}
 lengths = [sqrt(float(v.x()) ** 2 + float(v.y()) ** 2) for v in circumferences]

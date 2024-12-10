@@ -366,7 +366,7 @@
 <span class="sd">    SageMath machinery work. The fundamental problem that we are facing is that</span>
 <span class="sd">    our parents (surfaces) are not unique representations. However, surfaces do</span>
 <span class="sd">    implement equality if they are indistinguishable (and this is a good idea</span>
-<span class="sd">    to make pickling work.) SageMath has the assumption that if S == T (which</span>
+<span class="sd">    to make pickling work). SageMath has the assumption that if S == T (which</span>
 <span class="sd">    in SageMath normally implies S is T) that then Hom(S) is Hom(T). We could</span>
 <span class="sd">    implement this, but then Hom(T).domain() is not T but S. Instead, we opted</span>
 <span class="sd">    for tricking the coercion machinery into allowing our non-unique homsets.</span>
@@ -904,7 +904,7 @@
 
     <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a morphism in this set (for testing.)</span>
+<span class="sd">        Return a morphism in this set (for testing).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -944,7 +944,7 @@
     <span class="k">def</span> <span class="nf">_structure_preserving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether morphisms in this space are preserving all structure</span>
-<span class="sd">        (that can be preserved.)</span>
+<span class="sd">        (that can be preserved).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -1361,7 +1361,7 @@
 <span class="sd">        This is a helper method for :meth:`_create_morphism`.</span>
 
 <span class="sd">        Morphisms most override this method if they do not preserve structure</span>
-<span class="sd">        (of the join of the domain and codomain.)</span>
+<span class="sd">        (of the join of the domain and codomain).</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -2318,7 +2318,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
-        <span class="c1"># The morphisms as they are executed (in chronological order.)</span>
+        <span class="c1"># The morphisms as they are executed (in chronological order).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_morphisms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">morphism</span> <span class="ow">in</span> <span class="p">[</span><span class="n">rhs</span><span class="p">,</span> <span class="n">lhs</span><span class="p">]:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">morphism</span><span class="p">,</span> <span class="n">CompositionMorphism</span><span class="p">):</span>

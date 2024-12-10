@@ -507,7 +507,7 @@ example a <a class="reference internal" href="#flatsurf.geometry.hyperbolic.Hype
 be expressed as the latter. The advantage of this approach is that we can
 provide a more natural user interface, e.g., a segment has a single
 underlying geodesic whereas the corresponding convex polygon would have
-four (or three.) Similarly, an oriented geodesic (which cannot really be
+four (or three). Similarly, an oriented geodesic (which cannot really be
 expressed as a convex polygon due to the orientation) has a left and a
 right associated half spaces.</p>
 <p>Sometimes it can, however, be beneficial to treat each subset as a convex
@@ -2502,7 +2502,7 @@ point</p>
 <dd><p>Return whether all points in this set are ultra-ideal, i.e., the
 correspond to points outside the Klein disk.</p>
 <p>Note that it is normally not possible to create ultra ideal sets
-(except for the actual empty set.) They only exist internally during
+(except for the actual empty set). They only exist internally during
 geometric constructions in the Euclidean plane containing the Klein
 disk.</p>
 <p>EXAMPLES:</p>
@@ -2619,7 +2619,7 @@ set.</p></li>
 <p>OUTPUT:</p>
 <p>A set of points, namely <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicVertices" title="flatsurf.geometry.hyperbolic.HyperbolicVertices"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicVertices</span></code></a>. Iteration of this
 set happens incounterclockwise order (as seen from the inside of the
-convex set.)</p>
+convex set).</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
@@ -3199,7 +3199,7 @@ and <a class="reference internal" href="#flatsurf.geometry.hyperbolic.Hyperbolic
 <p>Note that due to this representation we can always compute intersection
 points of geodesics but we cannot always get the coordinates of the ideal
 end points of a geodesic (since we would have to take a square root to
-solve for the points on the unit circle.)</p>
+solve for the points on the unit circle).</p>
 <p>It might be beneficial to store geodesics differently, see
 <a class="reference external" href="https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650">https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650</a>
 for a discussion.</p>
@@ -3680,7 +3680,7 @@ that interchanges the ideal endpoints of this geodesic.</p>
 transformation sending z to <span class="math notranslate nohighlight">\(-1/z\)</span> has the imaginary unit as its fixed
 point. For a half circle centered at the origin its point on the
 imaginary axis must be the fixed point (due to symmetry or a direct
-computation.) All other geodesics, are just translated versions of
+computation). All other geodesics, are just translated versions of
 these so we can just conjugate with a translation to determine the
 fixed point, i.e., the fixed point is a translate of one of the above.</p>
 <p>EXAMPLES:</p>
@@ -6124,7 +6124,7 @@ and determine the unique isometry mapping the points by solving the
 corresponding polynomial system, see <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_from_equations" title="flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_from_equations"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_isometry_from_equations()</span></code></a>
 for the hacky Gröbner basis bit.</p>
 <p>There are a lot of problems with this approach (apart from it being
-extremely slow.)</p>
+extremely slow).</p>
 <p>Usually, we do not have access to meaningful points (the ideal end
 points of a geodesic do not typically live in the <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicPlane.base_ring" title="flatsurf.geometry.hyperbolic.HyperbolicPlane.base_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code></a>) so
 we have to map around geodesics instead. However, given two pairs of
@@ -7640,7 +7640,7 @@ to create segments.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.hyperbolic.HyperbolicSegment.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicSegment.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicSegment.__eq__" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this segment is indistinguishable from <code class="docutils literal notranslate"><span class="pre">other</span></code> (except
-for scaling in the defining geodesic’s equation.)</p>
+for scaling in the defining geodesic’s equation).</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicSegment</span>
@@ -8164,7 +8164,7 @@ modulo a cyclic permutation.</p></li>
 </ul>
 <p>ALGORITHM:</p>
 <p>We keep vertices sorted in counterclockwise order relative to a fixed
-reference vertex (the leftmost and bottommost in the Klein model.)</p>
+reference vertex (the leftmost and bottommost in the Klein model).</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import HyperbolicPlane
 sage: H = HyperbolicPlane()
@@ -8232,7 +8232,7 @@ Klein model:</p>
 <span class="sig-name descname"><span class="pre">_merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">sets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicVertices._merge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicVertices._merge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the merge of sorted lists of <code class="docutils literal notranslate"><span class="pre">sets</span></code>.</p>
 <p>Note that this set itself is not part of the merge (but its reference
-point is used.)</p>
+point is used).</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">sets</span></code> – iterables that are sorted with respect to <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicVertices._lt_" title="flatsurf.geometry.hyperbolic.HyperbolicVertices._lt_"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_lt_()</span></code></a>.</p></li>

@@ -1247,7 +1247,7 @@
                     <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_edge</span><span class="p">():</span>
-                <span class="c1"># Special case (The below method causes error if the trajectory is just an edge.)</span>
+                <span class="c1"># Special case (the method below fails if the trajectory is just an edge).</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">start_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span>
                     <span class="n">start_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="p">)</span>
