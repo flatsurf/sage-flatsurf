@@ -28,7 +28,7 @@ This will download the latest pixi tarball from our `Releases Page
 subdirectory of the directory where you opened the terminal.
 
 Due to conda limitations [1]_, this only works if the current directory does not
-contain any spaces. Run `pwd` to double check that your absolute path is free
+contain any spaces. Run ``pwd`` to double check that your absolute path is free
 of whitespace.
 
 The entire installation of sage-flatsurf and its dependencies are going to
@@ -47,7 +47,7 @@ To launch a browser with Jupyter Lab instead, run::
 
 The first time you run either of these commands, the installer downloads a copy
 of SageMath and some other dependencies (in total this is going to use about
-7GB of disk space.) In particular on macOS this can take a very long time on
+7GB of disk space). In particular on macOS this can take a very long time on
 the first launch (probably due to security measures in the operating system),
 please be patient.
 
@@ -76,16 +76,16 @@ ask for administrator privileges to install the necessary dependencies on your
 system and a reboot might be required during the installation process.
 
 Upon first launch of sage-flatsurf from your Start menu, a virtual machine
-running Ubuntu is created in your `%LOCALAPPDATA%`. This machine won't
+running Ubuntu is created in your ``%LOCALAPPDATA%``. This machine won't
 interfere with any other WSL machines you might have set up on your system.
 
 This Ubuntu system is then going to download all the dependencies of
-sage-flatsurf (about 7GB once extracted.) The first time, this might take some
+sage-flatsurf (about 7GB once extracted). The first time, this might take some
 time, please be patient.
 
 To remove sage-flatsurf again, please use the provided "Uninstall Virtual
 Machine" link from your Start menu, or just delete the sage-flatsurf directory
-from `%LOCALAPPDATA`.
+from ``%LOCALAPPDATA%``.
 
 When a new version of sage-flatsurf is released and you want to upgrade, just
 download the latest installer and run it. The two versions of sage-flatsurf do

@@ -24,7 +24,7 @@ installation guide if it is not available on your system yet.
 
 ## Building the Surface and Orbit Closure
 
-We consider the following half-translation surface
+Consider the following half-translation surface:
 
     +---5---+
     |       |
@@ -78,7 +78,7 @@ def apisa_wright_surface(h24, h3, l15, l6, l7, l8):
     return S
 ```
 
-We use some simple parameters:
+Use some simple parameters:
 
 ```{code-cell}
 K = QuadraticField(2)
@@ -91,14 +91,14 @@ S.plot(edge_labels=False)
 S
 ```
 
-Now build the canonical double cover and orbit closure:
+Build the canonical double cover:
 
 ```{code-cell}
 U = S.minimal_cover("translation")
 U.stratum()
 ```
 
-Now build the orbit closure. The snippet below explores saddle connection up to
+Now build the orbit closure. The snippet below explores saddle connections up to
 length 16 looking for cylinders. Each decomposition into cylinders and minimal
 components provides a new tangent direction in the `GL(2,R)`-orbit closure of
 the surface via A. Wright's cylinder deformation.
@@ -120,7 +120,7 @@ for i, dec in enumerate(O.decompositions(16, bfs=True)):  # optional: pyflatsurf
     new_dim = O.dimension()
     if old_dim != new_dim:
         holonomies = [cyl.circumferenceHolonomy() for cyl in dec.cylinders()]
-        # .area() as reported by liblatsurf is actually twice the area
+        # .area() as reported by libflatsurf is actually twice the area
         areas = [cyl.area() / 2 for cyl in dec.cylinders()]
         moduli = [
             (v.x() * v.x() + v.y() * v.y()) / area for v, area in zip(holonomies, areas)

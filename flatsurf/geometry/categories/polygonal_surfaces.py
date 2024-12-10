@@ -3,7 +3,7 @@ The category of surfaces built from polygons.
 
 This module provides shared functionality for all surfaces in sage-flatsurf
 that are built from polygons (such as Euclidean polygons or hyperbolic
-polygons.)
+polygons).
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -53,7 +53,7 @@ class PolygonalSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing polygons defined in some space
     such as the real plane (see
-    :mod:`~flatsurf.geometry.categories.euclidean_polygonal_surfaces`.)
+    :mod:`~flatsurf.geometry.categories.euclidean_polygonal_surfaces`).
 
     EXAMPLES::
 
@@ -386,7 +386,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S.num_polygons()
                 doctest:warning
                 ...
-                UserWarning: num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces.)
+                UserWarning: num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces).
                 1
                 sage: len(S.polygons())
                 1
@@ -404,7 +404,7 @@ class PolygonalSurfaces(SurfaceCategory):
             import warnings
 
             warnings.warn(
-                "num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces.)"
+                "num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces)."
             )
 
             # Note that using len(self.polygons()) on
@@ -567,7 +567,7 @@ class PolygonalSurfaces(SurfaceCategory):
             index) and (glued polygon label, glued edge index).
 
             Note that each gluing is reported twice (unless it is a
-            self-gluing.)
+            self-gluing).
 
             EXAMPLES::
 
@@ -645,7 +645,7 @@ class PolygonalSurfaces(SurfaceCategory):
             - ``label`` -- one of the labels included in :meth:`labels`
 
             - ``edge`` -- a non-negative integer to specify an edge (the edges
-              of a polygon are numbered starting from zero.)
+              of a polygon are numbered starting from zero).
 
             OUTPUT:
 
@@ -1136,7 +1136,7 @@ class PolygonalSurfaces(SurfaceCategory):
             The axiom satisfied by orientable surfaces with an orientation
             which is compatible with the orientation of the ambient space of
             the finitely many polygons that define the surface (assuming that
-            that ambient space is orientable.)
+            that ambient space is orientable).
 
             EXAMPLES::
 
@@ -1362,7 +1362,7 @@ class PolygonalSurfaces(SurfaceCategory):
         r"""
         The axiom satisfied by orientable surfaces with an orientation which is
         compatible with the orientation of the ambient space of the polygons
-        (assuming that that ambient space is orientable.)
+        (assuming that that ambient space is orientable).
 
         EXAMPLES::
 

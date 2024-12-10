@@ -42,22 +42,22 @@ v0.6.0
 * Added ``is_triangulated()``, ``is_delaunay_triangulated()``, and ``is_delaunay_decomposed()`` for the infinite staircase.
 * Added ``labels`` parameter to ``MutableOrientedSimilaritySurface.from_surface()`` to only copy part of an existing surface.
 * Added a Tour of flatsurf to the documentation.
-* Added ``VeechGroup`` and ``AffineAutomorphismGroup`` (also accessible as ``veech_gruop()`` and ``affine_automorphism_group()`` on surfaces.)
+* Added ``VeechGroup`` and ``AffineAutomorphismGroup``, also accessible as ``veech_group()`` and ``affine_automorphism_group()`` on surfaces.
 * Added ``apply_matrix()`` to all oriented similarity surfaces. (We apply the matrix to all polygons and keep the gluings intact. Probably not the most meaningful operation for non-dilation surfaces but it can be useful while building surfaces.)
 * Added ``delaunay_triangulate()`` to similarity surfaces which returns a morphisms to a Delaunay triangulation of the surface.
 * Added ``delaunay_decompose()`` to similarity surfaces which returns a morphisms to a Delaunay cell decomposition of the surface. This method always has an optional parameter ``codomain`` which can be an existing cell decomposition, this effectively exposes the ``isomorphism()`` function of a ``FlatTriangulation`` in libflatsurf.
 * Added ``ngens()`` to homology to get the Betti number of homology.
 * Added ``hom()`` for homology to produce the morphism in homology induced by a morphism of a surface or the morphism in homology given by a matrix.
-* Added ``pyflatsurf()`` to translation surfaces to produce an isomorphic surface that is backed by libflatsurf (and exposes the underlying libflatsurf object in its ``flat_triangulation()`` method.)
+* Added ``pyflatsurf()`` to translation surfaces to produce an isomorphic surface that is backed by libflatsurf (and exposes the underlying libflatsurf object in its ``flat_triangulation()`` method).
 * construction and test for veering triangulation of dilation surfaces
-* random_flip for triangulated similarity surfaces
+* ``random_flip`` for triangulated similarity surfaces
 
 **Changed:**
 
 * Changed the default development workflow. While you may still use conda/mamba for development, we recommend to use pixi instead, see the README for details.
 * Renamed ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``. (If for some reason you used this module directly, you need to update your imports.)
 * Moved ``GL2RImageSurface`` from ``flatsurf.geometry.half_dilation_surface`` to ``flatsurf.geometry.lazy``. (If for some reason you used this class directly, you need to update your imports.)
-* Changed ``labels()`` and ``polygons()`` not to inherit from ``collections.abc.Set`` anymore. These are not just sets because their order matter, in particular, their order is compatible. However, ``edges()`` and ``gluings()`` are still ``collections.abc.Set``.
+* Changed ``labels()`` and ``polygons()`` not to inherit from ``collections.abc.Set`` anymore. These are not just sets because their order matters, in particular, their order is compatible. However, ``edges()`` and ``gluings()`` are still ``collections.abc.Set``.
 * Changed ``relabel()`` on surfaces to default to relabeling to integer labels. Also the keyword parameter ``relabeling_map`` is now called ``relabeling``.
 * Changed ``apply_matrix()``, it now returns a morphism to the deformed surface. To recover the old behavior, use ``apply_matrix().codomain()``.
 * Changed ``triangle_flip()`` to now always turn the diagonal counterclockwise from the perspetive of ``label``.
@@ -77,10 +77,10 @@ v0.6.0
 
 **Removed:**
 
-* Removed support for SageMath 9.4, 9.5, 9.6 (things might still work but we are not testing for it automatically anymore.)
-* Removed the old ``flatsurf.geometry.relative_homology`` without prior deprecation (since it was not exposed publicly anywhere.) The new implementation should cover all the relevant features.
+* Removed support for SageMath 9.4, 9.5, 9.6 (things might still work but we are not testing for it automatically anymore).
+* Removed the old ``flatsurf.geometry.relative_homology`` without prior deprecation (since it was not exposed publicly anywhere). The new implementation should cover all the relevant features.
 * Removed the ``ring`` keyword argument from ``GL2RImageSurface`` and ``GL2RMapping``, the ring is now always the common parent of the surface base ring and the matrix base ring. (Use ``change_ring`` if you want the surface to live over another ring.)
-* Removed the option ``in_place=True`` from ``delaunay_triangulation()`` and ``delaunay_decomposition()``. There is no asymptotic runtime advantage in performing this operation in place (and we need to maintain two very different copies of the same functionality.)
+* Removed the option ``in_place=True`` from ``delaunay_triangulation()`` and ``delaunay_decomposition()``. There is no asymptotic runtime advantage in performing this operation in place (so no good reason to maintain two very different copies of the same functionality).
 * Removed the option ``triangulated=True`` from ``delaunay_triangulation()`` and ``delaunay_decomposition()`` since there is no significant runtime advantage in practice.
 * Removed the option ``delaunay_triangulated=True`` from ``delaunay_decomposition()`` since there is no significant runtime advantage in practice.
 * Removed the ``direction`` keyword from ``delaunay_triangulation()`` and ``delaunay_decomposition()``. The claimed behavior about separatrices does not actually hold so the behavior here was somewhat random. Instead, we now always turn each edge counterclockwise when flipping.
@@ -101,7 +101,7 @@ v0.6.0
 * Fixed ipyvue-flatsurf version installed with the flatsurf.yml environment so it is actually compatible with sage-flatsurf.
 * Fixed installation instructions to include the Jupyter notebook which is mentioned there.
 * Fixed comparison of infinite sets of labels. Labels can now be compared and hashed in some very limited cases.
-* Fixed ``j_invariant()`` and ``erase_marked_points()`` they are now not available for infinite type surfaces anymore (where they failed before.)
+* Fixed ``j_invariant()`` and ``erase_marked_points()``, no longer available for infinite type surfaces (where they failed before).
 * Fixed ``subdivide()`` and ``subdivide_polygons()``; they now return immutable surfaces in the correct category.
 * Fixed failing installation on macOS from flatsurf.yml.
 * Fixed documentation on how to upgrade a mamba install of flatsurf.
@@ -174,7 +174,7 @@ v0.5.0
 
 * Added a ``vertices()`` method to all surfaces built from polygons that returns the set of equivalence classes of vertices of those polygons.
 
-* Added points of polygons as explicit objects (so that polygons become proper SageMath parents.) These points currently do not have many features.
+* Added points of polygons as explicit objects (so that polygons become proper SageMath parents). These points currently do not have many features.
 
 * Added a ``describe_polygon()`` method to all polygons to create nicer textual representation of polygons for error messages.
 
@@ -188,7 +188,7 @@ v0.5.0
 * Added a Pull Request Template on GitHub so we don't forget to write news or update the documentation.
 * Added installation instructions to the documentation.
 * Added `HyperbolicPlane` and plotting of hyperbolic objects. Unlike the implementation in SageMath, we do not rely on any symbolic computations.
-* Added some convenience functions for ``SurfacePoint`` such as ``representatives()``, ``representative()``. Also ported over the methods from ``Singularity`` to ``SurfacePoint`` (though most are marked deprecated.)
+* Added some convenience functions for ``SurfacePoint`` such as ``representatives()``, ``representative()``. Also ported over the methods from ``Singularity`` to ``SurfacePoint`` (though most are marked deprecated).
 * Added support for keyword arguments when plotting surfaces, e.g., `plot(fill=None)` prints polygons transparent for a similarity surface.
 * Added `polygon_options`, `edge_options`, and `vertex_options` to control plotting in `Polygon.plot()`.
 * Added ``translation_surfaces.lanneau_nguyen_genus3_prototype()`` and ``translation_surfaces.lanneau_nguyen_genus4_prototype()``.
@@ -201,9 +201,9 @@ v0.5.0
 
 **Changed:**
 
-* Changed supported versions of SageMath. We now require at least SageMath 9.2 (released in October 2020.)
+* Changed supported versions of SageMath. We now require at least SageMath 9.2 (released in October 2020).
 
-* Changed the notion of "dilation surface" in some places. What was previously called a "half-dilation surface" is now called a "dilation surface", and what was previously called a "dilation surface" is now called a "positive dilation surface". (Existing code should not be affected by this but the documentation has been updated and new functions use this naming.) Note that the notions of a half-translation surface and a translation surface have not changed (though internally a translation surface is just a positive half-translation surface.)
+* Changed the notion of "dilation surface" in some places. What was previously called a "half-dilation surface" is now called a "dilation surface", and what was previously called a "dilation surface" is now called a "positive dilation surface". (Existing code should not be affected by this but the documentation has been updated and new functions use this naming.) Note that the notions of a half-translation surface and a translation surface have not changed (though internally a translation surface is just a positive half-translation surface).
 
 * Changed the mutability of the surface returned by ``polyhedron_to_cone_surface``; the returned surface is now immutable.
 
@@ -219,7 +219,7 @@ v0.5.0
 
 * Changed the label parameter of ``add_polygon()``. It is now required to be a keyword argument.
 
-* Changed the meaning of the ``lengths`` parameter when creating a polygon from lengths and angles. Before, the slopes of a generic polygon with such angles were scaled by ``lengths`` (the slopes are a somewhat random implementation detail.) Now, the ``lengths`` are actually, the Euclidean lengths of the sides. Specifying ``lengths`` and ``angles`` might therefore lead to some square roots having to be computed. To get the old behaviour, one can specify angles and edges and use the slopes scaled by lengths as edges.
+* Changed the meaning of the ``lengths`` parameter when creating a polygon from lengths and angles. Before, the slopes of a generic polygon with such angles were scaled by ``lengths`` (the slopes are a somewhat random implementation detail). Now, the ``lengths`` are the actual Euclidean lengths of the sides. Specifying ``lengths`` and ``angles`` might therefore lead to some square roots having to be computed. To get the old behaviour, one can specify angles and edges and use the slopes scaled by lengths as edges.
 * Changed the documentation build to use the furo theme for sphinx, the same theme that SageMath uses for its documentation.
 * The parameter ``limit`` for ``SurfacePoint`` and ``Singularity`` is now optional. If not given for infinite surfaces, the search will keep going until the object has been constructed.
 
@@ -228,11 +228,11 @@ v0.5.0
 
 **Deprecated:**
 
-* Deprecated the ``walker()`` method on surfaces. The ``labels()`` are now always guaranteed to be iterated in a canonical order (starting from the ``roots()``, a breadth-first search is performed.)
+* Deprecated the ``walker()`` method on surfaces. The ``labels()`` are now always guaranteed to be iterated in a canonical order (starting from the ``roots()``, a breadth-first search is performed).
 
 * Deprecated the ``base_label()`` method on surfaces. The ``root()`` and ``roots()`` methods serve the same purpose but have clearer semantics for disconnected surfaces.
 
-* Deprecated the ``num_polygons()`` method on surfaces. For finite type surfaces, ``len(polygons())`` serves the same purpose (and is sufficiently fast.)
+* Deprecated the ``num_polygons()`` method on surfaces. For finite type surfaces, ``len(polygons())`` serves the same purpose (and is sufficiently fast).
 
 * Deprecated the ``label_iterator()``, ``edge_iterator()``, ``label_polygon_iterator()``, ``edge_gluing_iterator()`` and ``polygon_iterator()`` methods on surfaces. The ``_iterator`` suffix has always been confusing to some. Also, returning an iterator has limitations, e.g., containment and length cannot be queried easily.
 
@@ -240,7 +240,7 @@ v0.5.0
 
 * Deprecated the ``field()`` method on polygons since its semantics were a bit confusing. (Does it return the fraction field of the base ring or complain if the base ring is not a field?)
 
-* Deprecated calling the object returned by ``Polygons()`` and ``ConvexPolygons()`` since they do not transfer well to the category framework (subcategories do not inherit ``__call__`` and ``Polygon()`` seems to be a more convenient alternative anyway.)
+* Deprecated calling the object returned by ``Polygons()`` and ``ConvexPolygons()`` since they do not transfer well to the category framework (subcategories do not inherit ``__call__`` and ``Polygon()`` seems to be a more convenient alternative anyway).
 
 * Deprecated ``convexity()`` and ``strict_convexity()`` from ``EquiangularPolygons`` in favor of ``is_convex(strict=False)`` that is identical to the convexity method on polygons.
 
@@ -254,7 +254,7 @@ v0.5.0
 
 * Deprecated ``num_edges()`` for polygons; it is essentially equivalent to ``len(vertices())`` (and "There should be one-- and preferably only one --obvious way to do it.")
 
-* Deprecated implicitly iterating over the vertices of a polygon; this is problematic since a polygon is now the parent of its infinitely many points (and iterating over vertices() is easier to understand and equivalent anyway.)
+* Deprecated implicitly iterating over the vertices of a polygon; this is problematic since a polygon is now the parent of its infinitely many points (and iterating over vertices() is easier to understand and equivalent anyway).
 
 * Deprecated ``add_polygons()`` for mutable surfaces; there is no benefit over adding polygons in a loop with ``add_polygon()``.
 
@@ -348,13 +348,13 @@ v0.5.0
 * Fixed rendering of metadata on PyPI.
 * Fixed remnants of Python 2 compatibility such as imports from six and __future__. (We do not support Python 2 anymore which is long past its end-of-life.)
 * Fixed some lint reported by pycodestyle.
-* Fixed comparison of `Surface` for equality in some cases. Equality comparison does not throw exceptions in as many cases anymore in particular surfaces can now be compared to non-surfaces and thus be put into sets and dicts (they will return that they are not equal to a non-surface.)
-* `Singularity`, `SurfacePoint`, `SaddleConnection` do not throw an exception anymore when compared to a different kind of object or to an object defined on another surface. (Instead, they now return to be non-equal in such cases.)
+* Fixed comparison of `Surface` for equality in some cases. Equality comparison does not throw exceptions in as many cases anymore in particular surfaces can now be compared to non-surfaces and thus be put into sets and dicts (they will return that they are not equal to a non-surface).
+* `Singularity`, `SurfacePoint`, `SaddleConnection` do not throw an exception anymore when compared to a different kind of object or to an object defined on another surface. (Instead, they now compare as non-equal in such cases.)
 * Fixed failing doctests due to warnings about namespace packages with recent versions of setuptools.
 
 **Performance:**
 
-* Improved performance of computations related to angles (asking a triangle for its angles is immediate now, ``%timeit similarity_surfaces.billiard(polygons.triangle(2, 13, 26)).minimal_cover("translation")`` takes 200ms instead of 15s now.)
+* Improved performance of computations related to angles (asking a triangle for its angles is immediate now, ``%timeit similarity_surfaces.billiard(polygons.triangle(2, 13, 26)).minimal_cover("translation")`` takes 200ms instead of 15s now).
 * Some operations of ``Singularity`` and ``SurfacePoint`` used to be linear and are now constant time and vice versa. This change should not be noticeable on most surfaces. Things could be easily sped up if this is a problem for some applications.
 
 
