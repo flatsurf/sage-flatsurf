@@ -94,7 +94,7 @@ class TopologicalSurfaces(SurfaceCategory):
 
             The result of this method can be fed to ``_refine_category_`` to
             change the category of the surface (and enable functionality
-            specific to the smaller classes of surfaces.)
+            specific to the smaller classes of surfaces).
 
             Note that this method does have much effect for a general
             topological surface. Subcategories and implementations of surfaces

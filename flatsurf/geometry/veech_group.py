@@ -147,7 +147,7 @@ class VeechGroup_generic(MatrixGroup_generic):
 
     def _an_element_(self):
         r"""
-        Return an element of the Veech group (for testing.)
+        Return an element of the Veech group (for testing).
 
         EXAMPLES::
 
@@ -298,7 +298,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
 
     def _an_element_(self):
         r"""
-        Return a morphism in this group (for testing.)
+        Return a morphism in this group (for testing).
 
         EXAMPLES::
 
