@@ -32,7 +32,7 @@ jupyter:
 s.plot()
 ```
 
-We get a list of all saddle connections of length less than 10.
+We get a list of all saddle connections of length less than $\sqrt{10}$.
 
 ```{code-cell}
 ---
