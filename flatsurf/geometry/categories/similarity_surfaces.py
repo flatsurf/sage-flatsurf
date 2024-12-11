@@ -3041,25 +3041,65 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def saddle_connections(
                 self,
-                squared_length_bound,
+                *args,
+                max_length=None,
+                max_length_strict=None,
+                max_length_squared=None,
+                max_length_squared_strict=None,
+                max_length_combinatorial=None,
+                start_label=None,
+                start_vertex=None,
+                squared_length_bound=None,
                 initial_label=None,
                 initial_vertex=None,
                 sc_list=None,
-                check=False,
+                check=None,
             ):
                 r"""
-                Returns a list of saddle connections on the surface whose length squared is less than or equal to squared_length_bound.
-                The length of a saddle connection is measured using holonomy from polygon in which the trajectory starts.
+                Return the saddle connections on the surface by increasing length.
 
-                If initial_label and initial_vertex are not provided, we return all saddle connections satisfying the bound condition.
+                INPUT:
 
-                If initial_label and initial_vertex are provided, it only provides saddle connections emanating from the corresponding
-                vertex of a polygon. If only initial_label is provided, the added saddle connections will only emanate from the
-                corresponding polygon.
+                - ``max_length`` -- a number or ``None`` (default: ``None``);
+                  if given, only return saddle connections whose
+                  :meth:`~SaddleConnection.holonomy` has length at most
+                  ``max_length``
 
-                If sc_list is provided the found saddle connections are appended to this list and the resulting list is returned.
+                - ``max_length_strict`` -- a number or ``None`` (default:
+                  ``None``); like ``max_length`` but only include saddle
+                  connections whose :meth:`~SaddleConnection.holonomy` has
+                  length strictly less than this value.
 
-                If check==True it uses the checks in the SaddleConnection class to sanity check our results.
+                - ``max_length_squared`` -- a number or ``None`` (default:
+                  ``None``); like ``max_length`` but only include saddle
+                  connections whose :meth:`~SaddleConnection.holonomy` has a
+                  squared length at most this value.
+
+                - ``max_length_squared`` -- a number or ``None`` (default:
+                  ``None``); like ``max_length_strict`` but for the square of
+                  the length of a saddle connection's
+                  :meth:`~SaddleConnection.holonomy`.
+
+                - ``max_length_combinatorial`` -- an integer or ``None``
+                  (default: ``None``); if given, only include saddle
+                  connections whose combinatorial length is at most that
+                  number. The combinatorial length is the minimum number of
+                  open line segments needed to represent the interior of the
+                  saddle connection with line segments that are contained in
+                  individual polygons.
+
+                - ``start_label`` -- a label in this surface or ``None``
+                  (default: ``None``); if given, only include saddle
+                  connections which start in the polygon with this label, i.e.,
+                  they start at a vertex of that polygon and their holonomy
+                  vector is contained in the half-open sector that is
+                  counterclockwise (inclusive) from the edge following the
+                  vertex and clockwise (exclusive) from the edge preceding the
+                  vertex.
+
+                - ``start_vertex`` -- a vertex in this surface or ``None``
+                  (default: ``None``); if given, only include saddle
+                  connections which start at this vertex.
 
                 EXAMPLES::
 
@@ -3097,11 +3137,67 @@ class SimilaritySurfaces(SurfaceCategory):
                     19
 
                 """
-                if squared_length_bound <= 0:
-                    raise ValueError
+                if args:
+                    import warnings
+                    warnings.warn("positional arguments to saddle_connections() have been deprecated and will not be supported anymore in a future version of sage-flatsurf; please use keyword arguments such as max_length_squared instead.")
 
-                if sc_list is None:
-                    sc_list = []
+                    args = list(args[::-1])
+                    squared_length_bound = args.pop()
+
+                    if args:
+                        initial_label = args.pop()
+                    if args:
+                        initial_vertex = args.pop()
+                    if args:
+                        sc_list = args.pop()
+                    if args:
+                        check = args.pop()
+                    if args:
+                        raise TypeError(f"saddle_connections() takes 6 positional arguments but {6 + len(args)} were given")
+
+                if squared_length_bound:
+                    import warnings
+                    warnings.warn("squared_length_bound has been deprecated as an argument to saddle_connections() and will be removed in a future version of sage-flatsurf; use max_length_squared instead.")
+                    max_length_squared = squared_length_bound
+
+                if initial_label:
+                    import warnings
+                    warnings.warn("initial_label has been deprecated as an argument to saddle_connections() and will be removed in a future version of sage-flatsurf; use start_label instead.")
+                    start_label = initial_label
+
+                if initial_vertex:
+                    import warnings
+                    warnings.warn("initial_vertex has been deprecated as an argument to saddle_connections() and will be removed in a future version of sage-flatsurf; use start_vertex instead.")
+                    start_vertex = initial_vertex
+
+                if sc_list is not None:
+                    raise NotImplementedError("sc_list has been removed as an argument to saddle_connections(); use sc_list.extend(saddle_connections(...)) instead")
+
+                if check is not None:
+                    import warnings
+                    warnings.warn("check has been deprecated as an argument to saddle_connections() and will be removed in a future version of sage-flatsurf; do not set it anymore, it has no effect.")
+
+
+                from sage.all import oo
+                if max_length_combinatorial is None:
+                    max_length_combinatorial = oo
+
+                max_length_with_op = min([(oo, "<")]
+                    + ([(max_length**2, "<=")] if max_length is not None else [])
+                    + ([(max_length_strict**2, "<")] if max_length_strict is not None else [])
+                    + ([(max_length_squared, "<=")] if max_length_squared is not None else [])
+                    + ([(max_length_squared_strict, "<")] if max_length_squared_strict is not None else [])
+                                         
+                )
+
+                if max_length_combinatorial < 1:
+                    return []
+
+                if max_length_with_op[0] <= 0:
+                    return []
+
+                raise NotImplementedError
+
                 if initial_label is None:
                     if not self.is_finite_type():
                         raise NotImplementedError
