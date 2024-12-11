@@ -725,3 +725,708 @@ def slope(a, rotate=1):
     if rotate == -1:
         return 1 if y else -1
     raise ValueError("invalid argument rotate={}".format(rotate))
+
+
+from sage.all import UniqueRepresentation, Parent
+from sage.structure.element import Element
+from sage.misc.cachefunc import cached_method
+
+
+class Cone(Element):
+    # This is an open cone.
+    def __init__(self, parent, start, end):
+        super().__init__(parent)
+        self._start = parent.rays()(start)
+        self._end = parent.rays()(end)
+
+    @cached_method
+    def is_empty(self):
+        return self._start == self._end
+
+    def is_convex(self):
+        from flatsurf.geometry.euclidean import ccw
+
+        return ccw(self._start.vector(), self._end.vector()) >= 0
+
+    # TODO: Rename to contains_cone() [arguments are reversed!]
+    def is_subset(self, other):
+        r"""
+        Return whether this cone is contained in ``other``.
+        """
+        if not isinstance(other, Cone):
+            raise NotImplementedError
+
+        if other.parent() is not self.parent():
+            raise NotImplementedError
+
+        if self.is_empty():
+            return True
+
+        if other.is_empty():
+            return False
+
+        from flatsurf.geometry.euclidean import ccw
+
+        start_ccw = ccw(self._start.vector(), other._start.vector())
+        end_ccw = ccw(self._end.vector(), other._end.vector())
+
+        # Check whether the interior of this cone is contained in other.
+        if not self.is_convex():
+            if other.is_convex():
+                return False
+
+            # This non-convex cone C is contained in the other non-convex cone D,
+            # iff for the complements we have D^c ⊆ C^c.
+            return other.complement().is_subset(self.complement())
+
+        if other.is_convex():
+            if start_ccw > 0:
+                return False
+            if end_ccw < 0:
+                return False
+
+            return True
+
+        raise NotImplementedError
+
+    def complement(self):
+        r"""
+        Return the maximal cone contained in the complement of this cone, i.e.,
+        the complement of this cone with the boundaries (except for the origin)
+        missing.
+
+        """
+        if self.is_empty():
+            raise NotImplementedError
+
+        return self.parent()(self._end, self._start)
+
+    def contains_ray(self, ray):
+        if ray.parent() is not self.parent().rays():
+            raise NotImplementedError
+
+        if self.is_empty():
+            return False
+
+        from flatsurf.geometry.euclidean import ccw
+
+        ccw_from_start = ccw(self._start.vector(), ray.vector())
+        ccw_to_end = ccw(ray.vector(), self._end.vector())
+
+        if self.is_convex():
+            if ccw_from_start <= 0:
+                return False
+
+            if ccw_to_end <= 0:
+                return False
+
+            return True
+
+        return (
+            not self.complement().contains_ray(ray)
+            and ray != self._start
+            and ray != self._end
+        )
+
+    def sorted_rays(self, rays):
+        class Key:
+            def __init__(self, cone, ray):
+                self._cone = cone
+                self._ray = ray
+
+            def __lt__(self, rhs):
+                # TODO: Make sure all code paths are tested.
+                from flatsurf.geometry.euclidean import ccw
+
+                if not self._cone.is_convex():
+                    start_to_self = ccw(self._cone._start.vector(), self._ray.vector())
+                    start_to_rhs = ccw(self._cone._start.vector(), rhs._ray.vector())
+                    if start_to_self > 0 and start_to_rhs > 0:
+                        return ccw(self._ray.vector(), rhs._ray.vector()) > 0
+
+                    end_to_self = ccw(self._cone._end.vector(), self._ray.vector())
+                    end_to_rhs = ccw(self._cone._end.vector(), rhs._ray.vector())
+                    if end_to_self < 0 and end_to_rhs < 0:
+                        return ccw(self._ray.vector(), rhs._ray.vector()) > 0
+
+                    if start_to_self > 0 and end_to_rhs < 0:
+                        return True
+                    if end_to_self < 0 and start_to_rhs > 0:
+                        return False
+
+                    raise NotImplementedError
+                return ccw(self._ray.vector(), rhs._ray.vector()) > 0
+
+        rays = sorted(rays, key=lambda ray: Key(self, ray))
+
+        from itertools import groupby
+
+        return [ray for ray, _ in groupby(rays)]
+
+    def a_ray(self):
+        if self.is_empty():
+            raise TypeError
+
+        if self.is_convex():
+            return self.parent().rays()((self._start.vector() + self._end.vector()) / 2)
+
+        raise NotImplementedError
+
+    def start(self):
+        return self._start
+
+    def end(self):
+        return self._end
+
+    def contains_point(self, p):
+        if self.is_empty():
+            return False
+        if p.is_zero():
+            return True
+        return self.contains_ray(self.parent().rays()(p))
+
+    def _repr_(self):
+        if self.is_empty():
+            return "Empty cone"
+        return f"Open cone between {self._start} and {self._end}"
+
+
+class Cones(UniqueRepresentation, Parent):
+    Element = Cone
+
+    def __init__(self, base_ring, category=None):
+        from sage.categories.all import Sets
+
+        super().__init__(base_ring, category=category or Sets())
+
+    @cached_method
+    def rays(self):
+        from flatsurf.geometry.ray import Rays
+
+        return Rays(self.base_ring())
+
+
+r"""
+Geometry with rays in the Euclidean plane.
+
+EXAMPLES::
+
+    sage: from flatsurf.geometry.ray import Rays
+    sage: R = Rays(QQ)
+    sage: R((1, 0))
+    Ray towards (1, 0)
+
+    sage: R((1, 0)) == R((2, 0))
+    True
+
+    sage: R((1, 0)) == R((-2, 0))
+    False
+
+"""
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2024 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
+from sage.structure.parent import Parent
+from sage.structure.element import Element
+from sage.structure.unique_representation import UniqueRepresentation
+from sage.misc.cachefunc import cached_method
+
+
+class Ray(Element):
+    r"""
+    A ray in the Euclidean plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.ray import Rays
+        sage: R = Rays(QQ)
+        sage: r = R((1, 0)); r
+        Ray towards (1, 0)
+
+        sage: R((0, 0))
+        Traceback (most recent call last):
+        ...
+        ValueError: direction must not be the zero vector
+
+    TESTS::
+
+        sage: from flatsurf.geometry.ray import Ray
+        sage: isinstance(r, Ray)
+        True
+        sage: TestSuite(r).run()
+
+    """
+
+    def __init__(self, parent, direction):
+        super().__init__(parent)
+
+        direction = parent.ambient_space()(direction)
+        direction.set_immutable()
+
+        if direction.is_zero():
+            raise ValueError("direction must not be the zero vector")
+
+        self._direction = direction
+
+    def vector(self):
+        r"""
+        Return a vector in this ray.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.ray import Rays
+            sage: R = Rays(QQ)
+            sage: r = R((1, 0)); r
+            Ray towards (1, 0)
+            sage: r.vector()
+            (1, 0)
+
+        """
+        return self._direction
+
+    def _neg_(self):
+        return self.parent()(-self._direction)
+
+    def _repr_(self):
+        return f"Ray towards {self._direction}"
+
+    def _richcmp_(self, other, op):
+        r"""
+        Return how this ray compares to ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.ray import Rays
+            sage: R = Rays(QQ)
+
+            sage: R((0, 1)) == R((0, 2))
+            True
+            sage: R((1, 0)) == R((2, 0))
+            True
+            sage: R((1, 1)) == R((2, 2))
+            True
+            sage: R((1, 1)) == R((2, 1))
+            False
+            sage: R((0, 1)) == R((0, -2))
+            False
+            sage: R((1, 1)) == R((-2, -2))
+            False
+
+        """
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            from sage.all import sgn
+
+            return (
+                self._direction[0] * other._direction[1]
+                == other._direction[0] * self._direction[1]
+                and sgn(self._direction[0]) == sgn(other._direction[0])
+                and sgn(self._direction[1]) == sgn(other._direction[1])
+            )
+
+
+class Rays(UniqueRepresentation, Parent):
+    r"""
+    The space of rays from the origin in the Euclidean plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.ray import Rays
+        sage: R = Rays(QQ)
+        sage: R
+        Rays in Vector space of dimension 2 over Rational Field
+
+    TESTS::
+
+        sage: isinstance(R, Rays)
+        True
+        sage: TestSuite(R).run()
+
+    """
+    Element = Ray
+
+    def __init__(self, base_ring, category=None):
+        from sage.categories.all import Sets, Rings
+
+        if base_ring not in Rings():
+            raise TypeError("base ring must be a ring")
+
+        super().__init__(base=base_ring, category=category or Sets())
+
+    def _an_element_(self):
+        return self((1, 0))
+
+    def some_element(self):
+        return [self(v) for v in self.ambient_space().some_elements() if v]
+
+    @cached_method
+    def ambient_space(self):
+        r"""
+        Return the ambient Euclidean space containing these rays.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.ray import Rays
+            sage: Rays(QQ).ambient_space()
+            Vector space of dimension 2 over Rational Field
+
+        """
+        return self.base_ring() ** 2
+
+    def _repr_(self):
+        return f"Rays in {self.ambient_space()}"
+
+
+def time_on_ray(p, direction, q):
+    if direction[0]:
+        dim = 0
+    else:
+        dim = 1
+
+    delta = q[dim] - p[dim]
+    length = direction[dim]
+    if length < 0:
+        delta *= -1
+        length *= -1
+
+    return delta, length
+
+
+def ray_segment_intersection(p, direction, segment):
+    r"""
+    Return the intersection of the ray from ``p`` in ``direction`` with
+    ``segment``.
+
+    If the segment and the ray intersect in a point, return that point as a
+    vector.
+
+    If the segment and the ray overlap in a segment, return the end points of
+    that segment (in order.)
+
+    If the segment and the ray do not intersect, return ``None``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import ray_segment_intersection
+        sage: V = QQ**2
+
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((1, -1)), V((1, 1))))
+        (1, 0)
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((0, 0)), V((1, 0))))
+        ((0, 0), (1, 0))
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((1, 0)), V((2, 0))))
+        ((1, 0), (2, 0))
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((-1, 0)), V((1, 0))))
+        ((0, 0), (1, 0))
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((-1, -1)), V((-1, 1))))
+
+    TESTS::
+
+        sage: ray_segment_intersection(V((0, 0)), V((5, 1)), (V((3, 2)), V((3, 3))))
+
+    """
+    intersection = line_intersection(*(p, p + direction), *segment)
+
+    if intersection is None:
+        # ray and segment are parallel.
+        if ccw(direction, segment[0] - p) != 0:
+            # ray and segment are not on the same line
+            return None
+
+        t0, length = time_on_ray(p, direction, segment[0])
+        t1, _ = time_on_ray(p, direction, segment[1])
+
+        if t1 < t0:
+            t0, t1 = t1, t0
+
+        if t1 < 0:
+            return None
+
+        if t1 == 0:
+            return p
+
+        t0 /= length
+        t1 /= length
+
+        if t0 < 0:
+            return (p, p + t1 * direction)
+
+        return (p + t0 * direction, p + t1 * direction)
+
+    if time_on_ray(p, direction, intersection)[0] < 0:
+        return None
+
+    if ccw(segment[0] - p, direction) * ccw(segment[1] - p, direction) > 0:
+        return None
+
+    return intersection
+
+
+def circle_from_three_points(p, q, r, base_ring=None):
+    r"""
+    Construct a circle from three points on the circle.
+    """
+    if base_ring is None:
+        base_ring = p.base_ring()
+    V2 = VectorSpace(base_ring.fraction_field(), 2)
+    V3 = VectorSpace(base_ring.fraction_field(), 3)
+
+    v1 = V3((p[0] + q[0], p[1] + q[1], 2))
+    v2 = V3((p[1] - q[1], q[0] - p[0], 0))
+    line1 = v1.cross_product(v2)
+    v1 = V3((p[0] + r[0], p[1] + r[1], 2))
+    v2 = V3((p[1] - r[1], r[0] - p[0], 0))
+    line2 = v1.cross_product(v2)
+    center_3 = line1.cross_product(line2)
+    if center_3[2].is_zero():
+        raise ValueError("The three points lie on a line.")
+    center = V2((center_3[0] / center_3[2], center_3[1] / center_3[2]))
+    return Circle(center, (p[0] - center[0]) ** 2 + (p[1] - center[1]) ** 2)
+
+
+class Circle:
+    def __init__(self, center, radius_squared, base_ring=None):
+        r"""
+        Construct a circle from a Vector representing the center, and the
+        radius squared.
+        """
+        if base_ring is None:
+            self._base_ring = radius_squared.parent()
+        else:
+            self._base_ring = base_ring
+
+        # for calculations:
+        self._V2 = VectorSpace(self._base_ring, 2)
+        self._V3 = VectorSpace(self._base_ring, 3)
+
+        self._center = self._V2(center)
+        self._center.set_immutable()
+        self._radius_squared = self._base_ring(radius_squared)
+
+    def center(self):
+        r"""
+        Return the center of the circle as a vector.
+        """
+        return self._center
+
+    def radius_squared(self):
+        r"""
+        Return the square of the radius of the circle.
+        """
+        return self._radius_squared
+
+    def point_position(self, point):
+        r"""
+        Return 1 if point lies in the circle, 0 if the point lies on the circle,
+        and -1 if the point lies outide the circle.
+        """
+        value = (
+            (point[0] - self._center[0]) ** 2
+            + (point[1] - self._center[1]) ** 2
+            - self._radius_squared
+        )
+        if value > self._base_ring.zero():
+            return -1
+        if value < self._base_ring.zero():
+            return 1
+        return 0
+
+    def closest_point_on_line(self, point, direction_vector):
+        r"""
+        Consider the line through the provided point in the given direction.
+        Return the closest point on this line to the center of the circle.
+        """
+        cc = self._V3((self._center[0], self._center[1], self._base_ring.one()))
+        # point at infinite orthogonal to direction_vector:
+        dd = self._V3(
+            (direction_vector[1], -direction_vector[0], self._base_ring.zero())
+        )
+        l1 = cc.cross_product(dd)
+
+        pp = self._V3((point[0], point[1], self._base_ring.one()))
+        # direction_vector pushed to infinity
+        ee = self._V3(
+            (direction_vector[0], direction_vector[1], self._base_ring.zero())
+        )
+        l2 = pp.cross_product(ee)
+
+        # This is the point we want to return
+        rr = l1.cross_product(l2)
+        try:
+            return self._V2((rr[0] / rr[2], rr[1] / rr[2]))
+        except ZeroDivisionError:
+            raise ValueError(
+                "Division by zero error. Perhaps direction is zero. "
+                + "point="
+                + str(point)
+                + " direction="
+                + str(direction_vector)
+                + " circle="
+                + str(self)
+            )
+
+    def line_position(self, point, direction_vector):
+        r"""
+        Consider the line through the provided point in the given direction.
+        We return 1 if the line passes through the circle, 0 if it is tangent
+        to the circle and -1 if the line does not intersect the circle.
+        """
+        return self.point_position(self.closest_point_on_line(point, direction_vector))
+
+    def line_segment_position(self, p, q):
+        r"""
+        Consider the open line segment pq.We return 1 if the line segment
+        enters the interior of the circle, zero if it touches the circle
+        tangentially (at a point in the interior of the segment) and
+        and -1 if it does not touch the circle or its interior.
+        """
+        if self.point_position(p) == 1:
+            return 1
+        if self.point_position(q) == 1:
+            return 1
+        r = self.closest_point_on_line(p, q - p)
+        pos = self.point_position(r)
+        if pos == -1:
+            return -1
+        # This checks if r lies in the interior of pq
+        if p[0] == q[0]:
+            if (p[1] < r[1] and r[1] < q[1]) or (p[1] > r[1] and r[1] > q[1]):
+                return pos
+        elif (p[0] < r[0] and r[0] < q[0]) or (p[0] > r[0] and r[0] > q[0]):
+            return pos
+        # It does not lie in the interior.
+        return -1
+
+    def tangent_vector(self, point):
+        r"""
+        Return a vector based at the provided point (which must lie on the circle)
+        which is tangent to the circle and points in the counter-clockwise
+        direction.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.circle import Circle
+            sage: c=Circle(vector((0,0)), 2, base_ring=QQ)
+            sage: c.tangent_vector(vector((1,1)))
+            (-1, 1)
+        """
+        if not self.point_position(point) == 0:
+            raise ValueError("point not on circle.")
+        return vector((self._center[1] - point[1], point[0] - self._center[0]))
+
+    def other_intersection(self, p, v):
+        r"""
+        Consider a point p on the circle and a vector v. Let L be the line
+        through p in direction v. Then L intersects the circle at another
+        point q. This method returns q.
+
+        Note that if p and v are both in the field of the circle,
+        then so is q.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.circle import Circle
+            sage: c=Circle(vector((0,0)), 25, base_ring=QQ)
+            sage: c.other_intersection(vector((3,4)),vector((1,2)))
+            (-7/5, -24/5)
+        """
+        pp = self._V3((p[0], p[1], self._base_ring.one()))
+        vv = self._V3((v[0], v[1], self._base_ring.zero()))
+        L = pp.cross_product(vv)
+        cc = self._V3((self._center[0], self._center[1], self._base_ring.one()))
+        vvperp = self._V3((-v[1], v[0], self._base_ring.zero()))
+        # line perpendicular to L through center:
+        Lperp = cc.cross_product(vvperp)
+        # intersection of L and Lperp:
+        rr = L.cross_product(Lperp)
+        r = self._V2((rr[0] / rr[2], rr[1] / rr[2]))
+        return self._V2((2 * r[0] - p[0], 2 * r[1] - p[1]))
+
+    def __rmul__(self, similarity):
+        r"""
+        Apply a similarity to the circle.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.square_torus()
+            sage: c = s.polygon(0).circumscribed_circle()
+            sage: c
+            Circle((1/2, 1/2), 1/2)
+            sage: s.edge_transformation(0,2)
+            (x, y) |-> (x, y - 1)
+            sage: s.edge_transformation(0,2) * c
+            Circle((1/2, -1/2), 1/2)
+        """
+        from .similarity import SimilarityGroup
+
+        SG = SimilarityGroup(self._base_ring)
+        s = SG(similarity)
+        return Circle(
+            s(self._center), s.det() * self._radius_squared, base_ring=self._base_ring
+        )
+
+    def __str__(self):
+        return (
+            "circle with center "
+            + str(self._center)
+            + " and radius squared "
+            + str(self._radius_squared)
+        )
+
+    def __repr__(self):
+        return "Circle(" + repr(self._center) + ", " + repr(self._radius_squared) + ")"
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this circle that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain().relabel()
+            sage: hash(S.polygon(0).circumscribed_circle()) == hash(S.polygon(1).circumscribed_circle())
+            True
+
+        """
+        return hash((self._center, self._radius_squared))
+
+    def __eq__(self, other):
+        r"""
+        Return whether this circle is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain().relabel()
+            sage: S.polygon(0).circumscribed_circle() == S.polygon(1).circumscribed_circle()
+            True
+
+        """
+        if not isinstance(other, Circle):
+            return False
+
+        return (
+            self._center == other._center
+            and self._radius_squared == other._radius_squared
+        )
