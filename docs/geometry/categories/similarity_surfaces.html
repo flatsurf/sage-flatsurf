@@ -912,6 +912,19 @@ numbers or as exact algebraic numbers.</p></li>
 <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
 </pre></div>
 </div>
+<p>This method creates a copy even if the base ring is unchanged:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span> <span class="ow">is</span> <span class="n">S</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+<p>Note that the resulting surface might not be functional if the
+polygon cannot be represented in the ring:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="n">Unable</span> <span class="n">to</span> <span class="n">coerce</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">a</span> <span class="n">rational</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">

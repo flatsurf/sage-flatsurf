@@ -389,7 +389,7 @@
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
 <span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
-<span class="c1">#                           2023 Julian Rüth</span>
+<span class="c1">#                      2023-2024 Julian Rüth</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -2739,6 +2739,8 @@
 <span class="sd">        sage: T = translation_surfaces.square_torus()</span>
 <span class="sd">        sage: S = T.change_ring(AA)</span>
 
+<span class="sd">    TESTS::</span>
+
 <span class="sd">        sage: from flatsurf.geometry.surface import BaseRingChangedSurface</span>
 <span class="sd">        sage: isinstance(S, BaseRingChangedSurface)</span>
 <span class="sd">        True</span>
@@ -2862,6 +2864,55 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="BaseRingChangedSurface.change_ring">
+<a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.change_ring">[docs]</a>
+    <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of this surface whose polygons are defined over</span>
+<span class="sd">        ``ring``.</span>
+
+<span class="sd">        This overrides</span>
+<span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces</span>
+<span class="sd">            sage: P = EuclideanPolygonsWithAngles(1, 3, 5).an_element()</span>
+<span class="sd">            sage: S = similarity_surfaces.billiard(P).change_ring(AA)</span>
+<span class="sd">            sage: T = S.change_ring(AA)</span>
+
+<span class="sd">            sage: S</span>
+<span class="sd">            Genus 0 Rational Cone Surface built from 2 triangles over Algebraic Real Field</span>
+<span class="sd">            sage: T</span>
+<span class="sd">            Genus 0 Rational Cone Surface built from 2 triangles over Algebraic Real Field</span>
+
+<span class="sd">        This method creates a copy of the surface even if the base ring is unchanged::</span>
+
+<span class="sd">            sage: S is T</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a printable representation of this surface.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces</span>
+<span class="sd">            sage: P = EuclideanPolygonsWithAngles(1, 3, 5).an_element()</span>
+<span class="sd">            sage: X = similarity_surfaces.billiard(P)</span>
+<span class="sd">            sage: X</span>
+<span class="sd">            Genus 0 Rational Cone Surface built from 2 triangles</span>
+
+<span class="sd">            sage: X.change_ring(AA)</span>
+<span class="sd">            Genus 0 Rational Cone Surface built from 2 triangles over Algebraic Real Field</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_reference</span><span class="si">!r}</span><span class="s2"> over </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <div class="viewcode-block" id="BaseRingChangedSurface.__eq__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.__eq__">[docs]</a>

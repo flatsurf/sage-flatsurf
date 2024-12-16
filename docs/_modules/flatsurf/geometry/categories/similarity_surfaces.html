@@ -2240,6 +2240,19 @@
 <span class="sd">                    sage: T.base_ring()</span>
 <span class="sd">                    Algebraic Real Field</span>
 
+<span class="sd">                This method creates a copy even if the base ring is unchanged::</span>
+
+<span class="sd">                    sage: S.change_ring(S.base_ring()) is S</span>
+<span class="sd">                    False</span>
+
+<span class="sd">                Note that the resulting surface might not be functional if the</span>
+<span class="sd">                polygon cannot be represented in the ring::</span>
+
+<span class="sd">                    sage: S.change_ring(QQ).polygon(0)</span>
+<span class="sd">                    Traceback (most recent call last):</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    TypeError: Unable to coerce 1/2*a + 1 to a rational</span>
+
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">BaseRingChangedSurface</span>
 
