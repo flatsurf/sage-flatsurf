@@ -43,7 +43,7 @@ surface and makes more functionality available::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                           2023 Julian Rüth
+#                      2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -2244,6 +2244,8 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
         sage: T = translation_surfaces.square_torus()
         sage: S = T.change_ring(AA)
 
+    TESTS::
+
         sage: from flatsurf.geometry.surface import BaseRingChangedSurface
         sage: isinstance(S, BaseRingChangedSurface)
         True
@@ -2349,6 +2351,52 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
 
         """
         return self._reference.opposite_edge(label, edge)
+
+    def change_ring(self, ring):
+        r"""
+        Return a copy of this surface whose polygons are defined over
+        ``ring``.
+
+        This overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces
+            sage: P = EuclideanPolygonsWithAngles(1, 3, 5).an_element()
+            sage: S = similarity_surfaces.billiard(P).change_ring(AA)
+            sage: T = S.change_ring(AA)
+
+            sage: S
+            Genus 0 Rational Cone Surface built from 2 triangles over Algebraic Real Field
+            sage: T
+            Genus 0 Rational Cone Surface built from 2 triangles over Algebraic Real Field
+
+        This method creates a copy of the surface even if the base ring is unchanged::
+
+            sage: S is T
+            False
+
+        """
+        return self._reference.change_ring(ring)
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces
+            sage: P = EuclideanPolygonsWithAngles(1, 3, 5).an_element()
+            sage: X = similarity_surfaces.billiard(P)
+            sage: X
+            Genus 0 Rational Cone Surface built from 2 triangles
+
+            sage: X.change_ring(AA)
+            Genus 0 Rational Cone Surface built from 2 triangles over Algebraic Real Field
+
+        """
+        return f"{self._reference!r} over {self.base_ring()}"
 
     def __eq__(self, other):
         r"""

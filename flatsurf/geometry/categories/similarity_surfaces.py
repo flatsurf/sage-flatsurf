@@ -1817,6 +1817,19 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: T.base_ring()
                     Algebraic Real Field
 
+                This method creates a copy even if the base ring is unchanged::
+
+                    sage: S.change_ring(S.base_ring()) is S
+                    False
+
+                Note that the resulting surface might not be functional if the
+                polygon cannot be represented in the ring::
+
+                    sage: S.change_ring(QQ).polygon(0)
+                    Traceback (most recent call last):
+                    ...
+                    TypeError: Unable to coerce 1/2*a + 1 to a rational
+
                 """
                 from flatsurf.geometry.surface import BaseRingChangedSurface
 
