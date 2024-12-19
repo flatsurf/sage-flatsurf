@@ -134,6 +134,7 @@ jupyterlab = "*"
 jupytext = "*"
 twine = "*"
 rever = "*"
+python-build = "*"
 
 [tool.pixi.feature.dev.tasks]
 sage = "sage"
