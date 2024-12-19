@@ -1,6 +1,6 @@
 [project]
 name = "sage-flatsurf"
-version = "0.7.0"
+version = "0.7.1"
 authors = [
   {name = "Vincent Delecroix"},
   {name = "W. Patrick Hooper"},

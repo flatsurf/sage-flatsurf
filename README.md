@@ -33,9 +33,9 @@ Extract it anywhere (make sure there are no spaces in the directory name) and
 run `./sage` or `./jupyterlab`.
 
 ```sh
-tar zxf sage-flatsurf-0.7.0.unix.tar.gz
-./sage-flatsurf-0.7.0/jupyterlab  # or
-./sage-flatsurf-0.7.0/sage
+tar zxf sage-flatsurf-0.7.1.unix.tar.gz
+./sage-flatsurf-0.7.1/jupyterlab  # or
+./sage-flatsurf-0.7.1/sage
 ```
 
 If you are on **Windows**, download the latest `.exe` installer from our [Releases
