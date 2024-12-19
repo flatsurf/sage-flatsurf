@@ -132,6 +132,8 @@ lint = { depends-on = ["black", "codespell", "pycodestyle", "ruff", "pylint"] }
 [tool.pixi.feature.dev.dependencies]
 jupyterlab = "*"
 jupytext = "*"
+twine = "*"
+rever = "*"
 
 [tool.pixi.feature.dev.tasks]
 sage = "sage"
