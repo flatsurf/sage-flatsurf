@@ -4,6 +4,32 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.7.0
+====================
+
+**Added:**
+
+* Added method ``SimplicialHomologyClass.chain()`` and examples that show how to rewrite a homology class into edges with multiplicities or into a holonomy vector.
+* Added homology of saddle connections
+
+**Changed:**
+
+* Changed documentation to recommend conda over mamba (since mamba has been merged into essentially).
+
+**Fixed:**
+
+* Fixed a printing issues with surfaces containing 21-gons to 99-gons.
+* Fixed printing of ``change_ring()`` surfaces.
+* Fixed ``surface.change_ring().change_ring()`` to change the ring of the underlying surface instead of wrapping the surface twice.
+* Fixed asssertion error when computing homology over the rationals.
+* Fixed broken links in documentation (and added automatic checks for broken links).
+* Fixed download instructions for "nightly build" installer.
+* Fixed ``%pip`` and ``!conda`` in JupyterLab when launched from the installer
+  (pip and conda are now installed into the dev environment).
+* Fixed an UnboundLocalError in some saddle connection searches.
+
+
+
 v0.6.2
 ====================
 
