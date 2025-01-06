@@ -3,20 +3,21 @@ Two dimensional plot of surfaces
 
 EXAMPLES::
 
-The construction of a plot of a surface is split into three components: a
-layout (disposition of polygons in the plane), a labeller (choice of labels to
-use for polygons and edges), options (styles). At the moment there is a single
-class for each of them but nothing prevents you from writing your own layout,
-labeller or option handling::
+The construction of a plot of a surface is split into three distinct
+components:
+- a layout (disposition of polygons in the plane)
+- a labeller (choice of labels to use for polygons and edges)
+- options (styles)
+At the moment there is a single class for each of them but nothing prevents you
+from writing your own layout, labeller or option handling::
 
     sage: from flatsurf import translation_surfaces
-    sage: from flatsurf.graphical.surface_plot import FiniteTypeDynamicalLayout, SurfaceLabeller, SurfacePlotOptions
+    sage: from flatsurf.graphical.surface_plot import BasicLayout, SurfaceLabeller, SurfacePlotOptions
 
-In order to plot a surface one needs to insantiate each of the above (note that
-both the layout and the labeller requires a surface as argument)::
+In order to plot a surface one needs to insantiate each of the above::
 
     sage: surface = translation_surfaces.arnoux_yoccoz(3)
-    sage: layout = FiniteTypeDynamicalLayout(surface)
+    sage: layout = BasicLayout(surface)
     sage: labeller = SurfaceLabeller(surface)
     sage: option_handler = SurfacePlotOptions(polygons={"color": "pink", 0: {"color": "blue"}}, polygons_alpha=0.4,
     ....:              polygons_labels={0: {"string": "left wing"}, 1: {"string": "nef", "color": "firebrick"}, 2: {"string": "right wing"}},
@@ -24,14 +25,14 @@ both the layout and the labeller requires a surface as argument)::
 
 The graphic is then made of a superposition of four different elements
 - polygons rendered with sage ``polygon2d`` function,
-- polygon rendered with sage ``text`` function,
+- polygon labels rendered with sage ``text`` function,
 - edge rendered with sage ``line2d`` function,
-- edge label rendered with sage ``test`` function.
+- edge labels rendered with sage ``text`` function.
 
 The arguments to be sent to each function are built by the option handler
-(respectively the functions ``polygon_options``, ``polygon_label_options``,
-`edge_options``, ``edge_label_options``). We illustrate this on a polygon
-and an edge::
+(respectively by the functions ``polygon_options``, ``polygon_label_options``,
+`edge_options``, ``edge_label_options``). We illustrate this on a polygon and
+an edge::
 
     sage: option_handler.polygon_options(layout, 0)
     {'alpha': 0.400000000000000,
@@ -57,9 +58,11 @@ and an edge::
     sage: line2d(**option_handler.edge_options(layout, 0, 0))
     Graphics object consisting of 1 graphics primitive
 
-    sage: option_handler.edge_label_options(layout, labeller, 0, 2)
-    {'color': 'black', 'string': 'a', 'xy': (-1/4, -1/4*alpha^2 + 1/2*alpha - 1/4)}
-    sage: text(**option_handler.edge_label_options(layout, labeller, 0, 2))
+    sage: option_handler.edge_label_options(layout, labeller, 1, 0)
+    {'color': 'black',
+     'string': 'a',
+     'xy': (-1/4*alpha^2 - 1/2, -3/4*alpha^2 + alpha - 1/4)}
+    sage: text(**option_handler.edge_label_options(layout, labeller, 1, 0))
     Graphics object consisting of 1 graphics primitive
 """
 # ****************************************************************************
@@ -81,8 +84,12 @@ and an edge::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+import collections
+
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
+from sage.rings.real_double import RDF
+from sage.rings.infinity import Infinity
 from sage.modules.free_module_element import vector
 
 from flatsurf.geometry.similarity import SimilarityGroup
@@ -111,7 +118,7 @@ def plot_surface(self, **kwds):
     from sage.plot.text import text
 
     # TODO: customization
-    layout = FiniteTypeDynamicalLayout(self)
+    layout = BasicLayout(self)
 
     # TODO: customization
     labeller = SurfaceLabeller(self)
@@ -182,13 +189,31 @@ class SurfaceLayout:
         r"""
         Iterator through quadruples ``(label1, edge1, label2, edge2)`` of pair of
         edges that are adjacent in this layout.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.graphical.surface_plot import BasicLayout
+            sage: surface = translation_surfaces.arnoux_yoccoz(3)
+            sage: layout = BasicLayout(surface, adjacencies=[(0, 0), (0, 1), (0, 2), (1, 2), (4, 0), (4, 1), (10, 0), (8, 0), (8, 1), (11, 0), (2, 1)])
+            sage: sorted(layout.adjacent_edges())
+            [(0, 0, 4, 2),
+             (0, 1, 1, 1),
+             (0, 2, 10, 2),
+             (1, 2, 11, 2),
+             (2, 1, 3, 1),
+             (4, 0, 8, 2),
+             (4, 1, 5, 1),
+             (8, 0, 2, 0),
+             (8, 1, 9, 1),
+             (10, 0, 6, 2),
+             (11, 0, 7, 2)]
         """
         visited = set()
         for label in self.labels():
             for edge in range(len(self._surface.polygon(label).vertices())):
                 if (label, edge) in visited:
                     continue
-                visited.add((label, edge))
 
                 if self.is_adjacent(label, edge):
                     label2, edge2 = self._surface.opposite_edge(label, edge)
@@ -199,6 +224,28 @@ class SurfaceLayout:
         r"""
         Iterator through ``(label, edge)`` that are edges which are not part
         of a pair of adjacent edges in this layout.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.graphical.surface_plot import BasicLayout
+            sage: surface = translation_surfaces.arnoux_yoccoz(3)
+            sage: layout = BasicLayout(surface, adjacencies=[(0, 0), (0, 1), (0, 2), (1, 2), (4, 0), (4, 1), (10, 0), (8, 0), (8, 1), (11, 0), (2, 1)])
+            sage: sorted(layout.non_adjacent_edges())
+            [(1, 0),
+             (2, 2),
+             (3, 0),
+             (3, 2),
+             (5, 0),
+             (5, 2),
+             (6, 0),
+             (6, 1),
+             (7, 0),
+             (7, 1),
+             (9, 0),
+             (9, 2),
+             (10, 1),
+             (11, 1)]
         """
         for label in self.labels():
             for edge in range(len(self._surface.polygon(label).vertices())):
@@ -209,13 +256,16 @@ class SurfaceLayout:
                 if not self.is_adjacent(label, edge):
                     yield (label, edge)
 
-    def is_visible(self, label):
-        return self.layout(label) is not None
+    def layout(self, label):
+        raise NotImplementedError
 
     def polygon(self, label):
         if not self.is_visible(label):
             raise ValueError("invisible polygon")
         return self.layout(label)(self._surface.polygon(label))
+
+    def is_visible(self, label):
+        raise NotImplementedError
 
     def make_visible(self, label):
         raise NotImplementedError
@@ -241,34 +291,99 @@ class SurfaceLayout:
         return False
 
 
-class FiniteTypeDynamicalLayout(SurfaceLayout):
+class BasicLayout(SurfaceLayout):
     r"""
     Layout for similarity surfaces.
 
     A layout is a partial map from the polygons defining a similarity surface
-    and similarities in the plane. Some of the polygons may be omitted (in
-    particular when the surface is infinite).
+    and similarities in the plane. Eaach similarity corresponds to a choice of
+    a given disposition of the polygon in the plane. Note that the map is
+    partial so that some of the polygons may be set invisible (in particular
+    when the surface is infinite).
     """
-    def __init__(self, surface):
+    def __init__(self, surface, adjacencies=None):
         self._surface = surface
         self._group = SimilarityGroup(surface.base_ring())
         self._transformations = {}
 
-        # the labels in _transformations are the visible polygons
+        # NOTE: the labels in _transformations are the visible polygons
         r = next(iter(self._surface.labels()))
         self._transformations[r] = self._group.one()
-        self.make_adjacencies_if_unset()
+
+        if adjacencies is not None:
+            for label, edge in adjacencies:
+                self.make_adjacent(label, edge)
+        else:
+            self.discover()
+
+    def layout(self, label):
+        r"""
+        Return the similarity for the polygon with the given ``label``.
+        """
+        return self._transformations[label]
+
+    def is_visible(self, label):
+        return label in self._transformations
 
     def labels(self):
         return self._transformations.keys()
 
     def make_visible(self, label):
-        raise NotImplementedError
+        r"""
+        Make the polygon with the given ``label`` visible.
+
+        The function tries to make it adjacent to one of its neighbors. If
+        none of the neighboring polygon has a layout set, then it is plot
+        positionned according to its coordinates.
+        """
+        for edge in range(len(self._surface.polygon(label).vertices())):
+            label2, edge2 = self._surface.opposite_edge(label, edge)
+            if (label2, edge2) in self._transformations:
+                self.make_adjacent(label2, edge2)
+                return
+
+        # default
+        self._transformation[label] = self._group.one()
+
+    def discover(self, limit=None):
+        r"""
+        Discover the surface and set the layout.
+        """
+        if limit is None:
+            limit = Infinity
+
+        if limit == Infinity:
+            if not self._surface.is_finite_type():
+                raise NotImplementedError
+            labels = self._surface.labels()
+        else:
+            labels = itertools.islice(self._surface.labels(), limit)
+
+        if not self._transformations:
+            self._transformations[next(self._surface.labels())] = self._group.one()
+
+        # simple BFS
+        todo = collections.deque(self._transformations)
+        i = 0
+        while todo and i < limit:
+            label = todo.popleft()
+            poly = self._surface.polygon(label)
+            for edge in range(len(poly.vertices())):
+                opposite_edge = self._surface.opposite_edge(label, edge)
+                if opposite_edge is None:
+                    continue
+                label2, edge2 = opposite_edge
+                if label2 not in self._transformations:
+                    self.make_adjacent(label, edge)
+                    todo.append(label2)
+                    i += 1
 
     def hide(self, label):
-        raise NotImplementedError
+        self._transformations.pop(label)
 
     def make_adjacent(self, p, e, reverse=False):
+        if p not in self._transformations:
+            raise ValueError("no layout set for polygon with label={}".format(p))
         pp, ee = self._surface.opposite_edge(p, e)
         if reverse:
             q = self._surface.polygon(p)
@@ -297,23 +412,6 @@ class FiniteTypeDynamicalLayout(SurfaceLayout):
             g = self._surface.edge_transformation(pp, ee)
 
         self._transformations[pp] = self._transformations[p] * g
-
-    def make_adjacencies_if_unset(self, adjacencies=None):
-        if adjacencies is None:
-            adjacencies = ((label, e) for label, p in zip(self._surface.labels(), self._surface.polygons()) for e in range(len(self._surface.vertices())))
-        for p, e in adjacencies:
-            opposite_edge = self._surface.opposite_edge(p, e)
-            if opposite_edge is None:
-                continue
-            pp, ee = opposite_edge
-            if p in self._transformations and pp not in self._transformations:
-                self.make_adjacent(p, e)
-
-    def layout(self, label):
-        try:
-            return self._transformations[label]
-        except KeyError:
-            return self._group.one()
 
 
 class SurfaceLabeller:
@@ -362,12 +460,20 @@ class SurfacePlotOptions:
         adjacent_edges_labels_options       : {'color': 'red'}
         ...
 
-    TODO individual options should not bypass flags::
+    Individual options do not bypass flags::
 
         sage: from flatsurf import translation_surfaces
-        sage: SP = SurfacePlotOptions(adjacent_edges_labels=False, non_adjacent_edges_labels=False, edges_labels={(0, 0): {"string": "my label"}})
-        sage: SP.edge_label_options(0, 0)['string'] # known bug
-        'my label'
+        sage: from flatsurf.graphical.surface_plot import BasicLayout, SurfaceLabeller, SurfacePlotOptions
+        sage: S = translation_surfaces.arnoux_yoccoz(3)
+        sage: layout = BasicLayout(S, adjacencies=[(0, 0)])
+        sage: labeller = SurfaceLabeller(S)
+        sage: SP = SurfacePlotOptions(adjacent_edges_labels=False, edges_labels={(0, 0): {"string": "my label"}})
+        sage: SP.edge_label_options(layout, labeller, 0, 0)
+        sage: SP = SurfacePlotOptions(adjacent_edges_labels=True, edges_labels={(0, 0): {"string": "my label"}})
+        sage: SP.edge_label_options(layout, labeller, 0, 0)
+        {'color': 'black',
+         'string': 'my label',
+         'xy': (-1/4*alpha^2, -1/4*alpha^2 + 1/4)}
     """
     def __init__(self, **kwds):
         # polygon options
@@ -491,6 +597,7 @@ class SurfacePlotOptions:
         return "\n".join(s)
 
     __repr__ = __str__
+
     def polygon_options(self, layout, label):
         r"""
         Return ``None`` when the polygon should not be plotted or a dictionary of options.
@@ -499,7 +606,7 @@ class SurfacePlotOptions:
        positions of the vertices to be rendered (which is the required argument of the sage
        ``polygon2d`` function).
         """
-        if not self._polygons:
+        if not self._polygons or not layout.is_visible(label):
             return
         opts = self._polygons_options.copy()
         opts.update(self._individual_polygons_options.get(label, []))
@@ -515,7 +622,7 @@ class SurfacePlotOptions:
         which are the string label and position to be rendered (which are the required
         arguments of the sage ``text`` function).
         """
-        if not self._polygons_labels:
+        if not self._polygons_labels or not layout.is_visible(label):
             return
         opts = self._polygons_labels_options.copy()
         opts.update(self._individual_polygons_labels_options.get(label, []))
@@ -553,6 +660,8 @@ class SurfacePlotOptions:
         start and end to be rendered (which is the required argument of the sage ``line2d``
         function).
         """
+        if not layout.is_visible(label):
+            return
         opts = self._edge_opt(layout, label, edge,
                               self._boundary_edges, self._self_glued_edges, self._adjacent_edges, self._non_adjacent_edges,
                               self._boundary_edges_options, self._self_glued_edges_options, self._adjacent_edges_options, self._non_adjacent_edges_options, self._individual_edges_options)
@@ -570,6 +679,9 @@ class SurfacePlotOptions:
             opts["points"] = [p.vertex(edge), p.vertex(edge + 1)]
         return opts
 
+    # TODO: the positionning of the edge_label is delicate
+    # matplotlib does not offer much
+    # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html#matplotlib.pyplot.text
     def edge_label_options(self, layout, labeller, label, edge):
         r"""
         Return ``None`` when the edge label should not be plotted or a dictionary of options
@@ -578,6 +690,8 @@ class SurfacePlotOptions:
         which are the string label and position to be rendered (which are the required
         arguments of the sage ``text`` function).
         """
+        if not layout.is_visible(label):
+            return
         opts = self._edge_opt(layout, label, edge,
                               self._boundary_edges_labels, self._self_glued_edges_labels, self._adjacent_edges_labels, self._non_adjacent_edges_labels,
                               self._boundary_edges_labels_options, self._self_glued_edges_labels_options, self._adjacent_edges_labels_options, self._non_adjacent_edges_labels_options, self._individual_edges_labels_options)
@@ -591,9 +705,31 @@ class SurfacePlotOptions:
 
         opts.update(self._individual_edges_labels_options.get((label, edge), []))
 
+        p = layout.polygon(label)
+        v0 = p.vertex(edge)
+        v1 = p.vertex(edge + 1)
+        edge_vector = v1 - v0
         if "xy" not in opts:
-            p = layout.polygon(label)
-            opts["xy"] = (p.vertex(edge) + p.vertex(edge + 1)) / 2
+            t = 0.3
+            push_off = 0.01
+            normal_vector = vector(RDF, (-edge_vector[1], edge_vector[0]))
+            normal_vector /= normal_vector.norm()
+            pos = (1 - t) * p.vertex(edge) + t * p.vertex(edge + 1) + push_off * normal_vector
+            opts["xy"] = pos
+        if "horizontal_alignment" not in opts:
+            if edge_vector[1] < 0:
+                opts["horizontal_alignment"] = "left"
+            elif edge_vector[1] > 0:
+                opts["horizontal_alignment"] = "right"
+            else:
+                opts["horizontal_alignment"] = "center"
+        if "vertical_alignment" not in opts:
+            if edge_vector[0] < 0:
+                opts["vertical_alignment"] = "top"
+            elif edge_vector[0] > 0:
+                opts["vertical_alignment"] = "bottom"
+            else:
+                opts["vertical_alignment"] = "center"
         if "string" not in opts:
             opts["string"] = labeller.edge_label(label, edge)
         return opts
