@@ -17,11 +17,13 @@ from writing your own layout, labeller or option handling::
 In order to plot a surface one needs to insantiate each of the above::
 
     sage: surface = translation_surfaces.arnoux_yoccoz(3)
+    sage: u, v = surface.vertices()
     sage: layout = BasicLayout(surface)
     sage: labeller = SurfaceLabeller(surface)
     sage: option_handler = SurfacePlotOptions(polygons={"color": "pink", 0: {"color": "blue"}}, polygons_alpha=0.4,
     ....:              polygons_labels={0: {"string": "left wing"}, 1: {"string": "nef", "color": "firebrick"}, 2: {"string": "right wing"}},
-    ....:              adjacent_edges={"color": "green"}, non_adjacent_edges_color="chartreuse", adjacent_edges_labels=False, edges_labels={(0, 0): {"string": "a"}})
+    ....:              adjacent_edges={"color": "green"}, non_adjacent_edges_color="chartreuse", adjacent_edges_labels=False, edges_labels={(0, 0): {"string": "a"}},
+    ....:               vertices={u: {"marker": "s", "color": "hotpink"}, v: {"marker": "h", "color": "lime"}})
 
 The graphic is then made of a superposition of four different elements
 - polygons rendered with sage ``polygon2d`` function,
@@ -116,6 +118,7 @@ def surface_plot(self, layout=None, labeller=None, option_handler=None, **kwds):
     """
     from sage.plot.graphics import Graphics
     from sage.plot.line import line2d
+    from sage.plot.point import point2d
     from sage.plot.polygon import polygon2d
     from sage.plot.text import text
 
@@ -128,7 +131,15 @@ def surface_plot(self, layout=None, labeller=None, option_handler=None, **kwds):
         labeller = SurfaceLabeller(self)
 
     # TODO: customization
+    # TODO: do not choose vertex colors here!!
     if option_handler is None:
+        from matplotlib import colormaps
+        colormap = colormaps["hsv"]
+        vertex_colors = {}
+        vertices = self.vertices()
+        for i, v in enumerate(vertices):
+            vertex_colors[v] = {"color": colormap(float(i) / float(len(vertices)))[:3]}
+        kwds["vertices"] = vertex_colors
         option_handler = SurfacePlotOptions(**kwds)
     elif kwds:
         raise ValueError
@@ -139,11 +150,11 @@ def surface_plot(self, layout=None, labeller=None, option_handler=None, **kwds):
         opts = option_handler.polygon_options(label, layout)
         if opts is None:
             continue
-        G += polygon2d(**opts)
+        G += polygon2d(zorder=0, **opts)
 
         opts = option_handler.polygon_label_options(label, layout, labeller)
         if opts is not None:
-            G += text(**opts)
+            G += text(zorder=3, **opts)
 
     for label1, edge1, label2, edge2 in layout.adjacent_edges():
         opts1 = option_handler.edge_options(label1, edge1, layout)
@@ -154,15 +165,15 @@ def surface_plot(self, layout=None, labeller=None, option_handler=None, **kwds):
             raise ValueError("inconsistent options for adjacent edge ({}, {}), ({}, {})".format(label1, edge1, label2, edge2))
         if opts1 is None:
             continue
-        G += line2d(points=points1, **opts1)
+        G += line2d(points=points1, zorder=1, **opts1)
 
         opts1 = option_handler.edge_label_options(label1, edge1, layout, labeller)
         if opts1 is not None:
-            G += text(**opts1)
+            G += text(zorder=3, **opts1)
 
         opts2 = option_handler.edge_label_options(label2, edge2, layout, labeller)
         if opts2 is not None:
-            G += text(**opts2)
+            G += text(zorder=3, **opts2)
 
     for label, edge in layout.non_adjacent_edges():
         # NOTE: this also contains boundary edges, self-glued edges and edges
@@ -170,12 +181,18 @@ def surface_plot(self, layout=None, labeller=None, option_handler=None, **kwds):
         opts = option_handler.edge_options(label, edge, layout)
         if opts is None:
             continue
-        G += line2d(**opts)
+        G += line2d(zorder=1, **opts)
 
         opts = option_handler.edge_label_options(label, edge, layout, labeller)
         if opts is None:
             continue
-        G += text(**opts)
+        G += text(zorder=3, **opts)
+
+    for v in layout.vertices():
+        opts = option_handler.vertex_options(v, layout)
+        if opts is None:
+            continue
+        G += point2d(zorder=2, **opts)
 
     G.axes(False)
     G.set_aspect_ratio(1)
@@ -227,10 +244,12 @@ class SurfaceLayout:
                     yield (label, edge, label2, edge2)
                     visited.add((label2, edge2))
 
-    def non_adjacent_edges(self):
+    def non_adjacent_edges(self, vertex=None):
         r"""
         Iterator through ``(label, edge)`` that are edges which are not part
         of a pair of adjacent edges in this layout.
+
+        If ``vertex`` is provided, only yield edges adjacent to it.
 
         EXAMPLES::
 
@@ -261,7 +280,17 @@ class SurfaceLayout:
                     continue
                 label2, edge2 = opposite_edge
                 if not self.is_adjacent(label, edge):
-                    yield (label, edge)
+                    if vertex is None or self._surface.point(label, self._surface.polygon(label).vertex(edge)) == vertex:
+                        yield (label, edge)
+
+    def vertices(self):
+        r"""
+        Return the vertices in the surface that are visible.
+        """
+        verts = set()
+        for label, edge in self.non_adjacent_edges():
+            verts.add(self._surface.point(label, self._surface.polygon(label).vertex(edge)))
+        return verts
 
     def layout(self, label):
         raise NotImplementedError
@@ -503,7 +532,7 @@ class SurfacePlotOptions:
         self._folded_polygons_labels = False
 
         self._polygons_labels_options = {
-            "color": "black"
+            "color": "gray"
         }
         self._folded_polygons_labels_options = {}
 
@@ -550,10 +579,20 @@ class SurfacePlotOptions:
 
         self._individual_edges_labels_options = {}
 
+        # vertex options
+        self._vertices = True
+        self._vertices_options = {
+            "marker": "o",
+            "color": "black",
+            "size": 50
+        }
+
+        self._individual_vertices_options = {}
+
         self.set_options(**kwds)
 
     def set_options(self, **kwds):
-        special_keys = ('polygons', 'folded_polygons', 'edges', 'boundary_edges', 'adjacent_edges', 'non_adjacent_edges', 'self_glued_edges')
+        special_keys = ('polygons', 'folded_polygons', 'edges', 'boundary_edges', 'adjacent_edges', 'non_adjacent_edges', 'self_glued_edges', 'vertices')
 
         for skey in special_keys:
             for key in [skey, skey + '_labels']:
@@ -756,4 +795,20 @@ class SurfacePlotOptions:
             edge_label = labeller.edge_label(label, edge)
             if edge_label is None:
                 return
+        return opts
+
+    def vertex_options(self, vertex, layout=None):
+        r"""
+        Return ``None`` if the vertex ``v`` should not be plotted otherwise a dictionary of options.
+        """
+        if not self._vertices:
+            return
+
+        opts = self._vertices_options.copy()
+        opts.update(self._individual_vertices_options.get(vertex, []))
+        if "points" not in opts:
+            if layout is None:
+                raise ValueError("a layout is needed as \"points\" is not preset for vertex {}".format(vertex))
+            points = [layout.polygon(label).vertex(edge) for (label, edge) in layout.non_adjacent_edges(vertex)]
+            opts["points"] = points
         return opts
