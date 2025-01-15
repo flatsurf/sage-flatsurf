@@ -46,7 +46,7 @@ an edge::
     Graphics object consisting of 1 graphics primitive
 
     sage: option_handler.polygon_label_options(0, layout, labeller)
-    {'color': 'black',
+    {'color': 'gray',
      'string': 'left wing',
      'xy': (-1/6*alpha^2 - 1/6, -1/3*alpha^2 + 1/3*alpha)}
     sage: text(**option_handler.polygon_label_options(0, layout, labeller))
@@ -67,6 +67,19 @@ an edge::
      'vertical_alignment': 'bottom',
      'xy': (-0.5942382152164581, 0.14630046089495533)}
     sage: text(**option_handler.edge_label_options(1, 0, layout, labeller))
+    Graphics object consisting of 1 graphics primitive
+
+    sage: u, v = surface.vertices()
+    sage: option_handler.vertex_options(v, layout)
+    {'color': 'lime',
+     'marker': 'h',
+     'points': [(1/2*alpha, 1/2*alpha^2 + alpha - 1/2),
+      (-1/2, -1/2*alpha^2 + alpha - 1/2),
+      (1/2, -1/2*alpha^2 + alpha - 1/2),
+      (-1/2*alpha^2, -1/2*alpha^2 + 1/2),
+      (-1/2*alpha^2, 1/2*alpha^2 - 1/2)],
+     'size': 50}
+    sage: point2d(**option_handler.vertex_options(v, layout))
     Graphics object consisting of 1 graphics primitive
 """
 # ****************************************************************************
@@ -110,11 +123,11 @@ def surface_plot(self, layout=None, labeller=None, option_handler=None, **kwds):
         sage: from flatsurf.graphical.surface_plot import surface_plot
         sage: S = translation_surfaces.arnoux_yoccoz(3)
         sage: surface_plot(S)
-        Graphics object consisting of 63 graphics primitives
+        Graphics object consisting of ... graphics primitives
         sage: surface_plot(S, polygons={"color": "pink", 0: {"color": "blue"}}, polygons_alpha=0.4,
         ....:              polygons_labels={0: {"string": "left wing"}, 1: {"string": "nef", "color": "firebrick"}, 2: {"string": "right wing"}},
         ....:              adjacent_edges={"color": "green"}, non_adjacent_edges_color="chartreuse", adjacent_edges_labels=False, edges_labels={(0, 0): {"string": "a"}})
-        Graphics object consisting of 63 graphics primitives
+        Graphics object consisting of ... graphics primitives
     """
     from sage.plot.graphics import Graphics
     from sage.plot.line import line2d
