@@ -34,35 +34,37 @@ The arguments to be sent to each function are built by the option handler
 `edge_options``, ``edge_label_options``). We illustrate this on a polygon and
 an edge::
 
-    sage: option_handler.polygon_options(layout, 0)
+    sage: option_handler.polygon_options(0, layout)
     {'alpha': 0.400000000000000,
      'color': 'blue',
      'points': ((0, 0),
       (-1/2*alpha^2, -1/2*alpha^2 + 1/2),
       (-1/2, -1/2*alpha^2 + alpha - 1/2))}
-    sage: polygon2d(**option_handler.polygon_options(layout, 0))
+    sage: polygon2d(**option_handler.polygon_options(0, layout))
     Graphics object consisting of 1 graphics primitive
 
-    sage: option_handler.polygon_label_options(layout, labeller, 0)
+    sage: option_handler.polygon_label_options(0, layout, labeller)
     {'color': 'black',
      'string': 'left wing',
      'xy': (-1/6*alpha^2 - 1/6, -1/3*alpha^2 + 1/3*alpha)}
-    sage: text(**option_handler.polygon_label_options(layout, labeller, 0))
+    sage: text(**option_handler.polygon_label_options(0, layout, labeller))
     Graphics object consisting of 1 graphics primitive
 
-    sage: option_handler.edge_options(layout, 0, 0)
+    sage: option_handler.edge_options(0, 0, layout)
     {'color': 'green',
      'linestyle': ':',
      'points': [(0, 0), (-1/2*alpha^2, -1/2*alpha^2 + 1/2)],
      'thickness': 0.5}
-    sage: line2d(**option_handler.edge_options(layout, 0, 0))
+    sage: line2d(**option_handler.edge_options(0, 0, layout))
     Graphics object consisting of 1 graphics primitive
 
-    sage: option_handler.edge_label_options(layout, labeller, 1, 0)
+    sage: option_handler.edge_label_options(1, 0, layout, labeller)
     {'color': 'black',
+     'horizontal_alignment': 'left',
      'string': 'a',
-     'xy': (-1/4*alpha^2 - 1/2, -3/4*alpha^2 + alpha - 1/4)}
-    sage: text(**option_handler.edge_label_options(layout, labeller, 1, 0))
+     'vertical_alignment': 'bottom',
+     'xy': (-0.5942382152164581, 0.14630046089495533)}
+    sage: text(**option_handler.edge_label_options(1, 0, layout, labeller))
     Graphics object consisting of 1 graphics primitive
 """
 # ****************************************************************************
@@ -96,21 +98,21 @@ from flatsurf.geometry.similarity import SimilarityGroup
 
 
 # TODO: to be changed as Surface.plot()
-def plot_surface(self, **kwds):
+def surface_plot(self, layout=None, labeller=None, option_handler=None, **kwds):
     r"""
     Return a 2d graphic representation of this surface.
 
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces
-        sage: from flatsurf.graphical.surface_plot import plot_surface
+        sage: from flatsurf.graphical.surface_plot import surface_plot
         sage: S = translation_surfaces.arnoux_yoccoz(3)
-        sage: plot_surface(S)
-        Graphics object consisting of 27 graphics primitives
-        sage: plot_surface(S, polygons={"color": "pink", 0: {"color": "blue"}}, polygons_alpha=0.4,
+        sage: surface_plot(S)
+        Graphics object consisting of 63 graphics primitives
+        sage: surface_plot(S, polygons={"color": "pink", 0: {"color": "blue"}}, polygons_alpha=0.4,
         ....:              polygons_labels={0: {"string": "left wing"}, 1: {"string": "nef", "color": "firebrick"}, 2: {"string": "right wing"}},
         ....:              adjacent_edges={"color": "green"}, non_adjacent_edges_color="chartreuse", adjacent_edges_labels=False, edges_labels={(0, 0): {"string": "a"}})
-        Graphics object consisting of 27 graphics primitives
+        Graphics object consisting of 63 graphics primitives
     """
     from sage.plot.graphics import Graphics
     from sage.plot.line import line2d
@@ -118,29 +120,34 @@ def plot_surface(self, **kwds):
     from sage.plot.text import text
 
     # TODO: customization
-    layout = BasicLayout(self)
+    if layout is None:
+        layout = BasicLayout(self)
 
     # TODO: customization
-    labeller = SurfaceLabeller(self)
+    if labeller is None:
+        labeller = SurfaceLabeller(self)
 
     # TODO: customization
-    option_handler = SurfacePlotOptions(**kwds)
+    if option_handler is None:
+        option_handler = SurfacePlotOptions(**kwds)
+    elif kwds:
+        raise ValueError
 
     G = Graphics()
 
     for label in layout.labels():
-        opts = option_handler.polygon_options(layout, label)
-        if opts is not None:
+        opts = option_handler.polygon_options(label, layout)
+        if opts is None:
             continue
         G += polygon2d(**opts)
 
-        opts = option_handler.polygon_label_options(layout, labeller, label)
+        opts = option_handler.polygon_label_options(label, layout, labeller)
         if opts is not None:
             G += text(**opts)
 
     for label1, edge1, label2, edge2 in layout.adjacent_edges():
-        opts1 = option_handler.edge_options(layout, label1, edge1)
-        opts2 = option_handler.edge_options(layout, label2, edge2)
+        opts1 = option_handler.edge_options(label1, edge1, layout)
+        opts2 = option_handler.edge_options(label2, edge2, layout)
         points1 = opts1.pop("points")
         points2 = opts2.pop("points")
         if opts1 != opts2:
@@ -149,23 +156,23 @@ def plot_surface(self, **kwds):
             continue
         G += line2d(points=points1, **opts1)
 
-        opts1 = option_handler.edge_label_options(layout, labeller, label1, edge1)
+        opts1 = option_handler.edge_label_options(label1, edge1, layout, labeller)
         if opts1 is not None:
             G += text(**opts1)
 
-        opts2 = option_handler.edge_label_options(layout, labeller, label2, edge2)
+        opts2 = option_handler.edge_label_options(label2, edge2, layout, labeller)
         if opts2 is not None:
-            G += text(**opts)
+            G += text(**opts2)
 
     for label, edge in layout.non_adjacent_edges():
         # NOTE: this also contains boundary edges, self-glued edges and edges
         # whose opposite edge belong to a hidden polygon
-        opts = option_handler.edge_options(layout, label, edge)
+        opts = option_handler.edge_options(label, edge, layout)
         if opts is None:
             continue
         G += line2d(**opts)
 
-        opts = option_handler.edge_label_options(layout, labeller, label, edge)
+        opts = option_handler.edge_label_options(label, edge, layout, labeller)
         if opts is None:
             continue
         G += text(**opts)
@@ -468,12 +475,14 @@ class SurfacePlotOptions:
         sage: layout = BasicLayout(S, adjacencies=[(0, 0)])
         sage: labeller = SurfaceLabeller(S)
         sage: SP = SurfacePlotOptions(adjacent_edges_labels=False, edges_labels={(0, 0): {"string": "my label"}})
-        sage: SP.edge_label_options(layout, labeller, 0, 0)
+        sage: SP.edge_label_options(0, 0, layout, labeller)
         sage: SP = SurfacePlotOptions(adjacent_edges_labels=True, edges_labels={(0, 0): {"string": "my label"}})
-        sage: SP.edge_label_options(layout, labeller, 0, 0)
+        sage: SP.edge_label_options(0, 0, layout, labeller)
         {'color': 'black',
+         'horizontal_alignment': 'right',
          'string': 'my label',
-         'xy': (-1/4*alpha^2, -1/4*alpha^2 + 1/4)}
+         'vertical_alignment': 'top',
+         'xy': (-0.05356065604458417, 0.10179080927503625)}
     """
     def __init__(self, **kwds):
         # polygon options
@@ -544,7 +553,7 @@ class SurfacePlotOptions:
         self.set_options(**kwds)
 
     def set_options(self, **kwds):
-        special_keys = ('polygons', 'folded_polygons', 'edges', 'boundary_edges', 'adjacent_edges', 'non_adjacent_edges')
+        special_keys = ('polygons', 'folded_polygons', 'edges', 'boundary_edges', 'adjacent_edges', 'non_adjacent_edges', 'self_glued_edges')
 
         for skey in special_keys:
             for key in [skey, skey + '_labels']:
@@ -598,7 +607,7 @@ class SurfacePlotOptions:
 
     __repr__ = __str__
 
-    def polygon_options(self, layout, label):
+    def polygon_options(self, label, layout=None):
         r"""
         Return ``None`` when the polygon should not be plotted or a dictionary of options.
 
@@ -611,10 +620,12 @@ class SurfacePlotOptions:
         opts = self._polygons_options.copy()
         opts.update(self._individual_polygons_options.get(label, []))
         if "points" not in opts:
+            if layout is None:
+                raise ValueError("a layout is needed as \"points\" is not preset for polygon with label {}".format(label))
             opts["points"] = layout.polygon(label).vertices()
         return opts
 
-    def polygon_label_options(self, layout, labeller, label):
+    def polygon_label_options(self, label, layout=None, labeller=None):
         r"""
         Return ``None`` when the polygon label should not be plotted or a dictionary of options
 
@@ -627,8 +638,12 @@ class SurfacePlotOptions:
         opts = self._polygons_labels_options.copy()
         opts.update(self._individual_polygons_labels_options.get(label, []))
         if "string" not in opts:
+            if labeller is None:
+                raise ValueError("a labeller is needed as \"string\" is not preset for polygon with label {}".format(label))
             opts["string"] = labeller.polygon_label(label)
         if "xy" not in opts:
+            if layout is None:
+                raise ValueError("a layout is needed as \"xy\" is not preset for polygon with label {}".format(label))
             verts = layout.polygon(label).vertices()
             opts["xy"] = sum(verts) / len(verts)
         return opts
@@ -652,7 +667,7 @@ class SurfacePlotOptions:
 
         raise RuntimeError
 
-    def edge_options(self, layout, label, edge):
+    def edge_options(self, label, edge, layout=None):
         r"""
         Return ``None`` when the edge should not be plotted or a dictionary of options
 
@@ -675,6 +690,8 @@ class SurfacePlotOptions:
         opts.update(self._individual_edges_options.get((label, edge), []))
 
         if "points" not in opts:
+            if layout is None:
+                raise ValueError("a layout is needed as \"points\" is not preset for edge ({}, {})".format(polygon, label))
             p = layout.polygon(label)
             opts["points"] = [p.vertex(edge), p.vertex(edge + 1)]
         return opts
@@ -682,7 +699,7 @@ class SurfacePlotOptions:
     # TODO: the positionning of the edge_label is delicate
     # matplotlib does not offer much
     # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html#matplotlib.pyplot.text
-    def edge_label_options(self, layout, labeller, label, edge):
+    def edge_label_options(self, label, edge, layout=None, labeller=None):
         r"""
         Return ``None`` when the edge label should not be plotted or a dictionary of options
 
@@ -705,11 +722,13 @@ class SurfacePlotOptions:
 
         opts.update(self._individual_edges_labels_options.get((label, edge), []))
 
-        p = layout.polygon(label)
-        v0 = p.vertex(edge)
-        v1 = p.vertex(edge + 1)
-        edge_vector = v1 - v0
         if "xy" not in opts:
+            if layout is None:
+                raise ValueError("a layout is needed as \"xy\" is not preset for the label of edge ({}, {})".format(label, edge))
+            p = layout.polygon(label)
+            v0 = p.vertex(edge)
+            v1 = p.vertex(edge + 1)
+            edge_vector = v1 - v0
             t = 0.3
             push_off = 0.01
             normal_vector = vector(RDF, (-edge_vector[1], edge_vector[0]))
@@ -731,5 +750,10 @@ class SurfacePlotOptions:
             else:
                 opts["vertical_alignment"] = "center"
         if "string" not in opts:
+            if labeller is None:
+                raise ValueError("a \"labeller\" is needed as \"string\" is not preset for the label of edge ({}, {})".format(label, edge))
             opts["string"] = labeller.edge_label(label, edge)
+            edge_label = labeller.edge_label(label, edge)
+            if edge_label is None:
+                return
         return opts
