@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: prefix-dev/setup-pixi@v0.8.1
-      with: { pixi-version: v0.28.2, environments: asv, activate-environment: true }
+      with: { pixi-version: v0.39.5, environments: asv, activate-environment: true }
     - name: Checkout historic performance data
       uses: actions/checkout@v4
       with: { path: .asv/results, ref: asv }
