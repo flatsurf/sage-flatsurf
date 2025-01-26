@@ -1,3 +1,0 @@
-**Fixed:**
-
-* Fixd problems of installer with pixi 0.40.2 release on macOS by forcing a tested version of the pixi installer.
