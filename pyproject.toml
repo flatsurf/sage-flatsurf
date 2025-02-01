@@ -216,5 +216,5 @@ libmambapy = "*"
 conda-build = "*"
 
 [tool.pixi.activation.env]
-MAKEFLAGS = "-j$(nproc)"
-SAGE_NUM_THREADS = "$(nproc)"
+MAKEFLAGS = "-j$(nproc || sysctl -n hw.ncpu)"
+SAGE_NUM_THREADS = "$(nproc || sysctl -n hw.ncpu)"
