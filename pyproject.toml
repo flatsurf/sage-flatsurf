@@ -183,31 +183,31 @@ depends-on = ["doc-build"]
 cwd = "doc"
 
 [tool.pixi.feature.sagemath-97.dependencies]
-sagelib = "9.7"
+sagelib = "9.7.*"
 python = "~=3.10.0"
 
 [tool.pixi.feature.sagemath-98.dependencies]
-sagelib = "9.8"
+sagelib = "9.8.*"
 python = "~=3.10.0"
 
 [tool.pixi.feature.sagemath-100.dependencies]
-sagelib = "10.0"
+sagelib = "10.0.*"
 python = "~=3.10.0"
 
 [tool.pixi.feature.sagemath-101.dependencies]
-sagelib = "10.1"
+sagelib = "10.1.*"
 python = "~=3.10.0"
 
 [tool.pixi.feature.sagemath-102.dependencies]
-sagelib = "10.2"
+sagelib = "10.2.*"
 python = "~=3.11.0"
 
 [tool.pixi.feature.sagemath-103.dependencies]
-sagelib = "10.3"
+sagelib = "10.3.*"
 python = "~=3.11.0"
 
 [tool.pixi.feature.sagemath-104.dependencies]
-sagelib = "10.4"
+sagelib = "10.4.*"
 python = "~=3.12.0"
 
 [tool.pixi.feature.asv.dependencies]
@@ -215,6 +215,6 @@ asv = ">=0.6.4,<0.7"
 libmambapy = "*"
 conda-build = "*"
 
-[activation.env]
-MAKEFLAGS = "-j$(nproc)"
-SAGE_NUM_THREADS = "$(nproc)"
+[tool.pixi.activation.env]
+MAKEFLAGS = "-j$(nproc || sysctl -n hw.ncpu)"
+SAGE_NUM_THREADS = "$(nproc || sysctl -n hw.ncpu)"
