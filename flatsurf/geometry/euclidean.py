@@ -533,10 +533,10 @@ def is_segment_intersecting(e1, e2):
     return 2  # middle intersection
 
 
-def is_between(e0, e1, f):
+def is_between(e0, e1, f, strict=True):
     r"""
-    Check whether the vector ``f`` is strictly in the sector formed by the vectors
-    ``e0`` and ``e1`` (in counter-clockwise order).
+    Check whether the vector ``f`` is (strictly) in the sector formed by the
+    vectors ``e0`` and ``e1`` (in counter-clockwise order).
 
     EXAMPLES::
 
@@ -549,6 +549,12 @@ def is_between(e0, e1, f):
         sage: for (i, vi), (j, vj), (k, vk) in product(enumerate(vecs), repeat=3):
         ....:     assert is_between(vi, vj, vk) == ((i == j and i != k) or i < k < j or k < j < i or j < i < k), ((i, vi), (j, vj), (k, vk))
     """
+    if not strict:
+        if is_parallel(e0, f):
+            return True
+        if is_parallel(f, e1):
+            return True
+
     if e0[0] * e1[1] > e1[0] * e0[1]:
         # positive determinant
         # [ e0[0] e1[0] ]^-1 = [ e1[1] -e1[0] ]
@@ -725,3 +731,11 @@ def slope(a, rotate=1):
     if rotate == -1:
         return 1 if y else -1
     raise ValueError("invalid argument rotate={}".format(rotate))
+
+
+def rotate(v, direction):
+    r"""
+    Return a rotated version of ``v`` that is parallel with ``w``.
+
+    """
+    return v.base_ring()((v.dot_product(v) / direction.dot_product(direction)).sqrt()) * direction

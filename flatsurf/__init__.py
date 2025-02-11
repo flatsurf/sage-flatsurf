@@ -22,6 +22,8 @@ from flatsurf.geometry.similarity_surface_generators import (
 
 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
+from flatsurf.geometry.path import Path
+
 from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
 from flatsurf.geometry.hyperbolic import HyperbolicPlane
