@@ -22,6 +22,8 @@
 # SOFTWARE.
 # ********************************************************************
 
+import os.path
+
 from rever.activities.command import command
 
 try:
@@ -31,7 +33,7 @@ except KeyboardInterrupt:
 
 $PROJECT = 'sage-flatsurf'
 
-command('pixi', 'pixi install --manifest-path pyproject.toml')
+command('pixi', 'pixi install --manifest-path "$PWD/pyproject.toml" -e dev')
 
 command('build', 'python -m build')
 command('twine', 'twine upload dist/sage_flatsurf-' + $VERSION + '.tar.gz dist/sage_flatsurf-' + $VERSION + '-py3-none-any.whl')
