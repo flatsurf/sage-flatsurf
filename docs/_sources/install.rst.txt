@@ -21,7 +21,7 @@ Install with the pixi tarball
 
 Open a terminal and run the following command::
 
-  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/0.7.2/sage-flatsurf-0.7.2.unix.tar.gz | tar zxf -
+  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/0.7.3/sage-flatsurf-0.7.3.unix.tar.gz | tar zxf -
 
 This will download the latest pixi tarball from our `Releases Page
 <https://github.com/flatsurf/sage-flatsurf/releases/>`_ and extract it into a
@@ -39,11 +39,11 @@ rename it.
 You can now use sage-flatsurf in a terminal or through Jupyter notebooks. To
 launch sage-flatsurf in the terminal, run::
 
-  ./sage-flatsurf-0.7.2/sage
+  ./sage-flatsurf-0.7.3/sage
 
 To launch a browser with Jupyter Lab instead, run::
 
-  ./sage-flatsurf-0.7.2/jupyterlab
+  ./sage-flatsurf-0.7.3/jupyterlab
 
 The first time you run either of these commands, the installer downloads a copy
 of SageMath and some other dependencies (in total this is going to use about
