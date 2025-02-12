@@ -1016,8 +1016,7 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
             n = len(self.angles())
             if len(lengths) != n - 2 and len(lengths) != n:
                 raise ValueError(
-                    "must provide %d or %d lengths but provided %d"
-                    % (n - 2, n, len(lengths))
+                    f"must provide {n - 2} or {n} lengths but provided {len(lengths)}"
                 )
 
             V = self.base_ring() ** 2
