@@ -9,7 +9,7 @@ authors = [
 dependencies = [
   "bidict",
   "more-itertools",
-  "surface-dynamics>=0.6.0,<0.7.0",
+  "surface-dynamics>=0.6.0,<0.8.0",
   "matplotlib",
 ]
 description = "Flat surfaces in SageMath"
@@ -54,8 +54,8 @@ bidict = "*"
 matplotlib-base = "*"
 more-itertools = "*"
 numpy = "*"
-surface-dynamics = ">=0.6.0,<0.7"
-sagelib = ">=9.4"
+surface-dynamics = "*"
+sagelib = "*"
 gap-defaults = "*"
 pip = "*"
 conda = "*"
