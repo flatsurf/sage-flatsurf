@@ -231,7 +231,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/soupsieve-2.5-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.15.1-hb29a8c4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py312he5c7d53_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py312he5c7d53_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tabulate-0.9.0-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -487,7 +487,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/soupsieve-2.5-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.15.1-h65da0ee_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py312h4bb98dc_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py312h4bb98dc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tabulate-0.9.0-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
@@ -716,7 +716,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.15.1-hb29a8c4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py312he5c7d53_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py312he5c7d53_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/threejs-sage-122-hd8ed1ab_2.tar.bz2
@@ -930,7 +930,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.15.1-h65da0ee_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py312h4bb98dc_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py312h4bb98dc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/threejs-sage-122-hd8ed1ab_2.tar.bz2
@@ -1289,7 +1289,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sniffio-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/soupsieve-2.5-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py312he5c7d53_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py312he5c7d53_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/terminado-0.18.1-pyh0d859eb_0.conda
@@ -1680,7 +1680,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sniffio-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/soupsieve-2.5-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py312h4bb98dc_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py312h4bb98dc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/terminado-0.18.1-pyh31c8845_0.conda
@@ -2023,7 +2023,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-serializinghtml-1.1.10-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/sqlalchemy-2.0.38-py312h66e93f0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py312he5c7d53_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py312he5c7d53_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tabulate-0.9.0-pyhd8ed1ab_2.conda
@@ -2356,7 +2356,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-serializinghtml-1.1.10-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/sqlalchemy-2.0.38-py312h01d7ebd_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py312h4bb98dc_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py312h4bb98dc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tabulate-0.9.0-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tachyon-0.99b6-h3a1d103_1002.conda
@@ -2640,7 +2640,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.14.1-hed91bc2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310h4c5959c_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310h4c5959c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -2915,7 +2915,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.14.1-h325aa07_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310h9086021_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310h9086021_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -3192,7 +3192,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.14.1-hed91bc2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310h84c0b4f_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310h84c0b4f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -3467,7 +3467,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.14.1-h325aa07_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310hb1cb2fa_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310hb1cb2fa_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -3744,7 +3744,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.14.1-hed91bc2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py311h1148151_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py311h1148151_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -4019,7 +4019,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.14.1-h325aa07_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py311h098ecb0_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py311h098ecb0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -4290,7 +4290,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.15.1-hb29a8c4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py311h5a06ecc_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py311h5a06ecc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -4556,7 +4556,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.15.1-h65da0ee_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py311h55d425d_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py311h55d425d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -4824,7 +4824,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.15.1-hb29a8c4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py312ha91b14b_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py312ha91b14b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -5090,7 +5090,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.15.1-h65da0ee_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py312h3c90245_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py312h3c90245_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -5366,7 +5366,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.14.1-hed91bc2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310hb386d66_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310hb386d66_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-2.0-h58526e2_1007.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -5644,7 +5644,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.14.1-h325aa07_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310ha02199c_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310ha02199c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-2.0-h2e338ed_1007.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -5922,7 +5922,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.14.1-hed91bc2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310h63e5139_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310h63e5139_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-3.0.1-hcb278e6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.17-h0157908_18.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -6197,7 +6197,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/spdlog-1.14.1-h325aa07_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/stack_data-0.6.3-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310h91c76e1_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310h91c76e1_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/symmetrica-3.0.1-hf0c8a7f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tapi-1300.6.5-h390ca13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/three.js-122-hd8ed1ab_2.tar.bz2
@@ -10690,8 +10690,7 @@ packages:
   - certifi
   license: BSD-3-Clause
   license_family: BSD
-  purls:
-  - pkg:pypi/httpcore?source=hash-mapping
+  purls: []
   size: 48959
   timestamp: 1731707562362
 - conda: https://conda.anaconda.org/conda-forge/noarch/httpx-0.28.1-pyhd8ed1ab_0.conda
@@ -16736,7 +16735,7 @@ packages:
   - python >=3.9
   license: ISC
   purls:
-  - pkg:pypi/pexpect?source=compressed-mapping
+  - pkg:pypi/pexpect?source=hash-mapping
   size: 53561
   timestamp: 1733302019362
 - conda: https://conda.anaconda.org/conda-forge/noarch/pickleshare-0.7.5-pyhd8ed1ab_1004.conda
@@ -19328,11 +19327,11 @@ packages:
 - pypi: .
   name: sage-flatsurf
   version: 0.7.2
-  sha256: 7ffc8c857cbf8d6a6bf3a3a6a9ab197fb51f311a3614b3daacada7ae35b525c3
+  sha256: 2f0a9e207bd1d08cd3ddc5c06b1d781688d86d333044c453a5fc8c41f7b7bced
   requires_dist:
   - bidict
   - more-itertools
-  - surface-dynamics>=0.6.0,<0.7.0
+  - surface-dynamics>=0.6.0,<0.8.0
   - matplotlib
   requires_python: '>=3.9'
   editable: true
@@ -21183,9 +21182,9 @@ packages:
   - pkg:pypi/stack-data?source=hash-mapping
   size: 26988
   timestamp: 1733569565672
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310h4c5959c_3.conda
-  sha256: 7d71a4f30e4ff9fd86e01634fe29f0571b8f570b813fc3746355a147898ce972
-  md5: e0f7bd2723c7f8805602e2ddd3d673d1
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310h4c5959c_0.conda
+  sha256: 4a30a232ba879510147d9409f60d2b1159b4c11e922ca81a68da340305dc5aae
+  md5: 53a662d4591b18cf195898041b2b648d
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21201,11 +21200,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7036862
-  timestamp: 1739326113380
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310h63e5139_3.conda
-  sha256: ac463c77d58f4ff8248a07f0e6ad6fddb928baa2e46fb8ff9b5b936a3394e5a4
-  md5: 4aa7c91a34971b8ff553f5c7cb228cc5
+  size: 7092479
+  timestamp: 1739372484513
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310h63e5139_0.conda
+  sha256: 8c4be6a906612b5a5a4d6ed107ad161db80c19401aab2164bbac1997d65d1bfe
+  md5: 9b62282800c801fe33dd892e93be599d
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21221,11 +21220,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7051231
-  timestamp: 1739326038812
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310h84c0b4f_3.conda
-  sha256: 8a0b60118c724b27072c23dc6775b1ce029d2adda90a87ba0956c8c2bfa2623a
-  md5: 40db39e8175c15936e42af6e8644b4c3
+  size: 7081079
+  timestamp: 1739372530851
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310h84c0b4f_0.conda
+  sha256: 3d28f10c2f9e703820a3b16ceba4400ed4ed5888012d0cb229249f13a32ec7e5
+  md5: 4fe4a7f8ba78c1aba07d4ba5cd9021ce
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21241,11 +21240,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7037722
-  timestamp: 1739326109274
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py310hb386d66_3.conda
-  sha256: c8bb2b5884058eab35b3e05f6dfacb8ba6a7ed6ba0384535acc1e6c83a56e7a0
-  md5: 2abd7ddc68a53f779603d71bd4f721b9
+  size: 7071040
+  timestamp: 1739372500106
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py310hb386d66_0.conda
+  sha256: 050c8a0032c5e4080bf9b09c0c494918c5fbe38d436d797cfe1621e954b512f8
+  md5: beb8542328ae539b36b393ffc08d62cc
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21261,11 +21260,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7127483
-  timestamp: 1739326145907
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py311h1148151_3.conda
-  sha256: 89d8b2db3bdde401b1781eb23d4ad2af00909f9a35e84fec49f4f549b5586ddb
-  md5: 1034082b44904148cda8d1d0008029c3
+  size: 6902454
+  timestamp: 1739372491790
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py311h1148151_0.conda
+  sha256: f14180415d900fe3e4cee000bb23b0532668c9147753b988afcbf9e3eb85f9ab
+  md5: 9c523e187ba025825af21ba626c0babe
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21281,11 +21280,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7387413
-  timestamp: 1739326054824
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py311h5a06ecc_3.conda
-  sha256: c841db94c26ad5e33f75afc0750322a3e49b1e966482c1cee98d361118350f6c
-  md5: ba207b558ec1496b4d72dd874a1f894a
+  size: 7334441
+  timestamp: 1739372490010
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py311h5a06ecc_0.conda
+  sha256: f0d2215f0635254624ade21908298a2e2cdd300af0680250ee43d90dafd8912e
+  md5: 2c912d82c2d1c157fb1e2936bf9cb4f0
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21301,11 +21300,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7273382
-  timestamp: 1739326133506
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py312ha91b14b_3.conda
-  sha256: 2dc3d5a58b5e2096ad0f86ad20570a8b09bdf9b450daa187e2c3d13b54a75650
-  md5: 1273b6c89c4a2259575095b0c10bc222
+  size: 7290054
+  timestamp: 1739372491872
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py312ha91b14b_0.conda
+  sha256: 80eb6b94864836530545fe43674c516dcf4acc5893bcc6172d4c8dd9d0f9b9c0
+  md5: e7b87da912c5eccae24653f456e5374c
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21321,11 +21320,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7259829
-  timestamp: 1739326229287
-- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.6.0-py312he5c7d53_3.conda
-  sha256: a53bd91c9ca4aadd8cb2125727b52e1c83fb47e6d6430aecb1d6e162900fed27
-  md5: 4df2f70178f4b7b6e54ea48c46a2a8f3
+  size: 7180159
+  timestamp: 1739372655887
+- conda: https://conda.anaconda.org/conda-forge/linux-64/surface-dynamics-0.7.0-py312he5c7d53_0.conda
+  sha256: c30078e04f1ff40c6e748600cc2fdb3fbc2e763a177786ce610d379b8f5c18bf
+  md5: 71ac7ba757298de71fd8eb6cbb3424d2
   depends:
   - __glibc >=2.17,<3.0.a0
   - gmp >=6.3.0,<7.0a0
@@ -21341,11 +21340,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7276573
-  timestamp: 1739326162953
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310h9086021_3.conda
-  sha256: c9be6f9b428990c407ef22545f6e641e06780cb3d3dff9d07858a5c60a1c3fbe
-  md5: 75a8e49b077a148b34bdd1e433b05130
+  size: 7136056
+  timestamp: 1739372645696
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310h9086021_0.conda
+  sha256: 055c98479f3089985ef4abefe071d5320ff50c3060f1c38e2ab9d37ada8dbcc7
+  md5: 06dca87ddc20db8525919dff9d27a767
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21360,11 +21359,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7105578
-  timestamp: 1739326250824
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310h91c76e1_3.conda
-  sha256: a58b8f6966323ee4dfcb78e12ed5dcc2840c3634d58b1b6d56f9a3ba7edad635
-  md5: d69f1692f4c98110bbdac6e38a92a981
+  size: 7051668
+  timestamp: 1739372704797
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310h91c76e1_0.conda
+  sha256: 364fd1c8bf2943229124c8b13d7df4ab4dca288c42f601f4ba304393804ce24c
+  md5: aa0bb13d359e79ba16960b19efa3c4b9
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21379,11 +21378,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7034866
-  timestamp: 1739326271207
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310ha02199c_3.conda
-  sha256: d62881ea84dfd53e95541103e4b3fc46d7a6f091423af73161287a32b14b2ae1
-  md5: 3b09ec1680c0b3fcbe3abfd75df3b164
+  size: 7092016
+  timestamp: 1739372833632
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310ha02199c_0.conda
+  sha256: a1b301ec1e536fbab74295b972c0981a6c369df01c834b6645e39bc57bdb858e
+  md5: 0d29dcb9e458d75189cf7a742049ea83
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21398,11 +21397,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 6991112
-  timestamp: 1739326189377
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py310hb1cb2fa_3.conda
-  sha256: a24b7f0285975b835e208529410c14223680b066bfdb9a59782defb6a4f87fd6
-  md5: bc78934dfbd51d83793ac8c9f9180975
+  size: 7104439
+  timestamp: 1739372688771
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py310hb1cb2fa_0.conda
+  sha256: 482a1645120935ad1ead620d1a80bbc38e4c57210224fe64979a4aa877194932
+  md5: c57dda5258cd19b711600ab999645f48
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21417,11 +21416,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7103760
-  timestamp: 1739326279443
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py311h098ecb0_3.conda
-  sha256: 209ea946bed21e9cd2a3ad5f2dae844afb1697ddf4bf3bc51df9478382bc4586
-  md5: 7339703cbdba104f362020f2d3c3157b
+  size: 7116552
+  timestamp: 1739372626229
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py311h098ecb0_0.conda
+  sha256: 81ad38a5f5443c3ae0b8be7c2577eb787d199dfce8b785dcedb3c5b785efe3bf
+  md5: 21e1a09c822cc09cc698ba3760fe8c96
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21436,11 +21435,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7234895
-  timestamp: 1739326434702
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py311h55d425d_3.conda
-  sha256: ab44a3767780dbabecd0b232cde6e6479d1bd46e1a8a693454f8ca1eb209c772
-  md5: 80b09b651c54720cc3d2652ff39ff5e3
+  size: 7264282
+  timestamp: 1739372964897
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py311h55d425d_0.conda
+  sha256: 16a73aa1ae6d505abee896767b4d3b60152894c18da2814d1e3d37b06e121a36
+  md5: 4491bdc7692ede1a6a83aa76dc855c5d
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21455,11 +21454,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7332619
-  timestamp: 1739326259456
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py312h3c90245_3.conda
-  sha256: d6bdab2481dee17be610a5e9223a9b5b02580b8712a81e6c1da72cd0ff26fc76
-  md5: 14d6413812196b2225fa1186f7e3da58
+  size: 7369570
+  timestamp: 1739372766179
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py312h3c90245_0.conda
+  sha256: 5807c8adfb573f57a2f5b935a9b7d3c8fc906334205e91f22791690c69de4b28
+  md5: 366e7297f1632b1e8631d73eed3a83fc
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21474,11 +21473,11 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7210217
-  timestamp: 1739326367991
-- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.6.0-py312h4bb98dc_3.conda
-  sha256: 2f75e3294381a25908a904cd09d901af847d6fec7bb43ba73bfeb9629be1030b
-  md5: 5c81962a5e50cd62188e7ae4492ac589
+  size: 7094642
+  timestamp: 1739372937911
+- conda: https://conda.anaconda.org/conda-forge/osx-64/surface-dynamics-0.7.0-py312h4bb98dc_0.conda
+  sha256: e030f112cdff7394003af67f42c5fed233e6d44b4c5d0359519ec56229b6ebeb
+  md5: 9bb210250b6890a8274a168bb9a645d2
   depends:
   - __osx >=10.13
   - gmp >=6.3.0,<7.0a0
@@ -21493,8 +21492,8 @@ packages:
   license: GPL-2.0-or-later
   purls:
   - pkg:pypi/surface-dynamics?source=hash-mapping
-  size: 7205218
-  timestamp: 1739326535354
+  size: 7122865
+  timestamp: 1739372754078
 - conda: https://conda.anaconda.org/conda-forge/linux-64/symmetrica-2.0-h58526e2_1007.tar.bz2
   sha256: 83df881d312466762ffd38a4a4afcf74453622e92c9032a725d401d2743596ef
   md5: 08eebf85292ce673d2e3098f676780fb
