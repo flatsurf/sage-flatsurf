@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>half_translation_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
@@ -363,14 +363,14 @@ category is automatically determined for immutable surfaces.</p>
 <p>EXAMPLES:</p>
 <p>We glue all the sides of a square to themselves. Since each gluing is just a
 rotation by π, this is a half-translation surface:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">HalfTranslationSurfaces</span><span class="p">())</span>
 <span class="kc">True</span>
 </pre></div>
@@ -381,7 +381,7 @@ rotation by π, this is a half-translation surface:</p>
 <dd><p>The category of surfaces built by gluing (Euclidean) polygons with
 translations and half-translations (rotations by angle π).</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">HalfTranslationSurfaces</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">half</span> <span class="n">translation</span> <span class="n">surfaces</span>
 </pre></div>
@@ -391,11 +391,11 @@ translations and half-translations (rotations by angle π).</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Orientable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/half_translation_surfaces.html#HalfTranslationSurfaces.Orientable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable" title="Link to this definition">¶</a></dt>
 <dd><p>The category of orientable half-translation surfaces.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">B</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="ow">in</span> <span class="n">HalfTranslationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Orientable</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -405,11 +405,11 @@ translations and half-translations (rotations by angle π).</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">WithoutBoundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/half_translation_surfaces.html#HalfTranslationSurfaces.Orientable.WithoutBoundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable.WithoutBoundary" title="Link to this definition">¶</a></dt>
 <dd><p>The category of orientable half-translation surfaces without boundary.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">B</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="ow">in</span> <span class="n">HalfTranslationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Orientable</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -425,7 +425,7 @@ want to put it here.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable.WithoutBoundary.ParentMethods.stratum">
 <span class="sig-name descname"><span class="pre">stratum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/half_translation_surfaces.html#HalfTranslationSurfaces.Orientable.WithoutBoundary.ParentMethods.stratum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable.WithoutBoundary.ParentMethods.stratum" title="Link to this definition">¶</a></dt>
 <dd><p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">B</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
@@ -447,11 +447,11 @@ want to put it here.</p>
 half-translation surfaces which can be oriented in a way compatible
 with the embedding of their polygons in the real plane.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">B</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="ow">in</span> <span class="n">HalfTranslationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -462,11 +462,11 @@ with the embedding of their polygons in the real plane.</p>
 <dd><p>The category of oriented half-translation surfaces built from
 finitely many polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">B</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="ow">in</span> <span class="n">HalfTranslationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -588,7 +588,7 @@ to put it here.</p>
 <p>This overrides
 <a class="reference internal" href="similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">B</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
 
@@ -614,7 +614,7 @@ to put it here.</p>
 <dd><p>Return the categories that a half-translation surface is always a
 member of.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfTranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">HalfTranslationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()</span>
 <span class="p">[</span><span class="n">Category</span> <span class="n">of</span> <span class="n">dilation</span> <span class="n">surfaces</span><span class="p">,</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">rational</span> <span class="n">cone</span> <span class="n">surfaces</span><span class="p">]</span>
 </pre></div>

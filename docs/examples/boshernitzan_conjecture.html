@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Boshernitzan’s Conjectures - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -382,7 +382,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>First, we construct a triangle with angles (7, 7, 16).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
 
 <span class="n">Δ</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="n">Δ</span>
@@ -398,7 +398,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>We unfold this triangle and obtain a translation surface.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 
 <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">Δ</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
 <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -406,13 +406,13 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/293326f857c86d28f6e1c53ae89359b67f4b8fdf7bbaff0114752178a0133843.png" src="../_images/293326f857c86d28f6e1c53ae89359b67f4b8fdf7bbaff0114752178a0133843.png" />
+<img alt="../_images/a8491f9ffabbdce75cc151e52f9eb812468ab69adba098d1624cc8c0e8547bc6.png" src="../_images/a8491f9ffabbdce75cc151e52f9eb812468ab69adba098d1624cc8c0e8547bc6.png" />
 </div>
 </div>
 <p>We construct the flow decomposition in direction (0, 1), orthogonal to one of the sides of the triangle.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">D</span> <span class="o">=</span> <span class="n">GL2ROrbitClosure</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">decomposition</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="n">Δ</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 <span class="n">D</span>
@@ -426,7 +426,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <p>We can visualize the complement of the minimal components if ipvue-flatsurf is available. (Note that visualizing the minimal components themselves might not work correctly until <a class="reference external" href="https://github.com/flatsurf/ipyvue-flatsurf/issues/62">#62</a> has ben resolved.)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipyvue_flatsurf</span> <span class="kn">import</span> <span class="n">Widget</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ipyvue_flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
 <span class="n">cylinders</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">components</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">cylinder</span><span class="p">()]</span>
 <span class="n">Widget</span><span class="p">(</span><span class="n">cylinders</span><span class="p">)</span>
@@ -453,7 +453,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>We start by constructing the unfolding of that triangle:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 
 <span class="n">Δ</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">Δ</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
@@ -464,7 +464,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>We find that this completely decomposes into cylinders in horizontal direction:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">D</span> <span class="o">=</span> <span class="n">GL2ROrbitClosure</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">decomposition</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="n">Δ</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 <span class="n">D</span>
@@ -478,7 +478,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <p>We can visualize these cylinders if ipyvue-flatsurf is available:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipyvue_flatsurf</span> <span class="kn">import</span> <span class="n">Widget</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ipyvue_flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
 <span class="n">Widget</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
 </pre></div>
@@ -491,7 +491,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>Again, we can ask sage-flatsurf to compute the flow decomposition of the unfolding of the (2, 3, 6) triangle. It turns out that in vertical direction (1, 0), it does not fully decompose into cylinders:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">GL2ROrbitClosure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">Δ</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">Δ</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
@@ -508,8 +508,8 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">EuclideanPolygonsWithAngles</span>
-<span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="n">T</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">random_element</span><span class="p">()</span>
@@ -528,7 +528,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <p>Using ipyvue-flatsurf, we can visualize the minimal components:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipyvue_flatsurf</span> <span class="kn">import</span> <span class="n">Widget</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ipyvue_flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
 <span class="n">Widget</span><span class="p">([</span><span class="n">component</span> <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">components</span><span class="p">()</span> <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">withoutPeriodicTrajectory</span><span class="p">()])</span>
 </pre></div>
@@ -550,7 +550,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>We start by retriangulating our surface. Namely, we want to obtain a single <em>large edge</em> for the flow direction, i.e., a unique edge that is wider (perpendicular to the flow direction) than all the other edges.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyflatsurf</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf</span>
 
 <span class="n">V</span> <span class="o">=</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Vector</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">F</span><span class="p">)</span><span class="o">.</span><span class="n">Coordinate</span><span class="p">]</span>
 <span class="n">horizontal</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -584,7 +584,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>This defines an Interval Exchange Transformation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyintervalxt</span><span class="o">,</span> <span class="nn">pyeantic</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyintervalxt</span><span class="o">,</span><span class="w"> </span><span class="nn">pyeantic</span>
 
 <span class="n">iet</span> <span class="o">=</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">IntervalExchangeTransformation</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">F</span><span class="p">)](</span>
     <span class="n">F</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span><span class="o">.</span><span class="n">vertical</span><span class="p">(),</span> <span class="n">large</span>
@@ -594,7 +594,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/2*c^9 + 19/4*c^7 - 31/2*c^5 + 20*c^3 - 33/4*c ~ 0.065529062)] [b: (1/4*c^9 - 9/4*c^7 + 7*c^5 - 9*c^3 + 17/4*c ~ 0.063925068)] [c: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [d: (-1/2*c^9 + 5*c^7 - 71/4*c^5 + 105/4*c^3 - 53/4*c ~ 0.034915894)] [e: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 99/4*c^3 + 45/4*c ~ 0.042025316)] [f: (1/4*c^9 - 9/4*c^7 + 7*c^5 - 9*c^3 + 17/4*c ~ 0.063925068)] [g: (-1/4*c^7 + 2*c^5 - 19/4*c^3 + 3*c ~ 0.10755438)] [h: (-1/4*c^9 + 11/4*c^7 - 43/4*c^5 + 35/2*c^3 - 10*c ~ 0.058746239)] [i: (-1/4*c^3 + 1*c ~ 0.040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/8*c^9 + 19/16*c^7 - 31/8*c^5 + 5*c^3 - 33/16*c ~ 0.016382266)] [b: (1/16*c^9 - 9/16*c^7 + 7/4*c^5 - 9/4*c^3 + 17/16*c ~ 0.015981267)] [c: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [d: (-1/8*c^9 + 5/4*c^7 - 71/16*c^5 + 105/16*c^3 - 53/16*c ~ 0.0087289736)] [e: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 99/16*c^3 + 45/16*c ~ 0.010506329)] [f: (1/16*c^9 - 9/16*c^7 + 7/4*c^5 - 9/4*c^3 + 17/16*c ~ 0.015981267)] [g: (-1/16*c^7 + 1/2*c^5 - 19/16*c^3 + 3/4*c ~ 0.026888595)] [h: (-1/16*c^9 + 11/16*c^7 - 43/16*c^5 + 35/8*c^3 - 5/2*c ~ 0.014686560)] [i: (-1/16*c^3 + 1/4*c ~ 0.010023681)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -614,7 +614,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (1/4*c^9 - 9/4*c^7 + 7*c^5 - 9*c^3 + 17/4*c ~ 0.063925068)] [c: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [d: (-1/2*c^9 + 5*c^7 - 71/4*c^5 + 105/4*c^3 - 53/4*c ~ 0.034915894)] [e: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 99/4*c^3 + 45/4*c ~ 0.042025316)] [f: (1/4*c^9 - 9/4*c^7 + 7*c^5 - 9*c^3 + 17/4*c ~ 0.063925068)] [a: (-1/2*c^9 + 19/4*c^7 - 31/2*c^5 + 20*c^3 - 33/4*c ~ 0.065529062)] [g: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 99/4*c^3 + 45/4*c ~ 0.042025316)] [h: (-1/4*c^9 + 11/4*c^7 - 43/4*c^5 + 35/2*c^3 - 10*c ~ 0.058746239)] [i: (-1/4*c^3 + 1*c ~ 0.040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (1/16*c^9 - 9/16*c^7 + 7/4*c^5 - 9/4*c^3 + 17/16*c ~ 0.015981267)] [c: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [d: (-1/8*c^9 + 5/4*c^7 - 71/16*c^5 + 105/16*c^3 - 53/16*c ~ 0.0087289736)] [e: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 99/16*c^3 + 45/16*c ~ 0.010506329)] [f: (1/16*c^9 - 9/16*c^7 + 7/4*c^5 - 9/4*c^3 + 17/16*c ~ 0.015981267)] [a: (-1/8*c^9 + 19/16*c^7 - 31/8*c^5 + 5*c^3 - 33/16*c ~ 0.016382266)] [g: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 99/16*c^3 + 45/16*c ~ 0.010506329)] [h: (-1/16*c^9 + 11/16*c^7 - 43/16*c^5 + 35/8*c^3 - 5/2*c ~ 0.014686560)] [i: (-1/16*c^3 + 1/4*c ~ 0.010023681)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -628,7 +628,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-1/4*c^9 + 11/4*c^7 - 21/2*c^5 + 63/4*c^3 - 7*c ~ 0.021899752)] [c: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [d: (-1/2*c^9 + 5*c^7 - 71/4*c^5 + 105/4*c^3 - 53/4*c ~ 0.034915894)] [e: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 99/4*c^3 + 45/4*c ~ 0.042025316)] [f: (1/4*c^9 - 9/4*c^7 + 7*c^5 - 9*c^3 + 17/4*c ~ 0.063925068)] [a: (-1/2*c^9 + 19/4*c^7 - 31/2*c^5 + 20*c^3 - 33/4*c ~ 0.065529062)] [g: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 99/4*c^3 + 45/4*c ~ 0.042025316)] [h: (-1/4*c^9 + 11/4*c^7 - 43/4*c^5 + 35/2*c^3 - 10*c ~ 0.058746239)] [i: (-1/4*c^3 + 1*c ~ 0.040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-1/16*c^9 + 11/16*c^7 - 21/8*c^5 + 63/16*c^3 - 7/4*c ~ 0.0054749380)] [c: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [d: (-1/8*c^9 + 5/4*c^7 - 71/16*c^5 + 105/16*c^3 - 53/16*c ~ 0.0087289736)] [e: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 99/16*c^3 + 45/16*c ~ 0.010506329)] [f: (1/16*c^9 - 9/16*c^7 + 7/4*c^5 - 9/4*c^3 + 17/16*c ~ 0.015981267)] [a: (-1/8*c^9 + 19/16*c^7 - 31/8*c^5 + 5*c^3 - 33/16*c ~ 0.016382266)] [g: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 99/16*c^3 + 45/16*c ~ 0.010506329)] [h: (-1/16*c^9 + 11/16*c^7 - 43/16*c^5 + 35/8*c^3 - 5/2*c ~ 0.014686560)] [i: (-1/16*c^3 + 1/4*c ~ 0.010023681)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -644,7 +644,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/2*c^9 + 5*c^7 - 71/4*c^5 + 105/4*c^3 - 53/4*c ~ 0.034915894)] [e: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 99/4*c^3 + 45/4*c ~ 0.042025316)] [f: (1/4*c^9 - 9/4*c^7 + 7*c^5 - 9*c^3 + 17/4*c ~ 0.063925068)] [a: (-1/2*c^9 + 19/4*c^7 - 31/2*c^5 + 20*c^3 - 33/4*c ~ 0.065529062)] [b: (-1/4*c^9 + 11/4*c^7 - 21/2*c^5 + 63/4*c^3 - 7*c ~ 0.021899752)] [c: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [g: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 41/4*c ~ 0.0019305928)] [h: (-1/4*c^9 + 11/4*c^7 - 43/4*c^5 + 35/2*c^3 - 10*c ~ 0.058746239)] [i: (-1/4*c^3 + 1*c ~ 0.040094723)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/8*c^9 + 5/4*c^7 - 71/16*c^5 + 105/16*c^3 - 53/16*c ~ 0.0087289736)] [e: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 99/16*c^3 + 45/16*c ~ 0.010506329)] [f: (1/16*c^9 - 9/16*c^7 + 7/4*c^5 - 9/4*c^3 + 17/16*c ~ 0.015981267)] [a: (-1/8*c^9 + 19/16*c^7 - 31/8*c^5 + 5*c^3 - 33/16*c ~ 0.016382266)] [b: (-1/16*c^9 + 11/16*c^7 - 21/8*c^5 + 63/16*c^3 - 7/4*c ~ 0.0054749380)] [c: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [g: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 49/8*c^3 + 41/16*c ~ 0.00048264820)] [h: (-1/16*c^9 + 11/16*c^7 - 43/16*c^5 + 35/8*c^3 - 5/2*c ~ 0.014686560)] [i: (-1/16*c^3 + 1/4*c ~ 0.010023681)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -666,7 +666,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [a: (-1/2*c^9 + 19/4*c^7 - 31/2*c^5 + 20*c^3 - 33/4*c ~ 0.065529062)] [d: (-5/4*c^9 + 49/4*c^7 - 169/4*c^5 + 119/2*c^3 - 107/4*c ~ 0.0091549570)] [b: (c^9 - 19/2*c^7 + 127/4*c^5 - 175/4*c^3 + 79/4*c ~ 0.012744795)] [c: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [g: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 41/4*c ~ 0.0019305928)] [h: (-1/4*c^9 + 11/4*c^7 - 43/4*c^5 + 35/2*c^3 - 10*c ~ 0.058746239)] [e: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [i: (-1/4*c^9 + 11/4*c^7 - 21/2*c^5 + 63/4*c^3 - 7*c ~ 0.021899752)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [a: (-1/8*c^9 + 19/16*c^7 - 31/8*c^5 + 5*c^3 - 33/16*c ~ 0.016382266)] [d: (-5/16*c^9 + 49/16*c^7 - 169/16*c^5 + 119/8*c^3 - 107/16*c ~ 0.0022887392)] [b: (1/4*c^9 - 19/8*c^7 + 127/16*c^5 - 175/16*c^3 + 79/16*c ~ 0.0031861987)] [c: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [g: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 49/8*c^3 + 41/16*c ~ 0.00048264820)] [h: (-1/16*c^9 + 11/16*c^7 - 43/16*c^5 + 35/8*c^3 - 5/2*c ~ 0.014686560)] [e: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [i: (-1/16*c^9 + 11/16*c^7 - 21/8*c^5 + 63/16*c^3 - 7/4*c ~ 0.0054749380)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
 </pre></div>
 </div>
 </div>
@@ -680,7 +680,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/2*c^9 + 19/4*c^7 - 31/2*c^5 + 20*c^3 - 33/4*c ~ 0.065529062)] [d: (-5/4*c^9 + 49/4*c^7 - 169/4*c^5 + 119/2*c^3 - 107/4*c ~ 0.0091549570)] [b: (c^9 - 19/2*c^7 + 127/4*c^5 - 175/4*c^3 + 79/4*c ~ 0.012744795)] [c: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [g: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 41/4*c ~ 0.0019305928)] [h: (-1/4*c^9 + 11/4*c^7 - 43/4*c^5 + 35/2*c^3 - 10*c ~ 0.058746239)] [e: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [i: (-1/4*c^9 + 11/4*c^7 - 21/2*c^5 + 63/4*c^3 - 7*c ~ 0.021899752)] / [a] [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-1/8*c^9 + 19/16*c^7 - 31/8*c^5 + 5*c^3 - 33/16*c ~ 0.016382266)] [d: (-5/16*c^9 + 49/16*c^7 - 169/16*c^5 + 119/8*c^3 - 107/16*c ~ 0.0022887392)] [b: (1/4*c^9 - 19/8*c^7 + 127/16*c^5 - 175/16*c^3 + 79/16*c ~ 0.0031861987)] [c: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [g: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 49/8*c^3 + 41/16*c ~ 0.00048264820)] [h: (-1/16*c^9 + 11/16*c^7 - 43/16*c^5 + 35/8*c^3 - 5/2*c ~ 0.014686560)] [e: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [i: (-1/16*c^9 + 11/16*c^7 - 21/8*c^5 + 63/16*c^3 - 7/4*c ~ 0.0054749380)] / [a] [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -695,7 +695,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-5/4*c^9 + 49/4*c^7 - 169/4*c^5 + 119/2*c^3 - 107/4*c ~ 0.0091549570)] [b: (c^9 - 19/2*c^7 + 127/4*c^5 - 175/4*c^3 + 79/4*c ~ 0.012744795)] [c: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [g: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 41/4*c ~ 0.0019305928)] [h: (-1/4*c^9 + 11/4*c^7 - 43/4*c^5 + 35/2*c^3 - 10*c ~ 0.058746239)] [e: (1/4*c^9 - 11/4*c^7 + 21/2*c^5 - 16*c^3 + 8*c ~ 0.018194971)] [i: (-1/4*c^9 + 11/4*c^7 - 21/2*c^5 + 63/4*c^3 - 7*c ~ 0.021899752)] / [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-5/16*c^9 + 49/16*c^7 - 169/16*c^5 + 119/8*c^3 - 107/16*c ~ 0.0022887392)] [b: (1/4*c^9 - 19/8*c^7 + 127/16*c^5 - 175/16*c^3 + 79/16*c ~ 0.0031861987)] [c: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [g: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 49/8*c^3 + 41/16*c ~ 0.00048264820)] [h: (-1/16*c^9 + 11/16*c^7 - 43/16*c^5 + 35/8*c^3 - 5/2*c ~ 0.014686560)] [e: (1/16*c^9 - 11/16*c^7 + 21/8*c^5 - 4*c^3 + 2*c ~ 0.0045487429)] [i: (-1/16*c^9 + 11/16*c^7 - 21/8*c^5 + 63/16*c^3 - 7/4*c ~ 0.0054749380)] / [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -709,7 +709,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-c^9 + 21/2*c^7 - 77/2*c^5 + 225/4*c^3 - 101/4*c ~ 0.0017741877)] [h: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 41/4*c ~ 0.0019305928)] [c: (c^9 - 10*c^7 + 141/4*c^5 - 51*c^3 + 49/2*c ~ 0.0071094216)] [g: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 41/4*c ~ 0.0019305928)] [b: (-1/2*c^9 + 11/2*c^7 - 21*c^5 + 127/4*c^3 - 15*c ~ 0.0037047805)] [i: (-3/4*c^9 + 27/4*c^7 - 85/4*c^5 + 111/4*c^3 - 47/4*c ~ 0.0054501765)] / [h] [d] [c] [b] [g] [i]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/4*c^9 + 21/8*c^7 - 77/8*c^5 + 225/16*c^3 - 101/16*c ~ 0.00044354691)] [h: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 49/8*c^3 + 41/16*c ~ 0.00048264820)] [c: (1/4*c^9 - 5/2*c^7 + 141/16*c^5 - 51/4*c^3 + 49/8*c ~ 0.0017773554)] [g: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 49/8*c^3 + 41/16*c ~ 0.00048264820)] [b: (-1/8*c^9 + 11/8*c^7 - 21/4*c^5 + 127/16*c^3 - 15/4*c ~ 0.00092619511)] [i: (-3/16*c^9 + 27/16*c^7 - 85/16*c^5 + 111/16*c^3 - 47/16*c ~ 0.0013625441)] / [h] [d] [c] [b] [g] [i]
 </pre></div>
 </div>
 </div>
@@ -724,7 +724,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-c^9 + 21/2*c^7 - 77/2*c^5 + 225/4*c^3 - 101/4*c ~ 0.0017741877)] [h: (1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 41/4*c ~ 0.0019305928)] / [h] [d]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-1/4*c^9 + 21/8*c^7 - 77/8*c^5 + 225/16*c^3 - 101/16*c ~ 0.00044354691)] [h: (1/8*c^9 - 5/4*c^7 + 35/8*c^5 - 49/8*c^3 + 41/16*c ~ 0.00048264820)] / [h] [d]
 </pre></div>
 </div>
 </div>
@@ -756,7 +756,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>We can use sage-flatsurf to check this assertion for some small triangles. Let us consider the (2, 2, 3) triangle.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">GL2ROrbitClosure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">Δ</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">Δ</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
@@ -764,7 +764,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipyvue_flatsurf</span> <span class="kn">import</span> <span class="n">Widget</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ipyvue_flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
 <span class="n">Widget</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 </pre></div>
@@ -795,7 +795,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <p>We can try to visualize the minimal components. There might be some rendering errors due to <a class="reference external" href="https://github.com/flatsurf/ipyvue-flatsurf/issues/62">#62</a> however:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipyvue_flatsurf</span> <span class="kn">import</span> <span class="n">Widget</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ipyvue_flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
 <span class="n">Widget</span><span class="p">(</span><span class="n">decomposition</span><span class="p">)</span>
 </pre></div>
@@ -810,7 +810,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>The (7,8,15) triangle which is also a counterexample to (a) works here as well.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">GL2ROrbitClosure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">Δ</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">Δ</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
@@ -818,14 +818,14 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipyvue_flatsurf</span> <span class="kn">import</span> <span class="n">Widget</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ipyvue_flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
 <span class="n">Widget</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">D</span> <span class="o">=</span> <span class="n">GL2ROrbitClosure</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">decomposition</span><span class="p">(</span><span class="n">vector</span><span class="p">(</span><span class="n">Δ</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
 <span class="n">D</span>

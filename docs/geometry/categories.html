@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>The flatsurf.geometry.categories Package - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -396,10 +396,10 @@ computation.</p>
 </div>
 <p>EXAMPLES:</p>
 <p>A single square without any gluings:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="mi">0</span>
 </pre></div>
@@ -453,7 +453,7 @@ that might be a <a class="reference external" href="https://en.wikipedia.org/wik
 <p>Often enough, the copy is actually not the problem but the time that is spent
 to figure out that that copy is actually a translation surface. If you already
 know that to be true, you can simplify things to:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">TranslationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">())</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
 <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -484,7 +484,7 @@ available:</p>
 </div>
 <p>While this works, this approach is quite brittle and might sometimes need a mix
 with the above to work:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">_refine_category_</span><span class="p">(</span><span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">())</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TranslationSurfaces</span><span class="o">.</span><span class="n">FiniteType</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">stratum</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.features - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
@@ -367,7 +367,7 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ####################################################################</span>
 
-<span class="kn">from</span> <span class="nn">sage.features</span> <span class="kn">import</span> <span class="n">PythonModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">PythonModule</span>
 
 <span class="n">cppyy_feature</span> <span class="o">=</span> <span class="n">PythonModule</span><span class="p">(</span>
     <span class="s2">&quot;cppyy&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://cppyy.readthedocs.io/en/latest/installation.html&quot;</span>
@@ -376,8 +376,8 @@
 
 <div class="viewcode-block" id="PyeanticModule">
 <a class="viewcode-back" href="../../features.html#flatsurf.features.PyeanticModule">[docs]</a>
-<span class="k">class</span> <span class="nc">PyeanticModule</span><span class="p">(</span><span class="n">PythonModule</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PyeanticModule</span><span class="p">(</span><span class="n">PythonModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="s2">&quot;pyeantic&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://github.com/flatsurf/e-antic/#install-with-conda&quot;</span>
         <span class="p">)</span>
@@ -385,19 +385,19 @@
 <div class="viewcode-block" id="PyeanticModule.fix_unwrap_intrusive_ptr">
 <a class="viewcode-back" href="../../features.html#flatsurf.features.PyeanticModule.fix_unwrap_intrusive_ptr">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">fix_unwrap_intrusive_ptr</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fix_unwrap_intrusive_ptr</span><span class="p">():</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unconditionally backports a fix from e-antic 2.0.1, see</span>
 <span class="sd">        https://github.com/flatsurf/e-antic/pull/260.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-            <span class="kn">import</span> <span class="nn">pyeantic</span>
-            <span class="kn">import</span> <span class="nn">cppyy</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">pyeantic</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">cppyy</span>
 
-            <span class="k">def</span> <span class="nf">unwrap_intrusive_ptr</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">unwrap_intrusive_ptr</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">pyeantic</span><span class="o">.</span><span class="n">eantic</span><span class="o">.</span><span class="n">renf_class</span><span class="p">):</span>
                     <span class="n">K</span> <span class="o">=</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">boost</span><span class="o">.</span><span class="n">intrusive_ptr</span><span class="p">[</span><span class="s2">&quot;const eantic::renf_class&quot;</span><span class="p">](</span><span class="n">K</span><span class="p">)</span>
 
@@ -413,7 +413,7 @@
 
                 <span class="k">return</span> <span class="n">wrapped</span>
 
-            <span class="kn">import</span> <span class="nn">pyeantic.cppyy_eantic</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">pyeantic.cppyy_eantic</span>
 
             <span class="n">pyeantic</span><span class="o">.</span><span class="n">cppyy_eantic</span><span class="o">.</span><span class="n">unwrap_intrusive_ptr</span> <span class="o">=</span> <span class="n">unwrap_intrusive_ptr</span>
 

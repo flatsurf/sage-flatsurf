@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.pyflatsurf.morphism - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -392,12 +392,12 @@
 <span class="c1">#  You should have received a copy of the GNU General Public License</span>
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ********************************************************************</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">SurfaceMorphism</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfaceMorphism</span>
 
 
 <div class="viewcode-block" id="Morphism_to_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_to_pyflatsurf">[docs]</a>
-<span class="k">class</span> <span class="nc">Morphism_to_pyflatsurf</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Morphism_to_pyflatsurf</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A trivial isomorphism from a sage-flatsurf translation surface to a</span>
 <span class="sd">    pyflatsurf backed translation surface.</span>
@@ -424,12 +424,12 @@
 
 <div class="viewcode-block" id="Morphism_to_pyflatsurf.__init__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_to_pyflatsurf.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">pyflatsurf_conversion</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">pyflatsurf_conversion</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pyflatsurf_conversion</span> <span class="o">=</span> <span class="n">pyflatsurf_conversion</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_image_homology_edge` and others.</span>
 
@@ -448,7 +448,7 @@
         <span class="n">edge</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">half_edge</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -465,7 +465,7 @@
 
 <div class="viewcode-block" id="Morphism_to_pyflatsurf.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_to_pyflatsurf.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the inverse of this morphism.</span>
 
@@ -485,7 +485,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for printing this morphism.</span>
 
@@ -501,7 +501,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;pyflatsurf conversion&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not verify that :meth:`_section_point` has been implemented</span>
 <span class="sd">        correctly.</span>
@@ -526,7 +526,7 @@
 
 <div class="viewcode-block" id="Morphism_to_pyflatsurf.__eq__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_to_pyflatsurf.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -549,7 +549,7 @@
 
 <div class="viewcode-block" id="Morphism_to_pyflatsurf.__hash__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_to_pyflatsurf.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -569,7 +569,7 @@
 
 <div class="viewcode-block" id="Morphism_from_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_from_pyflatsurf">[docs]</a>
-<span class="k">class</span> <span class="nc">Morphism_from_pyflatsurf</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Morphism_from_pyflatsurf</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A trivial isomorphism from a pyflatsurf backed translation surface to a</span>
 <span class="sd">    sage-flatsurf translation surface.</span>
@@ -595,12 +595,12 @@
 
 <div class="viewcode-block" id="Morphism_from_pyflatsurf.__init__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_from_pyflatsurf.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">pyflatsurf_conversion</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">pyflatsurf_conversion</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pyflatsurf_conversion</span> <span class="o">=</span> <span class="n">pyflatsurf_conversion</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_image_half_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">half_edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_half_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">half_edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_image_homology_edge` and others.</span>
 
@@ -618,7 +618,7 @@
         <span class="n">edge</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">half_edge</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -633,13 +633,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">half_edge</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
 
-        <span class="kn">import</span> <span class="nn">pyflatsurf</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf</span>
 
         <span class="n">half_edge</span> <span class="o">=</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">HalfEdge</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">half_edge</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">codomain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pyflatsurf_conversion</span><span class="o">.</span><span class="n">_preimage_half_edge</span><span class="p">(</span><span class="n">half_edge</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for printing this morphism.</span>
 
@@ -655,7 +655,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;pyflatsurf reconversion&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not verify that :meth:`_section_point` has been implemented</span>
 <span class="sd">        correctly.</span>
@@ -680,7 +680,7 @@
 
 <div class="viewcode-block" id="Morphism_from_pyflatsurf.__eq__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_from_pyflatsurf.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -703,7 +703,7 @@
 
 <div class="viewcode-block" id="Morphism_from_pyflatsurf.__hash__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_from_pyflatsurf.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -723,7 +723,7 @@
 
 <div class="viewcode-block" id="Morphism_Deformation">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_Deformation">[docs]</a>
-<span class="k">class</span> <span class="nc">Morphism_Deformation</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Morphism_Deformation</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism of</span>
 <span class="sd">    :class:`~flatsurf.geometry.pyflatsurf.surface.Surface_pyflatsurf` surfaces</span>
@@ -759,12 +759,12 @@
 
 <div class="viewcode-block" id="Morphism_Deformation.__init__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_Deformation.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">deformation</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">deformation</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deformation</span> <span class="o">=</span> <span class="n">deformation</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for the printing of this morphism.</span>
 
@@ -785,7 +785,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;pyflatsurf deformation&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for the printing of this morphism.</span>
 
@@ -806,7 +806,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deformation</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -826,7 +826,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">half_edge</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
 
-        <span class="kn">from</span> <span class="nn">pyflatsurf</span> <span class="kn">import</span> <span class="n">flatsurf</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatsurf</span>
 
         <span class="n">saddle_connection</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">SaddleConnection</span><span class="p">[</span>
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">flat_triangulation</span><span class="p">())</span>
@@ -848,7 +848,7 @@
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
             <span class="n">chain</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">chain</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">coefficient</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.conversion</span> <span class="kn">import</span> <span class="n">RingConversion</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.pyflatsurf.conversion</span><span class="w"> </span><span class="kn">import</span> <span class="n">RingConversion</span>
 
                 <span class="n">coefficient</span> <span class="o">=</span> <span class="n">RingConversion</span><span class="o">.</span><span class="n">from_pyflatsurf_from_elements</span><span class="p">(</span>
                     <span class="p">[</span><span class="n">coefficient</span><span class="p">]</span>
@@ -864,7 +864,7 @@
 
         <span class="k">return</span> <span class="n">image</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not verify that :meth:`_section_point` has been implemented</span>
 <span class="sd">        correctly.</span>
@@ -890,7 +890,7 @@
 
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;this test is expected to fail until #211 is merged&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_pickling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_pickling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not test that this morphism can be serialized and deserialized.</span>
 
@@ -917,7 +917,7 @@
 
 <div class="viewcode-block" id="Morphism_Deformation.__eq__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_Deformation.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -947,7 +947,7 @@
 
 <div class="viewcode-block" id="Morphism_Deformation.__hash__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/morphism.html#flatsurf.geometry.pyflatsurf.morphism.Morphism_Deformation.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>

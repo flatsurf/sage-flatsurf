@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.half_translation_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -396,17 +396,17 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ####################################################################</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.surface_category</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SurfaceCategory</span><span class="p">,</span>
     <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sage.misc.lazy_import</span> <span class="kn">import</span> <span class="n">LazyImport</span>
-<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.lazy_import</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyImport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span>
 
 
 <div class="viewcode-block" id="HalfTranslationSurfaces">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces">[docs]</a>
-<span class="k">class</span> <span class="nc">HalfTranslationSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HalfTranslationSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of surfaces built by gluing (Euclidean) polygons with</span>
 <span class="sd">    translations and half-translations (rotations by angle π).</span>
@@ -421,7 +421,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.super_categories">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.super_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the categories that a half-translation surface is always a</span>
 <span class="sd">        member of.</span>
@@ -433,8 +433,8 @@
 <span class="sd">            [Category of dilation surfaces, Category of rational cone surfaces]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.dilation_surfaces</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.cone_surfaces</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.dilation_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.cone_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">DilationSurfaces</span><span class="p">(),</span> <span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Rational</span><span class="p">()]</span></div>
 
@@ -447,7 +447,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.ParentMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all half-translation surfaces.</span>
 
@@ -457,7 +457,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.ParentMethods.is_translation_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.ParentMethods.is_translation_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a (half-)translation surface.</span>
 
@@ -490,7 +490,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Orientable">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable">[docs]</a>
-    <span class="k">class</span> <span class="nc">Orientable</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Orientable</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of orientable half-translation surfaces.</span>
 
@@ -508,7 +508,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Orientable.WithoutBoundary">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable.WithoutBoundary">[docs]</a>
-        <span class="k">class</span> <span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            The category of orientable half-translation surfaces without boundary.</span>
 
@@ -526,7 +526,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Orientable.WithoutBoundary.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable.WithoutBoundary.ParentMethods">[docs]</a>
-            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+            <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Provides methods available to all orientable half-translation</span>
 <span class="sd">                surfaces.</span>
@@ -537,7 +537,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Orientable.WithoutBoundary.ParentMethods.stratum">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Orientable.WithoutBoundary.ParentMethods.stratum">[docs]</a>
-                <span class="k">def</span> <span class="nf">stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    EXAMPLES::</span>
 
@@ -567,8 +567,8 @@
                     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">denominator</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">):</span>
                         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
-                    <span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">Stratum</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">surface_dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stratum</span>
 
                     <span class="k">return</span> <span class="n">Stratum</span><span class="p">(</span>
                         <span class="nb">sorted</span><span class="p">([</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mi">2</span>
@@ -580,7 +580,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Oriented">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented">[docs]</a>
-    <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of oriented half-translation surfaces, i.e., orientable</span>
 <span class="sd">        half-translation surfaces which can be oriented in a way compatible</span>
@@ -600,7 +600,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Oriented.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all oriented half-translation</span>
 <span class="sd">            surfaces.</span>
@@ -611,7 +611,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Oriented.ParentMethods.holonomy_field">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented.ParentMethods.holonomy_field">[docs]</a>
-            <span class="k">def</span> <span class="nf">holonomy_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">holonomy_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the relative holonomy field of this translation or half-translation surface.</span>
 
@@ -640,7 +640,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalized_coordinates</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span></div>
 
 
-            <span class="k">def</span> <span class="nf">_test_half_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_test_half_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Verify that this is a half-translation surface.</span>
 
@@ -657,13 +657,13 @@
                 <span class="n">limit</span> <span class="o">=</span> <span class="kc">None</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                     <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
                         <span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()[:</span><span class="mi">32</span><span class="p">]</span>
                     <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 
                 <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
                     <span class="n">TranslationSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_translation_surface</span><span class="p">(</span>
@@ -674,7 +674,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Oriented.FiniteType">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented.FiniteType">[docs]</a>
-        <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            The category of oriented half-translation surfaces built from</span>
 <span class="sd">            finitely many polygons.</span>
@@ -693,7 +693,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Oriented.FiniteType.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented.FiniteType.ParentMethods">[docs]</a>
-            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+            <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Provides methods available to all oriented half-translation</span>
 <span class="sd">                surfaces built from finitely many polygons.</span>
@@ -704,7 +704,7 @@
 
 <div class="viewcode-block" id="HalfTranslationSurfaces.Oriented.FiniteType.ParentMethods.normalized_coordinates">
 <a class="viewcode-back" href="../../../../geometry/categories/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented.FiniteType.ParentMethods.normalized_coordinates">[docs]</a>
-                <span class="k">def</span> <span class="nf">normalized_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">normalized_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a pair ``(new_surface, matrix)`` where ``new_surface`` is defined over the</span>
 <span class="sd">                    holonomy field and ``matrix`` is the transition matrix that maps this surface to</span>
@@ -771,12 +771,12 @@
 
 
 <span class="sd">                    &quot;&quot;&quot;</span>
-                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="n">QQ</span><span class="p">:</span>
                         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-                    <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Fields</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fields</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
                         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -788,7 +788,7 @@
                     <span class="n">u</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                     <span class="n">v</span> <span class="o">=</span> <span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                     <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">ccw</span>
 
                     <span class="k">while</span> <span class="n">ccw</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -804,18 +804,18 @@
                             <span class="n">hols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                             <span class="n">hols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="n">AA</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.subfield</span> <span class="kn">import</span> <span class="p">(</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.subfield</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                             <span class="n">number_field_elements_from_algebraics</span><span class="p">,</span>
                         <span class="p">)</span>
 
                         <span class="n">K</span><span class="p">,</span> <span class="n">new_hols</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span><span class="n">hols</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.subfield</span> <span class="kn">import</span> <span class="n">subfield_from_elements</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.subfield</span><span class="w"> </span><span class="kn">import</span> <span class="n">subfield_from_elements</span>
 
                         <span class="n">K</span><span class="p">,</span> <span class="n">new_hols</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">subfield_from_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">hols</span><span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">Polygon</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.polygon</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                     <span class="p">)</span>
 

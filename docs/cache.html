@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>The flatsurf.cache Module - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
@@ -361,7 +361,7 @@ clear caches upon mutation.</p>
 <p>Therefore, we add a decorator <code class="docutils literal notranslate"><span class="pre">&#64;cached_surface_method</span></code> that only caches if
 the surface is immutable.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">())</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">is</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="kc">False</span>

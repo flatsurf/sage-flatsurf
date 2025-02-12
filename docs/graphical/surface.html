@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>surface - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -359,7 +359,7 @@
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span><span class="w"> </span><span class="nn">flatsurf</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">18</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
@@ -491,8 +491,8 @@ is called to make all polygons visible.</p>
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphicalSurface</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">GraphicalSurface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -526,7 +526,7 @@ maximal x-and y- coordinates of a visible graphical polygon.</p>
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/surface.html#GraphicalSurface.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.copy" title="Link to this definition">¶</a></dt>
 <dd><p>Make a copy of this GraphicalSurface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">will_plot_zero_flags</span> <span class="o">=</span> <span class="kc">True</span>
@@ -560,7 +560,7 @@ maximal x-and y- coordinates of a visible graphical polygon.</p>
 <span class="sig-name descname"><span class="pre">edge_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/graphical/surface.html#GraphicalSurface.edge_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.edge_labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return the list of edge labels to be used for the polygon with label <code class="docutils literal notranslate"><span class="pre">lab</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="p">[])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">edge_labels</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -614,7 +614,7 @@ maximal x-and y- coordinates of a visible graphical polygon.</p>
 <dd><p>Returns the truth value of the statement
 ‘The polygon opposite edge (p,e) is adjacent to that edge.’</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="p">[])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
@@ -645,7 +645,7 @@ The polygon moved is obtained from opposite_edge(p,e).</p>
 at the edge.</p>
 <p>If visible is True (by default), we also make the moved polygon visible.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="p">[])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -677,7 +677,7 @@ provided.</p></li>
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
@@ -742,9 +742,9 @@ examples below for details.</p></li>
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphicalSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">GraphicalSurface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
@@ -982,7 +982,7 @@ is and the surface is infinite.</p>
 </li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">to_surface</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
@@ -990,7 +990,7 @@ is and the surface is infinite.</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">to_surface</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">v</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">SimilaritySurfaceTangentVector</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">1</span> <span class="n">based</span> <span class="n">at</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="k">with</span> <span class="n">vector</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">to_surface</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">search_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">search_limit</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
@@ -1009,7 +1009,7 @@ is and the surface is infinite.</p>
 <span class="n">Vector</span> <span class="n">space</span> <span class="n">of</span> <span class="n">dimension</span> <span class="mi">2</span> <span class="n">over</span> <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">v</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">to_surface</span><span class="p">((</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">),(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)),</span><span class="n">ring</span><span class="o">=</span><span class="n">AA</span><span class="p">,</span><span class="n">search_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">search_limit</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">bundle</span><span class="p">()</span>
-<span class="n">Tangent</span> <span class="n">bundle</span> <span class="n">of</span> <span class="n">Minimal</span> <span class="n">Planar</span> <span class="n">Cover</span> <span class="n">of</span> <span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">square</span> <span class="n">defined</span> <span class="n">over</span> <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
+<span class="n">Tangent</span> <span class="n">bundle</span> <span class="n">of</span> <span class="n">Minimal</span> <span class="n">Planar</span> <span class="n">Cover</span> <span class="n">of</span> <span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">square</span> <span class="n">defined</span> <span class="n">over</span> <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
 </pre></div>
 </div>
 </dd></dl>

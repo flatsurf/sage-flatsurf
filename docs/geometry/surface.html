@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>surface - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -360,7 +360,7 @@ surfaces in sage-flatsurf inherit from some of the classes in this module.</p>
 by gluing polygons with similarities.</p>
 <p>EXAMPLES:</p>
 <p>We build a translation surface by gluing two hexagons, labeled 0 and 1:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QuadraticField</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span>
@@ -376,14 +376,14 @@ by gluing polygons with similarities.</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
-<span class="n">Translation</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">regular</span> <span class="n">hexagons</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="mi">2</span> <span class="n">regular</span> <span class="n">hexagons</span>
 </pre></div>
 </div>
 <p>We signal that the construction is complete. This refines the category of the
 surface and makes more functionality available:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
-<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_2</span><span class="p">(</span><span class="mi">1</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">regular</span> <span class="n">hexagons</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_2</span><span class="p">(</span><span class="mi">1</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="mi">2</span> <span class="n">regular</span> <span class="n">hexagons</span>
 </pre></div>
 </div>
 <dl class="py class">
@@ -393,7 +393,7 @@ surface and makes more functionality available:</p>
 <p>EXAMPLES:</p>
 <p>This class is used in the implementation of
 <a class="reference internal" href="categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring()</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 </pre></div>
@@ -411,7 +411,7 @@ surface and makes more functionality available:</p>
 <a class="reference internal" href="categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_test_eq_surface()</span></code></a>
 for details on this notion of equality.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span> <span class="o">==</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 <span class="kc">True</span>
@@ -425,7 +425,7 @@ for details on this notion of equality.</p>
 <dd><p>Return a hash value for this surface that is compatible with
 <a class="reference internal" href="#flatsurf.geometry.surface.BaseRingChangedSurface.__eq__" title="flatsurf.geometry.surface.BaseRingChangedSurface.__eq__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__eq__()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">hash</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">))</span> <span class="o">==</span> <span class="nb">hash</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">))</span>
 <span class="kc">True</span>
@@ -451,15 +451,15 @@ for details on this notion of equality.</p>
 <p>This overrides
 <a class="reference internal" href="categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
-<span class="n">Genus</span> <span class="mi">0</span> <span class="n">Rational</span> <span class="n">Cone</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">triangles</span> <span class="n">over</span> <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
+<span class="n">Genus</span> <span class="mi">0</span> <span class="n">Rational</span> <span class="n">Cone</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="mi">2</span> <span class="n">triangles</span> <span class="n">over</span> <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span>
-<span class="n">Genus</span> <span class="mi">0</span> <span class="n">Rational</span> <span class="n">Cone</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">triangles</span> <span class="n">over</span> <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
+<span class="n">Genus</span> <span class="mi">0</span> <span class="n">Rational</span> <span class="n">Cone</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="mi">2</span> <span class="n">triangles</span> <span class="n">over</span> <span class="n">Algebraic</span> <span class="n">Real</span> <span class="n">Field</span>
 </pre></div>
 </div>
 <p>This method creates a copy of the surface even if the base ring is unchanged:</p>
@@ -476,7 +476,7 @@ for details on this notion of equality.</p>
 <p>This implements
 <a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 
@@ -491,7 +491,7 @@ for details on this notion of equality.</p>
 <span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#BaseRingChangedSurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.BaseRingChangedSurface.labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels of the polygons of this surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
@@ -507,7 +507,7 @@ for details on this notion of equality.</p>
 <p>This implements
 <a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 
@@ -524,7 +524,7 @@ for details on this notion of equality.</p>
 <p>This implements
 <a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 
@@ -541,7 +541,7 @@ for details on this notion of equality.</p>
 <dd><p>Return a label for each connected component on this surface.</p>
 <p>This implements <a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
 
@@ -568,11 +568,11 @@ finite (some operations might not be supported in that case or not
 terminate if the component is actually infinite).</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">t_fractal</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">component</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">component</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">ComponentLabels</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComponentLabels</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">ComponentLabels</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -598,7 +598,7 @@ terminate if the component is actually infinite).</p></li>
 <dd><p>Return an iterator of this component that enumerates labels starting
 from the root label in a breadth-first-search.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">component</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">component</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
@@ -621,7 +621,7 @@ from the root label in a breadth-first-search.</p>
 <p>The set of edges contains of pairs (label, index) with the labels of the
 polygons and the actual edges indexed from 0 in the second component.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">edges</span>
@@ -663,7 +663,7 @@ polygons and the actual edges indexed from 0 in the second component.</p>
 being glued.</p>
 <p>Note that each gluing (that is not a self-gluing) is reported twice.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gluings</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">gluings</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gluings</span>
@@ -715,11 +715,11 @@ a finite set; if <code class="docutils literal notranslate"><span class="pre">No
 the set is actually infinite).</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">LabeledCollection</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabeledCollection</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">LabeledCollection</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -739,7 +739,7 @@ the set is actually infinite).</p></li>
 <span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#LabeledCollection.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.LabeledCollection.__contains__" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether <code class="docutils literal notranslate"><span class="pre">x</span></code> is contained in this set.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">labels</span>
@@ -765,7 +765,7 @@ the set is actually infinite).</p></li>
 <span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#LabeledCollection.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.LabeledCollection.__len__" title="Link to this definition">¶</a></dt>
 <dd><p>Return the size of this set.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span>
 <span class="mi">1</span>
@@ -818,11 +818,11 @@ sage: S.labels()
 <dd><p>Abstract base class for sets of labels or related objects, such as the set
 of gluings of a surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gluings</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">gluings</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">LabeledSet</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabeledSet</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gluings</span><span class="p">,</span> <span class="n">LabeledSet</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -864,11 +864,11 @@ a finite set; if <code class="docutils literal notranslate"><span class="pre">No
 the set is actually infinite).</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">t_fractal</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">LabeledView</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabeledView</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">LabeledView</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -925,7 +925,7 @@ produce somewhat random output.</p>
 the min of the mins of a each partition of that set.</p>
 </div>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">t_fractal</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
@@ -933,14 +933,14 @@ the min of the mins of a each partition of that set.</p>
 <span class="ne">NotImplementedError</span><span class="p">:</span> <span class="n">cannot</span> <span class="n">determine</span> <span class="n">minimum</span> <span class="n">of</span> <span class="n">an</span> <span class="n">infinite</span> <span class="nb">set</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
 <span class="mi">0</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">labels</span><span class="p">())[:</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">LabeledView</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabeledView</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">LabeledView</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
 <span class="mi">0</span>
 </pre></div>
@@ -965,7 +965,7 @@ the surface (because it needs to iterate over the entire surface).</p>
 <a class="reference internal" href="#flatsurf.geometry.surface.LabelsFromView" title="flatsurf.geometry.surface.LabelsFromView"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelsFromView</span></code></a>.</p>
 </div>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
@@ -991,7 +991,7 @@ the surface (because it needs to iterate over the entire surface).</p>
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Labels.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Labels.__getitem__" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels at position <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1028,11 +1028,11 @@ search order in the surface since this class is picking up the generic
 <a class="reference internal" href="#flatsurf.geometry.surface.Labels.__iter__" title="flatsurf.geometry.surface.Labels.__iter__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Labels.__iter__()</span></code></a>.</p>
 </div>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">LabelsFromView</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelsFromView</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="n">LabelsFromView</span>
 <span class="kc">True</span>
 </pre></div>
@@ -1062,10 +1062,10 @@ similarities.</p>
 <p>This is the main tool to create new surfaces of finite type in
 sage-flatsurf.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1075,7 +1075,7 @@ sage-flatsurf.</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
-<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">square</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">square</span>
 </pre></div>
 </div>
 <dl class="py attribute">
@@ -1091,7 +1091,7 @@ sage-flatsurf.</p>
 <a class="reference internal" href="categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_test_eq_surface()</span></code></a>
 for details on this notion of equality.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">AA</span><span class="p">)</span>
@@ -1111,7 +1111,7 @@ for details on this notion of equality.</p>
 <dd><p>Return a hash value for this surface that is compatible with
 <a class="reference internal" href="#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.__eq__" title="flatsurf.geometry.surface.MutableOrientedSimilaritySurface.__eq__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__eq__()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
@@ -1186,7 +1186,7 @@ in-place.</p>
 are copied and glued like in the original surface.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 </pre></div>
@@ -1232,7 +1232,7 @@ that polygon</p></li>
 that polygon</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
@@ -1254,7 +1254,7 @@ sides:</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
-<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">square</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">square</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1280,7 +1280,7 @@ to allow joining in-place.</p>
 of a polygon are numbered starting from zero).</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]))</span>
 <span class="mi">0</span>
@@ -1334,7 +1334,7 @@ gluings intact.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">polygon</span></code> – a Euclidean polygon</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]))</span>
 <span class="mi">0</span>
@@ -1402,7 +1402,7 @@ to allow triangulating in-place.</p>
 <span class="sig-name descname"><span class="pre">unglue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#MutableOrientedSimilaritySurface.unglue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.unglue" title="Link to this definition">¶</a></dt>
 <dd><p>Unglue the side <code class="docutils literal notranslate"><span class="pre">edge</span></code> of the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code> if it is glued.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 
@@ -1415,7 +1415,7 @@ to allow triangulating in-place.</p>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
-<span class="n">Translation</span> <span class="n">Surface</span> <span class="k">with</span> <span class="n">boundary</span> <span class="n">built</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">square</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="k">with</span> <span class="n">boundary</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">square</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1431,10 +1431,10 @@ preserving similarities.</p>
 without making a choice about how data is stored internally; it is a
 generic base class for other implementations of mutable surfaces.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface_base</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface_base</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface_base</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -1462,7 +1462,7 @@ copy is created and returned if in_place=False (as default).</p>
 <a class="reference internal" href="categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons()</span></code></a>
 to provide in-place standardizing of surfaces.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Polygon</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Polygon</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)]))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -1494,10 +1494,10 @@ to provide in-place flipping of triangles.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">MutablePolygonalSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#MutablePolygonalSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.MutablePolygonalSurface" title="Link to this definition">¶</a></dt>
 <dd><p>A base class for mutable surfaces that are built by gluing polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutablePolygonalSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutablePolygonalSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">MutablePolygonalSurface</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -1515,14 +1515,14 @@ to provide in-place flipping of triangles.</p>
 <a class="reference internal" href="categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_test_eq_surface()</span></code></a>
 for details on this notion of equality.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">==</span> <span class="n">T</span>
 <span class="kc">True</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1538,7 +1538,7 @@ for details on this notion of equality.</p>
 <dd><p>Return a hash value for this surface that is compatible with
 <a class="reference internal" href="#flatsurf.geometry.surface.MutablePolygonalSurface.__eq__" title="flatsurf.geometry.surface.MutablePolygonalSurface.__eq__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__eq__()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">hash</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="o">==</span> <span class="nb">hash</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
@@ -1575,10 +1575,10 @@ for details on this notion of equality.</p>
 if <code class="docutils literal notranslate"><span class="pre">None</span></code> an integer identifier is automatically selected</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1598,10 +1598,10 @@ if <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <span class="sig-name descname"><span class="pre">add_polygons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#MutablePolygonalSurface.add_polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.MutablePolygonalSurface.add_polygons" title="Link to this definition">¶</a></dt>
 <dd><p>Add several polygons with automatically assigned labels at once.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygons</span><span class="p">([</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">(),</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()])</span>
 <span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
 <span class="o">...</span>
@@ -1616,10 +1616,10 @@ if <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <span class="sig-name descname"><span class="pre">change_base_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#MutablePolygonalSurface.change_base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.MutablePolygonalSurface.change_base_label" title="Link to this definition">¶</a></dt>
 <dd><p>This is a deprecated alias for <a class="reference internal" href="#flatsurf.geometry.surface.MutablePolygonalSurface.set_root" title="flatsurf.geometry.surface.MutablePolygonalSurface.set_root"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_root()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1637,20 +1637,20 @@ if <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <dd><p>Return the connected components as the sequence of their respective
 polygon labels.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">components</span><span class="p">()</span>
 <span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">components</span><span class="p">()</span>
 <span class="p">((</span><span class="mi">0</span><span class="p">,),)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">1</span>
 
@@ -1671,7 +1671,7 @@ polygon labels.</p>
 <p>This implements
 <a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span>
@@ -1692,13 +1692,13 @@ polygon labels.</p>
 <a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels()</span></code></a>
 method with a more efficient implementation.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 <span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1720,7 +1720,7 @@ method with a more efficient implementation.</p>
 <p>This implements
 <a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -1728,7 +1728,7 @@ method with a more efficient implementation.</p>
 <span class="o">...</span>
 <span class="ne">KeyError</span><span class="p">:</span> <span class="mi">0</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1748,13 +1748,13 @@ the order of the labels in <a class="reference internal" href="categories/polygo
 <a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons()</span></code></a>
 with a more efficient implementation.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
 <span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
@@ -1778,10 +1778,10 @@ with a more efficient implementation.</p>
 <dd><p>Remove the polygon with label <code class="docutils literal notranslate"><span class="pre">label</span></code> from this surface (and all data
 associated to it).</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1799,20 +1799,20 @@ associated to it).</p>
 <dd><p>Return a label for each connected component on this surface.</p>
 <p>This implements <a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
 <span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
 <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">1</span>
 
@@ -1835,12 +1835,12 @@ associated to it).</p>
 <span class="sig-name descname"><span class="pre">set_default_graphical_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graphical_surface</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#MutablePolygonalSurface.set_default_graphical_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.MutablePolygonalSurface.set_default_graphical_surface" title="Link to this definition">¶</a></dt>
 <dd><p>EXAMPLES:</p>
 <p>This has been disabled because it tends to break caching:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_default_graphical_surface</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">())</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
 <span class="o">...</span>
-<span class="ne">NotImplementedError</span><span class="p">:</span> <span class="n">set_default_graphical_surface</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">removed</span> <span class="kn">from</span> <span class="nn">this</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">.</span> <span class="n">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">default</span> <span class="n">plotting</span> <span class="n">of</span> <span class="n">a</span> <span class="n">surface</span><span class="p">,</span> <span class="n">create</span> <span class="n">a</span> <span class="n">subclass</span> <span class="ow">and</span> <span class="n">override</span> <span class="n">graphical_surface</span><span class="p">()</span> <span class="n">instead</span>
+<span class="ne">NotImplementedError</span><span class="p">:</span> <span class="n">set_default_graphical_surface</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">removed</span> <span class="kn">from</span><span class="w"> </span><span class="nn">this</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">.</span> <span class="n">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">default</span> <span class="n">plotting</span> <span class="n">of</span> <span class="n">a</span> <span class="n">surface</span><span class="p">,</span> <span class="n">create</span> <span class="n">a</span> <span class="n">subclass</span> <span class="ow">and</span> <span class="n">override</span> <span class="n">graphical_surface</span><span class="p">()</span> <span class="n">instead</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1851,10 +1851,10 @@ associated to it).</p>
 <dd><p>Make this surface immutable.</p>
 <p>Any mutation attempts from now on will be an error.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 
@@ -1924,7 +1924,7 @@ surface.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">root</span></code> – a polygon label in this surface</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_root</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -1932,7 +1932,7 @@ surface.</p>
 <span class="o">...</span>
 <span class="ne">ValueError</span><span class="p">:</span> <span class="n">root</span> <span class="n">must</span> <span class="n">be</span> <span class="n">a</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">surface</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
@@ -1980,10 +1980,10 @@ label chosen automatically.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">roots</span></code> – a sequence of polygon labels in this surface</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
@@ -2024,10 +2024,10 @@ label chosen automatically.</p>
 <dd><p>Base class for surfaces built from Euclidean polygons that are glued with
 orientation preserving similarities.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">OrientedSimilaritySurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">OrientedSimilaritySurface</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -2062,11 +2062,11 @@ orientation preserving similarities.</p>
 <p>The polygons are returned in the same order as labels of the surface are
 returned by <a class="reference internal" href="#flatsurf.geometry.surface.Labels" title="flatsurf.geometry.surface.Labels"><code class="xref py py-class docutils literal notranslate"><span class="pre">Labels</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span> <span class="n">Polygons</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -2086,7 +2086,7 @@ returned by <a class="reference internal" href="#flatsurf.geometry.surface.Label
 <span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Polygons.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Polygons.__iter__" title="Link to this definition">¶</a></dt>
 <dd><p>Iterate over the polygons in the same order as <code class="docutils literal notranslate"><span class="pre">labels()</span></code> does.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
@@ -2106,7 +2106,7 @@ returned by <a class="reference internal" href="#flatsurf.geometry.surface.Label
 <span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Polygons.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Polygons.__len__" title="Link to this definition">¶</a></dt>
 <dd><p>Return the number of polygons in this surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span>
@@ -2128,11 +2128,11 @@ returned by <a class="reference internal" href="#flatsurf.geometry.surface.Label
 <dd><p>The collection of polygons of a <a class="reference internal" href="#flatsurf.geometry.surface.MutableOrientedSimilaritySurface" title="flatsurf.geometry.surface.MutableOrientedSimilaritySurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableOrientedSimilaritySurface</span></code></a>.</p>
 <p>This is a faster version of <a class="reference internal" href="#flatsurf.geometry.surface.Polygons" title="flatsurf.geometry.surface.Polygons"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygons</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">cathedral</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Polygons_MutableOrientedSimilaritySurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons_MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span> <span class="n">Polygons_MutableOrientedSimilaritySurface</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -2173,16 +2173,16 @@ the labels of the corresponding component.</p>
 <p>This is a helper method for <a class="reference internal" href="#flatsurf.geometry.surface.MutablePolygonalSurface.components" title="flatsurf.geometry.surface.MutablePolygonalSurface.components"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MutablePolygonalSurface.components()</span></code></a> and
 <a class="reference internal" href="#flatsurf.geometry.surface.MutablePolygonalSurface.roots" title="flatsurf.geometry.surface.MutablePolygonalSurface.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MutablePolygonalSurface.roots()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">1</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">components</span> <span class="o">=</span> <span class="n">RootedComponents_MutablePolygonalSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2207,17 +2207,17 @@ the labels of the corresponding component.</p>
 <dd><p>Return the labels of the connected component rooted at the label
 <code class="docutils literal notranslate"><span class="pre">root</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">1</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">components</span> <span class="o">=</span> <span class="n">RootedComponents_MutablePolygonalSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -2236,17 +2236,17 @@ the labels of the corresponding component.</p>
 <dd><p>Iterate over the keys of this mapping, i.e., the root labels of the
 connected components.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">1</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">components</span> <span class="o">=</span> <span class="n">RootedComponents_MutablePolygonalSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">components</span><span class="p">)</span>
 <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -2259,17 +2259,17 @@ connected components.</p>
 <span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#RootedComponents_MutablePolygonalSurface.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.RootedComponents_MutablePolygonalSurface.__len__" title="Link to this definition">¶</a></dt>
 <dd><p>Return the number of connected components of this surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
 <span class="mi">1</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RootedComponents_MutablePolygonalSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">components</span> <span class="o">=</span> <span class="n">RootedComponents_MutablePolygonalSurface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span>
 <span class="mi">1</span>
@@ -2297,10 +2297,10 @@ connected components.</p>
 <p>This class patches bits of the category framework in SageMath that assume
 that all parent structures are immutable.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_base</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_base</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">Surface_base</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -2325,7 +2325,7 @@ that all parent structures are immutable.</p>
 <span class="sig-name descname"><span class="pre">an_element</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface.html#Surface_base.an_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface.Surface_base.an_element" title="Link to this definition">¶</a></dt>
 <dd><p>Return a point of this surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="n">Point</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="n">of</span> <span class="n">polygon</span> <span class="mi">0</span>

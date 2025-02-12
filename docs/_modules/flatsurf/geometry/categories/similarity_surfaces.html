@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.similarity_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -462,19 +462,19 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.surface_category</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SurfaceCategory</span><span class="p">,</span>
     <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">flatsurf.cache</span> <span class="kn">import</span> <span class="n">cached_surface_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_surface_method</span>
 
-<span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
-<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.category_with_axiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_axioms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span>
 
 
 <div class="viewcode-block" id="SimilaritySurfaces">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces">[docs]</a>
-<span class="k">class</span> <span class="nc">SimilaritySurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimilaritySurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of surfaces built from polygons with edges identified by</span>
 <span class="sd">    similarities.</span>
@@ -489,7 +489,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.super_categories">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.super_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the categories that a similarity surface is also a member of,</span>
 <span class="sd">        namely the surfaces formed by Euclidean polygons.</span>
@@ -501,7 +501,7 @@
 <span class="sd">            [Category of euclidean polygonal surfaces]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.euclidean_polygonal_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.euclidean_polygonal_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">EuclideanPolygonalSurfaces</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -510,7 +510,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all surfaces that are built from</span>
 <span class="sd">        Euclidean polygons that are glued by similarities.</span>
@@ -521,7 +521,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.refined_category">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.refined_category">[docs]</a>
-        <span class="k">def</span> <span class="nf">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the smallest subcategory that this surface is in by consulting</span>
 <span class="sd">            how its edges are glued.</span>
@@ -557,19 +557,19 @@
 <span class="sd">                Category of connected without boundary finite type translation surfaces</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.polygonal_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.polygonal_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                 <span class="n">PolygonalSurfaces</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">category</span> <span class="o">=</span> <span class="n">PolygonalSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cone_surface</span><span class="p">():</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.cone_surfaces</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.cone_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 
                 <span class="n">category</span> <span class="o">&amp;=</span> <span class="n">ConeSurfaces</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dilation_surface</span><span class="p">():</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.dilation_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.dilation_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                     <span class="n">DilationSurfaces</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -579,13 +579,13 @@
                     <span class="n">category</span> <span class="o">&amp;=</span> <span class="n">DilationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Positive</span><span class="p">()</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_translation_surface</span><span class="p">():</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.translation_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.translation_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                             <span class="n">TranslationSurfaces</span><span class="p">,</span>
                         <span class="p">)</span>
 
                         <span class="n">category</span> <span class="o">&amp;=</span> <span class="n">TranslationSurfaces</span><span class="p">()</span>
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_translation_surface</span><span class="p">(</span><span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.half_translation_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.half_translation_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">HalfTranslationSurfaces</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -600,7 +600,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_cone_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a cone surface, i.e., glued edges</span>
 <span class="sd">            can be transformed into each other with isometries.</span>
@@ -631,14 +631,14 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_translation_surface</span><span class="p">():</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 
             <span class="k">return</span> <span class="n">ConeSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_dilation_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a dilation surface, i.e., whether</span>
 <span class="sd">            glued edges can be transformed into each other by translation</span>
@@ -673,7 +673,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_translation_surface</span><span class="p">(</span><span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
 
             <span class="k">return</span> <span class="n">DilationSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_dilation_surface</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span>
@@ -682,7 +682,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_translation_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a translation surface, i.e., glued</span>
 <span class="sd">            edges can be transformed into each other by translations.</span>
@@ -724,7 +724,7 @@
 <span class="sd">                True</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 
             <span class="k">return</span> <span class="n">TranslationSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_translation_surface</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span>
@@ -733,7 +733,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_rational_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_rational_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a rational surface, i.e., the</span>
 <span class="sd">            rotational part of all gluings is a rational multiple of π.</span>
@@ -761,7 +761,7 @@
             <span class="k">return</span> <span class="n">SimilaritySurfaces</span><span class="o">.</span><span class="n">Rational</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-        <span class="k">def</span> <span class="nf">_mul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">switch_sides</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_mul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">switch_sides</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            EXAMPLES::</span>
 
@@ -789,20 +789,20 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">switch_sides</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-            <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">Matrix</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.element</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matrix</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;only implemented for matrices&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">matrix</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;only implemented for 2x2 matrices&quot;</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">GL2RImageSurface</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2RImageSurface</span>
 
             <span class="k">return</span> <span class="n">GL2RImageSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.apply_matrix">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.apply_matrix">[docs]</a>
-        <span class="k">def</span> <span class="nf">apply_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">apply_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Apply the 2×2 matrix ``m`` to the polygons of this surface and</span>
 <span class="sd">            return a morphism from this surface to the deformed surface.</span>
@@ -831,7 +831,7 @@
 
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">in_place</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. &quot;</span>
@@ -845,18 +845,18 @@
                     <span class="s2">&quot;this surface does not support applying a GL(2,R) action in-place yet&quot;</span>
                 <span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">GL2RImageSurface</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2RImageSurface</span>
 
             <span class="n">image</span> <span class="o">=</span> <span class="n">GL2RImageSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">GL2RMorphism</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2RMorphism</span>
 
             <span class="k">return</span> <span class="n">GL2RMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.homology">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology">[docs]</a>
-        <span class="k">def</span> <span class="nf">homology</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">homology</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -900,14 +900,14 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;surface must be immutable to compute homology&quot;</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
             <span class="n">k</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
             <span class="n">coefficients</span> <span class="o">=</span> <span class="n">coefficients</span> <span class="ow">or</span> <span class="n">ZZ</span>
 
             <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Modules</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Modules</span>
 
                 <span class="n">category</span> <span class="o">=</span> <span class="n">Modules</span><span class="p">(</span><span class="n">coefficients</span><span class="p">)</span>
 
@@ -923,7 +923,7 @@
 
 
         <span class="nd">@cached_surface_method</span>
-        <span class="k">def</span> <span class="nf">_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the ``k``-th homology group of this surface.</span>
 
@@ -964,7 +964,7 @@
 <span class="sd">                False</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.homology</span> <span class="kn">import</span> <span class="n">SimplicialHomologyGroup</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.homology</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimplicialHomologyGroup</span>
 
             <span class="k">return</span> <span class="n">SimplicialHomologyGroup</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span>
@@ -972,7 +972,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.cohomology">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology">[docs]</a>
-        <span class="k">def</span> <span class="nf">cohomology</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">cohomology</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1018,18 +1018,18 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;surface must be immutable to compute cohomology&quot;</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
             <span class="n">k</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
             <span class="n">coefficients</span> <span class="o">=</span> <span class="n">coefficients</span> <span class="ow">or</span> <span class="n">RR</span>
 
             <span class="n">relative</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">relative</span> <span class="ow">or</span> <span class="p">{})</span>
 
             <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Modules</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Modules</span>
 
                 <span class="n">category</span> <span class="o">=</span> <span class="n">Modules</span><span class="p">(</span><span class="n">coefficients</span><span class="p">)</span>
 
@@ -1043,7 +1043,7 @@
 
 
         <span class="nd">@cached_surface_method</span>
-        <span class="k">def</span> <span class="nf">_cohomology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_cohomology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the ``k``-th cohomology group of this surface.</span>
 
@@ -1072,7 +1072,7 @@
 <span class="sd">                False</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.cohomology</span> <span class="kn">import</span> <span class="n">SimplicialCohomologyGroup</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.cohomology</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimplicialCohomologyGroup</span>
 
             <span class="k">return</span> <span class="n">SimplicialCohomologyGroup</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span>
@@ -1081,7 +1081,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented">[docs]</a>
-    <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of oriented surfaces built from Euclidean polygons that</span>
 <span class="sd">        are glued by similarities with the orientation compatible with the</span>
@@ -1097,7 +1097,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ElementMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ElementMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all points of oriented similarity</span>
 <span class="sd">            surfaces.</span>
@@ -1108,7 +1108,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.angle">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.angle">[docs]</a>
-            <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the total angle at this point as a multiple of 2π.</span>
 
@@ -1156,7 +1156,7 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">RR</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">RR</span>
 
                 <span class="n">ring</span> <span class="o">=</span> <span class="n">RR</span> <span class="k">if</span> <span class="n">numerical</span> <span class="k">else</span> <span class="n">QQ</span>
 
@@ -1179,7 +1179,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.turns">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.turns">[docs]</a>
-            <span class="k">def</span> <span class="nf">turns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">turns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the number of total 2π turns at this vertex.</span>
 
@@ -1248,7 +1248,7 @@
                 <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">vector</span> <span class="k">for</span> <span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]]</span>
 
                 <span class="k">for</span> <span class="n">vector</span><span class="p">,</span> <span class="n">previous</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="n">vectors</span><span class="p">):</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span><span class="p">,</span> <span class="n">is_parallel</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">ccw</span><span class="p">,</span> <span class="n">is_parallel</span>
 
                     <span class="c1"># This is a vertex at a concave vertex of a polygon (with</span>
                     <span class="c1"># angle &lt; 2π). So at least one π turn must have happened.</span>
@@ -1272,7 +1272,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges">[docs]</a>
-            <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the edges of the polygons that contain this point.</span>
 
@@ -1286,7 +1286,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges_ccw">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges_ccw">[docs]</a>
-            <span class="k">def</span> <span class="nf">edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the edges of the polygons that are crossed when walking</span>
 <span class="sd">                around this point in counterclockwise direction.</span>
@@ -1365,7 +1365,7 @@
                 <span class="p">)</span></div>
 
 
-            <span class="k">def</span> <span class="nf">_test_edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_test_edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Verify that :meth:`edges_ccw` is implemented correctly.</span>
 
@@ -1386,11 +1386,11 @@
                     <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
                 <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">[::</span><span class="mi">2</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]):</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">is_parallel</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_parallel</span>
 
                     <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">is_parallel</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
-            <span class="k">def</span> <span class="nf">_edges_ccw_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_edges_ccw_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the edges that are crossed when walking around this</span>
 <span class="sd">                point on an edge.</span>
@@ -1424,7 +1424,7 @@
 
                 <span class="k">return</span> <span class="p">[(</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="p">),</span> <span class="p">(</span><span class="n">opposite</span><span class="p">,</span> <span class="o">-</span><span class="n">start_holonomy</span><span class="p">)]</span>
 
-            <span class="k">def</span> <span class="nf">_edges_ccw_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_edges_ccw_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the edges that are crossed when walking around this</span>
 <span class="sd">                point at a vertex.</span>
@@ -1472,7 +1472,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">start_holonomy</span> <span class="o">=</span> <span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)(</span><span class="n">start_holonomy</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">similarity_from_vectors</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_from_vectors</span>
 
                 <span class="n">similarity</span> <span class="o">=</span> <span class="n">similarity_from_vectors</span><span class="p">(</span>
                     <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">start_holonomy</span>
@@ -1514,7 +1514,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all oriented surfaces that are built</span>
 <span class="sd">            from Euclidean polygons that are glued by similarities.</span>
@@ -1525,7 +1525,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.some_elements">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.some_elements">[docs]</a>
-            <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return some typical points of this surface (for testing).</span>
 
@@ -1537,12 +1537,12 @@
 <span class="sd">                    [Point (1/2, 1/2) of polygon 0, Vertex 0 of polygon 0]</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
                 <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="mi">32</span><span class="p">):</span>
                     <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Fields</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fields</span>
 
                     <span class="k">if</span> <span class="n">polygon</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
                         <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-callable</span>
@@ -1561,7 +1561,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.angles">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.angles">[docs]</a>
-            <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_adjacent_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_adjacent_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the angles around the vertices of the surface as</span>
 <span class="sd">                multiples of 2π.</span>
@@ -1676,7 +1676,7 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">return_adjacent_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">return_adjacent_edges</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; use angle() and edges_ccw()[::2] on each vertex instead.&quot;</span>
@@ -1689,7 +1689,7 @@
                             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
                         <span class="p">]</span>
 
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; omit the argument to not include the edges instead.&quot;</span>
@@ -1699,7 +1699,7 @@
 
 
             <span class="nd">@cached_surface_method</span>
-            <span class="k">def</span> <span class="nf">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">numerical</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">numerical</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the total angle at this vertex in multiples of 2π.</span>
 
@@ -1719,14 +1719,14 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="n">turns</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">turns</span><span class="p">()</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">angle</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">angle</span>
 
                 <span class="k">return</span> <span class="n">turns</span> <span class="o">+</span> <span class="n">angle</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">[docs]</a>
             <span class="nd">@cached_surface_method</span>
-            <span class="k">def</span> <span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Returns the 2x2 matrix representing a similarity which when</span>
 <span class="sd">                applied to the polygon with label `p` makes it so the edge `e`</span>
@@ -1754,7 +1754,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead&quot;</span>
@@ -1766,15 +1766,15 @@
                 <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">ee</span><span class="p">)</span>
 
                 <span class="c1"># note the orientation, it is -v and not v</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">similarity_from_vectors</span>
-                <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_from_vectors</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.matrix.matrix_space</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatrixSpace</span>
 
                 <span class="k">return</span> <span class="n">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.underlying_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.underlying_surface">[docs]</a>
-            <span class="k">def</span> <span class="nf">underlying_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">underlying_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return this surface.</span>
 
@@ -1789,7 +1789,7 @@
 <span class="sd">                    True</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;underlying_surface() has been deprecated and will be removed in a future version of sage-flatsurf; this function has no effect anymore since there is no distinction between a surface and its underlying surface anymore&quot;</span>
@@ -1800,7 +1800,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_transformation">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_transformation">[docs]</a>
-            <span class="k">def</span> <span class="nf">edge_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">edge_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the similarity bringing the provided edge to the opposite edge.</span>
 
@@ -1821,7 +1821,7 @@
 <span class="sd">                    (2, 0)</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
                 <span class="n">G</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
                 <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -1844,7 +1844,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero">[docs]</a>
-            <span class="k">def</span> <span class="nf">set_vertex_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">set_vertex_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Applies a combinatorial rotation to the polygon with the provided label.</span>
 
@@ -1892,7 +1892,7 @@
                         <span class="s2">&quot;this surface does not support set_vertex_zero(mutable=True)&quot;</span>
                     <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                     <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -1904,7 +1904,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.relabel">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel">[docs]</a>
-            <span class="k">def</span> <span class="nf">relabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabeling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">relabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabeling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a surface whose polygons have been relabeled according</span>
 <span class="sd">                to ``relabeling``.</span>
@@ -1986,11 +1986,11 @@
                             <span class="s2">&quot;cannot relabel a surface with an infinite number of polygons with a dict relabeling yet&quot;</span>
                         <span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">LazyRelabeledSurface</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyRelabeledSurface</span>
 
                     <span class="k">return</span> <span class="n">LazyRelabeledSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                     <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -2003,7 +2003,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.copy">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.copy">[docs]</a>
-            <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2095,7 +2095,7 @@
                 <span class="k">if</span> <span class="n">optimal_number_field</span><span class="p">:</span>
                     <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; There is currently no replacement for optimal number field. If you are relying on this features, let the authors of sage-flatsurf know and we will try to make it available again.&quot;</span>
 
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
@@ -2119,7 +2119,7 @@
                         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
                             <span class="n">coordinates_AA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AA</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
                             <span class="n">coordinates_AA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AA</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-                    <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.qqbar</span><span class="w"> </span><span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span>
 
                     <span class="n">field</span><span class="p">,</span> <span class="n">coordinates_NF</span><span class="p">,</span> <span class="n">hom</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span>
                         <span class="n">coordinates_AA</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span>
@@ -2131,7 +2131,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># Unfortunately field doesn&#39;t come with an real embedding (which is given by hom!)</span>
                         <span class="c1"># So, we make a copy of the field, and add the embedding.</span>
-                        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">NumberField</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumberField</span>
 
                         <span class="n">field2</span> <span class="o">=</span> <span class="n">NumberField</span><span class="p">(</span>
                             <span class="n">field</span><span class="o">.</span><span class="n">polynomial</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">hom</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
@@ -2139,14 +2139,14 @@
                         <span class="c1"># The following converts from field to field2:</span>
                         <span class="n">hom2</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">im_gens</span><span class="o">=</span><span class="p">[</span><span class="n">field2</span><span class="o">.</span><span class="n">gen</span><span class="p">()])</span>
 
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                             <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                         <span class="p">)</span>
 
                         <span class="n">ss</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">field2</span><span class="p">)</span>
                         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
 
-                        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
                         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()):</span>
                             <span class="n">new_edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2175,7 +2175,7 @@
                     <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">relabel</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_list</span>
 
                         <span class="k">return</span> <span class="n">Surface_list</span><span class="p">(</span>
                             <span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
@@ -2185,7 +2185,7 @@
                             <span class="n">deprecation_warning</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_dict</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_dict</span>
 
                         <span class="k">return</span> <span class="n">Surface_dict</span><span class="p">(</span>
                             <span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
@@ -2204,7 +2204,7 @@
                             <span class="s2">&quot;An infinite surface can only be copied if it is immutable.&quot;</span>
                         <span class="p">)</span>
                     <span class="k">if</span> <span class="n">relabel</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_list</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_list</span>
 
                         <span class="k">return</span> <span class="n">Surface_list</span><span class="p">(</span>
                             <span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
@@ -2214,7 +2214,7 @@
                             <span class="n">deprecation_warning</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_dict</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_dict</span>
 
                         <span class="k">return</span> <span class="n">Surface_dict</span><span class="p">(</span>
                             <span class="n">surface</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
@@ -2227,7 +2227,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.change_ring">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring">[docs]</a>
-            <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a copy of this surface whose polygons are defined over</span>
 <span class="sd">                ``ring``.</span>
@@ -2254,14 +2254,14 @@
 <span class="sd">                    TypeError: Unable to coerce 1/2*a + 1 to a rational</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">BaseRingChangedSurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRingChangedSurface</span>
 
                 <span class="k">return</span> <span class="n">BaseRingChangedSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangle_flip">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangle_flip">[docs]</a>
-            <span class="k">def</span> <span class="nf">triangle_flip</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">triangle_flip</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span>
             <span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2378,13 +2378,13 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore&quot;</span>
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.&quot;</span>
@@ -2403,7 +2403,7 @@
                         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise&quot;</span>
@@ -2414,7 +2414,7 @@
                         <span class="s2">&quot;this surface does not support triangle_flip(in_place=True) yet&quot;</span>
                     <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                     <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -2427,7 +2427,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_convex">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_convex">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether the polygon with ``label`` is convex after it</span>
 <span class="sd">                has been glued with the polygon across its ``edge``.</span>
@@ -2459,7 +2459,7 @@
 
                 <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
                 <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">opposite_label</span><span class="p">,</span> <span class="n">opposite_edge</span><span class="p">)</span>
                 <span class="n">p2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">opposite_label</span><span class="p">)</span>
@@ -2474,7 +2474,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.random_flip">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.random_flip">[docs]</a>
-            <span class="k">def</span> <span class="nf">random_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">random_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Perform random edge flip on a triangulated surface.</span>
 
@@ -2495,14 +2495,14 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_triangulated</span><span class="p">():</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;random_flip only works for triangulated surfaces&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">in_place</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                     <span class="p">)</span>
 
                     <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="kn">from</span> <span class="nn">sage.misc.prandom</span> <span class="kn">import</span> <span class="n">choice</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.prandom</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span>
 
                 <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">repeat</span><span class="p">:</span>
                     <span class="n">p1</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
@@ -2518,7 +2518,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.join_polygons">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.join_polygons">[docs]</a>
-            <span class="k">def</span> <span class="nf">join_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">join_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Join polygons across the provided edge (p1,e1). By default,</span>
 <span class="sd">                it returns the surface obtained by joining the two polygons</span>
@@ -2562,7 +2562,7 @@
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -2591,7 +2591,7 @@
                     <span class="n">es</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
                     <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="n">es</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
@@ -2603,7 +2603,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon">[docs]</a>
-            <span class="k">def</span> <span class="nf">subdivide_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">subdivide_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Cut the polygon with label p along the diagonal joining vertex</span>
 <span class="sd">                v1 to vertex v2. This cuts p into two polygons, one will keep the same</span>
@@ -2635,7 +2635,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.singularity">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.singularity">[docs]</a>
-            <span class="k">def</span> <span class="nf">singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Represents the Singularity associated to the v-th vertex of the polygon</span>
 <span class="sd">                with label ``label``.</span>
@@ -2660,14 +2660,14 @@
 <span class="sd">                    ValueError: number of edges at singularity exceeds limit</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">Singularity</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Singularity</span>
 
                 <span class="k">return</span> <span class="n">Singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.point">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.point">[docs]</a>
-            <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a point in this surface.</span>
 
@@ -2722,13 +2722,13 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.surface_point">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.surface_point">[docs]</a>
-            <span class="k">def</span> <span class="nf">surface_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">surface_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a point in this surface.</span>
 
 <span class="sd">                This is an alias for :meth:`point`.</span>
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;surface_point() has been deprecated and will be removed in a future version of sage-flatsurf; use point() instead&quot;</span>
@@ -2739,7 +2739,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.minimal_cover">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.minimal_cover">[docs]</a>
-            <span class="k">def</span> <span class="nf">minimal_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">minimal_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the minimal translation or half-translation cover of the surface.</span>
 
@@ -2792,19 +2792,19 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">cover_type</span> <span class="o">==</span> <span class="s2">&quot;translation&quot;</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.minimal_cover</span> <span class="kn">import</span> <span class="n">MinimalTranslationCover</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.minimal_cover</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinimalTranslationCover</span>
 
                     <span class="k">return</span> <span class="n">MinimalTranslationCover</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">cover_type</span> <span class="o">==</span> <span class="s2">&quot;half-translation&quot;</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.minimal_cover</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.minimal_cover</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MinimalHalfTranslationCover</span><span class="p">,</span>
                     <span class="p">)</span>
 
                     <span class="k">return</span> <span class="n">MinimalHalfTranslationCover</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">cover_type</span> <span class="o">==</span> <span class="s2">&quot;planar&quot;</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.minimal_cover</span> <span class="kn">import</span> <span class="n">MinimalPlanarCover</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.minimal_cover</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinimalPlanarCover</span>
 
                     <span class="k">return</span> <span class="n">MinimalPlanarCover</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -2813,7 +2813,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.vector_space">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.vector_space">[docs]</a>
-            <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the vector space in which self naturally embeds.</span>
 
@@ -2831,13 +2831,13 @@
 <span class="sd">                    Vector space of dimension 2 over Rational Field</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 or base_ring().fraction_field()**2 instead&quot;</span>
                 <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.modules.free_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorSpace</span>
 
                 <span class="k">return</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
@@ -2845,7 +2845,7 @@
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle">[docs]</a>
             <span class="nd">@cached_surface_method</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">:</span> <span class="n">ring</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
-            <span class="k">def</span> <span class="nf">tangent_bundle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">tangent_bundle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the tangent bundle</span>
 
@@ -2862,7 +2862,7 @@
                         <span class="s2">&quot;cannot compute the tangent bundle of a mutable surface&quot;</span>
                     <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.tangent_bundle</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.tangent_bundle</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                     <span class="n">SimilaritySurfaceTangentBundle</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -2871,7 +2871,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_vector">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_vector">[docs]</a>
-            <span class="k">def</span> <span class="nf">tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a tangent vector.</span>
 
@@ -2893,7 +2893,7 @@
 <span class="sd">                    sage: S.tangent_vector(S.root(), (1/2,1/2), (1,sqrt2), ring=K)</span>
 <span class="sd">                    SimilaritySurfaceTangentVector in polygon 1 based at (1/2, -3/2) with vector (1, sqrt2)</span>
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
                 <span class="n">p</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
@@ -2908,19 +2908,19 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangulation_mapping">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulation_mapping">[docs]</a>
-            <span class="k">def</span> <span class="nf">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a ``SurfaceMapping`` triangulating the surface</span>
 <span class="sd">                or ``None`` if the surface is already triangulated.</span>
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="n">triangulation_mapping</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="n">triangulation_mapping</span>
 
                 <span class="k">return</span> <span class="n">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangulate">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate">[docs]</a>
-            <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a triangulated version of this surface. (This may be mutable</span>
 <span class="sd">                or not depending on the input.)</span>
@@ -2986,7 +2986,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">relabel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the relabel keyword argument of triangulate() is ignored, it has been deprecated and will be removed in a future version of sage-flatsurf&quot;</span>
@@ -2998,13 +2998,13 @@
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                     <span class="n">s</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
                     <span class="n">triangulation</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="n">relabel</span><span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedUnknownMorphism</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedUnknownMorphism</span>
 
                     <span class="k">return</span> <span class="n">NamedUnknownMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
                         <span class="bp">self</span><span class="p">,</span> <span class="n">triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="s2">&quot;Triangulation&quot;</span>
@@ -3013,17 +3013,17 @@
                 <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">label</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">}</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                     <span class="n">TriangulationMorphism_LazyTriangulatedSurface</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">LazyTriangulatedSurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyTriangulatedSurface</span>
 
                 <span class="k">return</span> <span class="n">TriangulationMorphism_LazyTriangulatedSurface</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
                     <span class="bp">self</span><span class="p">,</span> <span class="n">LazyTriangulatedSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
                 <span class="p">)</span></div>
 
 
-            <span class="k">def</span> <span class="nf">_delaunay_edge_needs_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_delaunay_edge_needs_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether edge ``e1`` of polygon ``p1`` should be flipped</span>
 <span class="sd">                to get closer to a Delaunay triangulated surface.</span>
@@ -3033,14 +3033,14 @@
                 <span class="n">poly2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">poly1</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">poly2</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge must be adjacent to two triangles.&quot;</span><span class="p">)</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">similarity_from_vectors</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_from_vectors</span>
 
                 <span class="n">sim1</span> <span class="o">=</span> <span class="n">similarity_from_vectors</span><span class="p">(</span><span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="o">-</span><span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
                 <span class="n">sim2</span> <span class="o">=</span> <span class="n">similarity_from_vectors</span><span class="p">(</span><span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="o">-</span><span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
                 <span class="n">sim</span> <span class="o">=</span> <span class="n">sim1</span> <span class="o">*</span> <span class="n">sim2</span>
                 <span class="k">return</span> <span class="n">sim</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>
 
-            <span class="k">def</span> <span class="nf">_delaunay_edge_needs_join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_delaunay_edge_needs_join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether edge ``e1`` of polygon ``p1`` should be</span>
 <span class="sd">                eliminated and the polygons attached to it joined to get closer</span>
@@ -3049,7 +3049,7 @@
                 <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
                 <span class="n">poly1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
                 <span class="n">poly2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">similarity_from_vectors</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_from_vectors</span>
 
                 <span class="n">sim1</span> <span class="o">=</span> <span class="n">similarity_from_vectors</span><span class="p">(</span>
                     <span class="n">poly1</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span> <span class="o">-</span> <span class="n">poly1</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="o">-</span><span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -3063,7 +3063,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_delaunay_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_delaunay_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether the surface is triangulated and the</span>
 <span class="sd">                triangulation is Delaunay.</span>
@@ -3075,7 +3075,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; &quot;</span>
@@ -3105,7 +3105,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_delaunay_decomposed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_delaunay_decomposed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return if the decomposition of the surface into polygons is Delaunay.</span>
 
@@ -3116,7 +3116,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; &quot;</span>
@@ -3155,7 +3155,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation">[docs]</a>
-            <span class="k">def</span> <span class="nf">delaunay_triangulation</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">delaunay_triangulation</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -3196,14 +3196,14 @@
 <span class="sd">                    True</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead&quot;</span>
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">triangulated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the triangulated keyword has been deprecated as a parameter for delaunay_triangulation() and will be removed in a future version of sage-flatsurf&quot;</span>
@@ -3215,7 +3215,7 @@
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the direction parameter of delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf&quot;</span>
@@ -3227,7 +3227,7 @@
                             <span class="s2">&quot;the relabel keyword has been removed from delaunay_triangulation(); use relabel() to use integer labels instead&quot;</span>
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()&quot;</span>
@@ -3244,7 +3244,7 @@
                             <span class="s2">&quot;the relabel keyword has been removed from delaunay_triangulation(); use relabel() to use integer labels instead&quot;</span>
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()&quot;</span>
@@ -3255,7 +3255,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulate">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulate">[docs]</a>
-            <span class="k">def</span> <span class="nf">delaunay_triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">delaunay_triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a Delaunay triangulation of this surface.</span>
 
@@ -3282,7 +3282,7 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="n">triangulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                     <span class="n">LazyDelaunayTriangulatedSurface</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -3290,13 +3290,13 @@
                     <span class="n">triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
                 <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">DelaunayTriangulationMorphism</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">DelaunayTriangulationMorphism</span>
 
                 <span class="n">delaunay</span> <span class="o">=</span> <span class="n">DelaunayTriangulationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
                     <span class="n">triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">codomain</span>
                 <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
 
                 <span class="k">return</span> <span class="n">NamedFactorizationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
                     <span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="s2">&quot;Delaunay triangulation&quot;</span><span class="p">,</span> <span class="n">delaunay</span> <span class="o">*</span> <span class="n">triangulation</span>
@@ -3305,7 +3305,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition">[docs]</a>
-            <span class="k">def</span> <span class="nf">delaunay_decomposition</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">delaunay_decomposition</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">delaunay_triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3366,21 +3366,21 @@
 <span class="sd">                    True</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead&quot;</span>
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">triangulated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf&quot;</span>
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">delaunay_triangulated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the delaunay_triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf&quot;</span>
@@ -3392,7 +3392,7 @@
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the direction parameter of delaunay_decomposition() has been removed since it did not work correctly in previous versions of sage-flatsurf&quot;</span>
@@ -3404,7 +3404,7 @@
                             <span class="s2">&quot;the relabel keyword has been removed from delaunay_decomposition(); use relabel() to use integer labels instead&quot;</span>
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()&quot;</span>
@@ -3415,7 +3415,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose">[docs]</a>
-            <span class="k">def</span> <span class="nf">delaunay_decompose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">delaunay_decompose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a Delaunay decomposition of this surface, i.e., a</span>
 <span class="sd">                representation of this surface such that the circumscribed disk</span>
@@ -3484,7 +3484,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">End</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">End</span>
 
                     <span class="n">decomposition</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">End</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">identity</span><span class="p">()</span>
@@ -3492,7 +3492,7 @@
                         <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span>
                     <span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">DelaunayDecompositionIsomorphism</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -3503,7 +3503,7 @@
                     <span class="c1"># This will raise an error if no such isomorphism exists.</span>
                     <span class="n">isomorphism</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
 
                     <span class="k">return</span> <span class="n">NamedFactorizationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
                         <span class="bp">self</span><span class="p">,</span>
@@ -3514,19 +3514,19 @@
 
                 <span class="n">delaunay_triangulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">LazyDelaunaySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyDelaunaySurface</span>
 
                 <span class="n">decomposed</span> <span class="o">=</span> <span class="n">LazyDelaunaySurface</span><span class="p">(</span>
                     <span class="n">delaunay_triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
                 <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">DelaunayDecompositionMorphism</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">DelaunayDecompositionMorphism</span>
 
                 <span class="n">decomposition</span> <span class="o">=</span> <span class="n">DelaunayDecompositionMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
                     <span class="n">delaunay_triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">decomposed</span>
                 <span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
 
                 <span class="k">return</span> <span class="n">NamedFactorizationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
                     <span class="bp">self</span><span class="p">,</span>
@@ -3538,7 +3538,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.saddle_connections">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.saddle_connections">[docs]</a>
-            <span class="k">def</span> <span class="nf">saddle_connections</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">saddle_connections</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">squared_length_bound</span><span class="p">,</span>
                 <span class="n">initial_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3624,11 +3624,11 @@
                     <span class="k">return</span> <span class="n">sc_list</span>
 
                 <span class="c1"># Now we have a specified initial_label and initial_vertex</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
                 <span class="n">SG</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
                 <span class="n">start_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">initial_label</span><span class="p">,</span> <span class="n">initial_vertex</span><span class="p">)</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.circle</span> <span class="kn">import</span> <span class="n">Circle</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.circle</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circle</span>
 
                 <span class="n">circle</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">(</span>
                     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
@@ -3642,7 +3642,7 @@
                 <span class="c1"># First check the edge eminating rightward from the start_vertex.</span>
                 <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">initial_vertex</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">squared_length_bound</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SaddleConnection</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SaddleConnection</span>
 
                     <span class="n">sc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SaddleConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_data</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
 
@@ -3679,7 +3679,7 @@
                     <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                     <span class="c1"># First check the vertex</span>
                     <span class="n">vert_position</span> <span class="o">=</span> <span class="n">sim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vert</span><span class="p">))</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">ccw</span>
 
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="n">ccw</span><span class="p">(</span><span class="n">wedge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vert_position</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -3687,7 +3687,7 @@
                         <span class="ow">and</span> <span class="n">vert_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">vert_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
                         <span class="o">&lt;=</span> <span class="n">squared_length_bound</span>
                     <span class="p">):</span>
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SaddleConnection</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SaddleConnection</span>
 
                         <span class="n">sc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                             <span class="n">SaddleConnection</span><span class="p">(</span>
@@ -3741,7 +3741,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.ramified_cover">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.ramified_cover">[docs]</a>
-            <span class="k">def</span> <span class="nf">ramified_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">ramified_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a ramified cover of this surface.</span>
 
@@ -3774,12 +3774,12 @@
 <span class="sd">                    ValueError: inconsistent covering data</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">sage.groups.perm_gps.permgroup_named</span> <span class="kn">import</span> <span class="n">SymmetricGroup</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.groups.perm_gps.permgroup_named</span><span class="w"> </span><span class="kn">import</span> <span class="n">SymmetricGroup</span>
 
                 <span class="n">G</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                     <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                 <span class="n">cover</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
                 <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
@@ -3811,7 +3811,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide">[docs]</a>
-            <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a copy of this surface whose polygons have been partitioned into</span>
 <span class="sd">                smaller triangles with</span>
@@ -3883,7 +3883,7 @@
 
                 <span class="n">subdivisions</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">]</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                 <span class="n">surface</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">())</span>
 
@@ -3915,7 +3915,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide_edges">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_edges">[docs]</a>
-            <span class="k">def</span> <span class="nf">subdivide_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">subdivide_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a copy of this surface whose edges have been split into</span>
 <span class="sd">                ``parts`` equal pieces each.</span>
@@ -3966,7 +3966,7 @@
 
                 <span class="n">subdivideds</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">subdivide_edges</span><span class="p">(</span><span class="n">parts</span><span class="o">=</span><span class="n">parts</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">]</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                 <span class="n">surface</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">())</span>
 
@@ -3992,7 +3992,7 @@
 
                 <span class="n">surface</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">SubdivideEdgesMorphism</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubdivideEdgesMorphism</span>
 
                 <span class="k">return</span> <span class="n">SubdivideEdgesMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">parts</span><span class="p">)</span></div>
 </div>
@@ -4001,7 +4001,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Rational">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational">[docs]</a>
-    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Rational</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by similarity surfaces where all similarities that</span>
 <span class="sd">        describe how edges are glued only use rational rotations, i.e.,</span>
@@ -4023,7 +4023,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Rational.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all surfaces built from Euclidean</span>
 <span class="sd">            polygons glued by similarities that have rational monodromy, i.e.,</span>
@@ -4036,7 +4036,7 @@
 <span class="sd">            &quot;&quot;&quot;</span>
 
             <span class="nd">@staticmethod</span>
-            <span class="k">def</span> <span class="nf">_is_rational_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_is_rational_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether the gluings of this surface lead to a rational</span>
 <span class="sd">                surface, i.e., whether all gluings use similarities whose</span>
@@ -4069,7 +4069,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; &quot;</span>
@@ -4082,7 +4082,7 @@
                 <span class="n">labels</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 
                 <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
                     <span class="n">labels</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
 
@@ -4115,7 +4115,7 @@
                         <span class="n">b</span> <span class="o">=</span> <span class="n">AA</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
                         <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
 
-                        <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="p">(</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                             <span class="n">is_cosine_sine_of_rational</span><span class="p">,</span>
                         <span class="p">)</span>
 
@@ -4126,7 +4126,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.Rational.ParentMethods.is_rational_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational.ParentMethods.is_rational_surface">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether all edges of this surface are glued with</span>
 <span class="sd">                similarities whose rotational part is by a rational multiple of</span>
@@ -4143,7 +4143,7 @@
                 <span class="k">return</span> <span class="kc">True</span></div>
 
 
-            <span class="k">def</span> <span class="nf">_test_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_test_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Verify that this is a rational similarity surface.</span>
 
@@ -4159,7 +4159,7 @@
                 <span class="n">limit</span> <span class="o">=</span> <span class="kc">None</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                     <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
                         <span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()[:</span><span class="mi">32</span><span class="p">]</span>
@@ -4175,7 +4175,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType">[docs]</a>
-    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of surfaces built by gluing a finite number of Euclidean</span>
 <span class="sd">        polygons with similarities.</span>
@@ -4192,7 +4192,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all surfaces that are built from</span>
 <span class="sd">            finitely many polygons in the real plane glued with similarities.</span>
@@ -4203,7 +4203,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods.num_singularities">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods.num_singularities">[docs]</a>
-            <span class="k">def</span> <span class="nf">num_singularities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">num_singularities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                EXAMPLES::</span>
 
@@ -4227,7 +4227,7 @@
 <span class="sd">                    sage: translation_surfaces.origami(r,u).num_singularities()</span>
 <span class="sd">                    4</span>
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;num_singularities() has been deprecated and will be removed in a future version of sage-flatsurf; use len(vertices()) instead&quot;</span>
@@ -4238,7 +4238,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface">[docs]</a>
-            <span class="k">def</span> <span class="nf">_test_eq_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_test_eq_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Verify that this surface follows our standards for equality of</span>
 <span class="sd">                surfaces.</span>
@@ -4279,7 +4279,7 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                 <span class="n">copy</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
@@ -4296,7 +4296,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented">[docs]</a>
-        <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            The category of surfaces built from finitely many Euclidean</span>
 <span class="sd">            polygons glued with singularities with an orientation that is</span>
@@ -4315,7 +4315,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods">[docs]</a>
-            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+            <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Provides methods available to all surfaces that are built from</span>
 <span class="sd">                finitely many Euclidean polygons that are glued by similarities</span>
@@ -4328,7 +4328,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons">[docs]</a>
-                <span class="k">def</span> <span class="nf">reposition_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">reposition_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    We choose a maximal tree in the dual graph of the decomposition into</span>
 <span class="sd">                    polygons, and ensure that the gluings between two polygons joined by</span>
@@ -4345,7 +4345,7 @@
                             <span class="s2">&quot;this surface does not implement reposition_polygons(in_place=True) yet&quot;</span>
                         <span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -4357,7 +4357,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons">[docs]</a>
-                <span class="k">def</span> <span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a surface with each polygon replaced with a new</span>
 <span class="sd">                    polygon which differs by translation and reindexing. The</span>
@@ -4386,7 +4386,7 @@
                             <span class="s2">&quot;cannot standardize polygons in_place anymore on this surface; use in_place=False to create a copy of the surface with standardized polygons&quot;</span>
                         <span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -4400,14 +4400,14 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.fundamental_group">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.fundamental_group">[docs]</a>
-                <span class="k">def</span> <span class="nf">fundamental_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">fundamental_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return the fundamental group of this surface.</span>
 <span class="sd">                    &quot;&quot;&quot;</span>
                     <span class="k">if</span> <span class="n">base_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">base_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.fundamental_group</span> <span class="kn">import</span> <span class="n">FundamentalGroup</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.fundamental_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">FundamentalGroup</span>
 
                     <span class="k">return</span> <span class="n">FundamentalGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="p">)</span></div>
 </div>
@@ -4417,10 +4417,10 @@
 
 <div class="viewcode-block" id="SimilaritySurfaces.SubcategoryMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.SubcategoryMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SubcategoryMethods</span><span class="p">:</span>
 <div class="viewcode-block" id="SimilaritySurfaces.SubcategoryMethods.Rational">
 <a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.SubcategoryMethods.Rational">[docs]</a>
-        <span class="k">def</span> <span class="nf">Rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">Rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of surfaces with rational monodromy, see</span>
 <span class="sd">            :class:`~.SimilaritySurfaces.Rational`.</span>

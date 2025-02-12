@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>cohomology - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -355,7 +355,7 @@
 <p>Absolute and relative (simplicial) cohomology of surfaces.</p>
 <p>EXAMPLES:</p>
 <p>The absolute cohomology of the regular octagon:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialCohomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 </pre></div>
@@ -366,7 +366,7 @@
 </pre></div>
 </div>
 <p>The absolute cohomology of the unfolding of the (3, 4, 13) triangle:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">13</span><span class="p">])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialCohomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
@@ -413,13 +413,13 @@ cohomology group is chosen automatically depending on <code class="docutils lite
 <a class="reference internal" href="#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.homology" title="flatsurf.geometry.cohomology.SimplicialCohomologyGroup.homology"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SimplicialCohomologyGroup.homology()</span></code></a>.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialCohomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.cohomology</span> <span class="kn">import</span> <span class="n">SimplicialCohomologyClass</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.cohomology</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimplicialCohomologyClass</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">SimplicialCohomologyClass</span><span class="p">)</span>
 <span class="kc">True</span>
 </pre></div>
@@ -459,7 +459,7 @@ H¹(Translation Surface in H_1(0) built from a square)
 <span class="sig-name descname"><span class="pre">gens</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/cohomology.html#SimplicialCohomologyGroup.gens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.gens" title="Link to this definition">¶</a></dt>
 <dd><p>Return generators of this cohomology.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialCohomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
@@ -488,7 +488,7 @@ H₁(Translation Surface in H_1(0) built from a square)
 <span class="sig-name descname"><span class="pre">is_absolute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/cohomology.html#SimplicialCohomologyGroup.is_absolute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.is_absolute" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this is an absolute cohomology (and not a relative one).</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialCohomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
@@ -503,7 +503,7 @@ H₁(Translation Surface in H_1(0) built from a square)
 <span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/cohomology.html#SimplicialCohomologyGroup.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.surface" title="Link to this definition">¶</a></dt>
 <dd><p>Return the surface over which this cohomology is defined.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialCohomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialCohomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>

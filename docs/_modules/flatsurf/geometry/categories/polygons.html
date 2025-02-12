@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.polygons - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -385,20 +385,20 @@
 <span class="c1">#  You should have received a copy of the GNU General Public License</span>
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
-<span class="kn">from</span> <span class="nn">sage.categories.category_types</span> <span class="kn">import</span> <span class="n">Category_over_base_ring</span>
-<span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.category_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Category_over_base_ring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.category_with_axiom</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">,</span>
     <span class="n">all_axioms</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sage.misc.abstract_method</span> <span class="kn">import</span> <span class="n">abstract_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.abstract_method</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstract_method</span>
 
-<span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Sets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sets</span>
 
 
 <div class="viewcode-block" id="Polygons">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons">[docs]</a>
-<span class="k">class</span> <span class="nc">Polygons</span><span class="p">(</span><span class="n">Category_over_base_ring</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Polygons</span><span class="p">(</span><span class="n">Category_over_base_ring</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of polygons defined over a base ring.</span>
 
@@ -415,7 +415,7 @@
 
 <div class="viewcode-block" id="Polygons.super_categories">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.super_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the categories polygons automatically belong to.</span>
 
@@ -431,7 +431,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_describe_polygon</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_describe_polygon</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable description of a polygon with ``num_edges`` edges</span>
 <span class="sd">        and additional features encoded as keyword arguments.</span>
@@ -456,7 +456,7 @@
 <span class="sd">            (&#39;a&#39;, &#39;64-gon&#39;, &#39;64-gons&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">infinity</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">infinity</span>
 
         <span class="c1"># From https://en.wikipedia.org/wiki/Polygon#Naming</span>
         <span class="n">ngon_names</span> <span class="o">=</span> <span class="p">{</span>
@@ -492,7 +492,7 @@
         <span class="n">description</span> <span class="o">=</span> <span class="n">ngon_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">num_edges</span><span class="si">}</span><span class="s2">-gon&quot;</span><span class="p">))</span>
         <span class="n">description</span> <span class="o">=</span> <span class="n">description</span> <span class="o">+</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span><span class="p">,)</span>
 
-        <span class="k">def</span> <span class="nf">augment</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="o">*</span><span class="n">attributes</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">augment</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="o">*</span><span class="n">attributes</span><span class="p">):</span>
             <span class="k">nonlocal</span> <span class="n">description</span>
             <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">article</span><span class="p">,</span>
@@ -500,7 +500,7 @@
                 <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attributes</span> <span class="o">+</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="mi">2</span><span class="p">],)),</span>
             <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">augment_if</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">augment_if</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
                 <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
             <span class="p">):</span>
@@ -508,7 +508,7 @@
                 <span class="k">return</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">def</span> <span class="nf">augment_if_not</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">augment_if_not</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
                 <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
                 <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
@@ -557,7 +557,7 @@
 
 <div class="viewcode-block" id="Polygons.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all polygons.</span>
 
@@ -568,7 +568,7 @@
 <div class="viewcode-block" id="Polygons.ParentMethods.change_ring">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.change_ring">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a copy of this polygon which is defined over ``ring``.</span>
 
@@ -586,7 +586,7 @@
 <div class="viewcode-block" id="Polygons.ParentMethods.is_convex">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.is_convex">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this is a convex polygon.</span>
 
@@ -610,7 +610,7 @@
 <div class="viewcode-block" id="Polygons.ParentMethods.is_degenerate">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.is_degenerate">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_degenerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_degenerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this polygon is considered degenerate.</span>
 
@@ -636,7 +636,7 @@
 <div class="viewcode-block" id="Polygons.ParentMethods.is_simple">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.is_simple">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this polygon is not self-intersecting.</span>
 
@@ -652,7 +652,7 @@
 
 <div class="viewcode-block" id="Polygons.ParentMethods.base_ring">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.base_ring">[docs]</a>
-        <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the ring over which this polygon is defined.</span>
 
@@ -669,7 +669,7 @@
 
 <div class="viewcode-block" id="Polygons.ParentMethods.describe_polygon">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.describe_polygon">[docs]</a>
-        <span class="k">def</span> <span class="nf">describe_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">describe_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a textual description of this polygon for generating</span>
 <span class="sd">            human-readable messages.</span>
@@ -704,7 +704,7 @@
                 <span class="n">slopes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slopes</span><span class="p">(</span><span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">slope</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">slope</span> <span class="ow">in</span> <span class="n">slopes</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">is_parallel</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_parallel</span>
 
                 <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;isosceles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">is_parallel</span><span class="p">(</span><span class="n">slopes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">slopes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -715,7 +715,7 @@
             <span class="k">return</span> <span class="n">Polygons</span><span class="o">.</span><span class="n">_describe_polygon</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()),</span> <span class="o">**</span><span class="n">properties</span><span class="p">)</span></div>
 
 
-        <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Verify that the polygon is in the smallest category that can be</span>
 <span class="sd">            easily determined.</span>
@@ -741,7 +741,7 @@
 
 <div class="viewcode-block" id="Polygons.Convex">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Convex">[docs]</a>
-    <span class="k">class</span> <span class="nc">Convex</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Convex</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by convex polygons.</span>
 
@@ -756,7 +756,7 @@
 
 <div class="viewcode-block" id="Polygons.Convex.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Convex.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all convex polygons.</span>
 
@@ -766,7 +766,7 @@
 
 <div class="viewcode-block" id="Polygons.Convex.ParentMethods.is_convex">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Convex.ParentMethods.is_convex">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this is a convex polygon, which it is.</span>
 
@@ -790,7 +790,7 @@
 
 <div class="viewcode-block" id="Polygons.Simple">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Simple">[docs]</a>
-    <span class="k">class</span> <span class="nc">Simple</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Simple</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by polygons that are not self-intersecting.</span>
 
@@ -805,7 +805,7 @@
 
 <div class="viewcode-block" id="Polygons.Simple.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Simple.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all simple polygons.</span>
 
@@ -815,7 +815,7 @@
 
 <div class="viewcode-block" id="Polygons.Simple.ParentMethods.is_simple">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Simple.ParentMethods.is_simple">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this polygon is not self-intersecting, i.e.,</span>
 <span class="sd">                return ``True``.</span>
@@ -835,7 +835,7 @@
 
 <div class="viewcode-block" id="Polygons.Rational">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Rational">[docs]</a>
-    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Rational</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by polygons whose inner angles are rational</span>
 <span class="sd">        multiples of π.</span>
@@ -851,7 +851,7 @@
 
 <div class="viewcode-block" id="Polygons.Rational.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Rational.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all rational polygons.</span>
 
@@ -861,7 +861,7 @@
 
 <div class="viewcode-block" id="Polygons.Rational.ParentMethods.is_rational">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Rational.ParentMethods.is_rational">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether all inner angles of this polygon are rational</span>
 <span class="sd">                multiples of π, i.e., return ``True``.</span>
@@ -881,10 +881,10 @@
 
 <div class="viewcode-block" id="Polygons.SubcategoryMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SubcategoryMethods</span><span class="p">:</span>
 <div class="viewcode-block" id="Polygons.SubcategoryMethods.Convex">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Convex">[docs]</a>
-        <span class="k">def</span> <span class="nf">Convex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">Convex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of convex polygons.</span>
 
@@ -900,7 +900,7 @@
 
 <div class="viewcode-block" id="Polygons.SubcategoryMethods.Simple">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Simple">[docs]</a>
-        <span class="k">def</span> <span class="nf">Simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">Simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategyr of simple polygons.</span>
 
@@ -916,7 +916,7 @@
 
 <div class="viewcode-block" id="Polygons.SubcategoryMethods.Rational">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Rational">[docs]</a>
-        <span class="k">def</span> <span class="nf">Rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">Rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of polygons with rational angles.</span>
 
@@ -932,7 +932,7 @@
 
 <div class="viewcode-block" id="Polygons.SubcategoryMethods.field">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.field">[docs]</a>
-        <span class="k">def</span> <span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the field over which these polygons are defined.</span>
 
@@ -947,7 +947,7 @@
 <span class="sd">                Rational Field</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead&quot;</span>
@@ -959,7 +959,7 @@
 <div class="viewcode-block" id="Polygons.SubcategoryMethods.base_ring">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.base_ring">[docs]</a>
         <span class="nd">@cached_method</span>
-        <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the ring over which the polygons in this category are</span>
 <span class="sd">            defined.</span>
@@ -978,16 +978,16 @@
             <span class="k">assert</span> <span class="kc">False</span></div>
 
 
-        <span class="k">def</span> <span class="nf">_test_base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_test_base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
             <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rings</span>
 
             <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Polygons.SubcategoryMethods.change_ring">
 <a class="viewcode-back" href="../../../../geometry/categories/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.change_ring">[docs]</a>
-        <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return this category but defined over the ring ``ring``.</span>
 
@@ -1002,10 +1002,10 @@
 <span class="sd">                Category of convex simple euclidean rectangles over Algebraic Real Field</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">from</span> <span class="nn">sage.categories.category</span> <span class="kn">import</span> <span class="n">JoinCategory</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.category</span><span class="w"> </span><span class="kn">import</span> <span class="n">JoinCategory</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">JoinCategory</span><span class="p">):</span>
-                <span class="kn">from</span> <span class="nn">sage.categories.category</span> <span class="kn">import</span> <span class="n">Category</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.category</span><span class="w"> </span><span class="kn">import</span> <span class="n">Category</span>
 
                 <span class="k">return</span> <span class="n">Category</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="p">[</span><span class="n">S</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span> <span class="k">for</span> <span class="n">S</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()]</span>

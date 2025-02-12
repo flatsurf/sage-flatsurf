@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.graphical.hyperbolic - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -397,18 +397,18 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">from</span> <span class="nn">sage.plot.primitive</span> <span class="kn">import</span> <span class="n">GraphicPrimitive</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
-<span class="kn">from</span> <span class="nn">sage.misc.decorators</span> <span class="kn">import</span> <span class="n">options</span><span class="p">,</span> <span class="n">rename_keyword</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.plot.primitive</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphicPrimitive</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">options</span><span class="p">,</span> <span class="n">rename_keyword</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPoint</span><span class="p">,</span> <span class="n">HyperbolicPlane</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPoint</span><span class="p">,</span> <span class="n">HyperbolicPlane</span>
 
 
 <div class="viewcode-block" id="CartesianPathPlot">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.CartesianPathPlot">[docs]</a>
-<span class="k">class</span> <span class="nc">CartesianPathPlot</span><span class="p">(</span><span class="n">GraphicPrimitive</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CartesianPathPlot</span><span class="p">(</span><span class="n">GraphicPrimitive</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A plotted path in the hyperbolic plane, i.e., a sequence of commands and</span>
 <span class="sd">    associated control points in the hyperbolic plane.</span>
@@ -512,7 +512,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">options</span> <span class="o">=</span> <span class="n">options</span> <span class="ow">or</span> <span class="p">{}</span>
 
         <span class="n">valid_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed_options</span><span class="p">()</span>
@@ -526,7 +526,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_allowed_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_allowed_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the options that are supported by a path.</span>
 
@@ -554,11 +554,11 @@
 <span class="sd">            RuntimeError: option beta not valid</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.plot.polygon</span> <span class="kn">import</span> <span class="n">Polygon</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.plot.polygon</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
         <span class="k">return</span> <span class="n">Polygon</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">{})</span><span class="o">.</span><span class="n">_allowed_options</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this plot for debugging purposes.</span>
 
@@ -576,7 +576,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;CartesianPathPlot(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_commands</span><span class="si">}</span><span class="s2">)&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_render_on_subplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subplot</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_render_on_subplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subplot</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render this path on ``subplot``.</span>
 
@@ -624,11 +624,11 @@
             <span class="p">}</span>
         <span class="p">}</span>
 
-        <span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="kn">import</span> <span class="n">Path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
         <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
 
-        <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">PathPatch</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathPatch</span>
 
         <span class="n">patch</span> <span class="o">=</span> <span class="n">PathPatch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">matplotlib_options</span><span class="p">)</span>
 
@@ -650,7 +650,7 @@
         <span class="k">if</span> <span class="s2">&quot;alpha&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
             <span class="n">patch</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]))</span>
 
-        <span class="kn">from</span> <span class="nn">sage.plot.colors</span> <span class="kn">import</span> <span class="n">to_mpl_color</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.plot.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_mpl_color</span>
 
         <span class="n">color</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="s2">&quot;rgbcolor&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
@@ -675,7 +675,7 @@
         <span class="k">if</span> <span class="s2">&quot;legend_label&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
             <span class="n">patch</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;legend_label&quot;</span><span class="p">))</span>
 
-        <span class="k">def</span> <span class="nf">redraw</span><span class="p">(</span><span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">redraw</span><span class="p">(</span><span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Redraw after the viewport has been rescaled to make sure that</span>
 <span class="sd">            infinite rays reach the end of the viewport.</span>
@@ -690,7 +690,7 @@
         <span class="n">subplot</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;xlim_changed&quot;</span><span class="p">,</span> <span class="n">redraw</span><span class="p">)</span>
         <span class="n">redraw</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_create_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">,</span> <span class="n">fill</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">,</span> <span class="n">fill</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a matplotlib path for this primitive in the bounding box given</span>
 <span class="sd">        by ``xlim`` and ``ylim``.</span>
@@ -737,7 +737,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;path must not start with a </span><span class="si">{</span><span class="n">command</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2"> command&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="kn">import</span> <span class="n">Path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
         <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span>
 
@@ -749,7 +749,7 @@
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_infinity</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_infinity</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the finite coordinates of a point that ressembles infinity</span>
 <span class="sd">        starting from ``pos`` and going in ``direction``.</span>
@@ -782,12 +782,12 @@
 <span class="sd">            (3920.30937574010, 3919.30937574010)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
         <span class="n">direction</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">infinity</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">infinity</span>
 
         <span class="k">if</span> <span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="n">λx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
@@ -814,7 +814,7 @@
         <span class="k">return</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">λ</span> <span class="o">*</span> <span class="n">direction</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_extend_path</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extend_path</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extend the matplotlib Path ``vertices`` and ``codes`` by realizing ``command``.</span>
 
@@ -865,9 +865,9 @@
 <span class="sd">            [1, 2]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="kn">import</span> <span class="n">Path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-        <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">extend</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="n">vertices</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
             <span class="n">codes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">codes</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
@@ -898,7 +898,7 @@
                 <span class="n">end</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="o">.</span><span class="n">_infinity</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">)</span>
 
                 <span class="c1"># Sweep the bounding box counterclockwise from start to end</span>
-                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
                 <span class="n">center</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(((</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">end</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">end</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
 
@@ -936,7 +936,7 @@
 <div class="viewcode-block" id="CartesianPathPlot.get_minmax_data">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.CartesianPathPlot.get_minmax_data">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">get_minmax_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_minmax_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a bounding box for this plot.</span>
 
@@ -966,7 +966,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">matplotlib.transforms</span> <span class="kn">import</span> <span class="n">Bbox</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bbox</span>
 
             <span class="n">bbox</span> <span class="o">=</span> <span class="n">Bbox</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
 
@@ -996,12 +996,12 @@
                             <span class="n">Bbox</span><span class="o">.</span><span class="n">from_bounds</span><span class="p">(</span><span class="o">*</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                         <span class="p">]</span>
                     <span class="p">)</span>
-                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">sgn</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">sgn</span>
 
                     <span class="k">if</span> <span class="n">sgn</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">sgn</span><span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                         <span class="c1"># The bounding box includes a point that is higher</span>
                         <span class="c1"># than the endpoints of the arc.</span>
-                        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqrt</span>
 
                         <span class="n">bbox</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
                             <span class="p">[</span>
@@ -1021,7 +1021,7 @@
                     <span class="c1"># infinite rays are visible at all. If everything plotted</span>
                     <span class="c1"># is extremely small, then this is not ideal. Maybe we</span>
                     <span class="c1"># should make this relative to the entire plot size.</span>
-                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
                     <span class="n">direction</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
                     <span class="n">moved</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">+</span> <span class="n">direction</span>
@@ -1033,7 +1033,7 @@
                         <span class="sa">f</span><span class="s2">&quot;cannot determine bounding box for </span><span class="si">{</span><span class="n">command</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2"> command&quot;</span>
                     <span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">sage.plot.plot</span> <span class="kn">import</span> <span class="n">minmax_data</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.plot.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">minmax_data</span>
 
             <span class="k">return</span> <span class="n">minmax_data</span><span class="p">(</span><span class="n">bbox</span><span class="o">.</span><span class="n">intervalx</span><span class="p">,</span> <span class="n">bbox</span><span class="o">.</span><span class="n">intervaly</span><span class="p">,</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -1041,7 +1041,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_arc_path</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_arc_path</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a matplotlib path approximating an circular arc.</span>
 
@@ -1073,9 +1073,9 @@
 <span class="sd">            big arcs and should be optimized.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="kn">import</span> <span class="n">Path</span>
-        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">atan2</span><span class="p">,</span> <span class="n">pi</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">atan2</span><span class="p">,</span> <span class="n">pi</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
         <span class="n">unit_arc</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">arc</span><span class="p">(</span>
             <span class="n">atan2</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">pi</span> <span class="o">*</span> <span class="mi">180</span><span class="p">,</span>
@@ -1100,7 +1100,7 @@
 <div class="viewcode-block" id="HyperbolicPathPlotCommand">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">HyperbolicPathPlotCommand</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HyperbolicPathPlotCommand</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A step in a hyperbolic plot.</span>
 
@@ -1129,7 +1129,7 @@
 
 <div class="viewcode-block" id="HyperbolicPathPlotCommand.cartesian">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.cartesian">[docs]</a>
-    <span class="k">def</span> <span class="nf">cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">cursor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">cursor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sequence of commands that realizes this plot in the</span>
 <span class="sd">        Cartesian plot coordinate system.</span>
@@ -1181,7 +1181,7 @@
             <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;half_plane&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
                 <span class="k">return</span> <span class="p">[</span><span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETOINFINITY&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
             <span class="k">return</span> <span class="p">[</span>
                 <span class="n">CartesianPathPlotCommand</span><span class="p">(</span>
@@ -1207,7 +1207,7 @@
 <div class="viewcode-block" id="HyperbolicPathPlotCommand.make_cartesian">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.make_cartesian">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">make_cartesian</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_cartesian</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sequence of :class:`CartesianPathPlotCommand` that realizes</span>
 <span class="sd">        the hyperbolic ``commands`` in the ``model``.</span>
@@ -1299,7 +1299,7 @@
 <div class="viewcode-block" id="HyperbolicPathPlotCommand.create_segment_cartesian">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_segment_cartesian">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_segment_cartesian</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_segment_cartesian</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a sequence of :class:`CartesianPathPlotCommand` that represent</span>
 <span class="sd">        the closed boundary of a</span>
@@ -1374,7 +1374,7 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;half_plane&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
             <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
                 <span class="k">return</span> <span class="p">[</span>
@@ -1417,7 +1417,7 @@
                 <span class="p">)</span>
             <span class="p">]</span>
         <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;klein&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
             <span class="k">return</span> <span class="p">[</span>
                 <span class="n">CartesianPathPlotCommand</span><span class="p">(</span>
@@ -1431,7 +1431,7 @@
 <div class="viewcode-block" id="HyperbolicPathPlotCommand.create_move_cartesian">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.HyperbolicPathPlotCommand.create_move_cartesian">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_move_cartesian</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_move_cartesian</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of :class:`CartesianPathPlotCommand` that represent the</span>
 <span class="sd">        open &quot;segment&quot; on the boundary of a polygon connecting ``start`` and</span>
@@ -1477,7 +1477,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;exactly one of fill &amp; stroke must be set&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;half_plane&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">fill</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
@@ -1523,7 +1523,7 @@
                 <span class="p">]</span>
 
         <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;klein&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
             <span class="k">if</span> <span class="n">fill</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[</span>
@@ -1547,7 +1547,7 @@
 <div class="viewcode-block" id="CartesianPathPlotCommand">
 <a class="viewcode-back" href="../../../graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">CartesianPathPlotCommand</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CartesianPathPlotCommand</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A plot command in the plot coordinate system.</span>
 
@@ -1612,7 +1612,7 @@
     <span class="n">aspect_ratio</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="k">def</span> <span class="nf">hyperbolic_path</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hyperbolic_path</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a SageMath ``Graphics`` object that represents the hyperbolic path</span>
 <span class="sd">    encoded by ``commands``.</span>
@@ -1654,7 +1654,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">options</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="kn">from</span> <span class="nn">sage.plot.all</span> <span class="kn">import</span> <span class="n">Graphics</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.plot.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graphics</span>
 
     <span class="n">g</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
     <span class="n">g</span><span class="o">.</span><span class="n">_set_extra_kwds</span><span class="p">(</span><span class="n">Graphics</span><span class="o">.</span><span class="n">_extract_kwds_for_show</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>

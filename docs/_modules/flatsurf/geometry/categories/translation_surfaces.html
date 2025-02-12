@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.translation_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -390,16 +390,16 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ####################################################################</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="n">SurfaceCategoryWithAxiom</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.half_translation_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.surface_category</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfaceCategoryWithAxiom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.half_translation_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">HalfTranslationSurfaces</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">flatsurf.cache</span> <span class="kn">import</span> <span class="n">cached_surface_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_surface_method</span>
 
 
 <div class="viewcode-block" id="TranslationSurfaces">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces">[docs]</a>
-<span class="k">class</span> <span class="nc">TranslationSurfaces</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TranslationSurfaces</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of surfaces built by gluing (Euclidean) polygons with</span>
 <span class="sd">    translations.</span>
@@ -418,7 +418,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.extra_super_categories">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.extra_super_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">extra_super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extra_super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the other categories that a translation surface is automatically</span>
 <span class="sd">        a member of (apart from being a positive half-translation surface, its</span>
@@ -433,14 +433,14 @@
 <span class="sd">            (Category of oriented polygonal surfaces,)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.polygonal_surfaces</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.polygonal_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">(),)</span></div>
 
 
 <div class="viewcode-block" id="TranslationSurfaces.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.ParentMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all translation surfaces in</span>
 <span class="sd">        sage-flatsurf.</span>
@@ -451,7 +451,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.ParentMethods.is_translation_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.ParentMethods.is_translation_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a translation surface, i.e., return</span>
 <span class="sd">            ``True``.</span>
@@ -470,7 +470,7 @@
 
 
         <span class="nd">@staticmethod</span>
-        <span class="k">def</span> <span class="nf">_is_translation_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_is_translation_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether ``surface`` is a translation surface by checking how its</span>
 <span class="sd">            polygons are glued.</span>
@@ -517,7 +517,7 @@
 
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;limit has been deprecated as a keyword argument for _is_translation_surface() and will be removed from a future version of sage-flatsurf; &quot;</span>
@@ -532,7 +532,7 @@
             <span class="n">labels</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
                 <span class="n">labels</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
 
@@ -554,7 +554,7 @@
                     <span class="c1"># have overridden this (just returning the identity matrix e.g.)</span>
                     <span class="c1"># and we want to deduce the matrix from the attached polygon</span>
                     <span class="c1"># edges instead.</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
 
                     <span class="n">matrix</span> <span class="o">=</span> <span class="n">SimilaritySurfaces</span><span class="o">.</span><span class="n">Oriented</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">edge_matrix</span><span class="o">.</span><span class="n">f</span><span class="p">(</span>  <span class="c1"># pylint: disable=no-member</span>
                         <span class="n">surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span>
@@ -576,7 +576,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.ParentMethods.minimal_translation_cover">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.ParentMethods.minimal_translation_cover">[docs]</a>
-        <span class="k">def</span> <span class="nf">minimal_translation_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">minimal_translation_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the minimal cover of this surface that makes this surface a</span>
 <span class="sd">            translation surface, i.e., return this surface itself.</span>
@@ -594,7 +594,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.ParentMethods.edge_matrix">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.ParentMethods.edge_matrix">[docs]</a>
-        <span class="k">def</span> <span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Returns the 2x2 matrix representing a similarity which when</span>
 <span class="sd">            applied to the polygon with label `p` makes it so the edge `e`</span>
@@ -612,7 +612,7 @@
 
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead&quot;</span>
@@ -622,25 +622,25 @@
             <span class="k">if</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">e</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">()):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid edge index for this polygon&quot;</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">identity_matrix</span>
 
             <span class="k">return</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TranslationSurfaces.ParentMethods.canonicalize_mapping">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.ParentMethods.canonicalize_mapping">[docs]</a>
-        <span class="k">def</span> <span class="nf">canonicalize_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">canonicalize_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a SurfaceMapping canonicalizing this translation surface.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.mappings</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                 <span class="n">canonicalize_translation_surface_mapping</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">canonicalize_translation_surface_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-        <span class="k">def</span> <span class="nf">_test_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_test_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Verify that this is a translation surface.</span>
 
@@ -656,7 +656,7 @@
             <span class="n">limit</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
-                <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                 <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
                     <span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()[:</span><span class="mi">32</span><span class="p">]</span>
@@ -671,7 +671,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType">[docs]</a>
-    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of translation surfaces built from finitely many polygons.</span>
 
@@ -686,7 +686,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all translation surfaces built from</span>
 <span class="sd">            finitely many polygons.</span>
@@ -698,7 +698,7 @@
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf">[docs]</a>
             <span class="nd">@cached_surface_method</span>
-            <span class="k">def</span> <span class="nf">pyflatsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">pyflatsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return an isomorphism to a surface backed by libflatsurf.</span>
 
@@ -723,7 +723,7 @@
 <span class="sd">                    Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.surface</span> <span class="kn">import</span> <span class="n">Surface_pyflatsurf</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.pyflatsurf.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_pyflatsurf</span>
 
                 <span class="k">return</span> <span class="n">Surface_pyflatsurf</span><span class="o">.</span><span class="n">_from_flatsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 </div>
@@ -731,7 +731,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.WithoutBoundary">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary">[docs]</a>
-        <span class="k">class</span> <span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            The category of translation surfaces without boundary built from</span>
 <span class="sd">            finitely many polygons.</span>
@@ -747,7 +747,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods">[docs]</a>
-            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+            <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Provides methods available to all translation surfaces without</span>
 <span class="sd">                boundary that are built from finitely many polygons.</span>
@@ -758,7 +758,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum">[docs]</a>
-                <span class="k">def</span> <span class="nf">stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return the stratum this surface belongs to.</span>
 
@@ -772,15 +772,15 @@
 <span class="sd">                        H_3(4)</span>
 
 <span class="sd">                    &quot;&quot;&quot;</span>
-                    <span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">Stratum</span>
-                    <span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">surface_dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stratum</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.integer_ring</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
                     <span class="k">return</span> <span class="n">Stratum</span><span class="p">([</span><span class="n">ZZ</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles</span><span class="p">()],</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.canonicalize">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.canonicalize">[docs]</a>
-                <span class="k">def</span> <span class="nf">canonicalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">canonicalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a canonical version of this translation surface.</span>
 
@@ -813,7 +813,7 @@
                                 <span class="s2">&quot;calling canonicalize(in_place=True) is not supported anymore&quot;</span>
                             <span class="p">)</span>
 
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf&quot;</span>
@@ -821,13 +821,13 @@
 
                     <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">standardize_polygons</span><span class="p">()</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                     <span class="p">)</span>
 
                     <span class="n">s</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -849,7 +849,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.j_invariant">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.j_invariant">[docs]</a>
-                <span class="k">def</span> <span class="nf">j_invariant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">j_invariant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return the Kenyon-Smillie J-invariant of this translation surface.</span>
 
@@ -879,7 +879,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.erase_marked_points">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.erase_marked_points">[docs]</a>
-                <span class="k">def</span> <span class="nf">erase_marked_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">erase_marked_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return an isometric or similar surface with a minimal number of regular</span>
 <span class="sd">                    vertices of angle 2π.</span>
@@ -933,7 +933,7 @@
                     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles</span><span class="p">()):</span>
                         <span class="c1"># no 2π angle</span>
                         <span class="k">return</span> <span class="bp">self</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.conversion</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.pyflatsurf.conversion</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">from_pyflatsurf</span><span class="p">,</span>
                         <span class="n">to_pyflatsurf</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -947,7 +947,7 @@
 
 <div class="viewcode-block" id="TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.rel_deformation">
 <a class="viewcode-back" href="../../../../geometry/categories/translation_surfaces.html#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.rel_deformation">[docs]</a>
-                <span class="k">def</span> <span class="nf">rel_deformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deformation</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">rel_deformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deformation</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a deformed surface obtained by shifting the vertices</span>
 <span class="sd">                    by ``deformation``.</span>
@@ -976,14 +976,14 @@
 
 <span class="sd">                    &quot;&quot;&quot;</span>
                     <span class="k">if</span> <span class="n">local</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the local keyword has been removed from rel_deformation() without a replacement; do not use it anymore&quot;</span>
                         <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="kn">import</span> <span class="nn">warnings</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;the limit keyword has been removed from rel_deformation() without a replacement; do not use it anymore&quot;</span>
@@ -994,13 +994,13 @@
                             <span class="s2">&quot;only triangulated surfaces can be rel-deformed&quot;</span>
                         <span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.conversion</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.pyflatsurf.conversion</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
                         <span class="n">FlatTriangulationConversion</span><span class="p">,</span>
                     <span class="p">)</span>
 
                     <span class="n">conversion</span> <span class="o">=</span> <span class="n">FlatTriangulationConversion</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
                     <span class="n">deformation</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="n">vertex</span><span class="p">:</span> <span class="n">vector</span><span class="p">(</span>

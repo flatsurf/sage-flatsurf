@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.polygon - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -385,7 +385,7 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">cached_method</span><span class="p">,</span>
     <span class="n">Parent</span><span class="p">,</span>
     <span class="n">QQ</span><span class="p">,</span>
@@ -393,22 +393,22 @@
     <span class="n">vector</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">Element</span>
-<span class="kn">from</span> <span class="nn">sage.structure.sequence</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.element</span><span class="w"> </span><span class="kn">import</span> <span class="n">Element</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.sequence</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.subfield</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.subfield</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">number_field_elements_from_algebraics</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygons</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.euclidean_polygons_with_angles</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygons</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.euclidean_polygons_with_angles</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">EuclideanPolygonsWithAngles</span> <span class="k">as</span> <span class="n">EuclideanPolygonsWithAnglesCategory</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="EuclideanPolygonPoint">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygonPoint">[docs]</a>
-<span class="k">class</span> <span class="nc">EuclideanPolygonPoint</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EuclideanPolygonPoint</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A point in a polygon.</span>
 
@@ -432,14 +432,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_xy</span> <span class="o">=</span> <span class="n">xy</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EuclideanPolygonPoint.position">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygonPoint.position">[docs]</a>
-    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Describe the position of this point in the polygon.</span>
 
@@ -467,7 +467,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xy</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this point.</span>
 
@@ -483,7 +483,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xy</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this point is indistinguishable from ``other``.</span>
 
@@ -506,7 +506,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xy</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_xy</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value of this point that is compatible with</span>
 <span class="sd">        :meth:`_richcmp_`.</span>
@@ -526,7 +526,7 @@
 
 <div class="viewcode-block" id="PolygonPosition">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition">[docs]</a>
-<span class="k">class</span> <span class="nc">PolygonPosition</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PolygonPosition</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Describes the position of a point within or outside of a polygon.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -537,7 +537,7 @@
     <span class="n">EDGE_INTERIOR</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">VERTEX</span> <span class="o">=</span> <span class="mi">3</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_type</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_type</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_position_type</span> <span class="o">=</span> <span class="n">position_type</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">vertex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -550,7 +550,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Constructed edge position with no specified edge.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span> <span class="o">=</span> <span class="n">edge</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_outside</span><span class="p">():</span>
             <span class="k">return</span> <span class="s2">&quot;point positioned outside polygon&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_in_interior</span><span class="p">():</span>
@@ -565,13 +565,13 @@
 
 <div class="viewcode-block" id="PolygonPosition.is_outside">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.is_outside">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_outside</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_outside</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_type</span> <span class="o">==</span> <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">OUTSIDE</span></div>
 
 
 <div class="viewcode-block" id="PolygonPosition.is_inside">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.is_inside">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_inside</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_inside</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return true if the position is not outside the closure of the polygon</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -580,13 +580,13 @@
 
 <div class="viewcode-block" id="PolygonPosition.is_in_interior">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.is_in_interior">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_in_interior</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_in_interior</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_type</span> <span class="o">==</span> <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">INTERIOR</span></div>
 
 
 <div class="viewcode-block" id="PolygonPosition.is_in_boundary">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.is_in_boundary">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_in_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_in_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return true if the position is in the boundary of the polygon</span>
 <span class="sd">        (either the interior of an edge or a vertex).</span>
@@ -599,25 +599,25 @@
 
 <div class="viewcode-block" id="PolygonPosition.is_in_edge_interior">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.is_in_edge_interior">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_in_edge_interior</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_in_edge_interior</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_type</span> <span class="o">==</span> <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">EDGE_INTERIOR</span></div>
 
 
 <div class="viewcode-block" id="PolygonPosition.is_vertex">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.is_vertex">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_type</span> <span class="o">==</span> <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">VERTEX</span></div>
 
 
 <div class="viewcode-block" id="PolygonPosition.get_position_type">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.get_position_type">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_position_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_position_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_type</span></div>
 
 
 <div class="viewcode-block" id="PolygonPosition.get_edge">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.get_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_in_edge_interior</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Asked for edge when not in edge interior.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span></div>
@@ -625,7 +625,7 @@
 
 <div class="viewcode-block" id="PolygonPosition.get_vertex">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.get_vertex">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Asked for vertex when not a vertex.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertex</span></div>
@@ -635,7 +635,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon">[docs]</a>
-<span class="k">class</span> <span class="nc">EuclideanPolygon</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EuclideanPolygon</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A (possibly non-convex) simple polygon in the plane `\mathbb{R}^2`.</span>
 
@@ -661,7 +661,7 @@
 
     <span class="n">Element</span> <span class="o">=</span> <span class="n">EuclideanPolygonPoint</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">V</span> <span class="o">=</span> <span class="n">base_ring</span><span class="o">**</span><span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">vertices</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">:</span>
@@ -680,7 +680,7 @@
         <span class="c1"># subcategory since computation of angles can be very costly.</span>
         <span class="c1"># The category gets further refined when angles() is invoked.</span>
 
-    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a point of this polygon.</span>
 
@@ -696,7 +696,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon.parent">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.parent">[docs]</a>
-    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the category this polygon belongs to.</span>
 
@@ -723,7 +723,7 @@
 <span class="sd">            Category of convex simple euclidean triangles with angles (1/8, 1/4, 1/8) over Rational Field</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;parent() of a polygon has been deprecated and will be removed in a future version of sage-flatsurf; use category() instead&quot;</span>
@@ -733,10 +733,10 @@
 
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
@@ -769,7 +769,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon.cmp">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.cmp">[docs]</a>
-    <span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implement a total order on polygons</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -807,7 +807,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon.translate">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.translate">[docs]</a>
-    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of this polygon that has been translated by ``u``.</span>
 
@@ -829,7 +829,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon.change_ring">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.change_ring">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of this polygon whose vertices have coordinates over the</span>
 <span class="sd">        base ring ``ring``.</span>
@@ -855,7 +855,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon.is_strictly_convex">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.is_strictly_convex">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_strictly_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_strictly_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this polygon is strictly convex.</span>
 
@@ -876,7 +876,7 @@
 <span class="sd">            False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;is_strictly_convex() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex(strict=True) instead&quot;</span>
@@ -887,7 +887,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon.num_edges">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.num_edges">[docs]</a>
-    <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of edges of this polygon.</span>
 
@@ -902,7 +902,7 @@
 <span class="sd">            4</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;num_edges() has been deprecated and will be removed in a future version of sage-flatsurf; use len(vertices()) instead&quot;</span>
@@ -911,7 +911,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this polygon.</span>
 
@@ -927,7 +927,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygon.vertices">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.vertices">[docs]</a>
-    <span class="k">def</span> <span class="nf">vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the vertices of this polygon in counterclockwise order as</span>
 <span class="sd">        vectors in the real plane.</span>
@@ -946,7 +946,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">translation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;the translation keyword of vertices() has been deprecated and will be removed in a future version of sage-flatsurf; use translate().vertices() instead&quot;</span>
@@ -964,8 +964,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;iterating over the vertices of a polygon implicitly has been deprecated, this functionality will be removed in a future version of sage-flatsurf; iterate over vertices() instead&quot;</span>
@@ -976,10 +976,10 @@
 
 <div class="viewcode-block" id="PolygonsConstructor">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor">[docs]</a>
-<span class="k">class</span> <span class="nc">PolygonsConstructor</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PolygonsConstructor</span><span class="p">:</span>
 <div class="viewcode-block" id="PolygonsConstructor.square">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor.square">[docs]</a>
-    <span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
@@ -996,7 +996,7 @@
 
 <div class="viewcode-block" id="PolygonsConstructor.rectangle">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor.rectangle">[docs]</a>
-    <span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rectangle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
@@ -1031,7 +1031,7 @@
 
 <div class="viewcode-block" id="PolygonsConstructor.triangle">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor.triangle">[docs]</a>
-    <span class="k">def</span> <span class="nf">triangle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">triangle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the triangle with angles a*pi/N,b*pi/N,c*pi/N where N=a+b+c.</span>
 
@@ -1073,7 +1073,7 @@
 <div class="viewcode-block" id="PolygonsConstructor.regular_ngon">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor.regular_ngon">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">regular_ngon</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regular_ngon</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a regular n-gon with unit length edges, first edge horizontal, and other vertices lying above this edge.</span>
 
@@ -1096,7 +1096,7 @@
         <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">QQ</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">base_ring</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">QQbar</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.qqbar</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQbar</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">QQbar</span><span class="o">.</span><span class="n">zeta</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">()</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">QQbar</span><span class="o">.</span><span class="n">zeta</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">()</span>
@@ -1118,7 +1118,7 @@
 <div class="viewcode-block" id="PolygonsConstructor.right_triangle">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor.right_triangle">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">right_triangle</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">leg0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">leg1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hypotenuse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">right_triangle</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">leg0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">leg1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hypotenuse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a right triangle in a number field with an angle of pi*angle.</span>
 
@@ -1140,7 +1140,7 @@
 <span class="sd">            sage: polygons.right_triangle(1/4,1).base_ring()</span>
 <span class="sd">            Rational Field</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">QQbar</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.qqbar</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQbar</span>
 
         <span class="n">angle</span> <span class="o">=</span> <span class="n">QQ</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="n">QQ</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)):</span>
@@ -1171,7 +1171,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
@@ -1241,7 +1241,7 @@
 <span class="sd">            ....:     assert T.angles() == (a/D, b/D, c/D)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;calling polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead&quot;</span>
@@ -1255,7 +1255,7 @@
 
 <div class="viewcode-block" id="ConvexPolygons">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.ConvexPolygons">[docs]</a>
-<span class="k">def</span> <span class="nf">ConvexPolygons</span><span class="p">(</span><span class="n">base_ring</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ConvexPolygons</span><span class="p">(</span><span class="n">base_ring</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    EXAMPLES::</span>
 
@@ -1272,7 +1272,7 @@
 <span class="sd">        Polygon(vertices=[(0, 0), (1, 0), (0, 1)])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
         <span class="s2">&quot;ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons. &quot;</span>
@@ -1284,7 +1284,7 @@
 
 <div class="viewcode-block" id="Polygon">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.Polygon">[docs]</a>
-<span class="k">def</span> <span class="nf">Polygon</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">Polygon</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">vertices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1473,7 +1473,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;base_point&quot;</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
         <span class="n">base_point</span> <span class="o">=</span> <span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;base_point&quot;</span><span class="p">)</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;base_point has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead&quot;</span>
@@ -1490,7 +1490,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">base_point</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;ring&quot;</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;ring has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead&quot;</span>
@@ -1498,7 +1498,7 @@
         <span class="n">base_ring</span> <span class="o">=</span> <span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ring&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;field&quot;</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;field has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead&quot;</span>
@@ -1508,7 +1508,7 @@
     <span class="n">convex</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="s2">&quot;convex&quot;</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
         <span class="n">convex</span> <span class="o">=</span> <span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;convex&quot;</span><span class="p">)</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="k">if</span> <span class="n">convex</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -1520,7 +1520,7 @@
             <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;calling Polygon() with positional arguments has been deprecated and will not be supported in a future version of sage-flatsurf; use edges= or vertices= explicitly instead&quot;</span>
@@ -1530,7 +1530,7 @@
 
     <span class="k">if</span> <span class="n">angles</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;length&quot;</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;length has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use lengths instead&quot;</span>
@@ -1559,7 +1559,7 @@
         <span class="n">base_ring</span> <span class="o">=</span> <span class="n">_Polygon_base_ring</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygons</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygons</span>
 
         <span class="c1"># Currently, all polygons are assumed to be without self-intersection, i.e., simple.</span>
         <span class="n">category</span> <span class="o">=</span> <span class="n">EuclideanPolygons</span><span class="p">(</span><span class="n">base_ring</span><span class="p">)</span><span class="o">.</span><span class="n">Simple</span><span class="p">()</span>
@@ -1600,7 +1600,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_Polygon_base_ring</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_Polygon_base_ring</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the base ring a polygon can be defined over.</span>
 
@@ -1619,12 +1619,12 @@
 <span class="sd">        Algebraic Real Field</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">sage.categories.pushout</span> <span class="kn">import</span> <span class="n">pushout</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.pushout</span><span class="w"> </span><span class="kn">import</span> <span class="n">pushout</span>
 
     <span class="n">base_ring</span> <span class="o">=</span> <span class="n">QQ</span>
 
     <span class="k">if</span> <span class="n">angles</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
 
         <span class="n">base_ring</span> <span class="o">=</span> <span class="n">pushout</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
@@ -1654,7 +1654,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">is_square</span> <span class="o">=</span> <span class="n">scale</span><span class="o">.</span><span class="n">is_square</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;Due to https://github.com/flatsurf/exact-real/issues/173, we cannot compute the minimal base ring over which this polygon is defined. The polygon could possibly have been defined over a smaller ring.&quot;</span>
@@ -1668,7 +1668,7 @@
     <span class="k">return</span> <span class="n">base_ring</span>
 
 
-<span class="k">def</span> <span class="nf">_Polygon_normalize_arguments</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_Polygon_normalize_arguments</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the normalized arguments defining a polygon. Additionally, a flag is</span>
 <span class="sd">    returned that indicates whether we made a choice in normalizing these</span>
@@ -1750,7 +1750,7 @@
     <span class="k">return</span> <span class="n">choice</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span>
 
 
-<span class="k">def</span> <span class="nf">_Polygon_complete_vertices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">choice</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_Polygon_complete_vertices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">choice</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return vertices that define a polygon by completing the ``vertices`` to an</span>
 <span class="sd">    ``n``-gon with ``angles``.</span>
@@ -1786,7 +1786,7 @@
         <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">slopes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;cannot construct </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Polygons</span><span class="o">.</span><span class="n">_describe_polygon</span><span class="p">(</span><span class="n">n</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> angles and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span><span class="si">}</span><span class="s2"> vertices&quot;</span>
@@ -1795,7 +1795,7 @@
     <span class="k">return</span> <span class="n">vertices</span>
 
 
-<span class="k">def</span> <span class="nf">_Polygon_check</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">convex</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_Polygon_check</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">convex</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verify that ``p`` is a valid polygon and that it satisfies the constraints</span>
 <span class="sd">    given.</span>
@@ -1824,12 +1824,12 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polygon has zero edge&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">is_anti_parallel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_anti_parallel</span>
 
         <span class="k">if</span> <span class="n">is_anti_parallel</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polygon has anti-parallel edges&quot;</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygons</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygons</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">EuclideanPolygons</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">is_simple</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;polygon self-intersects&quot;</span><span class="p">)</span>
@@ -1847,10 +1847,10 @@
 
     <span class="k">if</span> <span class="n">angles</span><span class="p">:</span>
         <span class="c1"># Check that the polygon has the prescribed angles</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.euclidean_polygons_with_angles</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.euclidean_polygons_with_angles</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.euclidean_polygons</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.euclidean_polygons</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">EuclideanPolygons</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1872,7 +1872,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygonsWithAngles">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygonsWithAngles">[docs]</a>
-<span class="k">def</span> <span class="nf">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="o">*</span><span class="n">angles</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="o">*</span><span class="n">angles</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the category of Euclidean polygons with prescribed ``angles``</span>
 <span class="sd">    over a (minimal) number field.</span>
@@ -2020,7 +2020,7 @@
 
     <span class="n">angles</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAnglesCategory</span><span class="o">.</span><span class="n">_normalize_angles</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.euclidean_polygons_with_angles</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.euclidean_polygons_with_angles</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">_base_ring</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -2032,7 +2032,7 @@
 
 <div class="viewcode-block" id="EquiangularPolygons">
 <a class="viewcode-back" href="../../../geometry/polygon.html#flatsurf.geometry.polygon.EquiangularPolygons">[docs]</a>
-<span class="k">def</span> <span class="nf">EquiangularPolygons</span><span class="p">(</span><span class="o">*</span><span class="n">angles</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">EquiangularPolygons</span><span class="p">(</span><span class="o">*</span><span class="n">angles</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    EXAMPLES::</span>
 
@@ -2044,14 +2044,14 @@
 <span class="sd">        Category of simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
         <span class="s2">&quot;EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use EuclideanPolygonsWithAngles() instead&quot;</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;number_field&quot;</span> <span class="ow">in</span> <span class="n">kwds</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
         <span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;The number_field parameter has been removed in this release of sage-flatsurf. &quot;</span>

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.veech_group - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -387,11 +387,11 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">######################################################################</span>
 
-<span class="kn">from</span> <span class="nn">sage.groups.matrix_gps.matrix_group</span> <span class="kn">import</span> <span class="n">MatrixGroup_generic</span>
-<span class="kn">from</span> <span class="nn">sage.categories.morphism</span> <span class="kn">import</span> <span class="n">Morphism</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.groups.matrix_gps.matrix_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatrixGroup_generic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">Morphism</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SurfaceMorphism</span><span class="p">,</span>
     <span class="n">SurfaceMorphism_factorization</span><span class="p">,</span>
     <span class="n">MorphismSpace</span><span class="p">,</span>
@@ -400,7 +400,7 @@
 
 <div class="viewcode-block" id="VeechGroup_generic">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup_generic">[docs]</a>
-<span class="k">class</span> <span class="nc">VeechGroup_generic</span><span class="p">(</span><span class="n">MatrixGroup_generic</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VeechGroup_generic</span><span class="p">(</span><span class="n">MatrixGroup_generic</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generic (currently essentially empty) implementation of the Veech group.</span>
 
@@ -430,17 +430,17 @@
 
 <div class="viewcode-block" id="VeechGroup_generic.__init__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup_generic.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VeechGroup_generic.surface">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup_generic.surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The surface for which this is the Veech group.</span>
 
@@ -455,7 +455,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this group.</span>
 
@@ -470,7 +470,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VeechGroup(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="si">!r}</span><span class="s2">)&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an element of the Veech group from ``x``.</span>
 
@@ -488,7 +488,7 @@
 <span class="sd">            [0 1]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">GL</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL</span>
 
         <span class="n">x</span> <span class="o">=</span> <span class="n">GL</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_element_constructor_</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -499,7 +499,7 @@
 
         <span class="k">return</span> <span class="n">x</span>
 
-    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an element of the Veech group (for testing).</span>
 
@@ -513,13 +513,13 @@
 <span class="sd">            [0 1]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">identity_matrix</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">identity_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 
 <div class="viewcode-block" id="VeechGroup_generic.gens">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup_generic.gens">[docs]</a>
-    <span class="k">def</span> <span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return generators of this group.</span>
 
@@ -539,7 +539,7 @@
 
 <div class="viewcode-block" id="VeechGroup_generic.__contains__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup_generic.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether ``x`` is contained in the Veech group.</span>
 
@@ -559,7 +559,7 @@
         <span class="c1"># implementation of __contains__, i.e., the problem is that</span>
         <span class="c1"># GL(2, QQ)(M) != M</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">GL</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL</span>
 
         <span class="n">x</span> <span class="o">=</span> <span class="n">GL</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())(</span><span class="n">x</span><span class="p">)</span>
 
@@ -573,7 +573,7 @@
 
 <div class="viewcode-block" id="VeechGroup_generic.__eq__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup_generic.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this group is indistinguishable from ``other``.</span>
 
@@ -593,7 +593,7 @@
 
 <div class="viewcode-block" id="VeechGroup_generic.__hash__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup_generic.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this group that is compatible with :meth:`__eq__`.</span>
 
@@ -612,7 +612,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphismGroup_generic">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphismGroup_generic">[docs]</a>
-<span class="k">class</span> <span class="nc">AffineAutomorphismGroup_generic</span><span class="p">(</span><span class="n">MorphismSpace</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AffineAutomorphismGroup_generic</span><span class="p">(</span><span class="n">MorphismSpace</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generic implementation of the group of affine automorphisms of a surface.</span>
 
@@ -648,7 +648,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphismGroup_generic.__init__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphismGroup_generic.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span></div>
@@ -656,7 +656,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphismGroup_generic.surface">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphismGroup_generic.surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The surface for which this is the affine automorphism group.</span>
 
@@ -671,7 +671,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a morphism in this group (for testing).</span>
 
@@ -686,13 +686,13 @@
 <span class="sd">                    [0 1]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">identity_matrix</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">()(</span><span class="n">identity_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 
 <div class="viewcode-block" id="AffineAutomorphismGroup_generic.__repr__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphismGroup_generic.__repr__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable repreentation of this group.</span>
 
@@ -710,7 +710,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphismGroup_generic.derivative">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphismGroup_generic.derivative">[docs]</a>
-    <span class="k">def</span> <span class="nf">derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the derivative of this group, i.e., the map to</span>
 <span class="sd">        `GL_2(\mathbb{R})` whose image is the :func:`VeechGroup`.</span>
@@ -726,14 +726,14 @@
 <span class="sd">              To:   General Linear Group of degree 2 over Rational Field</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">GL</span><span class="p">,</span> <span class="n">Hom</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL</span><span class="p">,</span> <span class="n">Hom</span>
 
         <span class="n">codomain</span> <span class="o">=</span> <span class="n">GL</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="n">Hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parent</span><span class="o">.</span><span class="n">__make_element_class__</span><span class="p">(</span><span class="n">DerivativeMap</span><span class="p">)(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_from_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an affine automorphism whose :meth:`derivative` is ``matrix``.</span>
 
@@ -753,17 +753,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_element_class__</span><span class="p">(</span><span class="n">AffineAutomorphism_matrix</span><span class="p">)(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Disabled, because we have no proper identity morphism yet</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Disabled, because we have no proper identity morphism yet</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="AffineAutomorphismGroup_generic.__reduce__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphismGroup_generic.__reduce__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a serializable representation of this space.</span>
 
@@ -783,7 +783,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphism_matrix">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphism_matrix">[docs]</a>
-<span class="k">class</span> <span class="nc">AffineAutomorphism_matrix</span><span class="p">(</span><span class="n">SurfaceMorphism_factorization</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AffineAutomorphism_matrix</span><span class="p">(</span><span class="n">SurfaceMorphism_factorization</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An affine automorphism of a surface that is an (arbitrary) lift of an</span>
 <span class="sd">    element of `GL_2(\mathbb{R})`.</span>
@@ -812,7 +812,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphism_matrix.__init__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphism_matrix.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">matrix</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">parent</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
@@ -824,7 +824,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">=</span> <span class="n">matrix</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_repr_`.</span>
 
@@ -842,7 +842,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Affine&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_repr_`.</span>
 
@@ -861,7 +861,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Lift of linear action given by</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span><span class="si">!r}</span><span class="s2">&quot;</span>
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism_factorization._factorization`, the</span>
 <span class="sd">        actual morphism that does all the heavy lifting for us.</span>
@@ -900,13 +900,13 @@
 
         <span class="k">return</span> <span class="n">codomain_normalization</span><span class="o">.</span><span class="n">section</span><span class="p">()</span> <span class="o">*</span> <span class="n">normalization</span> <span class="o">*</span> <span class="n">deformation</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Disabled, because pyflatsurf backed surfaces cannot have points yet</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="AffineAutomorphism_matrix.__eq__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphism_matrix.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -929,7 +929,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphism_matrix.__hash__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphism_matrix.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this automorphism that is compatible with :meth:`__eq__`.</span>
 
@@ -949,7 +949,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphism_matrix.__reduce__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphism_matrix.__reduce__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a serializable representation of this automorphism.</span>
 
@@ -970,7 +970,7 @@
 
 <div class="viewcode-block" id="DerivativeMap">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.DerivativeMap">[docs]</a>
-<span class="k">class</span> <span class="nc">DerivativeMap</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DerivativeMap</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The derivative from the :class:`AffineAutomorphismGroup` to</span>
 <span class="sd">    `GL_2(\mathbb{R})`.</span>
@@ -994,7 +994,7 @@
 
 <div class="viewcode-block" id="DerivativeMap.section">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.DerivativeMap.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a section of this map, i.e., a map that lifts a matrix in</span>
 <span class="sd">        `GL_2(\mathbb{R})` to an affine automorphism.</span>
@@ -1013,7 +1013,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper for :meth:`_repr_`.</span>
 
@@ -1032,7 +1032,7 @@
 
 <div class="viewcode-block" id="DerivativeMap.__eq__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.DerivativeMap.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this derivative is indistinguishable from ``other``.</span>
 
@@ -1053,7 +1053,7 @@
 
 <div class="viewcode-block" id="DerivativeMap.__hash__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.DerivativeMap.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this derivative that is compatible with :meth:`__eq__`.</span>
 
@@ -1073,7 +1073,7 @@
 
 <div class="viewcode-block" id="SectionDerivativeMap">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.SectionDerivativeMap">[docs]</a>
-<span class="k">class</span> <span class="nc">SectionDerivativeMap</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SectionDerivativeMap</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A section of a :class:`DerivativeMap`.</span>
 
@@ -1097,7 +1097,7 @@
 
 <div class="viewcode-block" id="SectionDerivativeMap.__init__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.SectionDerivativeMap.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">derivative</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">derivative</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">derivative</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">reversed</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_derivative</span> <span class="o">=</span> <span class="n">derivative</span></div>
@@ -1105,7 +1105,7 @@
 
 <div class="viewcode-block" id="SectionDerivativeMap.section">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.SectionDerivativeMap.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a section of this section, i.e., the original map.</span>
 
@@ -1124,7 +1124,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_derivative</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper for :meth:`_repr_`.</span>
 
@@ -1143,7 +1143,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Section&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an affine automorphism whose derivative is ``matrix``.</span>
 
@@ -1173,7 +1173,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_call_with_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call_with_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_call_` to accept a ``check`` keyword.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1193,7 +1193,7 @@
 
 <div class="viewcode-block" id="SectionDerivativeMap.__eq__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.SectionDerivativeMap.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this section is indistinguishable from ``other``.</span>
 
@@ -1214,7 +1214,7 @@
 
 <div class="viewcode-block" id="SectionDerivativeMap.__hash__">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.SectionDerivativeMap.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this section that is compatible with :meth:`__eq__`.</span>
 
@@ -1234,7 +1234,7 @@
 
 <div class="viewcode-block" id="AffineAutomorphismGroup">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.AffineAutomorphismGroup">[docs]</a>
-<span class="k">def</span> <span class="nf">AffineAutomorphismGroup</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">AffineAutomorphismGroup</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the group of affine automorphisms of this surface, i.e., the</span>
 <span class="sd">    group of homeomorphisms that can be locally expressed as affine</span>
@@ -1258,7 +1258,7 @@
 
 <div class="viewcode-block" id="VeechGroup">
 <a class="viewcode-back" href="../../../geometry/veech_group.html#flatsurf.geometry.veech_group.VeechGroup">[docs]</a>
-<span class="k">def</span> <span class="nf">VeechGroup</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">VeechGroup</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Veech group of ``surface``, i.e., the group of matrices that fix</span>
 <span class="sd">    its vertices.</span>

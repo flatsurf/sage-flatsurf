@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>polygons - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
@@ -359,10 +359,10 @@ category framework in sage-flatsurf.</p>
 <p>Normally, you won’t create this (or any other) category directly. The correct
 category of a polygon is automatically determined.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span> <span class="ow">in</span> <span class="n">C</span>
 <span class="kc">True</span>
 </pre></div>
@@ -374,7 +374,7 @@ category of a polygon is automatically determined.</p>
 <p>This comprises arbitrary base ring, e.g., this category contains Euclidean
 polygons and hyperbolic polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
 </pre></div>
@@ -384,7 +384,7 @@ polygons and hyperbolic polygons.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.Convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.Convex" title="Link to this definition">¶</a></dt>
 <dd><p>The axiom satisfied by convex polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">Convex</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">convex</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
@@ -401,7 +401,7 @@ want to put it here.</p>
 <span class="sig-name descname"><span class="pre">is_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.Convex.ParentMethods.is_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.Convex.ParentMethods.is_convex" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this is a convex polygon, which it is.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -424,7 +424,7 @@ implementation, you probably want to put it here.</p>
 <span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.ParentMethods.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.base_ring" title="Link to this definition">¶</a></dt>
 <dd><p>Return the ring over which this polygon is defined.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
 <span class="n">Rational</span> <span class="n">Field</span>
@@ -437,7 +437,7 @@ implementation, you probably want to put it here.</p>
 <span class="sig-name descname"><span class="pre">change_ring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ring</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.ParentMethods.change_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.change_ring" title="Link to this definition">¶</a></dt>
 <dd><p>Return a copy of this polygon which is defined over <code class="docutils literal notranslate"><span class="pre">ring</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">K</span><span class="o">.&lt;</span><span class="n">sqrt2</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">NumberField</span><span class="p">(</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">AA</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
@@ -454,7 +454,7 @@ human-readable messages.</p>
 <p>The description is returned as a triple (indeterminate article,
 singular, plural).</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">describe_polygon</span><span class="p">()</span>
 <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;square&#39;</span><span class="p">,</span> <span class="s1">&#39;squares&#39;</span><span class="p">)</span>
@@ -472,7 +472,7 @@ singular, plural).</p>
 polygon with a π angle is not considered convex.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -488,14 +488,14 @@ polygon with a π angle is not considered convex.</p></li>
 <dd><p>Return whether this polygon is considered degenerate.</p>
 <p>EXAMPLES:</p>
 <p>Polygons with zero area are considered degenerate:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_degenerate</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
 </div>
 <p>Polygons with marked vertices are considered degenerate:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_degenerate</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -508,7 +508,7 @@ polygon with a π angle is not considered convex.</p></li>
 <span class="sig-name descname"><span class="pre">is_simple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.ParentMethods.is_simple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.is_simple" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this polygon is not self-intersecting.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">is_simple</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -524,7 +524,7 @@ polygon with a π angle is not considered convex.</p></li>
 <dd><p>The axiom satisfied by polygons whose inner angles are rational
 multiples of π.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">Rational</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">rational</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
@@ -542,7 +542,7 @@ want to put it here.</p>
 <dd><p>Return whether all inner angles of this polygon are rational
 multiples of π, i.e., return <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">is_rational</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -559,7 +559,7 @@ multiples of π, i.e., return <code class="docutils literal notranslate"><span c
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Simple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.Simple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.Simple" title="Link to this definition">¶</a></dt>
 <dd><p>The axiom satisfied by polygons that are not self-intersecting.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">Simple</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">simple</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
@@ -577,7 +577,7 @@ want to put it here.</p>
 <dd><p>Return whether this polygon is not self-intersecting, i.e.,
 return <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">is_simple</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -597,7 +597,7 @@ return <code class="docutils literal notranslate"><span class="pre">True</span><
 <span class="sig-name descname"><span class="pre">Convex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.SubcategoryMethods.Convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Convex" title="Link to this definition">¶</a></dt>
 <dd><p>Return the subcategory of convex polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">Convex</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">convex</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
 </pre></div>
@@ -609,7 +609,7 @@ return <code class="docutils literal notranslate"><span class="pre">True</span><
 <span class="sig-name descname"><span class="pre">Rational</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.SubcategoryMethods.Rational"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Rational" title="Link to this definition">¶</a></dt>
 <dd><p>Return the subcategory of polygons with rational angles.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">Rational</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">rational</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
 </pre></div>
@@ -621,7 +621,7 @@ return <code class="docutils literal notranslate"><span class="pre">True</span><
 <span class="sig-name descname"><span class="pre">Simple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.SubcategoryMethods.Simple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Simple" title="Link to this definition">¶</a></dt>
 <dd><p>Return the subcategyr of simple polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">Simple</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">simple</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
 </pre></div>
@@ -646,7 +646,7 @@ Rational Field</p>
 <span class="sig-name descname"><span class="pre">change_ring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ring</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.SubcategoryMethods.change_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.change_ring" title="Link to this definition">¶</a></dt>
 <dd><p>Return this category but defined over the ring <code class="docutils literal notranslate"><span class="pre">ring</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span>
@@ -662,12 +662,12 @@ Rational Field</p>
 <span class="sig-name descname"><span class="pre">field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.SubcategoryMethods.field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.field" title="Link to this definition">¶</a></dt>
 <dd><p>Return the field over which these polygons are defined.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">field</span><span class="p">()</span>
 <span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
 <span class="o">...</span>
-<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">field</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">base_ring</span><span class="p">()</span> <span class="ow">or</span> <span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span> <span class="n">instead</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">field</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">base_ring</span><span class="p">()</span> <span class="ow">or</span> <span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span> <span class="n">instead</span>
 <span class="n">Rational</span> <span class="n">Field</span>
 </pre></div>
 </div>
@@ -680,7 +680,7 @@ Rational Field</p>
 <span class="sig-name descname"><span class="pre">super_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/polygons.html#Polygons.super_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygons.Polygons.super_categories" title="Link to this definition">¶</a></dt>
 <dd><p>Return the categories polygons automatically belong to.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">Polygons</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">Polygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()</span>
 <span class="p">[</span><span class="n">Category</span> <span class="n">of</span> <span class="n">sets</span><span class="p">]</span>

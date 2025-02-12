@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.circle - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -371,13 +371,13 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
-<span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.modules.free_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorSpace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.modules.free_module_element</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
 
 <div class="viewcode-block" id="circle_from_three_points">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.circle_from_three_points">[docs]</a>
-<span class="k">def</span> <span class="nf">circle_from_three_points</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">circle_from_three_points</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a circle from three points on the circle.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -402,8 +402,8 @@
 
 <div class="viewcode-block" id="Circle">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle">[docs]</a>
-<span class="k">class</span> <span class="nc">Circle</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius_squared</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Circle</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius_squared</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a circle from a Vector representing the center, and the</span>
 <span class="sd">        radius squared.</span>
@@ -423,7 +423,7 @@
 
 <div class="viewcode-block" id="Circle.center">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.center">[docs]</a>
-    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the center of the circle as a vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -432,7 +432,7 @@
 
 <div class="viewcode-block" id="Circle.radius_squared">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.radius_squared">[docs]</a>
-    <span class="k">def</span> <span class="nf">radius_squared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">radius_squared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the square of the radius of the circle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -441,7 +441,7 @@
 
 <div class="viewcode-block" id="Circle.point_position">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.point_position">[docs]</a>
-    <span class="k">def</span> <span class="nf">point_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">point_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return 1 if point lies in the circle, 0 if the point lies on the circle,</span>
 <span class="sd">        and -1 if the point lies outide the circle.</span>
@@ -460,7 +460,7 @@
 
 <div class="viewcode-block" id="Circle.closest_point_on_line">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.closest_point_on_line">[docs]</a>
-    <span class="k">def</span> <span class="nf">closest_point_on_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">direction_vector</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">closest_point_on_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">direction_vector</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Consider the line through the provided point in the given direction.</span>
 <span class="sd">        Return the closest point on this line to the center of the circle.</span>
@@ -497,7 +497,7 @@
 
 <div class="viewcode-block" id="Circle.line_position">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.line_position">[docs]</a>
-    <span class="k">def</span> <span class="nf">line_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">direction_vector</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">line_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">direction_vector</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Consider the line through the provided point in the given direction.</span>
 <span class="sd">        We return 1 if the line passes through the circle, 0 if it is tangent</span>
@@ -508,7 +508,7 @@
 
 <div class="viewcode-block" id="Circle.line_segment_position">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.line_segment_position">[docs]</a>
-    <span class="k">def</span> <span class="nf">line_segment_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">line_segment_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Consider the open line segment pq.We return 1 if the line segment</span>
 <span class="sd">        enters the interior of the circle, zero if it touches the circle</span>
@@ -535,7 +535,7 @@
 
 <div class="viewcode-block" id="Circle.tangent_vector">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.tangent_vector">[docs]</a>
-    <span class="k">def</span> <span class="nf">tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a vector based at the provided point (which must lie on the circle)</span>
 <span class="sd">        which is tangent to the circle and points in the counter-clockwise</span>
@@ -555,7 +555,7 @@
 
 <div class="viewcode-block" id="Circle.other_intersection">
 <a class="viewcode-back" href="../../../geometry/circle.html#flatsurf.geometry.circle.Circle.other_intersection">[docs]</a>
-    <span class="k">def</span> <span class="nf">other_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">other_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Consider a point p on the circle and a vector v. Let L be the line</span>
 <span class="sd">        through p in direction v. Then L intersects the circle at another</span>
@@ -584,7 +584,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V2</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply a similarity to the circle.</span>
 
@@ -600,7 +600,7 @@
 <span class="sd">            sage: s.edge_transformation(0,2) * c</span>
 <span class="sd">            Circle((1/2, -1/2), 1/2)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
         <span class="n">SG</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">SG</span><span class="p">(</span><span class="n">similarity</span><span class="p">)</span>
@@ -608,7 +608,7 @@
             <span class="n">s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="p">),</span> <span class="n">s</span><span class="o">.</span><span class="n">det</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius_squared</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;circle with center &quot;</span>
             <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="p">)</span>
@@ -616,10 +616,10 @@
             <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_radius_squared</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Circle(&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_radius_squared</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this circle that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -634,7 +634,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius_squared</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this circle is indistinguishable from ``other``.</span>
 

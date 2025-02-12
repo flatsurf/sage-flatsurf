@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>fundamental_group - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -358,7 +358,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.fundamental_group.</span></span><span class="sig-name descname"><span class="pre">FundamentalGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/fundamental_group.html#FundamentalGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.fundamental_group.FundamentalGroup" title="Link to this definition">¶</a></dt>
 <dd><p>The fundamental group of a punctured surface</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">t</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">fundamental_group</span><span class="p">())</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
@@ -374,7 +374,7 @@
 <span class="sig-name descname"><span class="pre">gens</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/fundamental_group.html#FundamentalGroup.gens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.fundamental_group.FundamentalGroup.gens" title="Link to this definition">¶</a></dt>
 <dd><p>Return a generating set</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">r</span> <span class="o">=</span> <span class="n">S</span><span class="p">(</span><span class="s1">&#39;(1,2,3,4,5,6,7,8)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">u</span> <span class="o">=</span> <span class="n">S</span><span class="p">(</span><span class="s1">&#39;(1,8,5,4)(2,3)(6,7)&#39;</span><span class="p">)</span>
@@ -389,11 +389,11 @@
 <dt class="sig sig-object py" id="flatsurf.geometry.fundamental_group.FundamentalGroup.one">
 <span class="sig-name descname"><span class="pre">one</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/fundamental_group.html#FundamentalGroup.one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.fundamental_group.FundamentalGroup.one" title="Link to this definition">¶</a></dt>
 <dd><p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-<span class="o">....</span><span class="p">:</span>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
+<span class="o">....</span><span class="p">:</span>     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="o">....</span><span class="p">:</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">x</span>
 <span class="o">....</span><span class="p">:</span>     <span class="nd">@cached_method</span>
-<span class="o">....</span><span class="p">:</span>     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">....</span><span class="p">:</span>     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="o">....</span><span class="p">:</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="o">^</span><span class="mi">2</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">cache</span><span class="p">)</span>
@@ -416,7 +416,7 @@
 <span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/fundamental_group.html#Path.intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.fundamental_group.Path.intersection" title="Link to this definition">¶</a></dt>
 <dd><p>The intersection number of this element with <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">t</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">fundamental_group</span><span class="p">()</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>

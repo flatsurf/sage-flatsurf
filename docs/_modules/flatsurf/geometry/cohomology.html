@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.cohomology - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -397,14 +397,14 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">######################################################################</span>
 
-<span class="kn">from</span> <span class="nn">sage.structure.parent</span> <span class="kn">import</span> <span class="n">Parent</span>
-<span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">Element</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.parent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.element</span><span class="w"> </span><span class="kn">import</span> <span class="n">Element</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
 
 
 <div class="viewcode-block" id="SimplicialCohomologyClass">
 <a class="viewcode-back" href="../../../geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyClass">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialCohomologyClass</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialCohomologyClass</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A cohomology class.</span>
 
@@ -429,12 +429,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">values</span>
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this cohomology class.</span>
 
@@ -452,7 +452,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">homology</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">homology</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluate this class at an element of homology.</span>
 
@@ -473,7 +473,7 @@
             <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">homology</span><span class="p">()</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pointwise sum of two cohomology classes.</span>
 
@@ -499,7 +499,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">values</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return how this cohomoly class compares to other with respect to the</span>
 <span class="sd">        binary relation ``op``.</span>
@@ -516,7 +516,7 @@
 <span class="sd">            False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.structure.richcmp</span> <span class="kn">import</span> <span class="n">op_EQ</span><span class="p">,</span> <span class="n">op_NE</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.richcmp</span><span class="w"> </span><span class="kn">import</span> <span class="n">op_EQ</span><span class="p">,</span> <span class="n">op_NE</span>
 
         <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="n">op_NE</span><span class="p">:</span>
             <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_richcmp_</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op_EQ</span><span class="p">)</span>
@@ -536,7 +536,7 @@
 
 <div class="viewcode-block" id="SimplicialCohomologyGroup">
 <a class="viewcode-back" href="../../../geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialCohomologyGroup</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialCohomologyGroup</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ``k``-th simplicial cohomology group of the ``surface`` with</span>
 <span class="sd">    ``coefficients``.</span>
@@ -566,18 +566,18 @@
 
     <span class="n">Element</span> <span class="o">=</span> <span class="n">SimplicialCohomologyClass</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
         <span class="n">Parent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;surface most be immutable&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
         <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ZZ</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;k must be an integer&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rings</span>
 
         <span class="k">if</span> <span class="n">coefficients</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;coefficients must be a ring&quot;</span><span class="p">)</span>
@@ -613,7 +613,7 @@
 
 <div class="viewcode-block" id="SimplicialCohomologyGroup.is_absolute">
 <a class="viewcode-back" href="../../../geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.is_absolute">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this is an absolute cohomology (and not a relative one).</span>
 
@@ -630,7 +630,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relative</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this cohomology group.</span>
 
@@ -667,7 +667,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
             <span class="n">X</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_relative</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">RR</span><span class="p">:</span>
             <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span>
@@ -677,7 +677,7 @@
 
 <div class="viewcode-block" id="SimplicialCohomologyGroup.surface">
 <a class="viewcode-back" href="../../../geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface over which this cohomology is defined.</span>
 
@@ -694,7 +694,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return ``x`` as a class in this cohomology.</span>
 
@@ -723,7 +723,7 @@
 <div class="viewcode-block" id="SimplicialCohomologyGroup.homology">
 <a class="viewcode-back" href="../../../geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.homology">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the homology of the underlying space (with integer</span>
 <span class="sd">        coefficients).</span>
@@ -737,14 +737,14 @@
 <span class="sd">            H₁(Translation Surface in H_1(0) built from a square)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.homology</span> <span class="kn">import</span> <span class="n">SimplicialHomology</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.homology</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimplicialHomology</span>
 
         <span class="k">return</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_relative</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimplicialCohomologyGroup.gens">
 <a class="viewcode-back" href="../../../geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.gens">[docs]</a>
-    <span class="k">def</span> <span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return generators of this cohomology.</span>
 
@@ -764,7 +764,7 @@
 
 <div class="viewcode-block" id="SimplicialCohomology">
 <a class="viewcode-back" href="../../../geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomology">[docs]</a>
-<span class="k">def</span> <span class="nf">SimplicialCohomology</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">SimplicialCohomology</span><span class="p">(</span>
     <span class="n">surface</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">implementation</span><span class="o">=</span><span class="s2">&quot;dual&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

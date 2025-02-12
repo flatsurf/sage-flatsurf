@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>translation_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
@@ -361,11 +361,11 @@ category framework in sage-flatsurf.</p>
 <p>Normally, you won’t create this (or any other) category directly. The correct
 category is automatically determined for immutable surfaces.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">TranslationSurfaces</span><span class="p">())</span>
 <span class="kc">True</span>
 </pre></div>
@@ -376,7 +376,7 @@ category is automatically determined for immutable surfaces.</p>
 <dd><p>The category of surfaces built by gluing (Euclidean) polygons with
 translations.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TranslationSurfaces</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">translation</span> <span class="n">surfaces</span>
 </pre></div>
@@ -386,7 +386,7 @@ translations.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FiniteType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/translation_surfaces.html#TranslationSurfaces.FiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType" title="Link to this definition">¶</a></dt>
 <dd><p>The category of translation surfaces built from finitely many polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">connected</span> <span class="n">without</span> <span class="n">boundary</span> <span class="n">finite</span> <span class="nb">type</span> <span class="n">translation</span> <span class="n">surfaces</span>
@@ -404,7 +404,7 @@ want to put it here.</p>
 <span class="sig-name descname"><span class="pre">pyflatsurf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/translation_surfaces.html#TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf" title="Link to this definition">¶</a></dt>
 <dd><p>Return an isomorphism to a surface backed by libflatsurf.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]),</span> <span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -433,7 +433,7 @@ want to put it here.</p>
 <dd><p>The category of translation surfaces without boundary built from
 finitely many polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">connected</span> <span class="n">without</span> <span class="n">boundary</span> <span class="n">finite</span> <span class="nb">type</span> <span class="n">translation</span> <span class="n">surfaces</span>
@@ -452,11 +452,11 @@ want to put it here.</p>
 <dd><p>Return a canonical version of this translation surface.</p>
 <p>EXAMPLES:</p>
 <p>We will check if an element lies in the Veech group:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span>
-<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_3</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">squares</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">regular</span> <span class="n">octagon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_3</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="mi">2</span> <span class="n">squares</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">regular</span> <span class="n">octagon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">TranslationSurfaces</span><span class="p">()</span>
 <span class="kc">True</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
@@ -479,7 +479,7 @@ want to put it here.</p>
 <dd><p>Return an isometric or similar surface with a minimal number of regular
 vertices of angle 2π.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span><span class="w"> </span><span class="nn">flatsurf</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,2,3,4)&#39;</span><span class="p">),</span> <span class="n">G</span><span class="p">(</span><span class="s1">&#39;(1,4,2,3)&#39;</span><span class="p">))</span>
@@ -513,7 +513,7 @@ function:</p>
 <dd><p>Return the Kenyon-Smillie J-invariant of this translation surface.</p>
 <p>It is assumed that the coordinates are defined over a number field.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">O</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">O</span><span class="o">.</span><span class="n">j_invariant</span><span class="p">()</span>
 <span class="p">(</span>
@@ -538,7 +538,7 @@ vertex not present in the dict will be treated as a
 deformation by the zero vector.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">arnoux_yoccoz</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S1</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">rel_deformation</span><span class="p">({</span><span class="n">S</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)})</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span>  <span class="c1"># optional: pyflatsurf</span>
 
@@ -559,7 +559,7 @@ deformation by the zero vector.</p></li>
 <p>This uses the package <code class="docutils literal notranslate"><span class="pre">surface-dynamics</span></code>
 (see <a class="reference external" href="http://www.labri.fr/perso/vdelecro/flatsurf_sage.html">http://www.labri.fr/perso/vdelecro/flatsurf_sage.html</a>)</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="k">as</span> <span class="nn">sfg</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity_surface_generators</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sfg</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">sfg</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
 <span class="n">H_3</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
@@ -593,7 +593,7 @@ applied to the polygon with label <span class="math notranslate nohighlight">\(p
 can be glued to its opposite edge by translation.</p>
 <p>Since this is a translation surface, this is just the identity.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">[</span><span class="mi">1</span> <span class="mi">0</span><span class="p">]</span>
@@ -608,7 +608,7 @@ can be glued to its opposite edge by translation.</p>
 <dd><p>Return whether this surface is a translation surface, i.e., return
 <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_translation_surface</span><span class="p">(</span><span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="kc">True</span>
@@ -624,7 +624,7 @@ can be glued to its opposite edge by translation.</p>
 <dd><p>Return the minimal cover of this surface that makes this surface a
 translation surface, i.e., return this surface itself.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">minimal_translation_cover</span><span class="p">()</span> <span class="ow">is</span> <span class="n">S</span>
 <span class="kc">True</span>
@@ -642,7 +642,7 @@ a member of (apart from being a positive half-translation surface, its
 orientation is compatible with the orientation of the polygons in the
 real plane, so it’s “oriented.”)</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">TranslationSurfaces</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">extra_super_categories</span><span class="p">()</span>
 <span class="p">(</span><span class="n">Category</span> <span class="n">of</span> <span class="n">oriented</span> <span class="n">polygonal</span> <span class="n">surfaces</span><span class="p">,)</span>

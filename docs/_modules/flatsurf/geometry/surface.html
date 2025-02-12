@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.surface - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -404,17 +404,17 @@
 <span class="c1">#  You should have received a copy of the GNU General Public License</span>
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ********************************************************************</span>
-<span class="kn">import</span> <span class="nn">collections.abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections.abc</span>
 
-<span class="kn">from</span> <span class="nn">sage.structure.parent</span> <span class="kn">import</span> <span class="n">Parent</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.parent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SurfacePoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfacePoint</span>
 
 
 <div class="viewcode-block" id="Surface_base">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_base">[docs]</a>
-<span class="k">class</span> <span class="nc">Surface_base</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Surface_base</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A base class for all surfaces in sage-flatsurf.</span>
 
@@ -432,7 +432,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_refine_category_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_refine_category_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Refine the category of this surface to a subcategory ``category``.</span>
 
@@ -451,7 +451,7 @@
 <span class="sd">            Category of connected without boundary finite type translation surfaces</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.structure.debug_options</span> <span class="kn">import</span> <span class="n">debug</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.debug_options</span><span class="w"> </span><span class="kn">import</span> <span class="n">debug</span>
 
         <span class="n">old_refine_category_hash_check</span> <span class="o">=</span> <span class="n">debug</span><span class="o">.</span><span class="n">refine_category_hash_check</span>
         <span class="n">debug</span><span class="o">.</span><span class="n">refine_category_hash_check</span> <span class="o">=</span> <span class="kc">False</span>
@@ -466,7 +466,7 @@
 
 <div class="viewcode-block" id="Surface_base.an_element">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_base.an_element">[docs]</a>
-    <span class="k">def</span> <span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a point of this surface.</span>
 
@@ -489,7 +489,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">MutablePolygonalSurface</span><span class="p">(</span><span class="n">Surface_base</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MutablePolygonalSurface</span><span class="p">(</span><span class="n">Surface_base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A base class for mutable surfaces that are built by gluing polygons.</span>
 
@@ -506,8 +506,8 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_next_label</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_roots</span> <span class="o">=</span> <span class="p">()</span>
@@ -519,7 +519,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that this surface has been refined to its best possible</span>
 <span class="sd">        subcategory (that can be computed cheaply).</span>
@@ -546,7 +546,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.add_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.add_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an unglued polygon to this surface and return its label.</span>
 
@@ -592,7 +592,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.add_polygons">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.add_polygons">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygons</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygons</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add several polygons with automatically assigned labels at once.</span>
 
@@ -609,7 +609,7 @@
 <span class="sd">            [0, 1]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;add_polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use labels = [add_polygon(p) for p in polygons] instead&quot;</span>
@@ -620,7 +620,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.set_default_graphical_surface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.set_default_graphical_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_default_graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_default_graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES:</span>
 
@@ -641,7 +641,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.remove_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.remove_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove the polygon with label ``label`` from this surface (and all data</span>
 <span class="sd">        associated to it).</span>
@@ -670,7 +670,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.roots">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.roots">[docs]</a>
-    <span class="k">def</span> <span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a label for each connected component on this surface.</span>
 
@@ -714,7 +714,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.components">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.components">[docs]</a>
-    <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the connected components as the sequence of their respective</span>
 <span class="sd">        polygon labels.</span>
@@ -753,7 +753,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon with label ``label`` in this surface.</span>
 
@@ -783,7 +783,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.set_immutable">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.set_immutable">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make this surface immutable.</span>
 
@@ -850,7 +850,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.is_mutable">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.is_mutable">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface can be modified.</span>
 
@@ -875,7 +875,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.__eq__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
 
@@ -935,7 +935,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.__hash__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this surface that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -962,7 +962,7 @@
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()),</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roots</span><span class="p">))</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this surface.</span>
 
@@ -988,7 +988,7 @@
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_surface</span><span class="p">()</span><span class="si">}</span><span class="s2"> built from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_polygons</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string describing this kind of surface.</span>
 
@@ -1004,7 +1004,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Surface&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_describe_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_describe_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string describing the nature of the polygons that make up this surface.</span>
 
@@ -1050,7 +1050,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.set_root">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.set_root">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set ``root`` as the label at which exploration of a connected component</span>
 <span class="sd">        starts.</span>
@@ -1133,7 +1133,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.set_roots">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.set_roots">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roots</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roots</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Declare that the labels in ``roots`` are the labels from which their</span>
 <span class="sd">        corresponding connected components should be enumerated.</span>
@@ -1205,7 +1205,7 @@
 
 <div class="viewcode-block" id="MutablePolygonalSurface.change_base_label">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.change_base_label">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a deprecated alias for :meth:`set_root`.</span>
 
@@ -1224,7 +1224,7 @@
 <span class="sd">            UserWarning: change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_root() instead</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_root() instead&quot;</span>
@@ -1236,7 +1236,7 @@
 <div class="viewcode-block" id="MutablePolygonalSurface.labels">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.labels">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon labels in this surface.</span>
 
@@ -1272,7 +1272,7 @@
 <div class="viewcode-block" id="MutablePolygonalSurface.polygons">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.polygons">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygons that make up this surface.</span>
 
@@ -1314,7 +1314,7 @@
 
 <div class="viewcode-block" id="OrientedSimilaritySurface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.OrientedSimilaritySurface">[docs]</a>
-<span class="k">class</span> <span class="nc">OrientedSimilaritySurface</span><span class="p">(</span><span class="n">Surface_base</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OrientedSimilaritySurface</span><span class="p">(</span><span class="n">Surface_base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for surfaces built from Euclidean polygons that are glued with</span>
 <span class="sd">    orientation preserving similarities.</span>
@@ -1334,13 +1334,13 @@
 
 <div class="viewcode-block" id="OrientedSimilaritySurface.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.OrientedSimilaritySurface.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rings</span>
 
         <span class="k">if</span> <span class="n">base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;base ring must be a ring&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
 
         <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">category</span> <span class="o">=</span> <span class="n">SimilaritySurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span>
@@ -1350,7 +1350,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
             <span class="k">return</span> <span class="s2">&quot;Surface built from infinitely many polygons&quot;</span>
 
@@ -1391,7 +1391,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface_base">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface_base">[docs]</a>
-<span class="k">class</span> <span class="nc">MutableOrientedSimilaritySurface_base</span><span class="p">(</span><span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MutableOrientedSimilaritySurface_base</span><span class="p">(</span><span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for surface built from Euclidean polyogns glued by orientation</span>
 <span class="sd">    preserving similarities.</span>
@@ -1413,7 +1413,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface_base.triangle_flip">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface_base.triangle_flip">[docs]</a>
-    <span class="k">def</span> <span class="nf">triangle_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">triangle_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangle_flip`</span>
@@ -1423,13 +1423,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.&quot;</span>
@@ -1444,7 +1444,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise&quot;</span>
@@ -1469,7 +1469,7 @@
                 <span class="s2">&quot;cannot flip this edge because the surrounding quadrilateral is not strictly convex&quot;</span>
             <span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
         <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">diagonal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="n">T</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">vertices</span><span class="p">()])</span>
@@ -1503,7 +1503,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">diagonal</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">diagonal</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
-        <span class="k">def</span> <span class="nf">to_new</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">to_new</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">lbl</span> <span class="o">==</span> <span class="n">label</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
                     <span class="k">assert</span> <span class="n">edge</span> <span class="o">!=</span> <span class="n">diagonal</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -1522,7 +1522,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface_base.standardize_polygons">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface_base.standardize_polygons">[docs]</a>
-    <span class="k">def</span> <span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace each polygon with a new polygon which differs by</span>
 <span class="sd">        translation and reindexing. The new polygon will have the property</span>
@@ -1580,7 +1580,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface">[docs]</a>
-<span class="k">class</span> <span class="nc">MutableOrientedSimilaritySurface</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MutableOrientedSimilaritySurface</span><span class="p">(</span>
     <span class="n">MutableOrientedSimilaritySurface_base</span><span class="p">,</span> <span class="n">MutablePolygonalSurface</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1615,10 +1615,10 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gluings</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
 
         <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">category</span> <span class="o">=</span> <span class="n">SimilaritySurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span>
@@ -1631,7 +1631,7 @@
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.from_surface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.from_surface">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_surface</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_surface</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a mutable copy of ``surface``.</span>
 
@@ -1705,7 +1705,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.add_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.add_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Overrides add_polygon from MutablePolygonalSurface</span>
         <span class="n">label</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gluings</span>
@@ -1719,7 +1719,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.remove_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.remove_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="c1"># Overrides remove_polygon from MutablePolygonalSurface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unglue_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gluings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
@@ -1729,7 +1729,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.glue">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.glue">[docs]</a>
-    <span class="k">def</span> <span class="nf">glue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">glue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Glue ``x`` and ``y`` with an (orientation preserving) similarity.</span>
 
@@ -1800,7 +1800,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.unglue">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.unglue">[docs]</a>
-    <span class="k">def</span> <span class="nf">unglue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unglue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unglue the side ``edge`` of the polygon ``label`` if it is glued.</span>
 
@@ -1858,7 +1858,7 @@
                     <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;did not find any root to split&quot;</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_unglue_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unglue_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all gluigns from polygon ``label``.</span>
 
@@ -1886,7 +1886,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.set_edge_pairing">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.set_edge_pairing">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label0</span><span class="p">,</span> <span class="n">edge0</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label0</span><span class="p">,</span> <span class="n">edge0</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
@@ -1904,7 +1904,7 @@
 <span class="sd">            (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;set_edge_pairing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead&quot;</span>
@@ -1914,7 +1914,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.change_edge_gluing">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.change_edge_gluing">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_edge_gluing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label0</span><span class="p">,</span> <span class="n">edge0</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_edge_gluing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label0</span><span class="p">,</span> <span class="n">edge0</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
@@ -1932,7 +1932,7 @@
 <span class="sd">            (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;change_edge_gluing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead&quot;</span>
@@ -1942,7 +1942,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.change_polygon_gluings">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.change_polygon_gluings">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_polygon_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">gluings</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_polygon_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">gluings</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
@@ -1959,7 +1959,7 @@
 <span class="sd">            (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;change_polygon_gluings() has been deprecated and will be removed in a future version of sage-flatsurf; use glue() in a loop instead&quot;</span>
@@ -1974,7 +1974,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.change_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.change_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TESTS::</span>
 
@@ -1992,7 +1992,7 @@
 <span class="sd">            Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead&quot;</span>
@@ -2017,7 +2017,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.refine_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.refine_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">refine_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">gluings</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refine_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">gluings</span><span class="p">):</span>
         <span class="n">old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="n">old_gluings</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">vertices</span><span class="p">()))]</span>
 
@@ -2038,7 +2038,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.replace_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.replace_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">replace_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replace_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace the polygon ``label`` with ``polygon`` while keeping its</span>
 <span class="sd">        gluings intact.</span>
@@ -2078,7 +2078,7 @@
         <span class="n">old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertices</span><span class="p">()):</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.polygons</span> <span class="kn">import</span> <span class="n">Polygons</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.polygons</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygons</span>
 
             <span class="n">article</span><span class="p">,</span> <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span> <span class="o">=</span> <span class="n">Polygons</span><span class="o">.</span><span class="n">_describe_polygon</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">vertices</span><span class="p">()))</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;polygon must be </span><span class="si">{</span><span class="n">article</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">singular</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2088,7 +2088,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.opposite_edge">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.opposite_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.</span>
 
@@ -2128,7 +2128,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead&quot;</span>
@@ -2139,7 +2139,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.set_vertex_zero">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.set_vertex_zero">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_vertex_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_vertex_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero`</span>
@@ -2159,7 +2159,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="n">glue</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
         <span class="n">pp</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span>
             <span class="n">edges</span><span class="o">=</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="n">v</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)],</span> <span class="n">base_ring</span><span class="o">=</span><span class="n">us</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
@@ -2181,7 +2181,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.relabel">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.relabel">[docs]</a>
-    <span class="k">def</span> <span class="nf">relabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabeling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">relabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabeling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`</span>
@@ -2234,7 +2234,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.join_polygons">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.join_polygons">[docs]</a>
-    <span class="k">def</span> <span class="nf">join_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">join_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.join_polygons`</span>
@@ -2267,7 +2267,7 @@
             <span class="n">edge_map</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">es</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
             <span class="n">es</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
         <span class="n">new_polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="n">es</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
@@ -2303,7 +2303,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.subdivide_polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.subdivide_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">subdivide_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subdivide_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon`</span>
@@ -2328,7 +2328,7 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">ne</span><span class="p">):</span>
             <span class="n">newedges1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
         <span class="n">newpoly1</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="n">newedges1</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
@@ -2372,7 +2372,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.reposition_polygons">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.reposition_polygons">[docs]</a>
-    <span class="k">def</span> <span class="nf">reposition_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reposition_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons`</span>
@@ -2387,7 +2387,7 @@
                     <span class="s2">&quot;the relabel keyword has been removed from reposition_polygon; use relabel() to use integer labels instead&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to reposition_polygons()&quot;</span>
@@ -2396,7 +2396,7 @@
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
         <span class="n">S</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
         <span class="n">identity</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
@@ -2428,7 +2428,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.triangulate">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.triangulate">[docs]</a>
-    <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`</span>
@@ -2482,7 +2482,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">relabel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;the relabel keyword argument of triangulate() is ignored, it has been deprecated and will be removed in a future version of sage-flatsurf&quot;</span>
@@ -2491,7 +2491,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">in_place</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;in-place triangulation has been deprecated and the in_place keyword argument will be removed from triangulate() in a future version of sage-flatsurf&quot;</span>
@@ -2504,13 +2504,13 @@
                 <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">_triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedUnknownMorphism</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedUnknownMorphism</span>
 
         <span class="k">return</span> <span class="n">NamedUnknownMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Triangulation&quot;</span><span class="p">)</span></div>
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_triangulate</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_triangulate</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`triangulate`.</span>
 
@@ -2533,7 +2533,7 @@
             <span class="n">relabeling</span> <span class="o">=</span> <span class="p">{</span><span class="n">lbl</span><span class="p">:</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="n">triangulation</span><span class="o">.</span><span class="n">labels</span><span class="p">()}</span>
         <span class="n">triangulation</span> <span class="o">=</span> <span class="n">triangulation</span><span class="o">.</span><span class="n">relabel</span><span class="p">(</span><span class="n">relabeling</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">bidict</span> <span class="kn">import</span> <span class="n">bidict</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">bidict</span><span class="w"> </span><span class="kn">import</span> <span class="n">bidict</span>
 
         <span class="n">edge_to_edge</span> <span class="o">=</span> <span class="n">bidict</span><span class="p">(</span>
             <span class="p">{</span><span class="n">edge</span><span class="p">:</span> <span class="p">(</span><span class="n">relabeling</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span> <span class="ow">in</span> <span class="n">edge_to_edge</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -2543,7 +2543,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.delaunay_single_flip">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.delaunay_single_flip">[docs]</a>
-    <span class="k">def</span> <span class="nf">delaunay_single_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delaunay_single_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a single in place flip of a triangulated mutable surface</span>
 <span class="sd">        in-place.</span>
@@ -2560,7 +2560,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.cmp">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.cmp">[docs]</a>
-    <span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare two surfaces. This is an ordering returning -1, 0, or 1.</span>
 
@@ -2570,7 +2570,7 @@
 <span class="sd">        If the two surfaces are infinite, we just examine the first limit polygons.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;limit has been deprecated as a keyword argument for _cmp() and will be removed from a future version of sage-flatsurf; &quot;</span>
@@ -2624,7 +2624,7 @@
                     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
                 <span class="c1"># both surfaces are infinite.</span>
-                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
                 <span class="n">lw1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
                 <span class="n">labels1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">lw1</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
@@ -2657,7 +2657,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.__eq__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
 
@@ -2693,7 +2693,7 @@
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.__hash__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this surface that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -2726,7 +2726,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">BaseRingChangedSurface</span><span class="p">(</span><span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseRingChangedSurface</span><span class="p">(</span><span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Changes the ring over which a surface is defined.</span>
 
@@ -2751,7 +2751,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;surface must be immutable&quot;</span><span class="p">)</span>
 
@@ -2761,7 +2761,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.is_mutable">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.is_mutable">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface can be modified, i.e., return ``False``.</span>
 
@@ -2783,7 +2783,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.labels">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.labels">[docs]</a>
-    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the labels of the polygons of this surface.</span>
 
@@ -2801,7 +2801,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.roots">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.roots">[docs]</a>
-    <span class="k">def</span> <span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a label for each connected component on this surface.</span>
 
@@ -2822,7 +2822,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.polygon">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon with ``label``.</span>
 
@@ -2845,7 +2845,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.opposite_edge">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.opposite_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.</span>
 
@@ -2867,7 +2867,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.change_ring">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.change_ring">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of this surface whose polygons are defined over</span>
 <span class="sd">        ``ring``.</span>
@@ -2896,7 +2896,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this surface.</span>
 
@@ -2916,7 +2916,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.__eq__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
 
@@ -2940,7 +2940,7 @@
 
 <div class="viewcode-block" id="BaseRingChangedSurface.__hash__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this surface that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -2960,7 +2960,7 @@
 
 <div class="viewcode-block" id="RootedComponents_MutablePolygonalSurface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.RootedComponents_MutablePolygonalSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">RootedComponents_MutablePolygonalSurface</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RootedComponents_MutablePolygonalSurface</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Connected components of a :class:`MutablePolygonalSurface`.</span>
 
@@ -2988,13 +2988,13 @@
 
 <div class="viewcode-block" id="RootedComponents_MutablePolygonalSurface.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.RootedComponents_MutablePolygonalSurface.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span></div>
 
 
 <div class="viewcode-block" id="RootedComponents_MutablePolygonalSurface.__getitem__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.RootedComponents_MutablePolygonalSurface.__getitem__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the labels of the connected component rooted at the label</span>
 <span class="sd">        ``root``.</span>
@@ -3022,7 +3022,7 @@
 
 <div class="viewcode-block" id="RootedComponents_MutablePolygonalSurface.__iter__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.RootedComponents_MutablePolygonalSurface.__iter__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the keys of this mapping, i.e., the root labels of the</span>
 <span class="sd">        connected components.</span>
@@ -3070,7 +3070,7 @@
 
 <div class="viewcode-block" id="RootedComponents_MutablePolygonalSurface.__len__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.RootedComponents_MutablePolygonalSurface.__len__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of connected components of this surface.</span>
 
@@ -3102,7 +3102,7 @@
 
 <div class="viewcode-block" id="LabeledCollection">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledCollection">[docs]</a>
-<span class="k">class</span> <span class="nc">LabeledCollection</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Collection</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LabeledCollection</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Collection</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for collection of labels as returned by ``labels()``</span>
 <span class="sd">    methods of surfaces.</span>
@@ -3135,7 +3135,7 @@
 
 <div class="viewcode-block" id="LabeledCollection.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledCollection.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">finite</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
             <span class="n">finite</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -3145,7 +3145,7 @@
 
 <div class="viewcode-block" id="LabeledCollection.__repr__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledCollection.__repr__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this set.</span>
 
@@ -3161,7 +3161,7 @@
 <span class="sd">            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
         <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">17</span><span class="p">))</span>
 
@@ -3173,7 +3173,7 @@
 
 <div class="viewcode-block" id="LabeledCollection.__len__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledCollection.__len__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the size of this set.</span>
 
@@ -3206,7 +3206,7 @@
 
 <div class="viewcode-block" id="LabeledCollection.__contains__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledCollection.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether ``x`` is contained in this set.</span>
 
@@ -3232,7 +3232,7 @@
 
 <div class="viewcode-block" id="LabeledSet">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledSet">[docs]</a>
-<span class="k">class</span> <span class="nc">LabeledSet</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Set</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LabeledSet</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Set</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for sets of labels or related objects, such as the set</span>
 <span class="sd">    of gluings of a surface.</span>
@@ -3253,7 +3253,7 @@
 
 <div class="viewcode-block" id="LabeledView">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledView">[docs]</a>
-<span class="k">class</span> <span class="nc">LabeledView</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LabeledView</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A set of labels (or something resembling labels such as ``polygons()``)</span>
 <span class="sd">    backed by another collection ``view``.</span>
@@ -3288,32 +3288,32 @@
 
 <div class="viewcode-block" id="LabeledView.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledView.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="n">finite</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span></div>
 
 
 <div class="viewcode-block" id="LabeledView.__iter__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledView.__iter__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LabeledView.__contains__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledView.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span></div>
 
 
 <div class="viewcode-block" id="LabeledView.__len__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledView.__len__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LabeledView.min">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabeledView.min">[docs]</a>
-    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a minimal item in this set.</span>
 
@@ -3375,7 +3375,7 @@
 
 <div class="viewcode-block" id="ComponentLabels">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ComponentLabels">[docs]</a>
-<span class="k">class</span> <span class="nc">ComponentLabels</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComponentLabels</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The labels of a connected component.</span>
 
@@ -3405,14 +3405,14 @@
 
 <div class="viewcode-block" id="ComponentLabels.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ComponentLabels.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="n">finite</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">root</span></div>
 
 
 <div class="viewcode-block" id="ComponentLabels.__iter__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ComponentLabels.__iter__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an iterator of this component that enumerates labels starting</span>
 <span class="sd">        from the root label in a breadth-first-search.</span>
@@ -3426,7 +3426,7 @@
 <span class="sd">            [0, 1, 3, 2]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
 
         <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">pending</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">])</span>
@@ -3449,7 +3449,7 @@
 
 <div class="viewcode-block" id="Labels">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Labels">[docs]</a>
-<span class="k">class</span> <span class="nc">Labels</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Labels</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The labels of a surface.</span>
 
@@ -3488,14 +3488,14 @@
 
 <div class="viewcode-block" id="Labels.__iter__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Labels.__iter__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">components</span><span class="p">():</span>
             <span class="k">yield from</span> <span class="n">component</span></div>
 
 
 <div class="viewcode-block" id="Labels.__getitem__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Labels.__getitem__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the labels at position ``key``.</span>
 
@@ -3522,7 +3522,7 @@
 
             <span class="k">return</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="kn">from</span> <span class="nn">more_itertools</span> <span class="kn">import</span> <span class="n">islice_extended</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">more_itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice_extended</span>
 
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice_extended</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">step</span><span class="p">))</span></div>
 </div>
@@ -3531,7 +3531,7 @@
 
 <div class="viewcode-block" id="LabelsFromView">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelsFromView">[docs]</a>
-<span class="k">class</span> <span class="nc">LabelsFromView</span><span class="p">(</span><span class="n">Labels</span><span class="p">,</span> <span class="n">LabeledView</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LabelsFromView</span><span class="p">(</span><span class="n">Labels</span><span class="p">,</span> <span class="n">LabeledView</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The labels of a surface backed by another set that can quickly compute the</span>
 <span class="sd">    length of the labels and decide containment in the set.</span>
@@ -3558,7 +3558,7 @@
 
 <div class="viewcode-block" id="Polygons">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Polygons">[docs]</a>
-<span class="k">class</span> <span class="nc">Polygons</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Polygons</span><span class="p">(</span><span class="n">LabeledCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The collection of polygons of a surface.</span>
 
@@ -3579,7 +3579,7 @@
 
 <div class="viewcode-block" id="Polygons.__iter__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Polygons.__iter__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the polygons in the same order as ``labels()`` does.</span>
 
@@ -3604,7 +3604,7 @@
 
 <div class="viewcode-block" id="Polygons.__len__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Polygons.__len__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of polygons in this surface.</span>
 
@@ -3624,7 +3624,7 @@
 
 <div class="viewcode-block" id="Polygons_MutableOrientedSimilaritySurface">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Polygons_MutableOrientedSimilaritySurface">[docs]</a>
-<span class="k">class</span> <span class="nc">Polygons_MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">Polygons</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Polygons_MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">Polygons</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The collection of polygons of a :class:`MutableOrientedSimilaritySurface`.</span>
 
@@ -3644,7 +3644,7 @@
 
 <div class="viewcode-block" id="Polygons_MutableOrientedSimilaritySurface.__init__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Polygons_MutableOrientedSimilaritySurface.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
         <span class="c1"># This hack makes __len__ 20% faster (it saves one attribute lookup).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">_polygons</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span></div>
@@ -3652,7 +3652,7 @@
 
 <div class="viewcode-block" id="Polygons_MutableOrientedSimilaritySurface.__len__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Polygons_MutableOrientedSimilaritySurface.__len__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">)</span></div>
 </div>
 
@@ -3660,7 +3660,7 @@
 
 <div class="viewcode-block" id="Edges">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Edges">[docs]</a>
-<span class="k">class</span> <span class="nc">Edges</span><span class="p">(</span><span class="n">LabeledSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Edges</span><span class="p">(</span><span class="n">LabeledSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The set of edges of a surface.</span>
 
@@ -3685,7 +3685,7 @@
 
 <div class="viewcode-block" id="Edges.__iter__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Edges.__iter__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">polygons</span><span class="p">()):</span>
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
                 <span class="k">yield</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span></div>
@@ -3693,7 +3693,7 @@
 
 <div class="viewcode-block" id="Edges.__contains__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Edges.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">label</span><span class="p">,</span> <span class="n">edge</span> <span class="o">=</span> <span class="n">x</span>
         <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -3706,7 +3706,7 @@
 
 <div class="viewcode-block" id="Gluings">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Gluings">[docs]</a>
-<span class="k">class</span> <span class="nc">Gluings</span><span class="p">(</span><span class="n">LabeledSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Gluings</span><span class="p">(</span><span class="n">LabeledSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The set of gluings of the surface.</span>
 
@@ -3733,7 +3733,7 @@
 
 <div class="viewcode-block" id="Gluings.__iter__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Gluings.__iter__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
             <span class="n">cross</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cross</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -3743,7 +3743,7 @@
 
 <div class="viewcode-block" id="Gluings.__contains__">
 <a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Gluings.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
 
         <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
@@ -3759,7 +3759,7 @@
 
 
 <span class="c1"># Import deprecated symbols so imports using flatsurf.geometry.surface do not break.</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_legacy</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa, we import at the bottom of the file to break a circular import  # pylint: disable=wrong-import-position</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_legacy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa, we import at the bottom of the file to break a circular import  # pylint: disable=wrong-import-position</span>
     <span class="n">Surface</span><span class="p">,</span>
     <span class="n">Surface_list</span><span class="p">,</span>
     <span class="n">Surface_dict</span><span class="p">,</span>

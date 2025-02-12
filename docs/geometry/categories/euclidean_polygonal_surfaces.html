@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>euclidean_polygonal_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
@@ -358,10 +358,10 @@ category framework in sage-flatsurf.</p>
 <p>Normally, you won’t create this (or any other) category directly. The correct
 category is automatically determined for immutable surfaces.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonalSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">EuclideanPolygonalSurfaces</span><span class="p">())</span>
 <span class="kc">True</span>
 </pre></div>
@@ -376,7 +376,7 @@ category is automatically determined for immutable surfaces.</p>
 <dd><p>The category of surfaces built by gluing Euclidean polygons (or more
 generally, polygons in two-dimensional real space).</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygonalSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonalSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonalSurfaces</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">euclidean</span> <span class="n">polygonal</span> <span class="n">surfaces</span>
 </pre></div>
@@ -398,10 +398,10 @@ beyond the possibilities of <a class="reference internal" href="#flatsurf.geomet
 plots or consult the <a class="reference internal" href="../../graphical/surface.html#module-flatsurf.graphical.surface" title="flatsurf.graphical.surface"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flatsurf.graphical.surface</span></code></a> reference for all the
 details.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
-<span class="n">Graphical</span> <span class="n">representation</span> <span class="n">of</span> <span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">square</span>
+<span class="n">Graphical</span> <span class="n">representation</span> <span class="n">of</span> <span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">square</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -416,7 +416,7 @@ for all the details.</p>
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">10</span> <span class="n">graphics</span> <span class="n">primitives</span>
@@ -461,7 +461,7 @@ number of edges of the polygon. The strings will be printed on each edge.</p></l
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
@@ -508,7 +508,7 @@ number of edges of the polygon. The strings will be printed on each edge.</p></l
 <dd><p>The categories such surfaces are also automatically contained in,
 namely the category of surfaces built from polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygonalSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanPolygonalSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">EuclideanPolygonalSurfaces</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()</span>
 <span class="p">[</span><span class="n">Category</span> <span class="n">of</span> <span class="n">polygonal</span> <span class="n">surfaces</span><span class="p">]</span>

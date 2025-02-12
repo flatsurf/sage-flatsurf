@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>cone_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
@@ -367,7 +367,7 @@ category is automatically determined for immutable surfaces.</p>
 <p>EXAMPLES:</p>
 <p>We glue the sides of a square with a rotation of π/2. Since each gluing is just
 a rotation, this is a cone surface:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -378,7 +378,7 @@ a rotation, this is a cone surface:</p>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">ConeSurfaces</span><span class="p">())</span>
 <span class="kc">True</span>
 </pre></div>
@@ -392,7 +392,7 @@ isometries on the edges.</p>
 <a class="reference internal" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.ParentMethods.is_cone_surface" title="flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.ParentMethods.is_cone_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_cone_surface()</span></code></a> on how this differs slightly from
 the customary definition of a cone surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">ConeSurfaces</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">cone</span> <span class="n">surfaces</span>
 </pre></div>
@@ -402,11 +402,11 @@ the customary definition of a cone surface.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FiniteType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/cone_surfaces.html#ConeSurfaces.FiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType" title="Link to this definition">¶</a></dt>
 <dd><p>The category of cone surfaces built from finitely many polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="ow">in</span> <span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -418,11 +418,11 @@ the customary definition of a cone surface.</p>
 whose orientation can be chosen to be compatible with the embedding of
 its polygons in the real plane.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="ow">in</span> <span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -440,11 +440,11 @@ want to put it here.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">WithoutBoundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/cone_surfaces.html#ConeSurfaces.FiniteType.Oriented.WithoutBoundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary" title="Link to this definition">¶</a></dt>
 <dd><p>The category of oriented cone surfaces without boundary.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="ow">in</span> <span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -454,11 +454,11 @@ want to put it here.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Connected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/cone_surfaces.html#ConeSurfaces.FiniteType.Oriented.WithoutBoundary.Connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.Connected" title="Link to this definition">¶</a></dt>
 <dd><p>The category of oriented connected cone surfaces without boundary.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="ow">in</span> <span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span><span class="o">.</span><span class="n">Connected</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -490,7 +490,7 @@ want to put it here.</p>
 <span class="sig-name descname"><span class="pre">area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/cone_surfaces.html#ConeSurfaces.FiniteType.ParentMethods.area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.ParentMethods.area" title="Link to this definition">¶</a></dt>
 <dd><p>Return the area of this surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">area</span><span class="p">()</span>
@@ -521,7 +521,7 @@ cone surface, see
 <a class="reference internal" href="#module-flatsurf.geometry.categories.cone_surfaces" title="flatsurf.geometry.categories.cone_surfaces"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a> for details.</p>
 </div>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_cone_surface</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -536,7 +536,7 @@ cone surface, see
 <span class="sig-name descname"><span class="pre">super_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/cone_surfaces.html#ConeSurfaces.super_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.super_categories" title="Link to this definition">¶</a></dt>
 <dd><p>Return the categories that a cone surfaces is also always a member of.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()</span>
 <span class="p">[</span><span class="n">Category</span> <span class="n">of</span> <span class="n">similarity</span> <span class="n">surfaces</span><span class="p">]</span>
 </pre></div>

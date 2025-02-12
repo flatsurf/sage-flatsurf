@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>surface_objects - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -370,9 +370,9 @@ meeting at 180 degree angles.</p>
 <li><p>Support cylinders whose monodromy is a dilation.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">Cylinder</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cylinder</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">cyl</span> <span class="o">=</span> <span class="n">Cylinder</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">cyl</span><span class="o">.</span><span class="n">initial_label</span><span class="p">()</span>
 <span class="mi">0</span>
@@ -608,9 +608,9 @@ polygon <code class="docutils literal notranslate"><span class="pre">label</span
 construction of the singularity is successful if the sequence of vertices
 hit by passing through edges closes up in <code class="docutils literal notranslate"><span class="pre">limit</span></code> or less steps.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="kn">import</span> <span class="n">TranslationSurfaceGenerators</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity_surface_generators</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaceGenerators</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">TranslationSurfaceGenerators</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">Singularity</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Singularity</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">sing</span><span class="o">=</span><span class="n">Singularity</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
 <span class="o">...</span>
@@ -642,7 +642,7 @@ adjacent to that singularity. An error is raised if the limit is
 insufficient.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -675,7 +675,7 @@ interior of a polygon:</p>
 true or false. If <code class="docutils literal notranslate"><span class="pre">v</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the both the pair <code class="docutils literal notranslate"><span class="pre">(label,</span> <span class="pre">v)</span></code>
 is passed as a single parameter in <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -699,7 +699,7 @@ is passed as a single parameter in <code class="docutils literal notranslate"><s
 <span class="sig-name descname"><span class="pre">coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.coordinates" title="Link to this definition">¶</a></dt>
 <dd><p>Return coordinates for the point in the in the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
@@ -716,7 +716,7 @@ is passed as a single parameter in <code class="docutils literal notranslate"><s
 <a class="reference internal" href="../graphical/surface_point.html#flatsurf.graphical.surface_point.GraphicalSurfacePoint" title="flatsurf.graphical.surface_point.GraphicalSurfacePoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.graphical.surface_point.GraphicalSurfacePoint</span></code></a> to
 represent this point graphically.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">half_translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">half_translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">half_translation_surfaces</span><span class="o">.</span><span class="n">step_billiard</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">graphical_surface_point</span><span class="p">()</span>
@@ -729,7 +729,7 @@ represent this point graphically.</p>
 <span class="sig-name descname"><span class="pre">is_vertex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.is_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.is_vertex" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this point is a singularity of the surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -746,7 +746,7 @@ represent this point graphically.</p>
 <span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels of polygons containing the point.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -776,7 +776,7 @@ two labels:</p>
 <span class="sig-name descname"><span class="pre">num_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.num_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.num_coordinates" title="Link to this definition">¶</a></dt>
 <dd><p>Return the number of different coordinate representations of the point.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -795,7 +795,7 @@ two labels:</p>
 <span class="sig-name descname"><span class="pre">one_vertex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.one_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.one_vertex" title="Link to this definition">¶</a></dt>
 <dd><p>Return a pair (l, v) from the equivalence class of this singularity.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -816,7 +816,7 @@ two labels:</p>
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">half_translation_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">half_translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">half_translation_surfaces</span><span class="o">.</span><span class="n">step_billiard</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -848,7 +848,7 @@ two labels:</p>
 <dd><p>Return a representative of this point, i.e., the first of
 <a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.representatives" title="flatsurf.geometry.surface_objects.SurfacePoint.representatives"><code class="xref py py-meth docutils literal notranslate"><span class="pre">representatives()</span></code></a>.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -865,7 +865,7 @@ two labels:</p>
 <dd><p>Return the representatives of this point as pairs of polygon labels and
 coordinates.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -881,7 +881,7 @@ coordinates.</p>
 <span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.surface" title="Link to this definition">¶</a></dt>
 <dd><p>Return the surface containing this point.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
@@ -897,7 +897,7 @@ coordinates.</p>
 <span class="sig-name descname"><span class="pre">vertex_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.vertex_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.vertex_set" title="Link to this definition">¶</a></dt>
 <dd><p>Return the list of pairs (l, v) in the equivalence class of this singularity.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>

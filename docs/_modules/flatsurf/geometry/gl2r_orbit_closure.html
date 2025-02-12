@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.gl2r_orbit_closure - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -427,12 +427,12 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">FreeModule</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">identity_matrix</span><span class="p">,</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">Unknown</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">prod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">FreeModule</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">identity_matrix</span><span class="p">,</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">Unknown</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">prod</span>
 
 
 <div class="viewcode-block" id="GL2ROrbitClosure">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure">[docs]</a>
-<span class="k">class</span> <span class="nc">GL2ROrbitClosure</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GL2ROrbitClosure</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Lower bound approximation to the tangent space of a GL(2,R)-orbit closure of a</span>
 <span class="sd">    linear family of translation surfaces.</span>
@@ -498,9 +498,9 @@
 <span class="sd">        ....:     assert (O.proj * V.gen(e.index())) == H.gen(i)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface_base</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_base</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">Surface_base</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">surface</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TranslationSurfaces</span><span class="p">():</span>
@@ -511,17 +511,17 @@
             <span class="n">base_ring</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">pyflatsurf</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">flat_triangulation</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.conversion</span> <span class="kn">import</span> <span class="n">sage_ring</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.pyflatsurf.conversion</span><span class="w"> </span><span class="kn">import</span> <span class="n">sage_ring</span>
 
             <span class="n">base_ring</span> <span class="o">=</span> <span class="n">sage_ring</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span>
 
         <span class="c1"># A model of the vector space R² in libflatsurf, e.g., to represent the</span>
         <span class="c1"># vector associated to a saddle connection.</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
 
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
-        <span class="kn">import</span> <span class="nn">pyflatsurf.vector</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf.vector</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">V2</span> <span class="o">=</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">Vectors</span><span class="p">(</span><span class="n">base_ring</span><span class="p">)</span>
 
@@ -570,7 +570,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.dimension">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.dimension">[docs]</a>
-    <span class="k">def</span> <span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the current complex dimension of the GL(2,R)-orbit closure.</span>
 
@@ -606,7 +606,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.ambient_stratum">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.ambient_stratum">[docs]</a>
-    <span class="k">def</span> <span class="nf">ambient_stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ambient_stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the stratum of Abelian differentials this surface belongs to.</span>
 
@@ -621,7 +621,7 @@
 <span class="sd">            sage: O.ambient_stratum() # optional: pyflatsurf</span>
 <span class="sd">            H_3(4, 0^4)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">Stratum</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">surface_dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stratum</span>
 
         <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span>
         <span class="n">angles</span> <span class="o">=</span> <span class="p">[</span><span class="n">surface</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span>
@@ -630,7 +630,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.base_ring">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.base_ring">[docs]</a>
-    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the underlying base ring</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -639,7 +639,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.field_of_definition">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.field_of_definition">[docs]</a>
-    <span class="k">def</span> <span class="nf">field_of_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">field_of_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the field of definition of the current subspace.</span>
 
@@ -686,14 +686,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">echelon_form</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.subfield</span> <span class="kn">import</span> <span class="n">subfield_from_elements</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.subfield</span><span class="w"> </span><span class="kn">import</span> <span class="n">subfield_from_elements</span>
 
         <span class="n">L</span><span class="p">,</span> <span class="n">elts</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">subfield_from_elements</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">M</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">L</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_half_edge_to_face</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_half_edge_to_face</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a canonical half-edge encoding the face bounded by ``h``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -703,15 +703,12 @@
         <span class="n">h3</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">nextInFace</span><span class="p">(</span><span class="n">h2</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">h3</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">index</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="s2">&quot;GL(2,R)-orbit closure of dimension at least </span><span class="si">%d</span><span class="s2"> in </span><span class="si">%s</span><span class="s2"> (ambient dimension </span><span class="si">%d</span><span class="s2">)&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ambient_stratum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
-        <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;GL(2,R)-orbit closure of dimension at least </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ambient_stratum</span><span class="p">()</span><span class="si">}</span><span class="s2"> (ambient dimension </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="si">}</span><span class="s2">)&quot;</span>
 
 <div class="viewcode-block" id="GL2ROrbitClosure.holonomy">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.holonomy">[docs]</a>
-    <span class="k">def</span> <span class="nf">holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the holonomy of ``v`` (with respect to the chosen homology basis)</span>
 
@@ -733,7 +730,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.holonomy_dual">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.holonomy_dual">[docs]</a>
-    <span class="k">def</span> <span class="nf">holonomy_dual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">holonomy_dual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the holonomy of the dual of ``v``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -742,13 +739,13 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.tangent_space_basis">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.tangent_space_basis">[docs]</a>
-    <span class="k">def</span> <span class="nf">tangent_space_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tangent_space_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="GL2ROrbitClosure.lift">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.lift">[docs]</a>
-    <span class="k">def</span> <span class="nf">lift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a vector in the &quot;spanning set basis&quot; return a vector on the full basis of</span>
 <span class="sd">        edges.</span>
@@ -803,7 +800,7 @@
             <span class="n">A</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">u</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Fields</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fields</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
             <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">uu</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">uu</span> <span class="ow">in</span> <span class="n">u</span><span class="p">)</span>
@@ -815,17 +812,17 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.absolute_homology">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.absolute_homology">[docs]</a>
-    <span class="k">def</span> <span class="nf">absolute_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">absolute_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">vert_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">vertices</span><span class="p">())}</span>
         <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vert_index</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span>
         <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
 
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
-        <span class="kn">import</span> <span class="nn">pyflatsurf</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf</span>
 
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spanning_set</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span>
@@ -848,7 +845,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.absolute_dimension">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.absolute_dimension">[docs]</a>
-    <span class="k">def</span> <span class="nf">absolute_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">absolute_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
@@ -881,7 +878,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_spanning_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_spanning_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a pair ``(tree, proj)`` where</span>
 
@@ -969,7 +966,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">proj</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_intersection_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">spanning_set</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_intersection_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">spanning_set</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a spanning tree, compute the associated intersection matrix.</span>
 
@@ -1037,7 +1034,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.boundaries">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.boundaries">[docs]</a>
-    <span class="k">def</span> <span class="nf">boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the list of boundaries (ie sum of edges around a triangular face).</span>
 
@@ -1086,13 +1083,13 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.decomposition">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decomposition">[docs]</a>
-    <span class="k">def</span> <span class="nf">decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V2</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyflatsurf_feature</span>
 
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
-        <span class="kn">import</span> <span class="nn">pyflatsurf</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf</span>
 
         <span class="n">decomposition</span> <span class="o">=</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">makeFlowDecomposition</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">vector</span>
@@ -1105,7 +1102,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.decompositions">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decompositions">[docs]</a>
-    <span class="k">def</span> <span class="nf">decompositions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bfs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decompositions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bfs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
 
         <span class="n">connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">connections</span><span class="p">()</span><span class="o">.</span><span class="n">bound</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bound</span><span class="p">))</span>
@@ -1114,10 +1111,10 @@
 
         <span class="n">slopes</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">cppyy_feature</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">cppyy_feature</span>
 
         <span class="n">cppyy_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
-        <span class="kn">import</span> <span class="nn">cppyy</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">cppyy</span>
 
         <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
             <span class="n">direction</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
@@ -1133,19 +1130,19 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.decompositions_depth_first">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decompositions_depth_first">[docs]</a>
-    <span class="k">def</span> <span class="nf">decompositions_depth_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decompositions_depth_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decompositions</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span> <span class="n">bfs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GL2ROrbitClosure.decompositions_breadth_first">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decompositions_breadth_first">[docs]</a>
-    <span class="k">def</span> <span class="nf">decompositions_breadth_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decompositions_breadth_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decompositions</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span> <span class="n">bfs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GL2ROrbitClosure.is_teichmueller_curve">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.is_teichmueller_curve">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_teichmueller_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_teichmueller_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bound</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return ``False`` when the program can find a direction which is either completely</span>
 <span class="sd">        periodic with incomensurable moduli or a direction with at least one cylinder</span>
@@ -1204,7 +1201,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.cylinder_circumference">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.cylinder_circumference">[docs]</a>
-    <span class="k">def</span> <span class="nf">cylinder_circumference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">sc_index</span><span class="p">,</span> <span class="n">proj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cylinder_circumference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">sc_index</span><span class="p">,</span> <span class="n">proj</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the circumference of the cylinder ``component`` in the homology</span>
 <span class="sd">        of the underlying surface.</span>
@@ -1262,7 +1259,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.cylinder_deformation_subspace">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.cylinder_deformation_subspace">[docs]</a>
-    <span class="k">def</span> <span class="nf">cylinder_deformation_subspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cylinder_deformation_subspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a subspace included in the tangent space to the GL(2,R)-orbit</span>
 <span class="sd">        closure computed from the flow decomposition ``decomposition``.</span>
@@ -1270,7 +1267,7 @@
 <span class="sd">        From A. Wright cylinder deformation Theorem.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">eliminate_denominators</span><span class="p">(</span><span class="n">fractions</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">eliminate_denominators</span><span class="p">(</span><span class="n">fractions</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Given a list of ``fractions``, pairs of numerators `n_i` and</span>
 <span class="sd">            denominators `d_i`, return a list of fractions `c n_i/d_i` scaled</span>
@@ -1319,7 +1316,7 @@
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;_backend&quot;</span><span class="p">):</span>
             <span class="c1"># Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.</span>
-            <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce</span>
 
             <span class="n">parent</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">span</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
@@ -1330,7 +1327,7 @@
                 <span class="n">module</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">module</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">promote</span><span class="p">(</span><span class="n">parent</span><span class="p">))</span> <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span>
             <span class="p">]</span>
 
-        <span class="k">def</span> <span class="nf">to_rational_vector</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">to_rational_vector</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the rational coefficients of `x` over its implicit basis,</span>
 <span class="sd">            e.g., if `x` is in a number field K, return the coefficients of x</span>
@@ -1343,7 +1340,7 @@
             <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;renf_elem&quot;</span><span class="p">):</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">number_field</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
             <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;_backend&quot;</span><span class="p">):</span>
-                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span>
 
                 <span class="n">ret</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
                     <span class="n">chain</span><span class="p">(</span>
@@ -1389,7 +1386,7 @@
         <span class="k">return</span> <span class="n">vectors</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_flow_decomposition_spanning_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">,</span> <span class="n">sc_index</span><span class="p">,</span> <span class="n">sc_comp</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_flow_decomposition_spanning_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">,</span> <span class="n">sc_index</span><span class="p">,</span> <span class="n">sc_comp</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper for :meth:`flow_decomposition_kontsevich_zorich_cocycle`.</span>
 
@@ -1465,7 +1462,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.flow_decomposition_kontsevich_zorich_cocycle">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.flow_decomposition_kontsevich_zorich_cocycle">[docs]</a>
-    <span class="k">def</span> <span class="nf">flow_decomposition_kontsevich_zorich_cocycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flow_decomposition_kontsevich_zorich_cocycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Base change from the homology of ``decomposition`` to the underlying surface.</span>
 
@@ -1551,7 +1548,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.update_tangent_space_from_flow_decomposition">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.update_tangent_space_from_flow_decomposition">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_tangent_space_from_flow_decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_tangent_space_from_flow_decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decomposition</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the current tangent space by using the cylinder deformation vectors from ``decomposition``.</span>
 
@@ -1603,7 +1600,7 @@
                 <span class="k">return</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a lower bound for the rank of the matrix _U.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1620,7 +1617,7 @@
 
             <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">30</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">p</span><span class="p">()</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">next_prime</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">next_prime</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="n">ZZ</span><span class="o">.</span><span class="n">valuation</span><span class="p">(</span><span class="n">next_prime</span><span class="p">(</span><span class="n">p</span><span class="p">))</span><span class="o">.</span><span class="n">extensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -1628,7 +1625,7 @@
 
 <div class="viewcode-block" id="GL2ROrbitClosure.update_tangent_space_from_vector">
 <a class="viewcode-back" href="../../../geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.update_tangent_space_from_vector">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_tangent_space_from_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_tangent_space_from_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">nrows</span><span class="p">():</span>
             <span class="k">return</span>
 
@@ -1646,7 +1643,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_U_rank</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether ``other`` was built starting from the same surface than</span>
 <span class="sd">        this orbit closure.</span>
@@ -1665,7 +1662,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_surface</span>
 
-    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether ``other`` was not built starting from the same surface</span>
 <span class="sd">        than this orbit closure.</span>
@@ -1684,7 +1681,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value of this object compatible with equality operators.</span>
 
@@ -1703,7 +1700,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a serializable representation of this Orbit Closure.</span>
 
@@ -1726,7 +1723,7 @@
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_right_kernel_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_right_kernel_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the right kernel of the rational matrix `M`.</span>
 
@@ -1767,7 +1764,7 @@
         <span class="k">return</span> <span class="n">ker</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_left_kernel_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_left_kernel_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the left kernel of the rational matrix `M`.</span>
 

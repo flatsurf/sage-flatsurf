@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.thurston_veech - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -386,17 +386,17 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">######################################################################</span>
 
-<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">diagonal_matrix</span><span class="p">,</span> <span class="n">NumberField</span>
-<span class="kn">from</span> <span class="nn">sage.rings.qqbar</span> <span class="kn">import</span> <span class="n">do_polred</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">diagonal_matrix</span><span class="p">,</span> <span class="n">NumberField</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.qqbar</span><span class="w"> </span><span class="kn">import</span> <span class="n">do_polred</span>
 
-<span class="kn">from</span> <span class="nn">surface_dynamics.flat_surfaces.origamis.origami</span> <span class="kn">import</span> <span class="n">Origami</span>
-<span class="kn">from</span> <span class="nn">surface_dynamics.misc.permutation</span> <span class="kn">import</span> <span class="n">perm_dense_cycles</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">surface_dynamics.flat_surfaces.origamis.origami</span><span class="w"> </span><span class="kn">import</span> <span class="n">Origami</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">surface_dynamics.misc.permutation</span><span class="w"> </span><span class="kn">import</span> <span class="n">perm_dense_cycles</span>
 
 
 <div class="viewcode-block" id="ThurstonVeech">
 <a class="viewcode-back" href="../../../geometry/thurston_veech.html#flatsurf.geometry.thurston_veech.ThurstonVeech">[docs]</a>
-<span class="k">class</span> <span class="nc">ThurstonVeech</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hp</span><span class="p">,</span> <span class="n">vp</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThurstonVeech</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hp</span><span class="p">,</span> <span class="n">vp</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        INPUT:</span>
 
@@ -436,7 +436,7 @@
             <span class="n">E</span><span class="p">[</span><span class="n">hcycles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">vcycles</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">E</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;ThurstonVeech(&quot;</span><span class="si">{}</span><span class="s1">&quot;, &quot;</span><span class="si">{}</span><span class="s1">&quot;)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_origami</span><span class="o">.</span><span class="n">r</span><span class="p">()</span><span class="o">.</span><span class="n">cycle_string</span><span class="p">(</span><span class="n">singletons</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_origami</span><span class="o">.</span><span class="n">u</span><span class="p">()</span><span class="o">.</span><span class="n">cycle_string</span><span class="p">(</span><span class="n">singletons</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
@@ -444,23 +444,23 @@
 
 <div class="viewcode-block" id="ThurstonVeech.stratum">
 <a class="viewcode-back" href="../../../geometry/thurston_veech.html#flatsurf.geometry.thurston_veech.ThurstonVeech.stratum">[docs]</a>
-    <span class="k">def</span> <span class="nf">stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stratum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origami</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ThurstonVeech.stratum_component">
 <a class="viewcode-back" href="../../../geometry/thurston_veech.html#flatsurf.geometry.thurston_veech.ThurstonVeech.stratum_component">[docs]</a>
-    <span class="k">def</span> <span class="nf">stratum_component</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stratum_component</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origami</span><span class="o">.</span><span class="n">stratum_component</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ThurstonVeech.cylinder_intersection_matrix">
 <a class="viewcode-back" href="../../../geometry/thurston_veech.html#flatsurf.geometry.thurston_veech.ThurstonVeech.cylinder_intersection_matrix">[docs]</a>
-    <span class="k">def</span> <span class="nf">cylinder_intersection_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cylinder_intersection_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_E</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hmult</span><span class="p">,</span> <span class="n">vmult</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hmult</span><span class="p">,</span> <span class="n">vmult</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        INPUT:</span>
 
@@ -517,7 +517,7 @@
         <span class="n">h</span> <span class="o">=</span> <span class="p">[</span><span class="n">hcirc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">hmult</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">c</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_hcyls</span><span class="p">)]</span>
         <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="n">vcirc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">vmult</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">d</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_vcyls</span><span class="p">)]</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
         <span class="n">P</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_origami</span><span class="o">.</span><span class="n">nb_squares</span><span class="p">()):</span>
@@ -525,7 +525,7 @@
             <span class="n">vi</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_vcycles</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
             <span class="n">P</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="n">vi</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">hi</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">vi</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">hi</span><span class="p">)],</span> <span class="n">base_ring</span><span class="o">=</span><span class="n">K</span><span class="p">))</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
         <span class="n">surface</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span><span class="p">:</span>

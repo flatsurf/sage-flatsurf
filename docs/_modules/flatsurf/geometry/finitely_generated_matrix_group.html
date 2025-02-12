@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.finitely_generated_matrix_group - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -389,17 +389,17 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.rings.integer</span> <span class="kn">import</span> <span class="n">Integer</span>
-<span class="kn">from</span> <span class="nn">sage.structure.parent</span> <span class="kn">import</span> <span class="n">Parent</span>
-<span class="kn">from</span> <span class="nn">sage.groups.group</span> <span class="kn">import</span> <span class="n">Group</span>
-<span class="kn">from</span> <span class="nn">sage.structure.sequence</span> <span class="kn">import</span> <span class="n">Sequence</span>
-<span class="kn">from</span> <span class="nn">sage.rings.infinity</span> <span class="kn">import</span> <span class="n">Infinity</span>
-<span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.integer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Integer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.parent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.groups.group</span><span class="w"> </span><span class="kn">import</span> <span class="n">Group</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.sequence</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.infinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Infinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.matrix.constructor</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
 
 
 <div class="viewcode-block" id="invariant_quadratic_forms">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.invariant_quadratic_forms">[docs]</a>
-<span class="k">def</span> <span class="nf">invariant_quadratic_forms</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">invariant_quadratic_forms</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the space of quadratic forms invariant under m.</span>
 
@@ -492,7 +492,7 @@
 
 <div class="viewcode-block" id="contains_definite_form">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.contains_definite_form">[docs]</a>
-<span class="k">def</span> <span class="nf">contains_definite_form</span><span class="p">(</span><span class="n">V</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">contains_definite_form</span><span class="p">(</span><span class="n">V</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether a given a subspace of the 3 dimensional space (a,b,c) contains</span>
 <span class="sd">    a definitive positive quadratic form ax^2 + 2bxy + by^2.</span>
@@ -538,7 +538,7 @@
 
 <div class="viewcode-block" id="matrix_multiplicative_order">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.matrix_multiplicative_order">[docs]</a>
-<span class="k">def</span> <span class="nf">matrix_multiplicative_order</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_multiplicative_order</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the order of the 2x2 matrix ``m``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -564,7 +564,7 @@
 
     <span class="c1"># might there be several solutions ? (other than scaling)... should not</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">identity_matrix</span>
 
         <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span> <span class="o">-</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">solve_right</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># no solution</span>
@@ -582,7 +582,7 @@
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup">[docs]</a>
-<span class="k">class</span> <span class="nc">FinitelyGenerated2x2MatrixGroup</span><span class="p">(</span><span class="n">Group</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FinitelyGenerated2x2MatrixGroup</span><span class="p">(</span><span class="n">Group</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finitely generated group of 2x2 matrices with real coefficients</span>
 
@@ -593,9 +593,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrices</span><span class="p">,</span> <span class="n">matrix_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrices</span><span class="p">,</span> <span class="n">matrix_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">matrix_space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.matrix.matrix_space</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatrixSpace</span>
 
             <span class="n">ring</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="n">matrices</span><span class="p">)</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
             <span class="n">matrix_space</span> <span class="o">=</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -606,7 +606,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span> <span class="o">=</span> <span class="n">matrix_space</span>
 
         <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.categories.groups</span> <span class="kn">import</span> <span class="n">Groups</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.groups</span><span class="w"> </span><span class="kn">import</span> <span class="n">Groups</span>
 
             <span class="n">category</span> <span class="o">=</span> <span class="n">Groups</span><span class="p">()</span>
 
@@ -614,7 +614,7 @@
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.is_abelian">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.is_abelian">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_abelian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_abelian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether this group is abelian.</span>
 
@@ -643,7 +643,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">mat_string</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;Matrix group generated by:</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -654,7 +654,7 @@
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.is_finite">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.is_finite">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether the group is finite.</span>
 
@@ -713,7 +713,7 @@
             <span class="k">return</span> <span class="kc">True</span>
 
         <span class="c1"># now we try to find a non-trivial invariant quadratic form</span>
-        <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">FreeModule</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.modules.free_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">FreeModule</span>
 
         <span class="n">V</span> <span class="o">=</span> <span class="n">FreeModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">3</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gens</span><span class="p">:</span>
@@ -726,7 +726,7 @@
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.cardinality">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.cardinality">[docs]</a>
-    <span class="k">def</span> <span class="nf">cardinality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cardinality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="c1"># THIS IS STUPID!!!</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -734,7 +734,7 @@
             <span class="k">return</span> <span class="n">Infinity</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
         <span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">one</span><span class="p">()}</span>
         <span class="n">wait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">[:]</span>
@@ -751,7 +751,7 @@
                         <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
                         <span class="n">wait</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">FinitelyGenerated2x2MatrixGroup</span><span class="p">)</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_generators</span>
@@ -759,25 +759,25 @@
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.some_elements">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.some_elements">[docs]</a>
-    <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
 
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">FinitelyGenerated2x2MatrixGroup</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.one">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.one">[docs]</a>
-    <span class="k">def</span> <span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_space</span><span class="o">.</span><span class="n">identity_matrix</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a typical element of this group, namely a generator.</span>
 
@@ -804,7 +804,7 @@
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup.gen">
 <a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.gen">[docs]</a>
-    <span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generators</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 </div>
 

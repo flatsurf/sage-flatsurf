@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.euclidean - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -376,7 +376,7 @@
 
 <div class="viewcode-block" id="is_cosine_sine_of_rational">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_cosine_sine_of_rational">[docs]</a>
-<span class="k">def</span> <span class="nf">is_cosine_sine_of_rational</span><span class="p">(</span><span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_cosine_sine_of_rational</span><span class="p">(</span><span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether the given pair is a cosine and sine of a same rational angle.</span>
 
@@ -426,7 +426,7 @@
 <span class="sd">        True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">AA</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">AA</span>
 
     <span class="c1"># We cannot check in AA due to https://github.com/flatsurf/exact-real/issues/172</span>
     <span class="c1"># We just trust that non-algebraic elements won&#39;t allow conversion to AA.</span>
@@ -458,7 +458,7 @@
     <span class="c1"># We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613</span>
     <span class="n">sin</span> <span class="o">=</span> <span class="n">sin</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">sin</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ComplexBallField</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComplexBallField</span>
 
     <span class="n">CBF</span> <span class="o">=</span> <span class="n">ComplexBallField</span><span class="p">(</span><span class="mi">53</span><span class="p">)</span>
 
@@ -474,7 +474,7 @@
     <span class="c1"># from below by n / (e^γ loglog n + 3 / loglog n) [cf. wikipedia].</span>
     <span class="n">degree_bound</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">cos</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">*</span> <span class="n">sin</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">count</span>
 
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
         <span class="n">xN</span> <span class="o">*=</span> <span class="n">x</span>
@@ -494,7 +494,7 @@
             <span class="n">x</span> <span class="o">=</span> <span class="n">CBF</span><span class="p">(</span><span class="n">cos</span><span class="p">)</span> <span class="o">+</span> <span class="n">CBF</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">CBF</span><span class="p">(</span><span class="n">sin</span><span class="p">)</span>
             <span class="n">xN</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="n">n</span>
 
-        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">log</span>
 
         <span class="k">if</span> <span class="n">n</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">/</span> <span class="n">log</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">degree_bound</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
@@ -503,7 +503,7 @@
 
 <div class="viewcode-block" id="acos">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.acos">[docs]</a>
-<span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">cos_angle</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">acos</span><span class="p">(</span><span class="n">cos_angle</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the arccosine of ``cos_angle`` as a multiple of 2π, i.e., as a value</span>
 <span class="sd">    between 0 and 1/2.</span>
@@ -539,7 +539,7 @@
 <span class="sd">        0.2097846883724169</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
     <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cos_angle</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
 
@@ -549,7 +549,7 @@
         <span class="k">return</span> <span class="n">angle</span>
 
     <span class="c1"># fast and dirty way using floating point approximation</span>
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">RR</span>
 
     <span class="n">angle_rat</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="mf">0.00000001</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">angle_rat</span><span class="o">.</span><span class="n">denominator</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">256</span><span class="p">:</span>
@@ -562,7 +562,7 @@
 
 <div class="viewcode-block" id="angle">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.angle">[docs]</a>
-<span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">angle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.</span>
 
@@ -613,7 +613,7 @@
 <span class="sd">        (0.6324555320336758?, 0.774596669241484?)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
     <span class="n">u0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">u1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -651,7 +651,7 @@
 
 <div class="viewcode-block" id="ccw">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.ccw">[docs]</a>
-<span class="k">def</span> <span class="nf">ccw</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ccw</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a positive number if the turn from ``v`` to ``w`` is</span>
 <span class="sd">    counterclockwise, a negative number if it is clockwise, and zero if the two</span>
@@ -682,7 +682,7 @@
 
 <div class="viewcode-block" id="is_parallel">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_parallel">[docs]</a>
-<span class="k">def</span> <span class="nf">is_parallel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_parallel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return whether the vectors ``v`` and ``w`` are parallel (but not</span>
 <span class="sd">    anti-parallel).</span>
@@ -738,7 +738,7 @@
 
 <div class="viewcode-block" id="is_anti_parallel">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_anti_parallel">[docs]</a>
-<span class="k">def</span> <span class="nf">is_anti_parallel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_anti_parallel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return whether the vectors ``v`` and ``w`` are anti-parallel, i.e., whether</span>
 <span class="sd">    ``v`` and ``-w`` are parallel.</span>
@@ -777,7 +777,7 @@
 
 <div class="viewcode-block" id="line_intersection">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.line_intersection">[docs]</a>
-<span class="k">def</span> <span class="nf">line_intersection</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">line_intersection</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the point of intersection between the line joining p1 to p2</span>
 <span class="sd">    and the line joining q1 to q2. If the lines do not have a single point of</span>
@@ -788,7 +788,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># Since the wedge product is non-zero, the following is invertible:</span>
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
 
     <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">q2</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">q2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
     <span class="k">return</span> <span class="n">p1</span> <span class="o">+</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">-</span> <span class="n">p1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span><span class="p">)</span></div>
@@ -797,7 +797,7 @@
 
 <div class="viewcode-block" id="is_segment_intersecting">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_segment_intersecting">[docs]</a>
-<span class="k">def</span> <span class="nf">is_segment_intersecting</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_segment_intersecting</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return whether the segments ``e1`` and ``e2`` intersect.</span>
 
@@ -827,17 +827,17 @@
 
     <span class="n">elts</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
 
-    <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.element</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_coercion_model</span>
 
     <span class="n">cm</span> <span class="o">=</span> <span class="n">get_coercion_model</span><span class="p">()</span>
 
     <span class="n">base_ring</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">common_parent</span><span class="p">(</span><span class="o">*</span><span class="n">elts</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">sage.structure.coerce</span> <span class="kn">import</span> <span class="n">py_scalar_parent</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.coerce</span><span class="w"> </span><span class="kn">import</span> <span class="n">py_scalar_parent</span>
 
         <span class="n">base_ring</span> <span class="o">=</span> <span class="n">py_scalar_parent</span><span class="p">(</span><span class="n">base_ring</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
 
     <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="n">xs1</span><span class="p">,</span> <span class="n">ys1</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">e1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -905,7 +905,7 @@
 
 <div class="viewcode-block" id="is_between">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_between">[docs]</a>
-<span class="k">def</span> <span class="nf">is_between</span><span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_between</span><span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether the vector ``f`` is strictly in the sector formed by the vectors</span>
 <span class="sd">    ``e0`` and ``e1`` (in counter-clockwise order).</span>
@@ -946,7 +946,7 @@
 
 <div class="viewcode-block" id="solve">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.solve">[docs]</a>
-<span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return (a,b) so that: x + au = y + bv</span>
 
@@ -987,7 +987,7 @@
 
 <div class="viewcode-block" id="projectivization">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.projectivization">[docs]</a>
-<span class="k">def</span> <span class="nf">projectivization</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">denominator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">projectivization</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">denominator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a simplified version of the projective coordinate [x: y].</span>
 
@@ -1020,7 +1020,7 @@
 <span class="sd">        (1, 0)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
     <span class="n">parent</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">y</span><span class="p">:</span>
@@ -1041,7 +1041,7 @@
 
 <div class="viewcode-block" id="slope">
 <a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.slope">[docs]</a>
-<span class="k">def</span> <span class="nf">slope</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">slope</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return either ``1`` (positive slope) or ``-1`` (negative slope).</span>
 

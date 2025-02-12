@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.mega_wollmilchsau - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -364,14 +364,14 @@
 <span class="c1">#  You should have received a copy of the GNU General Public License</span>
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
-<span class="kn">from</span> <span class="nn">sage.groups.group</span> <span class="kn">import</span> <span class="n">Group</span>
-<span class="kn">from</span> <span class="nn">sage.categories.groups</span> <span class="kn">import</span> <span class="n">Groups</span>
-<span class="kn">from</span> <span class="nn">sage.structure.unique_representation</span> <span class="kn">import</span> <span class="n">UniqueRepresentation</span>
-<span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">MultiplicativeGroupElement</span>
-<span class="kn">from</span> <span class="nn">sage.algebras.quatalg.quaternion_algebra</span> <span class="kn">import</span> <span class="n">QuaternionAlgebra</span>
-<span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.groups.group</span><span class="w"> </span><span class="kn">import</span> <span class="n">Group</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.groups</span><span class="w"> </span><span class="kn">import</span> <span class="n">Groups</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.unique_representation</span><span class="w"> </span><span class="kn">import</span> <span class="n">UniqueRepresentation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.element</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiplicativeGroupElement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.algebras.quatalg.quaternion_algebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuaternionAlgebra</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.integer_ring</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.origami</span> <span class="kn">import</span> <span class="n">AbstractOrigami</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.origami</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractOrigami</span>
 
 <span class="n">_Q</span> <span class="o">=</span> <span class="n">QuaternionAlgebra</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">_i</span><span class="p">,</span> <span class="n">_j</span><span class="p">,</span> <span class="n">_k</span> <span class="o">=</span> <span class="n">_Q</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
@@ -379,11 +379,11 @@
 
 <div class="viewcode-block" id="MegaWollmilchsauGroupElement">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroupElement">[docs]</a>
-<span class="k">class</span> <span class="nc">MegaWollmilchsauGroupElement</span><span class="p">(</span><span class="n">MultiplicativeGroupElement</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MegaWollmilchsauGroupElement</span><span class="p">(</span><span class="n">MultiplicativeGroupElement</span><span class="p">):</span>
 <div class="viewcode-block" id="MegaWollmilchsauGroupElement.quat_to_tuple">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroupElement.quat_to_tuple">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">quat_to_tuple</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quat_to_tuple</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert an element in the quaternion algebra to a quadruple&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -394,14 +394,14 @@
 <div class="viewcode-block" id="MegaWollmilchsauGroupElement.wedge">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroupElement.wedge">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">wedge</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wedge</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Wedge two quaterions. Returns an integer.&quot;&quot;&quot;</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">MegaWollmilchsauGroupElement</span><span class="o">.</span><span class="n">quat_to_tuple</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">MegaWollmilchsauGroupElement</span><span class="o">.</span><span class="n">quat_to_tuple</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The parent must be provided&quot;</span><span class="p">)</span>
         <span class="c1"># I should assert that the element lives in the domain of the group.</span>
@@ -419,17 +419,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
         <span class="n">MultiplicativeGroupElement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_r</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_q</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_cmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">_i</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">_i</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_r</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">_r</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">_r</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_q</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">_q</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">_q</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_mul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">MegaWollmilchsauGroupElement</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_i</span>
@@ -439,16 +439,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_q</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">_q</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">q1</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">_q</span>
         <span class="n">r1</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r</span><span class="p">)</span>
         <span class="n">i1</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+</span> <span class="n">MegaWollmilchsauGroupElement</span><span class="o">.</span><span class="n">wedge</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">q1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">MegaWollmilchsauGroupElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">q1</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_div_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_div_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mul_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="fm">__invert__</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="mi">67</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="p">)</span>
             <span class="o">+</span> <span class="mi">23</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">MegaWollmilchsauGroupElement</span><span class="o">.</span><span class="n">quat_to_tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_r</span><span class="p">))</span>
@@ -459,61 +459,61 @@
 
 <div class="viewcode-block" id="MegaWollmilchsauGroup">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup">[docs]</a>
-<span class="k">class</span> <span class="nc">MegaWollmilchsauGroup</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">Group</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MegaWollmilchsauGroup</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">Group</span><span class="p">):</span>
     <span class="n">Element</span> <span class="o">=</span> <span class="n">MegaWollmilchsauGroupElement</span>
 
-    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Group</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">Groups</span><span class="p">()</span><span class="o">.</span><span class="n">Infinite</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;MegaWollmilchsauGroup&quot;</span>
 
 <div class="viewcode-block" id="MegaWollmilchsauGroup.a">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.a">[docs]</a>
-    <span class="k">def</span> <span class="nf">a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">_i</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsauGroup.b">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.b">[docs]</a>
-    <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">_j</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsauGroup.one">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.one">[docs]</a>
-    <span class="k">def</span> <span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsauGroup.gens">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.gens">[docs]</a>
-    <span class="k">def</span> <span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsauGroup.is_abelian">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.is_abelian">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_abelian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_abelian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">()</span>
 
 <div class="viewcode-block" id="MegaWollmilchsauGroup.some_elements">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.some_elements">[docs]</a>
-    <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">()]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_test_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
@@ -529,8 +529,8 @@
 
 <div class="viewcode-block" id="MegaWollmilchsau">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsau">[docs]</a>
-<span class="k">class</span> <span class="nc">MegaWollmilchsau</span><span class="p">(</span><span class="n">AbstractOrigami</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MegaWollmilchsau</span><span class="p">(</span><span class="n">AbstractOrigami</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span> <span class="o">=</span> <span class="n">MegaWollmilchsauGroup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_G</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ai</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span>
@@ -538,29 +538,29 @@
 
 <div class="viewcode-block" id="MegaWollmilchsau.up">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsau.up">[docs]</a>
-    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">*</span> <span class="n">label</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsau.down">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsau.down">[docs]</a>
-    <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bi</span> <span class="o">*</span> <span class="n">label</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsau.right">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsau.right">[docs]</a>
-    <span class="k">def</span> <span class="nf">right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">label</span></div>
 
 
 <div class="viewcode-block" id="MegaWollmilchsau.left">
 <a class="viewcode-back" href="../../../geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsau.left">[docs]</a>
-    <span class="k">def</span> <span class="nf">left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ai</span> <span class="o">*</span> <span class="n">label</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;MegaWollmilchsau Origami&quot;</span></div>
 
 </pre></div>

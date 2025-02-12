@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>interval_exchange_transformation - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -368,7 +368,7 @@ from bottom to top.</p>
 <p>Note that this could also be used for homothetic surfaces. And to some
 extent to half translation surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.interval_exchange_transformation</span> <span class="kn">import</span> <span class="n">FlowPolygonMap</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.interval_exchange_transformation</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowPolygonMap</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">FlowPolygonMap</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">forward_image</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
 <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
@@ -382,7 +382,7 @@ extent to half translation surface.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.backward_image">
 <span class="sig-name descname"><span class="pre">backward_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/interval_exchange_transformation.html#FlowPolygonMap.backward_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.backward_image" title="Link to this definition">¶</a></dt>
 <dd><p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.interval_exchange_transformation</span> <span class="kn">import</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.interval_exchange_transformation</span><span class="w"> </span><span class="kn">import</span> \
 <span class="o">....</span><span class="p">:</span>     <span class="n">FlowPolygonMap</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">polygen</span><span class="p">(</span><span class="n">ZZ</span><span class="p">)</span>
@@ -415,7 +415,7 @@ extent to half translation surface.</p>
 <span class="sig-name descname"><span class="pre">forward_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/interval_exchange_transformation.html#FlowPolygonMap.forward_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.forward_image" title="Link to this definition">¶</a></dt>
 <dd><p>Return the forward image.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.interval_exchange_transformation</span> <span class="kn">import</span> <span class="n">FlowPolygonMap</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.interval_exchange_transformation</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowPolygonMap</span>
 </pre></div>
 </div>
 <p>Singularities are always sent to a <code class="docutils literal notranslate"><span class="pre">(i,0)</span></code>:</p>

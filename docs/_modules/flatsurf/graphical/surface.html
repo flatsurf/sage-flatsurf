@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.graphical.surface - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -382,14 +382,14 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
-<span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
-<span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.integer_ring</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.rational_field</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.modules.free_module_element</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
 
 <div class="viewcode-block" id="GraphicalSurface">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">GraphicalSurface</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GraphicalSurface</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class manages the rendering of a SimilaritySurface.</span>
 
@@ -525,7 +525,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">surface</span><span class="p">,</span>
         <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -631,7 +631,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.process_options">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.process_options">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_options</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_options</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">adjacencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">polygon_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -687,7 +687,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.copy">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.copy">[docs]</a>
-    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a copy of this GraphicalSurface.</span>
 
@@ -745,12 +745,12 @@
         <span class="k">return</span> <span class="n">gs</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Graphical representation of </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GraphicalSurface.visible">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.visible">[docs]</a>
-    <span class="k">def</span> <span class="nf">visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of the set of visible labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -759,7 +759,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.is_visible">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.is_visible">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether the polygon with the given label is marked as visible.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -768,7 +768,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.make_visible">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.make_visible">[docs]</a>
-    <span class="k">def</span> <span class="nf">make_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mark the polygon with the given label as visible.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -777,7 +777,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.hide">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.hide">[docs]</a>
-    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mark the polygon with the given label as invisible.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -786,7 +786,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.make_all_visible">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.make_all_visible">[docs]</a>
-    <span class="k">def</span> <span class="nf">make_all_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_all_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to show all invisible polygons by walking over the surface.</span>
 
@@ -834,7 +834,7 @@
                         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">l2</span><span class="p">):</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
                 <span class="n">T</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
@@ -865,7 +865,7 @@
                             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
                                 <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
                 <span class="n">T</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
@@ -890,7 +890,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.get_surface">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.get_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the underlying similarity surface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -899,7 +899,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.xmin">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.xmin">[docs]</a>
-    <span class="k">def</span> <span class="nf">xmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">xmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the minimal x-coordinate of a vertex of a visible graphical polygon.</span>
 
@@ -912,7 +912,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.ymin">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.ymin">[docs]</a>
-    <span class="k">def</span> <span class="nf">ymin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ymin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the minimal y-coordinate of a vertex of a visible graphical polygon.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -921,7 +921,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.xmax">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.xmax">[docs]</a>
-    <span class="k">def</span> <span class="nf">xmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">xmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the maximal x-coordinate of a vertex of a visible graphical polygon.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -930,7 +930,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.ymax">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.ymax">[docs]</a>
-    <span class="k">def</span> <span class="nf">ymax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ymax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the minimal y-coordinate of a vertex of a visible graphical polygon.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -939,7 +939,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.bounding_box">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.bounding_box">[docs]</a>
-    <span class="k">def</span> <span class="nf">bounding_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bounding_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the quadruple (x1,y1,x2,y2) where x1 and y1 are the minimal</span>
 <span class="sd">        x- and y-coordinates of a visible graphical polygon and x2 and y2 are the</span>
@@ -950,7 +950,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.graphical_polygon">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.graphical_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">graphical_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">graphical_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the graphical_polygon with the given label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -960,7 +960,7 @@
             <span class="n">t</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.graphical.polygon</span> <span class="kn">import</span> <span class="n">GraphicalPolygon</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.polygon</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphicalPolygon</span>
 
             <span class="n">p</span> <span class="o">=</span> <span class="n">GraphicalPolygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">transformation</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
@@ -969,7 +969,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.make_adjacent">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.make_adjacent">[docs]</a>
-    <span class="k">def</span> <span class="nf">make_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Move the polygon across the prescribed edge so that is adjacent.</span>
 <span class="sd">        The polygon moved is obtained from opposite_edge(p,e).</span>
@@ -998,7 +998,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pp</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.similarity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
             <span class="n">G</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
@@ -1034,7 +1034,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.is_adjacent">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.is_adjacent">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_adjacent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the truth value of the statement</span>
 <span class="sd">        &#39;The polygon opposite edge (p,e) is adjacent to that edge.&#39;</span>
@@ -1082,7 +1082,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.to_surface">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.to_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_surface</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_surface</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">point</span><span class="p">,</span>
         <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1169,7 +1169,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">singularity_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">warnings</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;singularity_limit has been deprecated as a keyword argument for to_surface() and will be removed from a future version of sage-flatsurf&quot;</span>
@@ -1189,7 +1189,7 @@
                             <span class="s2">&quot;If search_all=True and the surface is infinite, then a search_limit must be provided.&quot;</span>
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
                     <span class="n">labels</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="n">search_limit</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1217,7 +1217,7 @@
                     <span class="n">vertex</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
                     <span class="n">polygon</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">ccw</span>
 
                     <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">vertex</span><span class="p">),</span> <span class="n">direction</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">continue</span>
@@ -1249,7 +1249,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.opposite_edge">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.opposite_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given the label ``p`` of a polygon and an edge ``e`` in that polygon</span>
 <span class="sd">        returns the pair (``pp``, ``ee``) to which this edge is glued.</span>
@@ -1259,7 +1259,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.reset_letters">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.reset_letters">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset_letters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_letters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets the letter dictionary for storing letters used in</span>
 <span class="sd">        edge labeling if edge_labels=&quot;letter&quot; is used.</span>
@@ -1271,7 +1271,7 @@
             <span class="k">pass</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_letter_for_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_letter_for_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_letters&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_letters</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_next_letter</span> <span class="o">=</span> <span class="mi">1</span>
@@ -1298,7 +1298,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.edge_labels">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.edge_labels">[docs]</a>
-    <span class="k">def</span> <span class="nf">edge_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">edge_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the list of edge labels to be used for the polygon with label ``lab``.</span>
 
@@ -1373,7 +1373,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.plot_polygon">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting polygons returning a Graphics object.</span>
 
@@ -1399,7 +1399,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.plot_polygon_label">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_polygon_label">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_polygon_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_polygon_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">upside_down</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting polygon labels returning a Graphics2D.</span>
 
@@ -1421,7 +1421,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.plot_edge">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">is_adjacent</span><span class="p">,</span> <span class="n">is_self_glued</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">,</span> <span class="n">is_adjacent</span><span class="p">,</span> <span class="n">is_self_glued</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting a polygon&#39;s edge returning a Graphics2D.</span>
 
@@ -1455,7 +1455,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.plot_edge_label">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_edge_label">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_edge_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">edge_label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_edge_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">edge_label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting an edge label.</span>
 <span class="sd">        Calls :meth:`.polygon.GraphicalPolygon.plot_edge_label` passing</span>
@@ -1480,7 +1480,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.plot_zero_flag">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot_zero_flag">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_zero_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_zero_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">graphical_polygon</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method for plotting a polygon&#39;s zero_flag and returning a Graphics2D.</span>
 <span class="sd">        Simply calls :meth:`.polygon.GraphicalPolygon.plot_zero_flag` passing</span>
@@ -1499,7 +1499,7 @@
 
 <div class="viewcode-block" id="GraphicalSurface.plot">
 <a class="viewcode-back" href="../../../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a plot of this surface.</span>
 
@@ -1590,7 +1590,7 @@
 
             <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.plot.graphics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graphics</span>
 
         <span class="n">p</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
 

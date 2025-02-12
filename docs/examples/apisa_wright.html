@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Exploring Orbit Closures - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -377,10 +377,10 @@ installation guide if it is not available on your system yet.</p>
 <p>It belongs to <span class="math notranslate nohighlight">\(Q_3(10, -1^2)\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
 
-<span class="k">def</span> <span class="nf">apisa_wright_surface</span><span class="p">(</span><span class="n">h24</span><span class="p">,</span> <span class="n">h3</span><span class="p">,</span> <span class="n">l15</span><span class="p">,</span> <span class="n">l6</span><span class="p">,</span> <span class="n">l7</span><span class="p">,</span> <span class="n">l8</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apisa_wright_surface</span><span class="p">(</span><span class="n">h24</span><span class="p">,</span> <span class="n">h3</span><span class="p">,</span> <span class="n">l15</span><span class="p">,</span> <span class="n">l6</span><span class="p">,</span> <span class="n">l7</span><span class="p">,</span> <span class="n">l8</span><span class="p">):</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">([</span><span class="n">h24</span><span class="p">,</span> <span class="n">h3</span><span class="p">,</span> <span class="n">l15</span><span class="p">,</span> <span class="n">l6</span><span class="p">,</span> <span class="n">l7</span><span class="p">,</span> <span class="n">l8</span><span class="p">])</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span>
 
     <span class="n">v24</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">h24</span><span class="p">))</span>
@@ -425,7 +425,7 @@ installation guide if it is not available on your system yet.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/37eca9af34aa477690074942becee77354bc2e046d0a504d7c392d1fc3626ebc.png" src="../_images/37eca9af34aa477690074942becee77354bc2e046d0a504d7c392d1fc3626ebc.png" />
+<img alt="../_images/112e1c75136d8f7087833af4dce7a9b8d93bbe4438b49db8020d351f1177936d.png" src="../_images/112e1c75136d8f7087833af4dce7a9b8d93bbe4438b49db8020d351f1177936d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -460,7 +460,7 @@ components provides a new tangent direction in the <code class="docutils literal
 the surface via A. Wright’s cylinder deformation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>  <span class="c1"># optional: pyflatsurf</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GL2ROrbitClosure</span>  <span class="c1"># optional: pyflatsurf</span>
 
 <span class="n">O</span> <span class="o">=</span> <span class="n">GL2ROrbitClosure</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>  <span class="c1"># optional: pyflatsurf</span>
 <span class="n">O</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>  <span class="c1"># optional: pyflatsurf</span>

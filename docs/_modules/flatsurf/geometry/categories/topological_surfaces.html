@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.topological_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -385,10 +385,10 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
-<span class="kn">from</span> <span class="nn">sage.categories.topological_spaces</span> <span class="kn">import</span> <span class="n">TopologicalSpaces</span>
-<span class="kn">from</span> <span class="nn">sage.misc.abstract_method</span> <span class="kn">import</span> <span class="n">abstract_method</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.category_with_axiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_axioms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.topological_spaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">TopologicalSpaces</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.abstract_method</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstract_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.surface_category</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SurfaceCategory</span><span class="p">,</span>
     <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
 <span class="p">)</span>
@@ -396,7 +396,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces">[docs]</a>
-<span class="k">class</span> <span class="nc">TopologicalSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TopologicalSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of topological surfaces, i.e., surfaces that are locally</span>
 <span class="sd">    homeomorphic to the real plane or the closed upper half plane.</span>
@@ -417,7 +417,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.super_categories">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.super_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the categories a topological surface is also a member of.</span>
 
@@ -433,7 +433,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all surfaces in sage-flatsurf.</span>
 
@@ -443,7 +443,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods.refined_category">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.refined_category">[docs]</a>
-        <span class="k">def</span> <span class="nf">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the smallest subcategory that this surface is in.</span>
 
@@ -491,7 +491,7 @@
             <span class="k">return</span> <span class="n">category</span></div>
 
 
-        <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Verify that all (immutable) surfaces are contained in their refined</span>
 <span class="sd">            category automatically.</span>
@@ -512,7 +512,7 @@
 
             <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refined_category</span><span class="p">()))</span>
 
-        <span class="k">def</span> <span class="nf">_Hom_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_Hom_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the space of morphisms from this surface to ``Y``.</span>
 
@@ -525,7 +525,7 @@
 
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">Y</span> <span class="ow">in</span> <span class="n">TopologicalSurfaces</span><span class="p">():</span>
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">SurfaceMorphismSpace</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfaceMorphismSpace</span>
 
                 <span class="k">return</span> <span class="n">SurfaceMorphismSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
 
@@ -534,7 +534,7 @@
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods.is_mutable">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface allows modifications.</span>
 
@@ -560,7 +560,7 @@
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods.is_orientable">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_orientable">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_orientable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_orientable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is orientable.</span>
 
@@ -589,7 +589,7 @@
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods.is_with_boundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_with_boundary">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this a topological surface with boundary.</span>
 
@@ -618,7 +618,7 @@
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods.is_compact">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is compact.</span>
 
@@ -646,7 +646,7 @@
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods.is_connected">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_connected">[docs]</a>
         <span class="nd">@abstract_method</span>
-        <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is connected.</span>
 
@@ -674,7 +674,7 @@
 <div class="viewcode-block" id="TopologicalSurfaces.ParentMethods.genus">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.genus">[docs]</a>
         <span class="nd">@abstract_method</span><span class="p">(</span><span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">genus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">genus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the genus of this surface.</span>
 
@@ -687,7 +687,7 @@
 <span class="sd">            &quot;&quot;&quot;</span></div>
 
 
-        <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a point on this surface.</span>
 
@@ -734,7 +734,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Orientable">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Orientable">[docs]</a>
-    <span class="k">class</span> <span class="nc">Orientable</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Orientable</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by surfaces that can be oriented.</span>
 
@@ -752,7 +752,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Orientable.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Orientable.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all orientable surfaces in</span>
 <span class="sd">            sage-flatsurf.</span>
@@ -763,7 +763,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Orientable.ParentMethods.is_orientable">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Orientable.ParentMethods.is_orientable">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_orientable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_orientable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this surface is orientable, i.e., return ``True``.</span>
 
@@ -783,7 +783,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.WithBoundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.WithBoundary">[docs]</a>
-    <span class="k">class</span> <span class="nc">WithBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">WithBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by surfaces that have a boundary, i.e., at some</span>
 <span class="sd">        points this surface is homeomorphic to the closed upper half plane.</span>
@@ -804,7 +804,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.WithBoundary.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.WithBoundary.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all surfaces with boundary in</span>
 <span class="sd">            sage-flatsurf.</span>
@@ -815,7 +815,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.WithBoundary.ParentMethods.is_with_boundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.WithBoundary.ParentMethods.is_with_boundary">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this is a surface with boundary, i.e., return ``True``.</span>
 
@@ -838,7 +838,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.WithBoundary.WithoutBoundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.WithBoundary.WithoutBoundary">[docs]</a>
-        <span class="k">class</span> <span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            An impossible category, the surfaces with and without boundary.</span>
 
@@ -857,14 +857,14 @@
 
 <span class="sd">            &quot;&quot;&quot;</span>
 
-            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;a surface cannot be both with and without boundary&quot;</span><span class="p">)</span></div>
 </div>
 
 
 <div class="viewcode-block" id="TopologicalSurfaces.WithoutBoundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.WithoutBoundary">[docs]</a>
-    <span class="k">class</span> <span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by surfaces that have no boundary, i.e., the</span>
 <span class="sd">        surface is everywhere homeomorphic to the real plane.</span>
@@ -881,7 +881,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.WithoutBoundary.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.WithoutBoundary.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all surfaces without boundary in</span>
 <span class="sd">            sage-flatsurf.</span>
@@ -892,7 +892,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.WithoutBoundary.ParentMethods.is_with_boundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.WithoutBoundary.ParentMethods.is_with_boundary">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this is a surface with boundary, i.e., return ``False``.</span>
 
@@ -912,7 +912,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Connected">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Connected">[docs]</a>
-    <span class="k">class</span> <span class="nc">Connected</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Connected</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by surfaces that are topologically connected.</span>
 
@@ -928,7 +928,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Connected.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Connected.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all connected surfaces in</span>
 <span class="sd">            sage-flatsurf.</span>
@@ -939,7 +939,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Connected.ParentMethods.is_connected">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Connected.ParentMethods.is_connected">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this surface is connected, i.e., return</span>
 <span class="sd">                ``True``.</span>
@@ -960,7 +960,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Compact">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Compact">[docs]</a>
-    <span class="k">class</span> <span class="nc">Compact</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Compact</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by surfaces that are compact as topological spaces.</span>
 
@@ -976,7 +976,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Compact.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Compact.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all compact surfaces in</span>
 <span class="sd">            sage-flatsurf.</span>
@@ -987,7 +987,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.Compact.ParentMethods.is_compact">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Compact.ParentMethods.is_compact">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this surface is compact, i.e., return ``True``.</span>
 
@@ -1007,10 +1007,10 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.SubcategoryMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.SubcategoryMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SubcategoryMethods</span><span class="p">:</span>
 <div class="viewcode-block" id="TopologicalSurfaces.SubcategoryMethods.Orientable">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.SubcategoryMethods.Orientable">[docs]</a>
-        <span class="k">def</span> <span class="nf">Orientable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">Orientable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of surfaces that can be oriented.</span>
 
@@ -1026,7 +1026,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.SubcategoryMethods.WithBoundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.SubcategoryMethods.WithBoundary">[docs]</a>
-        <span class="k">def</span> <span class="nf">WithBoundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">WithBoundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of surfaces that have a boundary, i.e.,</span>
 <span class="sd">            points at which they are homeomorphic to the closed upper half</span>
@@ -1044,7 +1044,7 @@
 
 <div class="viewcode-block" id="TopologicalSurfaces.SubcategoryMethods.WithoutBoundary">
 <a class="viewcode-back" href="../../../../geometry/categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.SubcategoryMethods.WithoutBoundary">[docs]</a>
-        <span class="k">def</span> <span class="nf">WithoutBoundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">WithoutBoundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of surfaces that have no boundary, i.e.,</span>
 <span class="sd">            they are everywhere isomorphic to the real plane.</span>

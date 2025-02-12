@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.interval_exchange_transformation - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -344,12 +344,12 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for flatsurf.geometry.interval_exchange_transformation</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sage.structure.sage_object</span> <span class="kn">import</span> <span class="n">SageObject</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.sage_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">SageObject</span>
 
 
 <div class="viewcode-block" id="FlowPolygonMap">
 <a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap">[docs]</a>
-<span class="k">class</span> <span class="nc">FlowPolygonMap</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlowPolygonMap</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The map obtained as the return map of the flow on the sides of a (convex)</span>
 <span class="sd">    polygon.</span>
@@ -378,7 +378,7 @@
 <span class="sd">        [(0, 1)]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="n">bot_labels</span><span class="p">,</span> <span class="n">bot_lengths</span><span class="p">,</span> <span class="n">top_labels</span><span class="p">,</span> <span class="n">top_lengths</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="n">bot_labels</span><span class="p">,</span> <span class="n">bot_lengths</span><span class="p">,</span> <span class="n">top_labels</span><span class="p">,</span> <span class="n">top_lengths</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        INPUT:</span>
 
@@ -455,19 +455,19 @@
 
 <div class="viewcode-block" id="FlowPolygonMap.length_bot">
 <a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.length_bot">[docs]</a>
-    <span class="k">def</span> <span class="nf">length_bot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_bot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels_to_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="FlowPolygonMap.length_top">
 <a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.length_top">[docs]</a>
-    <span class="k">def</span> <span class="nf">length_top</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length_top</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_labels_to_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Flow polygon map:&quot;</span><span class="p">]</span>
         <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_labels</span><span class="p">))</span>
         <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bot_labels</span><span class="p">))</span>
@@ -477,7 +477,7 @@
 
 <div class="viewcode-block" id="FlowPolygonMap.forward_image">
 <a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.forward_image">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the forward image.</span>
 
@@ -509,7 +509,7 @@
 
 <div class="viewcode-block" id="FlowPolygonMap.backward_image">
 <a class="viewcode-back" href="../../../geometry/interval_exchange_transformation.html#flatsurf.geometry.interval_exchange_transformation.FlowPolygonMap.backward_image">[docs]</a>
-    <span class="k">def</span> <span class="nf">backward_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backward_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 

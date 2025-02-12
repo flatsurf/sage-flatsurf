@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Siegel-Veech Constants - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -360,7 +360,7 @@ our installation instructions if this library is not available on your system ye
 <p>We start by creating a surface with <a class="reference external" href="https://github.com/flatsurf/sage-flatsurf">sage-flatsurf</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 
 <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
@@ -374,7 +374,7 @@ our installation instructions if this library is not available on your system ye
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1914be6c9155bc0e5c02e665e65a0b566558be7f4081728cb93fd236061b3842.png" src="../_images/1914be6c9155bc0e5c02e665e65a0b566558be7f4081728cb93fd236061b3842.png" />
+<img alt="../_images/d439029dfe4de1a229dc6ac20a85261b9185f3fb6a3941fa6b98bc58c210a51e.png" src="../_images/d439029dfe4de1a229dc6ac20a85261b9185f3fb6a3941fa6b98bc58c210a51e.png" />
 </div>
 </div>
 <p>Decomposition of a surface into cylinders is implemented in <a class="reference external" href="https://github.com/flatsurf/flatsurf">pyflatsurf</a>. We triangulate our surface and make sure that its vertices are singularities.</p>
@@ -400,7 +400,7 @@ our installation instructions if this library is not available on your system ye
 <p>Here we define the target of the decomposition, i.e., a predicate that determines when a decomposition of a component can be stopped:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">target</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">cylinder</span><span class="p">():</span>
         <span class="c1"># This component is a cylinder. No further decomposition needed.</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -413,7 +413,7 @@ our installation instructions if this library is not available on your system ye
     <span class="c1"># This height bounds the size of any cylinder. However, it is stretched by the length of the vector</span>
     <span class="c1"># defining the vertical direction. (That vector is not normalized because that is hard to do in</span>
     <span class="c1"># general rings…)</span>
-    <span class="kn">from</span> <span class="nn">pyflatsurf</span> <span class="kn">import</span> <span class="n">flatsurf</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatsurf</span>
 
     <span class="n">denom</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">Bound</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span><span class="o">.</span><span class="n">vertical</span><span class="p">())</span><span class="o">.</span><span class="n">squared</span><span class="p">()</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">height</span> <span class="o">*</span> <span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span> <span class="o">&gt;</span> <span class="n">L</span>
@@ -427,7 +427,7 @@ our installation instructions if this library is not available on your system ye
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">circumferences</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">directions</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">pyflatsurf</span> <span class="kn">import</span> <span class="n">flatsurf</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatsurf</span>
 
     <span class="n">decomposition</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">makeFlowDecomposition</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">direction</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
     <span class="n">decomposition</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
@@ -446,7 +446,7 @@ our installation instructions if this library is not available on your system ye
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">circumferences</span><span class="p">]</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plot</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plot</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
@@ -457,7 +457,7 @@ our installation instructions if this library is not available on your system ye
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5a7cf61355ae7c75b944b03254c14a96e7992eb1fdc4dd11dc23112900ca5691.png" src="../_images/5a7cf61355ae7c75b944b03254c14a96e7992eb1fdc4dd11dc23112900ca5691.png" />
+<img alt="../_images/6a76b838fa697eeac3f4a31b8f0fcd8724948594d6fc2a06c4b827460ebadca4.png" src="../_images/6a76b838fa697eeac3f4a31b8f0fcd8724948594d6fc2a06c4b827460ebadca4.png" />
 </div>
 </div>
 </section>

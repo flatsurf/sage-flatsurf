@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.l_infinity_delaunay_cells - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -373,7 +373,7 @@
 <span class="c1">#  You should have received a copy of the GNU General Public License</span>
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
 
 <span class="c1"># the types of edges</span>
 <span class="n">V_NONE</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># start vertex has no horizontal/vertical separatrix</span>
@@ -385,7 +385,7 @@
 
 <div class="viewcode-block" id="sign_and_norm_conditions">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.sign_and_norm_conditions">[docs]</a>
-<span class="k">def</span> <span class="nf">sign_and_norm_conditions</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sign_and_norm_conditions</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inequalities:</span>
 
@@ -420,7 +420,7 @@
 
 <div class="viewcode-block" id="opposite_condition">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.opposite_condition">[docs]</a>
-<span class="k">def</span> <span class="nf">opposite_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">opposite_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    encode the equality `x_i = -x_j`</span>
 
@@ -452,7 +452,7 @@
 
 <div class="viewcode-block" id="bottom_top_delaunay_condition">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.bottom_top_delaunay_condition">[docs]</a>
-<span class="k">def</span> <span class="nf">bottom_top_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bottom_top_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delaunay condition for bottom-top pairs of triangles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -475,7 +475,7 @@
 
 <div class="viewcode-block" id="right_left_delaunay_condition">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.right_left_delaunay_condition">[docs]</a>
-<span class="k">def</span> <span class="nf">right_left_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">right_left_delaunay_condition</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delaunay condition for right-left pairs of triangles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -498,7 +498,7 @@
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation">[docs]</a>
-<span class="k">class</span> <span class="nc">LInfinityMarkedTriangulation</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LInfinityMarkedTriangulation</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    EXAMPLES::</span>
 
@@ -511,8 +511,8 @@
 <span class="sd">        sage: T = LInfinityMarkedTriangulation(2, gluings, types)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_faces</span><span class="p">,</span> <span class="n">edge_identifications</span><span class="p">,</span> <span class="n">edge_types</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_faces</span><span class="p">,</span> <span class="n">edge_identifications</span><span class="p">,</span> <span class="n">edge_types</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.integer_ring</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">num_faces</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_identifications</span> <span class="o">=</span> <span class="n">edge_identifications</span>
@@ -520,7 +520,7 @@
         <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the number of faces must be even&quot;</span><span class="p">)</span>
 
@@ -567,28 +567,28 @@
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.num_faces">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.num_faces">[docs]</a>
-    <span class="k">def</span> <span class="nf">num_faces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_faces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span></div>
 
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.num_edges">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.num_edges">[docs]</a>
-    <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">//</span> <span class="mi">2</span></div>
 
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.opposite_edge">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.opposite_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_identifications</span><span class="p">[(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)]</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Marked triangulation made of </span><span class="si">{}</span><span class="s2"> triangles&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_faces</span><span class="p">())</span>
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.bottom_top_pairs">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.bottom_top_pairs">[docs]</a>
-    <span class="k">def</span> <span class="nf">bottom_top_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bottom_top_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list ``(p1,e1,p2,e2)``.</span>
 
@@ -618,7 +618,7 @@
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.right_left_pairs">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.right_left_pairs">[docs]</a>
-    <span class="k">def</span> <span class="nf">right_left_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">right_left_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list ``(p1,e1,p2,e2)``</span>
 
@@ -649,7 +649,7 @@
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.polytope">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.polytope">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">polytope</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">polytope</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Each edge correspond to a vector in RR^2 (identified to CC)</span>
 
@@ -729,15 +729,15 @@
 
         <span class="c1">#        return eqns, ieqs</span>
 
-        <span class="kn">from</span> <span class="nn">sage.geometry.polyhedron.constructor</span> <span class="kn">import</span> <span class="n">Polyhedron</span>
-        <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.geometry.polyhedron.constructor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polyhedron</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.rational_field</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span>
 
         <span class="k">return</span> <span class="n">Polyhedron</span><span class="p">(</span><span class="n">ieqs</span><span class="o">=</span><span class="n">ieqs</span><span class="p">,</span> <span class="n">eqns</span><span class="o">=</span><span class="n">eqns</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="n">QQ</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LInfinityMarkedTriangulation.barycenter">
 <a class="viewcode-back" href="../../../geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.LInfinityMarkedTriangulation.barycenter">[docs]</a>
-    <span class="k">def</span> <span class="nf">barycenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">barycenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the translation surface in the barycenter of this polytope.</span>
 
@@ -759,10 +759,10 @@
         <span class="n">verts</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polytope</span><span class="p">()</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span>
         <span class="n">b</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">verts</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">verts</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
-        <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.rational_field</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
         <span class="n">barycenter</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 

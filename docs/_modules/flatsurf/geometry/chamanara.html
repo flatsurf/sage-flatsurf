@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.chamanara - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -390,16 +390,16 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ********************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">OrientedSimilaritySurface</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.minimal_cover</span> <span class="kn">import</span> <span class="n">MinimalTranslationCover</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">LazyRelabeledSurface</span>
-<span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrientedSimilaritySurface</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.minimal_cover</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinimalTranslationCover</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.lazy</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyRelabeledSurface</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.integer_ring</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
 
 <div class="viewcode-block" id="ChamanaraPolygon">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraPolygon">[docs]</a>
-<span class="k">def</span> <span class="nf">ChamanaraPolygon</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">sage.categories.fields</span> <span class="kn">import</span> <span class="n">Fields</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ChamanaraPolygon</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fields</span>
 
     <span class="n">field</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
@@ -408,7 +408,7 @@
         <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The value of alpha must be between zero and one.&quot;</span><span class="p">)</span>
     <span class="c1"># The value of x is $\sum_{n=0}^\infty \alpha^n$.</span>
     <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
     <span class="k">return</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)])</span></div>
 
@@ -416,7 +416,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">ChamanaraSurface</span><span class="p">(</span><span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChamanaraSurface</span><span class="p">(</span><span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Chamanara surface $X_{\alpha}$.</span>
 
@@ -431,7 +431,7 @@
 <span class="sd">        sage: TestSuite(S).run()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="n">ChamanaraPolygon</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
 
         <span class="n">field</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
@@ -440,7 +440,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;Chamanara surface with parameter </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">field</span><span class="p">,</span>
@@ -455,7 +455,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.is_dilation_surface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.is_dilation_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is a dilation surface, overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface`.</span>
@@ -475,7 +475,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.is_cone_surface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.is_cone_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is a cone surfaces, overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface`.</span>
@@ -493,7 +493,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.is_translation_surface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.is_translation_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surfaces is a (half-)translation surface, overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface`.</span>
@@ -513,7 +513,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.labels">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.labels">[docs]</a>
-    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the labels used to identify the polygons that make up this</span>
 <span class="sd">        surface, i.e., the integers.</span>
@@ -529,14 +529,14 @@
 <span class="sd">            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">LabelsFromView</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelsFromView</span>
 
         <span class="k">return</span> <span class="n">LabelsFromView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ChamanaraSurface.roots">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.roots">[docs]</a>
-    <span class="k">def</span> <span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a label in each connected component of this surface.</span>
 
@@ -556,7 +556,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.is_mutable">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.is_mutable">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is mutable which it is not.</span>
 
@@ -573,7 +573,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.polygon">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
@@ -591,7 +591,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.opposite_edge">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.opposite_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span>
         <span class="k">elif</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -611,7 +611,7 @@
                 <span class="k">return</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this surface that is compatible with equality testing.</span>
 
@@ -626,7 +626,7 @@
 
 <div class="viewcode-block" id="ChamanaraSurface.graphical_surface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraSurface.graphical_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
         <span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
             <span class="n">adjacencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -634,7 +634,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="n">adjacencies</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
 
@@ -661,7 +661,7 @@
 
 <div class="viewcode-block" id="chamanara_half_dilation_surface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.chamanara_half_dilation_surface">[docs]</a>
-<span class="k">def</span> <span class="nf">chamanara_half_dilation_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chamanara_half_dilation_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Chamanara&#39;s surface thought of as a Half Dilation surface.</span>
 
@@ -672,7 +672,7 @@
 <span class="sd">        sage: TestSuite(s).run()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf&quot;</span>
@@ -684,13 +684,13 @@
 
 <div class="viewcode-block" id="ChamanaraTranslationSurface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraTranslationSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">ChamanaraTranslationSurface</span><span class="p">(</span><span class="n">LazyRelabeledSurface</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChamanaraTranslationSurface</span><span class="p">(</span><span class="n">LazyRelabeledSurface</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">MinimalTranslationCover</span><span class="p">(</span><span class="n">ChamanaraSurface</span><span class="p">(</span><span class="n">alpha</span><span class="p">)))</span>
 
 <div class="viewcode-block" id="ChamanaraTranslationSurface.graphical_surface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraTranslationSurface.graphical_surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
         <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
         <span class="n">adjacencies</span> <span class="o">=</span> <span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
@@ -708,7 +708,7 @@
 
 <div class="viewcode-block" id="chamanara_surface">
 <a class="viewcode-back" href="../../../geometry/chamanara.html#flatsurf.geometry.chamanara.chamanara_surface">[docs]</a>
-<span class="k">def</span> <span class="nf">chamanara_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chamanara_surface</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Chamanara&#39;s surface thought of as a translation surface.</span>
 
@@ -719,7 +719,7 @@
 <span class="sd">        sage: TestSuite(s).run()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf&quot;</span>

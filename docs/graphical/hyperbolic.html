@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>hyperbolic - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -357,7 +357,7 @@
 <p>Usually, the primitives defined here should not be used directly. Instead the
 <a class="reference internal" href="../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot" title="flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot()</span></code></a> method of
 hyperbolic sets internally uses these primitives:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 
@@ -401,8 +401,8 @@ of <a class="reference external" href="https://doc.sagemath.org/html/en/referenc
 <p>EXAMPLES:</p>
 <p>A geodesic plot as a single such path (wrapped in a SageMath graphics
 object):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">CartesianPathPlot</span><span class="p">,</span> <span class="n">CartesianPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">CartesianPathPlot</span><span class="p">,</span> <span class="n">CartesianPathPlotCommand</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">vertical</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">CartesianPathPlot</span><span class="p">)</span>
@@ -483,7 +483,7 @@ function if you want to use this functionality in plots of your own.</p>
 <dd><p>Return a bounding box for this plot.</p>
 <p>This implements the required interface of SageMath’s GraphicPrimitive.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">CartesianPathPlot</span><span class="p">,</span> <span class="n">CartesianPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">CartesianPathPlot</span><span class="p">,</span> <span class="n">CartesianPathPlotCommand</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlot</span><span class="p">([</span>
 <span class="o">....</span><span class="p">:</span>     <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
@@ -513,7 +513,7 @@ function if you want to use this functionality in plots of your own.</p>
 <dd><p>A plot command in the plot coordinate system.</p>
 <p>EXAMPLES:</p>
 <p>Move the cursor to the origin of the coordinate system:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">CartesianPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">CartesianPathPlotCommand</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">CartesianPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -574,8 +574,8 @@ without drawing a segment (<code class="docutils literal notranslate"><span clas
 converted into a sequence of <a class="reference internal" href="#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand" title="flatsurf.graphical.hyperbolic.CartesianPathPlotCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">CartesianPathPlotCommand</span></code></a> which
 realizes the commands in a specific hyperbolic model.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s1">&#39;MOVETO&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -598,8 +598,8 @@ correct polygon to represent the area of the polygon.</p></li>
 correct polygon to represent the lines of the polygon.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">command</span> <span class="o">=</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">(</span><span class="s2">&quot;MOVETO&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">cartesian</span><span class="p">(</span><span class="s2">&quot;half_plane&quot;</span><span class="p">)</span>
@@ -646,8 +646,8 @@ a stroke path that is not filled</p></li>
 filled path that is not stroked</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">HyperbolicPathPlotCommand</span><span class="o">.</span><span class="n">create_move_cartesian</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -672,8 +672,8 @@ the segment to <code class="docutils literal notranslate"><span class="pre">end<
 realize this segment</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -738,8 +738,8 @@ correct polygon to represent the area of the polygon.</p></li>
 correct polygon to represent the lines of the polygon.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -817,8 +817,8 @@ encoded by <code class="docutils literal notranslate"><span class="pre">commands
 <p>EXAMPLES:</p>
 <div class="jupyter_cell jupyter_container docutils container">
 <div class="cell_input code_cell docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">,</span> <span class="n">hyperbolic_path</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.hyperbolic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPathPlotCommand</span><span class="p">,</span> <span class="n">hyperbolic_path</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperbolicPlane</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">HyperbolicPlane</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">hyperbolic_path</span><span class="p">([</span>

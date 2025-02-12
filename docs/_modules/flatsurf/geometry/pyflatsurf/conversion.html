@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.pyflatsurf.conversion - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -385,9 +385,9 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ********************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">pyflatsurf_feature</span><span class="p">,</span> <span class="n">pyeantic_feature</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyflatsurf_feature</span><span class="p">,</span> <span class="n">pyeantic_feature</span>
 
 
 <span class="k">if</span> <span class="n">pyeantic_feature</span><span class="o">.</span><span class="n">is_present</span><span class="p">():</span>
@@ -396,7 +396,7 @@
 
 <div class="viewcode-block" id="Conversion">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion">[docs]</a>
-<span class="k">class</span> <span class="nc">Conversion</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Conversion</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic base class for a conversion from sage-flatsurf to pyflatsurf.</span>
 
@@ -426,7 +426,7 @@
 
 <div class="viewcode-block" id="Conversion.__init__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span> <span class="o">=</span> <span class="n">domain</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_codomain</span> <span class="o">=</span> <span class="n">codomain</span></div>
 
@@ -434,7 +434,7 @@
 <div class="viewcode-block" id="Conversion.to_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.to_pyflatsurf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`Conversion` from ``domain`` to the ``codomain``.</span>
 
@@ -454,7 +454,7 @@
 <div class="viewcode-block" id="Conversion.from_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.from_pyflatsurf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`Conversion` from ``domain`` to ``codomain``.</span>
 
@@ -476,7 +476,7 @@
 <div class="viewcode-block" id="Conversion.to_pyflatsurf_from_elements">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.to_pyflatsurf_from_elements">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`Conversion` that converts the sage-flatsurf</span>
 <span class="sd">        ``elements`` to  ``codomain``.</span>
@@ -490,7 +490,7 @@
 <span class="sd">            Conversion from Integer Ring to __gmp_expr&lt;__mpz_struct[1],__mpz_struct[1]&gt;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span>
             <span class="n">domain</span><span class="o">=</span><span class="n">Sequence</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span><span class="o">.</span><span class="n">universe</span><span class="p">(),</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span>
@@ -499,7 +499,7 @@
 
 <div class="viewcode-block" id="Conversion.domain">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.domain">[docs]</a>
-    <span class="k">def</span> <span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the domain of this conversion, a sage-flatsurf object.</span>
 
@@ -523,7 +523,7 @@
 
 <div class="viewcode-block" id="Conversion.codomain">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.codomain">[docs]</a>
-    <span class="k">def</span> <span class="nf">codomain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">codomain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the codomain of this conversion, a pyflatsurf object.</span>
 
@@ -547,7 +547,7 @@
 
 <div class="viewcode-block" id="Conversion.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the conversion at an element of :meth:`domain` and return the</span>
 <span class="sd">        corresponding pyflatsurf object.</span>
@@ -572,7 +572,7 @@
 
 <div class="viewcode-block" id="Conversion.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the conversion of an element of :meth:`codomain` and return the</span>
 <span class="sd">        corresponding sage-flatsurf object.</span>
@@ -600,7 +600,7 @@
 
 <div class="viewcode-block" id="Conversion.__repr__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.__repr__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this conversion.</span>
 
@@ -624,7 +624,7 @@
 
 <div class="viewcode-block" id="Conversion.__eq__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this conversion is indistinguishable from ``other``.</span>
 
@@ -648,7 +648,7 @@
 
 <div class="viewcode-block" id="Conversion.__hash__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.Conversion.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this conversion that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -677,7 +677,7 @@
 
 <div class="viewcode-block" id="RingConversion">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion">[docs]</a>
-<span class="k">class</span> <span class="nc">RingConversion</span><span class="p">(</span><span class="n">Conversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RingConversion</span><span class="p">(</span><span class="n">Conversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A conversion between a SageMath ring and a C/C++ ring.</span>
 
@@ -696,7 +696,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_ring_conversions</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ring_conversions</span><span class="p">():</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the available ring conversion types.</span>
 
@@ -708,7 +708,7 @@
 <span class="sd">            [&lt;class &#39;flatsurf.geometry.pyflatsurf.conversion.RingConversion_eantic&#39;&gt;]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.features</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">pyeantic_feature</span><span class="p">,</span>
             <span class="n">pyexactreal_feature</span><span class="p">,</span>
             <span class="n">gmpxxyy_feature</span><span class="p">,</span>
@@ -726,7 +726,7 @@
             <span class="k">yield</span> <span class="n">RingConversion_exactreal</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a conversion from ``domain`` to ``codomain``.</span>
 
@@ -753,7 +753,7 @@
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given elements from pyflatsurf, deduce which pyflatsurf ring they live</span>
 <span class="sd">        in.</span>
@@ -779,7 +779,7 @@
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_domain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_domain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given elements from sage-flatsurf, deduce which pyflatsurf ring they</span>
 <span class="sd">        live in.</span>
@@ -798,7 +798,7 @@
 <span class="sd">            NumberField(a^2 - 2, [...])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
         <span class="n">conversion</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_conversion</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">Sequence</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span><span class="o">.</span><span class="n">universe</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">conversion</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -808,7 +808,7 @@
 <div class="viewcode-block" id="RingConversion.to_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion.to_pyflatsurf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`RingConversion` that converts the SageMath ring ``domain``</span>
 <span class="sd">        to something that libflatsurf/pyflatsurf can understand.</span>
@@ -843,7 +843,7 @@
 <div class="viewcode-block" id="RingConversion.from_pyflatsurf_from_flat_triangulation">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion.from_pyflatsurf_from_flat_triangulation">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pyflatsurf_from_flat_triangulation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">flat_triangulation</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_pyflatsurf_from_flat_triangulation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">flat_triangulation</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`RingConversion` that can map ``domain`` to the ring</span>
 <span class="sd">        over which ``flat_triangulation`` is defined.</span>
@@ -898,7 +898,7 @@
 <div class="viewcode-block" id="RingConversion.from_pyflatsurf_from_elements">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion.from_pyflatsurf_from_elements">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`RingConversion` that can map ``domain`` to the ring of</span>
 <span class="sd">        ``elements``.</span>
@@ -936,7 +936,7 @@
 <div class="viewcode-block" id="RingConversion.to_pyflatsurf_from_elements">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion.to_pyflatsurf_from_elements">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`RingConversion` than can map from the ``elements`` to</span>
 <span class="sd">        the ``codomain``.</span>
@@ -956,7 +956,7 @@
 <span class="sd">            sage: conversion = RingConversion.to_pyflatsurf_from_elements([1])  # optional: gmpxxyy</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
         <span class="k">for</span> <span class="n">conversion_type</span> <span class="ow">in</span> <span class="n">RingConversion</span><span class="o">.</span><span class="n">_ring_conversions</span><span class="p">():</span>
             <span class="n">deduced_codomain</span> <span class="o">=</span> <span class="n">codomain</span>
@@ -980,7 +980,7 @@
 <div class="viewcode-block" id="RingConversion.from_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion.from_pyflatsurf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`RingConversion` that maps ``domain`` to ``codomain``.</span>
 
@@ -1012,7 +1012,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pyflatsurf ``Vectors`` parent over the codomain of this</span>
 <span class="sd">        conversion.</span>
@@ -1025,7 +1025,7 @@
 <span class="sd">            Flatsurf Vectors over Rational Field</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">pyflatsurf.vector</span> <span class="kn">import</span> <span class="n">Vectors</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf.vector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vectors</span>
 
         <span class="k">return</span> <span class="n">Vectors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span></div>
 
@@ -1033,7 +1033,7 @@
 
 <div class="viewcode-block" id="RingConversion_eantic">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_eantic">[docs]</a>
-<span class="k">class</span> <span class="nc">RingConversion_eantic</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RingConversion_eantic</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A conversion from a SageMath number field to an e-antic real embedded number field.</span>
 
@@ -1049,7 +1049,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`RingConversion._create_conversion`.</span>
 
@@ -1064,12 +1064,12 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;at least one of domain and codomain must be set&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">pyeantic</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pyeantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
 
             <span class="n">renf</span> <span class="o">=</span> <span class="n">RealEmbeddedNumberField</span><span class="p">(</span><span class="n">codomain</span><span class="p">)</span>
             <span class="n">domain</span> <span class="o">=</span> <span class="n">renf</span><span class="o">.</span><span class="n">number_field</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">NumberFields</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">RR</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumberFields</span><span class="p">,</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">RR</span>
 
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumberFields</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1087,11 +1087,11 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">pyeantic</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pyeantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
 
             <span class="n">renf</span> <span class="o">=</span> <span class="n">RealEmbeddedNumberField</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
 
-            <span class="kn">import</span> <span class="nn">pyeantic.cppyy_eantic</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">pyeantic.cppyy_eantic</span>
 
             <span class="n">codomain</span> <span class="o">=</span> <span class="n">pyeantic</span><span class="o">.</span><span class="n">cppyy_eantic</span><span class="o">.</span><span class="n">unwrap_intrusive_ptr</span><span class="p">(</span><span class="n">renf</span><span class="o">.</span><span class="n">renf</span><span class="p">)</span>
 
@@ -1099,7 +1099,7 @@
 
 <div class="viewcode-block" id="RingConversion_eantic.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_eantic.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``x`` under this conversion.</span>
 
@@ -1112,7 +1112,7 @@
 <span class="sd">            (a ~ 1.4142136)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">sage.structure.element</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sage.structure.element</span>
 
         <span class="c1"># pylint: disable=c-extension-no-member</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="n">sage</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1127,7 +1127,7 @@
 
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_pyrenf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pyrenf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pyeantic ``RealEmbeddedNumberField`` that wraps the codomain</span>
 <span class="sd">        of this conversion.</span>
@@ -1142,13 +1142,13 @@
 <span class="sd">            Real Embedded Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095?</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">pyeantic</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyeantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
 
         <span class="k">return</span> <span class="n">RealEmbeddedNumberField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span>
 
 <div class="viewcode-block" id="RingConversion_eantic.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_eantic.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of ``y`` under this conversion.</span>
 
@@ -1167,7 +1167,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given elements from e-antic, deduce the e-antic ring they live in.</span>
 
@@ -1196,7 +1196,7 @@
 <span class="sd">            NumberField(a^2 - 2, [...])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">pyeantic</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyeantic</span>
 
         <span class="n">ring</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1204,7 +1204,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">pyeantic</span><span class="o">.</span><span class="n">eantic</span><span class="o">.</span><span class="n">renf_elem_class</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
-            <span class="kn">import</span> <span class="nn">pyeantic.cppyy_eantic</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">pyeantic.cppyy_eantic</span>
 
             <span class="n">element_ring</span> <span class="o">=</span> <span class="n">pyeantic</span><span class="o">.</span><span class="n">cppyy_eantic</span><span class="o">.</span><span class="n">unwrap_intrusive_ptr</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
             <span class="k">if</span> <span class="n">ring</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ring</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1218,7 +1218,7 @@
 
 <div class="viewcode-block" id="RingConversion_algebraic">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_algebraic">[docs]</a>
-<span class="k">class</span> <span class="nc">RingConversion_algebraic</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RingConversion_algebraic</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A conversion from the algebraic numbers in SageMath ``AA`` to an e-antic</span>
 <span class="sd">    real embedded number field.</span>
@@ -1247,7 +1247,7 @@
 
 <div class="viewcode-block" id="RingConversion_algebraic.__init__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_algebraic.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_eantic_conversion</span> <span class="o">=</span> <span class="n">RingConversion_eantic</span><span class="o">.</span><span class="n">_create_conversion</span><span class="p">(</span>
@@ -1256,7 +1256,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`RingConversion._create_conversion`.</span>
 
@@ -1275,7 +1275,7 @@
         <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">AA</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">AA</span>
 
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">AA</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1284,7 +1284,7 @@
 
 <div class="viewcode-block" id="RingConversion_algebraic.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_algebraic.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``x`` under this conversion.</span>
 
@@ -1301,7 +1301,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_domain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_domain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an e-antic number field that contains the algebraic SageMath</span>
 <span class="sd">        ``elements``.</span>
@@ -1313,12 +1313,12 @@
 <span class="sd">            NumberField(a^4 - 4*a^2 + 1, [...])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">AA</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">AA</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">is</span> <span class="n">AA</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">,</span> <span class="n">NumberField</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">,</span> <span class="n">NumberField</span>
 
         <span class="n">number_field</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">embedding</span> <span class="o">=</span> <span class="n">number_field_elements_from_algebraics</span><span class="p">(</span>
             <span class="n">elements</span><span class="p">,</span> <span class="n">embedded</span><span class="o">=</span><span class="kc">True</span>
@@ -1326,7 +1326,7 @@
         <span class="k">return</span> <span class="n">RingConversion_eantic</span><span class="o">.</span><span class="n">_create_conversion</span><span class="p">(</span><span class="n">number_field</span><span class="p">)</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an e-antic number field that contains the e-antic ``elements``.</span>
 
@@ -1345,7 +1345,7 @@
 
 <div class="viewcode-block" id="RingConversion_exactreal">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_exactreal">[docs]</a>
-<span class="k">class</span> <span class="nc">RingConversion_exactreal</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RingConversion_exactreal</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A conversion from a pyexactreal SageMath ring to a exact-real ring.</span>
 
@@ -1369,7 +1369,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`RingConversion._create_conversion`.</span>
 
@@ -1411,13 +1411,13 @@
                     <span class="n">codomain</span><span class="o">=</span><span class="n">base_conversion_codomain</span><span class="o">.</span><span class="n">parameters</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_conversion_codomain</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;IntegerRing&quot;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
                 <span class="n">domain_base_conversion</span> <span class="o">=</span> <span class="n">RingConversion</span><span class="o">.</span><span class="n">from_pyflatsurf</span><span class="p">(</span>
                     <span class="n">domain</span><span class="o">=</span><span class="n">ZZ</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_conversion_codomain</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;RationalField&quot;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span>
 
                 <span class="n">domain_base_conversion</span> <span class="o">=</span> <span class="n">RingConversion</span><span class="o">.</span><span class="n">from_pyflatsurf</span><span class="p">(</span>
                     <span class="n">domain</span><span class="o">=</span><span class="n">QQ</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span>
@@ -1425,16 +1425,16 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-            <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pyexactreal</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactReals</span>
 
             <span class="n">domain</span> <span class="o">=</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">domain_base_conversion</span><span class="o">.</span><span class="n">domain</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">pyeantic.real_embedded_number_field</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pyeantic.real_embedded_number_field</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
 
             <span class="c1"># TODO: Add the other base rings.</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">RealEmbeddedNumberField</span><span class="p">):</span>
-                <span class="kn">import</span> <span class="nn">pyexactreal</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">pyexactreal</span>
 
                 <span class="n">codomain</span> <span class="o">=</span> <span class="n">pyexactreal</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Module</span><span class="p">[</span>
                     <span class="n">pyexactreal</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">NumberField</span>
@@ -1448,7 +1448,7 @@
 
 <div class="viewcode-block" id="RingConversion_exactreal.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_exactreal.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``x`` under this conversion.</span>
 
@@ -1463,7 +1463,7 @@
 <span class="sd">            1</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">sage.structure.element</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sage.structure.element</span>
 
         <span class="c1"># pylint: disable=c-extension-no-member</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="n">sage</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1478,7 +1478,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_domain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_domain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an exact-real module that contains the SageMath pyexactreal ``elements``.</span>
 
@@ -1508,7 +1508,7 @@
             <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">_backend</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pyflatsurf parent of vectors over the codomain of this conversion.</span>
 
@@ -1525,10 +1525,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">pyflatsurf.vector</span> <span class="kn">import</span> <span class="n">Vectors</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf.vector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vectors</span>
 
-        <span class="kn">from</span> <span class="nn">pyexactreal.exact_reals</span> <span class="kn">import</span> <span class="n">ExactReals</span>
-        <span class="kn">from</span> <span class="nn">pyeantic.real_embedded_number_field</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyexactreal.exact_reals</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactReals</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyeantic.real_embedded_number_field</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="n">ExactReals</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Vectors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">())</span>
@@ -1539,7 +1539,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an exact-real module that contains the exact-real elements.</span>
 
@@ -1575,7 +1575,7 @@
 
 <div class="viewcode-block" id="RingConversion_exactreal.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_exactreal.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of ``y`` under this conversion.</span>
 
@@ -1597,7 +1597,7 @@
 
 <div class="viewcode-block" id="RingConversion_int">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_int">[docs]</a>
-<span class="k">class</span> <span class="nc">RingConversion_int</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RingConversion_int</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Conversion between SageMath integers and machine long long integers.</span>
 
@@ -1614,7 +1614,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`RingConversion._create_conversion`.</span>
 
@@ -1628,7 +1628,7 @@
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;at least one of domain and codomain must be set&quot;</span><span class="p">)</span>
 
-        <span class="kn">import</span> <span class="nn">cppyy</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">cppyy</span>
 
         <span class="n">longlong</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="p">,</span> <span class="s2">&quot;long long&quot;</span><span class="p">)</span>
 
@@ -1638,7 +1638,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given long longs, return the long long type.</span>
 
@@ -1660,7 +1660,7 @@
 <span class="sd">            &lt;class &#39;cppyy.gbl.long long&#39;&gt;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">cppyy</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">cppyy</span>
 
         <span class="n">longlong</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="p">,</span> <span class="s2">&quot;long long&quot;</span><span class="p">)</span>
 
@@ -1672,7 +1672,7 @@
 
 <div class="viewcode-block" id="RingConversion_int.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_int.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``x`` under this conversion.</span>
 
@@ -1693,7 +1693,7 @@
 
 <div class="viewcode-block" id="RingConversion_int.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_int.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of ``y`` under this conversion.</span>
 
@@ -1715,7 +1715,7 @@
 
 <div class="viewcode-block" id="RingConversion_gmp">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_gmp">[docs]</a>
-<span class="k">class</span> <span class="nc">RingConversion_gmp</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RingConversion_gmp</span><span class="p">(</span><span class="n">RingConversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Conversion between SageMath integers and rationals and GMP mpz and mpq.</span>
 
@@ -1732,7 +1732,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_conversion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`RingConversion._create_conversion`.</span>
 
@@ -1746,9 +1746,9 @@
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;at least one of domain and codomain must be set&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span>
-        <span class="kn">import</span> <span class="nn">cppyy</span>
-        <span class="kn">import</span> <span class="nn">gmpxxyy</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span><span class="p">,</span> <span class="n">QQ</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">cppyy</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">gmpxxyy</span>
 
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">codomain</span> <span class="o">==</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">mpz_class</span><span class="p">:</span>
@@ -1774,7 +1774,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deduce_codomain_from_codomain_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given elements from GMP, return the GMP ring they live in.</span>
 
@@ -1796,8 +1796,8 @@
 <span class="sd">            &lt;class cppyy.gbl.__gmp_expr&lt;__mpz_struct[1],__mpz_struct[1]&gt; at 0x...&gt;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">cppyy</span>
-        <span class="kn">import</span> <span class="nn">gmpxxyy</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">cppyy</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">gmpxxyy</span>
 
         <span class="n">ring</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
@@ -1817,7 +1817,7 @@
 
 <div class="viewcode-block" id="RingConversion_gmp.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_gmp.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``x`` under this conversion.</span>
 
@@ -1832,7 +1832,7 @@
 <span class="sd">            1/3</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">sage.structure.element</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sage.structure.element</span>
 
         <span class="c1"># pylint: disable=c-extension-no-member</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="n">sage</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1848,7 +1848,7 @@
 
 <div class="viewcode-block" id="RingConversion_gmp.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.RingConversion_gmp.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of ``y`` under this conversion.</span>
 
@@ -1870,7 +1870,7 @@
 
 <div class="viewcode-block" id="VectorSpaceConversion">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.VectorSpaceConversion">[docs]</a>
-<span class="k">class</span> <span class="nc">VectorSpaceConversion</span><span class="p">(</span><span class="n">Conversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VectorSpaceConversion</span><span class="p">(</span><span class="n">Conversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts vectors in a SageMath vector space into libflatsurf ``Vector&lt;T&gt;``\s.</span>
 
@@ -1883,7 +1883,7 @@
 
 <div class="viewcode-block" id="VectorSpaceConversion.__init__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.VectorSpaceConversion.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">ring_conversion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">ring_conversion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ring_conversion</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ring_conversion</span> <span class="o">=</span> <span class="n">RingConversion</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
@@ -1895,7 +1895,7 @@
 <div class="viewcode-block" id="VectorSpaceConversion.to_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.VectorSpaceConversion.to_pyflatsurf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ring_conversion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ring_conversion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`Conversion` from ``domain`` to ``codomain``.</span>
 
@@ -1919,7 +1919,7 @@
             <span class="k">if</span> <span class="n">ring_conversion</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ring_conversion</span> <span class="o">=</span> <span class="n">RingConversion</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
-            <span class="kn">from</span> <span class="nn">pyflatsurf.vector</span> <span class="kn">import</span> <span class="n">Vectors</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf.vector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vectors</span>
 
             <span class="n">codomain</span> <span class="o">=</span> <span class="n">Vectors</span><span class="p">(</span><span class="n">ring_conversion</span><span class="o">.</span><span class="n">domain</span><span class="p">())</span><span class="o">.</span><span class="n">Vector</span>
 
@@ -1929,7 +1929,7 @@
 <div class="viewcode-block" id="VectorSpaceConversion.from_pyflatsurf_from_elements">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.VectorSpaceConversion.from_pyflatsurf_from_elements">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ring_conversion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ring_conversion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`Conversion` that converts the pyflatsurf ``elements``</span>
 <span class="sd">        into vectors in ``domain``.</span>
@@ -1954,7 +1954,7 @@
                 <span class="o">+</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
             <span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorSpace</span>
 
             <span class="n">domain</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">ring_conversion</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -1966,7 +1966,7 @@
 <div class="viewcode-block" id="VectorSpaceConversion.to_pyflatsurf_from_elements">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.VectorSpaceConversion.to_pyflatsurf_from_elements">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf_from_elements</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a conversion that can convert the SageMath ``elements`` to ``codomain``.</span>
 
@@ -1983,7 +1983,7 @@
             <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span>
             <span class="n">domain</span><span class="o">=</span><span class="n">Sequence</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span><span class="o">.</span><span class="n">universe</span><span class="p">(),</span>
@@ -1993,7 +1993,7 @@
 
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pyflatsurf ``Vectors`` helper for the codomain of this conversion.</span>
 
@@ -2009,7 +2009,7 @@
 
 <div class="viewcode-block" id="VectorSpaceConversion.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.VectorSpaceConversion.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a ``Vector&lt;T&gt;`` corresponding to the SageMath ``vector``.</span>
 
@@ -2028,7 +2028,7 @@
 
 <div class="viewcode-block" id="VectorSpaceConversion.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.VectorSpaceConversion.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the SageMath vector corresponding to the pyflatsurf ``vector``.</span>
 
@@ -2053,7 +2053,7 @@
 
 <div class="viewcode-block" id="FlatTriangulationConversion">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion">[docs]</a>
-<span class="k">class</span> <span class="nc">FlatTriangulationConversion</span><span class="p">(</span><span class="n">Conversion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlatTriangulationConversion</span><span class="p">(</span><span class="n">Conversion</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a sage-flatsurf surface to a ``FlatTriangulation`` object and</span>
 <span class="sd">    vice-versa.</span>
@@ -2069,7 +2069,7 @@
 
 <div class="viewcode-block" id="FlatTriangulationConversion.__init__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">label_to_half_edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">label_to_half_edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        EXAMPLES::</span>
 
@@ -2094,7 +2094,7 @@
 <div class="viewcode-block" id="FlatTriangulationConversion.to_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.to_pyflatsurf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`Conversion` from ``domain`` to the ``codomain``.</span>
 
@@ -2121,7 +2121,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">TranslationSurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">TranslationSurfaces</span>
 
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TranslationSurfaces</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;domain must be a translation surface&quot;</span><span class="p">)</span>
@@ -2134,7 +2134,7 @@
             <span class="n">vertex_permutation</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_pyflatsurf_vertex_permutation</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
             <span class="n">vectors</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_pyflatsurf_vectors</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">pyflatsurf.factory</span> <span class="kn">import</span> <span class="n">make_surface</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_surface</span>
 
             <span class="n">codomain</span> <span class="o">=</span> <span class="n">make_surface</span><span class="p">(</span><span class="n">vertex_permutation</span><span class="p">,</span> <span class="n">vectors</span><span class="p">)</span>
 
@@ -2144,7 +2144,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_pyflatsurf_labels</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pyflatsurf_labels</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a mapping of the edges of the polygons of ``domain`` to half</span>
 <span class="sd">        edges numbered compatibly with libflatsurf/pyflatsurf, i.e., by</span>
@@ -2193,7 +2193,7 @@
         <span class="k">return</span> <span class="n">labels</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_pyflatsurf_vectors</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pyflatsurf_vectors</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the vectors of the positive half edges in ``domain`` in order.</span>
 
@@ -2228,7 +2228,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">vector_conversion</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="k">for</span> <span class="n">vector</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_pyflatsurf_vertex_permutation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pyflatsurf_vertex_permutation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation of half edges around vertices of ``domain`` in</span>
 <span class="sd">        cycle notation.</span>
@@ -2264,7 +2264,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cycle_decomposition</span><span class="p">(</span><span class="n">vertex_permutation</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_cycle_decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permutation</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cycle_decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permutation</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a permutation in cycle notation.</span>
 
@@ -2300,7 +2300,7 @@
 <div class="viewcode-block" id="FlatTriangulationConversion.from_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.from_pyflatsurf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a :class:`Conversion` from ``domain`` to ``codomain``.</span>
 
@@ -2328,7 +2328,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pyflatsurf_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">bidict</span> <span class="kn">import</span> <span class="n">bidict</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">bidict</span><span class="w"> </span><span class="kn">import</span> <span class="n">bidict</span>
 
         <span class="n">half_edge_to_polygon_edge</span> <span class="o">=</span> <span class="n">bidict</span><span class="p">()</span>
 
@@ -2344,11 +2344,11 @@
                 <span class="n">codomain</span>
             <span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Polygon</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Polygon</span>
 
             <span class="n">domain</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">ring_conversion</span><span class="o">.</span><span class="n">domain</span><span class="p">())</span>
 
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorSpace</span>
 
             <span class="n">vector_conversion</span> <span class="o">=</span> <span class="n">VectorSpaceConversion</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span>
                 <span class="n">VectorSpace</span><span class="p">(</span><span class="n">ring_conversion</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
@@ -2389,7 +2389,7 @@
 <div class="viewcode-block" id="FlatTriangulationConversion.ring_conversion">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.ring_conversion">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">ring_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ring_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the conversion that maps the base ring of the domain of this</span>
 <span class="sd">        conversion to the base ring of the codomain of this conversion.</span>
@@ -2411,7 +2411,7 @@
 <div class="viewcode-block" id="FlatTriangulationConversion.vector_space_conversion">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.vector_space_conversion">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">vector_space_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vector_space_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the conversion maps two-dimensional vectors over the base ring</span>
 <span class="sd">        of the domain to ``Vector&lt;T&gt;`` for the codomain.</span>
@@ -2427,7 +2427,7 @@
 <span class="sd">            Conversion from Vector space of dimension 2 over Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to flatsurf::Vector&lt;eantic::renf_elem_class&gt;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorSpace</span>
 
         <span class="k">return</span> <span class="n">VectorSpaceConversion</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span>
             <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ring_conversion</span><span class="p">()</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
@@ -2436,7 +2436,7 @@
 
 <div class="viewcode-block" id="FlatTriangulationConversion.__call__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``x`` under this conversion.</span>
 
@@ -2465,7 +2465,7 @@
 <span class="sd">            1</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SurfacePoint</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfacePoint</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SurfacePoint</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_point</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -2479,7 +2479,7 @@
 
 <div class="viewcode-block" id="FlatTriangulationConversion.section">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of ``y`` under this conversion.</span>
 
@@ -2510,7 +2510,7 @@
 <span class="sd">            ((0, 0), 0)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">pyflatsurf</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Point</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())]):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preimage_point</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
@@ -2522,7 +2522,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of the :class:`SurfacePoint` ``p`` under this conversion.</span>
 
@@ -2547,7 +2547,7 @@
         <span class="n">label</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">labels</span><span class="p">()))</span>
         <span class="n">coordinates</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">label</span><span class="p">)))</span>
 
-        <span class="kn">import</span> <span class="nn">pyflatsurf</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf</span>
 
         <span class="k">return</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">Point</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())](</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span>
@@ -2557,7 +2557,7 @@
             <span class="p">),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_preimage_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preimage_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of the point ``q`` in the domain of this conversion.</span>
 
@@ -2582,11 +2582,11 @@
         <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_space_conversion</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">vector</span><span class="p">(</span><span class="n">face</span><span class="p">))</span>
         <span class="n">coordinates</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SurfacePoint</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfacePoint</span>
 
         <span class="k">return</span> <span class="n">SurfacePoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_half_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_half_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the half edge that ``edge`` of polygon ``label`` maps to under this conversion.</span>
 
@@ -2610,11 +2610,11 @@
 <span class="sd">            1</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">pyflatsurf</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyflatsurf</span>
 
         <span class="k">return</span> <span class="n">pyflatsurf</span><span class="o">.</span><span class="n">flatsurf</span><span class="o">.</span><span class="n">HalfEdge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_to_half_edge</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)])</span>
 
-    <span class="k">def</span> <span class="nf">_preimage_half_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">half_edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preimage_half_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">half_edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of the ``half_edge`` in the domain of this</span>
 <span class="sd">        conversion as a pair ``(label, edge)``.</span>
@@ -2638,7 +2638,7 @@
 
 <div class="viewcode-block" id="FlatTriangulationConversion.__eq__">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.FlatTriangulationConversion.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this conversion is indistinguishable from ``other``.</span>
 
@@ -2668,7 +2668,7 @@
 
 <div class="viewcode-block" id="to_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.to_pyflatsurf">[docs]</a>
-<span class="k">def</span> <span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given S a translation surface from sage-flatsurf return a</span>
 <span class="sd">    flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.</span>
@@ -2681,7 +2681,7 @@
 
 <div class="viewcode-block" id="sage_ring">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.sage_ring">[docs]</a>
-<span class="k">def</span> <span class="nf">sage_ring</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sage_ring</span><span class="p">(</span><span class="n">surface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the SageMath ring over which the pyflatsurf surface ``surface`` can</span>
 <span class="sd">    be constructed in sage-flatsurf.</span>
@@ -2695,7 +2695,7 @@
 <span class="sd">        Number Field in a with defining polynomial x^4 - 5*x^2 + 5 with a = 1.902113032590308?</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
     <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">surface</span><span class="o">.</span><span class="n">fromHalfEdge</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">positive</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
     <span class="k">return</span> <span class="n">Sequence</span><span class="p">(</span>
@@ -2706,7 +2706,7 @@
 
 <div class="viewcode-block" id="to_sage_ring">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.to_sage_ring">[docs]</a>
-<span class="k">def</span> <span class="nf">to_sage_ring</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_sage_ring</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a coordinate of a flatsurf::Vector, return a SageMath element from</span>
 <span class="sd">    which :meth:`from_pyflatsurf` can eventually construct a translation surface.</span>
@@ -2741,20 +2741,20 @@
 <span class="sd">        Real Numbers as (Rational Field)-Module</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">flatsurf.features</span> <span class="kn">import</span> <span class="n">cppyy_feature</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">cppyy_feature</span>
 
     <span class="n">cppyy_feature</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
-    <span class="kn">import</span> <span class="nn">cppyy</span>
-    <span class="kn">import</span> <span class="nn">gmpxxyy</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">cppyy</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">gmpxxyy</span>
 
-    <span class="k">def</span> <span class="nf">maybe_type</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maybe_type</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">t</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="c1"># The type constructed by t might not exist because the required C++ library has not been loaded.</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">ZZ</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">ZZ</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -2763,26 +2763,26 @@
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">mpq_class</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">QQ</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">eantic</span><span class="o">.</span><span class="n">renf_elem_class</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">pyeantic</span> <span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyeantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealEmbeddedNumberField</span>
 
         <span class="n">real_embedded_number_field</span> <span class="o">=</span> <span class="n">RealEmbeddedNumberField</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">real_embedded_number_field</span><span class="o">.</span><span class="n">number_field</span><span class="p">(</span><span class="n">real_embedded_number_field</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">IntegerRing</span><span class="p">]</span>
     <span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyexactreal</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactReals</span>
 
         <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">ZZ</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">RationalField</span><span class="p">]</span>
     <span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyexactreal</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactReals</span>
 
         <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">QQ</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="n">maybe_type</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">Element</span><span class="p">[</span><span class="n">cppyy</span><span class="o">.</span><span class="n">gbl</span><span class="o">.</span><span class="n">exactreal</span><span class="o">.</span><span class="n">NumberField</span><span class="p">]</span>
     <span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyexactreal</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactReals</span>
 
         <span class="k">return</span> <span class="n">ExactReals</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">module</span><span class="p">()</span><span class="o">.</span><span class="n">ring</span><span class="p">()</span><span class="o">.</span><span class="n">parameters</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -2794,7 +2794,7 @@
 
 <div class="viewcode-block" id="from_pyflatsurf">
 <a class="viewcode-back" href="../../../../geometry/pyflatsurf/conversion.html#flatsurf.geometry.pyflatsurf.conversion.from_pyflatsurf">[docs]</a>
-<span class="k">def</span> <span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_pyflatsurf</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given T a flatsurf::FlatTriangulation from libflatsurf/pyflatsurf, return a</span>
 <span class="sd">    sage-flatsurf translation surface.</span>

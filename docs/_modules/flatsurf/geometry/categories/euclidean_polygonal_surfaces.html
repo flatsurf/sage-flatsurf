@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.euclidean_polygonal_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -390,12 +390,12 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ####################################################################</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="n">SurfaceCategory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.surface_category</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfaceCategory</span>
 
 
 <div class="viewcode-block" id="EuclideanPolygonalSurfaces">
 <a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html#flatsurf.geometry.categories.euclidean_polygonal_surfaces.EuclideanPolygonalSurfaces">[docs]</a>
-<span class="k">class</span> <span class="nc">EuclideanPolygonalSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EuclideanPolygonalSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of surfaces built by gluing Euclidean polygons (or more</span>
 <span class="sd">    generally, polygons in two-dimensional real space).</span>
@@ -410,7 +410,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygonalSurfaces.super_categories">
 <a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html#flatsurf.geometry.categories.euclidean_polygonal_surfaces.EuclideanPolygonalSurfaces.super_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The categories such surfaces are also automatically contained in,</span>
 <span class="sd">        namely the category of surfaces built from polygons.</span>
@@ -423,14 +423,14 @@
 <span class="sd">            [Category of polygonal surfaces]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.polygonal_surfaces</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.polygonal_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">PolygonalSurfaces</span><span class="p">()]</span></div>
 
 
 <div class="viewcode-block" id="EuclideanPolygonalSurfaces.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html#flatsurf.geometry.categories.euclidean_polygonal_surfaces.EuclideanPolygonalSurfaces.ParentMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all surfaces that are built from polygons</span>
 <span class="sd">        in the real plane.</span>
@@ -441,7 +441,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygonalSurfaces.ParentMethods.graphical_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html#flatsurf.geometry.categories.euclidean_polygonal_surfaces.EuclideanPolygonalSurfaces.ParentMethods.graphical_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">graphical_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a graphical representation of this surface.</span>
 
@@ -461,7 +461,7 @@
 
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="s2">&quot;cached&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. &quot;</span>
@@ -470,14 +470,14 @@
 
                 <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;cached&quot;</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphicalSurface</span>
 
             <span class="k">return</span> <span class="n">GraphicalSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="EuclideanPolygonalSurfaces.ParentMethods.plot">
 <a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html#flatsurf.geometry.categories.euclidean_polygonal_surfaces.EuclideanPolygonalSurfaces.ParentMethods.plot">[docs]</a>
-        <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a plot of this surface.</span>
 
@@ -511,7 +511,7 @@
 
 <div class="viewcode-block" id="EuclideanPolygonalSurfaces.ParentMethods.plot_polygon">
 <a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html#flatsurf.geometry.categories.euclidean_polygonal_surfaces.EuclideanPolygonalSurfaces.ParentMethods.plot_polygon">[docs]</a>
-        <span class="k">def</span> <span class="nf">plot_polygon</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">plot_polygon</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">label</span><span class="p">,</span>
             <span class="n">graphical_surface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -585,7 +585,7 @@
                 <span class="n">graphical_surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
             <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.graphical.polygon</span> <span class="kn">import</span> <span class="n">GraphicalPolygon</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.graphical.polygon</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphicalPolygon</span>
 
             <span class="n">gp</span> <span class="o">=</span> <span class="n">GraphicalPolygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 

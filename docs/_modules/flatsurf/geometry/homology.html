@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.homology - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -432,19 +432,19 @@
 <span class="c1">#  You should have received a copy of the GNU General Public License</span>
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">######################################################################</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">sage.structure.parent</span> <span class="kn">import</span> <span class="n">Parent</span>
-<span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">Element</span>
-<span class="kn">from</span> <span class="nn">sage.categories.morphism</span> <span class="kn">import</span> <span class="n">Morphism</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.parent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.element</span><span class="w"> </span><span class="kn">import</span> <span class="n">Element</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">Morphism</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">MorphismSpace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">MorphismSpace</span>
 
 
 <div class="viewcode-block" id="SimplicialHomologyClass">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialHomologyClass</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialHomologyClass</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An element of a homology group.</span>
 
@@ -487,14 +487,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span> <span class="o">=</span> <span class="n">chain</span>
 
 <div class="viewcode-block" id="SimplicialHomologyClass.algebraic_intersection">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection">[docs]</a>
-    <span class="k">def</span> <span class="nf">algebraic_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">algebraic_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the algebraic intersection of this class of a closed curve with</span>
 <span class="sd">        ``other``.</span>
@@ -575,7 +575,7 @@
         <span class="k">return</span> <span class="n">intersection</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">self_on_left</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">self_on_left</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return this homology class scaled by ``c``.</span>
 
@@ -600,7 +600,7 @@
 <div class="viewcode-block" id="SimplicialHomologyClass.coefficients">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficients">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the coefficients of this element in terms of the generators of homology.</span>
 
@@ -619,7 +619,7 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">to_homology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">))</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return how this class compares to ``other`` with respect to the binary</span>
 <span class="sd">        relation ``op``.</span>
@@ -635,7 +635,7 @@
 <span class="sd">            False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.structure.richcmp</span> <span class="kn">import</span> <span class="n">op_EQ</span><span class="p">,</span> <span class="n">op_NE</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.richcmp</span><span class="w"> </span><span class="kn">import</span> <span class="n">op_EQ</span><span class="p">,</span> <span class="n">op_NE</span>
 
         <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="n">op_NE</span><span class="p">:</span>
             <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_richcmp_</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op_EQ</span><span class="p">)</span>
@@ -651,7 +651,7 @@
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_richcmp_</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value of this class that is compatible with</span>
 <span class="sd">        :meth:`_richcmp_`.</span>
@@ -667,7 +667,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this class.</span>
 
@@ -684,7 +684,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyClass.chain">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.chain">[docs]</a>
-    <span class="k">def</span> <span class="nf">chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a lift of this element to the</span>
 <span class="sd">        :meth:`SimplicialHomologyGroup.chain_module`.</span>
@@ -717,7 +717,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyClass.coefficient">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient">[docs]</a>
-    <span class="k">def</span> <span class="nf">coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the multiplicity of this class at a generator of homology.</span>
 
@@ -751,7 +751,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the formal sum of this class and ``other``.</span>
 
@@ -767,7 +767,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_sub_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sub_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the formal difference of this class and ``other``.</span>
 
@@ -783,7 +783,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_neg_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_neg_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the negative of this homology class.</span>
 
@@ -803,7 +803,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyClass.surface">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface on which this homology class in defined.</span>
 
@@ -820,7 +820,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this class is non-trivial.</span>
 
@@ -842,7 +842,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialHomologyGroup</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialHomologyGroup</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ``k``-th simplicial homology group of the ``surface`` with</span>
 <span class="sd">    ``coefficients``.</span>
@@ -903,18 +903,18 @@
 
     <span class="n">Element</span> <span class="o">=</span> <span class="n">SimplicialHomologyClass</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
         <span class="n">Parent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">surface</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;surface must be immutable&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
         <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ZZ</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;k must be an integer&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rings</span>
 
         <span class="k">if</span> <span class="n">coefficients</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">():</span>  <span class="c1"># pyright: ignore[reportCallIssue]</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;coefficients must be a ring&quot;</span><span class="p">)</span>
@@ -949,7 +949,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.is_absolute">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this is absolute homology (and not relative to some set</span>
 <span class="sd">        of points).</span>
@@ -968,7 +968,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.some_elements">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements">[docs]</a>
-    <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return some typical homology classes (for testing).</span>
 
@@ -986,7 +986,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.surface">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.surface">[docs]</a>
-    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface of which this is the homology.</span>
 
@@ -1005,7 +1005,7 @@
 <div class="viewcode-block" id="SimplicialHomologyGroup.chain_module">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">chain_module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chain_module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the free module of simplicial chains of the surface i.e., formal</span>
 <span class="sd">        sums of simplicies, e.g., formal sums of edges of the surface.</span>
@@ -1019,7 +1019,7 @@
 <span class="sd">            Free module generated by {(0, 1), (0, 0)} over Integer Ring</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">FreeModule</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">FreeModule</span>
 
         <span class="k">return</span> <span class="n">FreeModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">simplices</span><span class="p">())</span></div>
 
@@ -1027,7 +1027,7 @@
 <div class="viewcode-block" id="SimplicialHomologyGroup.simplices">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.simplices">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">simplices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simplices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the simplices that form the generators of :meth:`chain_module`.</span>
 
@@ -1082,7 +1082,7 @@
 <div class="viewcode-block" id="SimplicialHomologyGroup.change">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.change">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return this homology but in dimension ``k``.</span>
 
@@ -1110,7 +1110,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.boundary">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.boundary">[docs]</a>
-    <span class="k">def</span> <span class="nf">boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the boundary of ``chain`` as an element of the</span>
 <span class="sd">        :meth:`chain_module` in lower dimension.</span>
@@ -1154,7 +1154,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">C0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">chain_module</span><span class="p">()</span>
 
-            <span class="k">def</span> <span class="nf">to_C0</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">to_C0</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relative</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">C0</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
                 <span class="k">return</span> <span class="n">C0</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
@@ -1184,7 +1184,7 @@
 
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_chain_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_chain_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the chain complex of vector spaces that is implementing this</span>
 <span class="sd">        homology (if the ``&quot;generic&quot;`` implementation has been selected).</span>
@@ -1205,14 +1205,14 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">boundary</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">boundary</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
             <span class="n">boundary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span><span class="o">.</span><span class="n">boundary</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
             <span class="n">coefficients</span> <span class="o">=</span> <span class="n">boundary</span><span class="o">.</span><span class="n">dense_coefficient_list</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">dimension</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">chain_module</span><span class="p">()</span><span class="o">.</span><span class="n">indices</span><span class="p">()</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">coefficients</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ChainComplex</span><span class="p">,</span> <span class="n">matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainComplex</span><span class="p">,</span> <span class="n">matrix</span>
 
         <span class="k">return</span> <span class="n">ChainComplex</span><span class="p">(</span>
             <span class="p">{</span>
@@ -1230,7 +1230,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.zero">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.zero">[docs]</a>
-    <span class="k">def</span> <span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimplicialHomologyClass</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimplicialHomologyClass</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the zero homology class.</span>
 
@@ -1247,7 +1247,7 @@
 
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the free module isomorphic to homology, a lift from that</span>
 <span class="sd">        module to the chain module, and an inverse (modulo boundaries).</span>
@@ -1276,12 +1276,12 @@
 
             <span class="n">F</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_module</span><span class="p">()</span>
 
-            <span class="k">def</span> <span class="nf">lift</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">lift</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">homology</span><span class="p">,</span> <span class="s2">&quot;lift&quot;</span><span class="p">):</span>
                     <span class="c1"># Available for quotients of vector spaces</span>
                     <span class="k">return</span> <span class="n">homology</span><span class="o">.</span><span class="n">lift</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
                 <span class="c1"># Available on quotients of other modules</span>
                 <span class="k">return</span> <span class="n">vector</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lift</span><span class="p">()</span><span class="o">.</span><span class="n">lift</span><span class="p">())</span>
@@ -1291,7 +1291,7 @@
                 <span class="n">codomain</span><span class="o">=</span><span class="n">F</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="k">def</span> <span class="nf">_to_homology</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_to_homology</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
                 <span class="n">multiplicities</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dense_coefficient_list</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">get_order</span><span class="p">())</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycles</span><span class="p">(</span><span class="n">multiplicities</span><span class="p">)</span>
@@ -1315,7 +1315,7 @@
             <span class="s2">&quot;cannot compute homology with this implementation yet&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that :meth:`_homology` computes homology correctly.</span>
 
@@ -1340,7 +1340,7 @@
         <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">homology</span><span class="o">.</span><span class="n">gens</span><span class="p">():</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">to_homology</span><span class="p">(</span><span class="n">from_homology</span><span class="p">(</span><span class="n">gen</span><span class="p">)),</span> <span class="n">gen</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this homology.</span>
 
@@ -1369,7 +1369,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
             <span class="n">X</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_relative</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">ZZ</span><span class="p">:</span>
             <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span>
@@ -1377,7 +1377,7 @@
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">H_k</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">)&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return ``x`` as an element of this homology.</span>
 
@@ -1442,7 +1442,7 @@
 <div class="viewcode-block" id="SimplicialHomologyGroup.gens">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.gens">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SimplicialHomologyClass</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SimplicialHomologyClass</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return generators of homology.</span>
 
@@ -1479,7 +1479,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.ngens">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.ngens">[docs]</a>
-    <span class="k">def</span> <span class="nf">ngens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ngens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the Betti number of this homology.</span>
 
@@ -1498,7 +1498,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.degree">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.degree">[docs]</a>
-    <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the degree `k` for this homology `H_k`.</span>
 
@@ -1517,7 +1517,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.symplectic_basis">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.symplectic_basis">[docs]</a>
-    <span class="k">def</span> <span class="nf">symplectic_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SimplicialHomologyClass</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">symplectic_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SimplicialHomologyClass</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a symplectic basis of generators of this homology group.</span>
 
@@ -1539,21 +1539,21 @@
 <span class="sd">            [B[(0, 0)], B[(0, 1)]]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
 
         <span class="n">E</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span>
             <span class="p">[[</span><span class="n">g</span><span class="o">.</span><span class="n">algebraic_intersection</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">()]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">()],</span>
         <span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Fields</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fields</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.matrix.symplectic_basis</span> <span class="kn">import</span> <span class="n">symplectic_basis_over_field</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.matrix.symplectic_basis</span><span class="w"> </span><span class="kn">import</span> <span class="n">symplectic_basis_over_field</span>
 
             <span class="n">F</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">symplectic_basis_over_field</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">sage.matrix.symplectic_basis</span> <span class="kn">import</span> <span class="n">symplectic_basis_over_ZZ</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.matrix.symplectic_basis</span><span class="w"> </span><span class="kn">import</span> <span class="n">symplectic_basis_over_ZZ</span>
 
             <span class="n">F</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">symplectic_basis_over_ZZ</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
 
@@ -1567,7 +1567,7 @@
         <span class="p">]</span>  <span class="c1"># pyright: ignore</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_test_symplectic_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_symplectic_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`symplectic_basis` has been implemented correctly.</span>
 
@@ -1604,7 +1604,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyGroup.hom">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.hom">[docs]</a>
-    <span class="k">def</span> <span class="nf">hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the homomorphism of homology induced by ``f``.</span>
 
@@ -1636,9 +1636,9 @@
 <span class="sd">            [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.veech_group</span> <span class="kn">import</span> <span class="n">SurfaceMorphism</span>
-        <span class="kn">from</span> <span class="nn">sage.matrix.matrix0</span> <span class="kn">import</span> <span class="n">Matrix</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Hom</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.veech_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfaceMorphism</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.matrix.matrix0</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hom</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">SurfaceMorphism</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1680,7 +1680,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_Hom_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_Hom_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the space of morphisms from this homology to ``Y``.</span>
 <span class="sd">        k        EXAMPLES::</span>
@@ -1698,7 +1698,7 @@
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_Hom_</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this homology is indistinguishable from ``other``.</span>
 
@@ -1732,7 +1732,7 @@
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this homology that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -1764,7 +1764,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphismSpace">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialHomologyMorphismSpace</span><span class="p">(</span><span class="n">MorphismSpace</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialHomologyMorphismSpace</span><span class="p">(</span><span class="n">MorphismSpace</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The space of homomorphisms from the homology ``domain`` to ``codomain``.</span>
 
@@ -1797,8 +1797,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Hom</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hom</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">domain</span><span class="p">,</span>
@@ -1808,7 +1808,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphismSpace.an_element">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.an_element">[docs]</a>
-    <span class="k">def</span> <span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return some homomorphism in homology.</span>
 
@@ -1840,7 +1840,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphismSpace.identity">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.identity">[docs]</a>
-    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the identity homomorphism in this space (if it exists).</span>
 
@@ -1857,7 +1857,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_endomorphism_set</span><span class="p">():</span>
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">identity_matrix</span>
 
             <span class="n">matrix</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">ngens</span><span class="p">(),</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span>
@@ -1870,7 +1870,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphismSpace.zero">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.zero">[docs]</a>
-    <span class="k">def</span> <span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the zero homomorphism.</span>
 
@@ -1885,7 +1885,7 @@
 <span class="sd">                    [0 0]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">zero_matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">zero_matrix</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span>
             <span class="n">zero_matrix</span><span class="p">(</span>
@@ -1900,7 +1900,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphismSpace.base_ring">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.base_ring">[docs]</a>
-    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the ring over which these homomorphisms are defined.</span>
 
@@ -1919,7 +1919,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a picklable version of this space.</span>
 
@@ -1939,7 +1939,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">homset_category</span><span class="p">(),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this space of homomorphisms.</span>
 
@@ -1961,7 +1961,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphism_base">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_base">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialHomologyMorphism_base</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialHomologyMorphism_base</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all homomorphisms in homology.</span>
 
@@ -1990,7 +1990,7 @@
 <div class="viewcode-block" id="SimplicialHomologyMorphism_base.matrix">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_base.matrix">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the matrix describing this homomorphism on the generators of</span>
 <span class="sd">        homology (as a multiplication from the left).</span>
@@ -2016,14 +2016,14 @@
 <span class="sd">            [1 0 0 1]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
 
         <span class="k">return</span> <span class="n">matrix</span><span class="p">(</span>
             <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span><span class="o">.</span><span class="n">coefficients</span><span class="p">())</span> <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">gens</span><span class="p">()]</span>
         <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pointwise sum of this morphism and ``other``.</span>
 
@@ -2052,7 +2052,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span><span class="p">(),</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">self_on_left</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">self_on_left</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the morphism given by pointwise multiplying with ``x``.</span>
 
@@ -2074,7 +2074,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_neg_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_neg_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pointwise negative of this homomorphism.</span>
 
@@ -2100,7 +2100,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">(),</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the composition of this homomorphism and ``other``.</span>
 
@@ -2128,7 +2128,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span> <span class="o">*</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span><span class="p">(),</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this is not the homommorphism that is zero everywhere.</span>
 
@@ -2157,7 +2157,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphism_matrix">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_matrix">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialHomologyMorphism_matrix</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_base</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialHomologyMorphism_matrix</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A homomorphism of homology that is given by a matrix that describes the</span>
 <span class="sd">    homomorphism on the generators.</span>
@@ -2186,18 +2186,18 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">matrix</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
-            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span> <span class="k">as</span> <span class="n">copy</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span> <span class="k">as</span> <span class="n">copy</span>
 
             <span class="n">matrix</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
             <span class="n">matrix</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">=</span> <span class="n">matrix</span>
 
-    <span class="k">def</span> <span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``g`` under this homomorphism.</span>
 
@@ -2215,7 +2215,7 @@
 <span class="sd">             8*B[(0, 0)] + 4*B[(0, 1)]]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector</span>
 
         <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">coefficients</span><span class="p">())</span>
 
@@ -2227,7 +2227,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()(</span><span class="n">to_chain</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -2263,7 +2263,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_matrix</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -2281,7 +2281,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_repr_`.</span>
 
@@ -2304,7 +2304,7 @@
 
 <div class="viewcode-block" id="SimplicialHomologyMorphism_induced">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_induced">[docs]</a>
-<span class="k">class</span> <span class="nc">SimplicialHomologyMorphism_induced</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_base</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplicialHomologyMorphism_induced</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A homomorphism of homology induced by a morphism of surfaces.</span>
 
@@ -2330,12 +2330,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">morphism</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">morphism</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span> <span class="o">=</span> <span class="n">morphism</span>
 
-    <span class="k">def</span> <span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of the homology class ``x`` under this morphism.</span>
 
@@ -2359,7 +2359,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_image_homology</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_repr_` to produce a printable representation</span>
 <span class="sd">        of this homomorphism.</span>
@@ -2381,7 +2381,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Induced&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`_repr_` to produce a printable representation</span>
 <span class="sd">        of this homomorphism.</span>
@@ -2406,7 +2406,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Induced by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="si">!r}</span><span class="s2">&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -2443,7 +2443,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_morphism</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this homomorphism that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -2470,7 +2470,7 @@
 
 <div class="viewcode-block" id="SimplicialHomology">
 <a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomology">[docs]</a>
-<span class="k">def</span> <span class="nf">SimplicialHomology</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">SimplicialHomology</span><span class="p">(</span>
     <span class="n">surface</span><span class="p">,</span>
     <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

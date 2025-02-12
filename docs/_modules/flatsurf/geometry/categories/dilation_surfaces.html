@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.dilation_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
@@ -391,10 +391,10 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ####################################################################</span>
 
-<span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.category_with_axiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_axioms</span>
 
-<span class="kn">from</span> <span class="nn">flatsurf.cache</span> <span class="kn">import</span> <span class="n">cached_surface_method</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_surface_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.surface_category</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SurfaceCategory</span><span class="p">,</span>
     <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
 <span class="p">)</span>
@@ -402,7 +402,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces">[docs]</a>
-<span class="k">class</span> <span class="nc">DilationSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DilationSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of surfaces built from polygons with edges identified by</span>
 <span class="sd">    translations and homothety.</span>
@@ -417,7 +417,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.super_categories">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.super_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the categories that a dilation surfaces is also always a member</span>
 <span class="sd">        of.</span>
@@ -429,14 +429,14 @@
 <span class="sd">            [Category of rational similarity surfaces]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.similarity_surfaces</span> <span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories.similarity_surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">SimilaritySurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Rational</span><span class="p">()]</span></div>
 
 
 <div class="viewcode-block" id="DilationSurfaces.Positive">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.Positive">[docs]</a>
-    <span class="k">class</span> <span class="nc">Positive</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Positive</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by dilation surfaces that use homothety with</span>
 <span class="sd">        positive scaling.</span>
@@ -452,7 +452,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.Positive.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.Positive.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all positive dilation surfaces.</span>
 
@@ -462,7 +462,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.Positive.ParentMethods.is_dilation_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.Positive.ParentMethods.is_dilation_surface">[docs]</a>
-            <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this surface is a dilation surface.</span>
 
@@ -473,7 +473,7 @@
                 <span class="k">return</span> <span class="kc">True</span></div>
 
 
-            <span class="k">def</span> <span class="nf">_test_positive_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_test_positive_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Verify that this is a positive dilation surface.</span>
 
@@ -490,7 +490,7 @@
                 <span class="n">limit</span> <span class="o">=</span> <span class="kc">None</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                     <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
                         <span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()[:</span><span class="mi">32</span><span class="p">]</span>
@@ -506,10 +506,10 @@
 
 <div class="viewcode-block" id="DilationSurfaces.SubcategoryMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.SubcategoryMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SubcategoryMethods</span><span class="p">:</span>
 <div class="viewcode-block" id="DilationSurfaces.SubcategoryMethods.Positive">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.SubcategoryMethods.Positive">[docs]</a>
-        <span class="k">def</span> <span class="nf">Positive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">Positive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of surfaces glued by positive dilation.</span>
 
@@ -527,7 +527,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods">[docs]</a>
-    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all dilation surfaces.</span>
 
@@ -537,7 +537,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.ParentMethods.is_dilation_surface">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.is_dilation_surface">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a dilation surface.</span>
 
@@ -568,7 +568,7 @@
 
 
         <span class="nd">@staticmethod</span>
-        <span class="k">def</span> <span class="nf">_is_dilation_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_is_dilation_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether ``surface`` is a dilation surface by checking how</span>
 <span class="sd">            its polygons are glued.</span>
@@ -619,7 +619,7 @@
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; &quot;</span>
@@ -629,7 +629,7 @@
             <span class="n">labels</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
 
                 <span class="n">labels</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
 
@@ -651,7 +651,7 @@
                     <span class="c1"># have overridden this (just returning the identity matrix e.g.)</span>
                     <span class="c1"># and we want to deduce the matrix from the attached polygon</span>
                     <span class="c1"># edges instead.</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
 
                     <span class="n">matrix</span> <span class="o">=</span> <span class="n">SimilaritySurfaces</span><span class="o">.</span><span class="n">Oriented</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">edge_matrix</span><span class="o">.</span><span class="n">f</span><span class="p">(</span>  <span class="c1"># pylint: disable=no-member</span>
                         <span class="n">surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span>
@@ -668,7 +668,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.ParentMethods.is_veering_triangulated">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.is_veering_triangulated">[docs]</a>
-        <span class="k">def</span> <span class="nf">is_veering_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_veering_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this dilation surface is given by a veering triangulation.</span>
 
@@ -696,7 +696,7 @@
 <span class="sd">                False</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">slope</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">slope</span>
 
             <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
                 <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
@@ -709,7 +709,7 @@
             <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">True</span></div>
 
 
-        <span class="k">def</span> <span class="nf">_delaunay_edge_needs_flip_Linfinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_delaunay_edge_needs_flip_Linfinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether the provided edge which bounds two triangles should be flipped</span>
 <span class="sd">            to get closer to the L-infinity Delaunay decomposition.</span>
@@ -772,7 +772,7 @@
                 <span class="n">edge2R</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">edge2R</span>
 
             <span class="c1"># convexity check of the quadrilateral</span>
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span><span class="p">,</span> <span class="n">slope</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">ccw</span><span class="p">,</span> <span class="n">slope</span>
 
             <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">edge2L</span><span class="p">,</span> <span class="n">edge1R</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ccw</span><span class="p">(</span><span class="n">edge1L</span><span class="p">,</span> <span class="n">edge2R</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -826,7 +826,7 @@
 
             <span class="k">return</span> <span class="mi">0</span>
 
-        <span class="k">def</span> <span class="nf">_test_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_test_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Verify that this is a dilation surface.</span>
 
@@ -843,7 +843,7 @@
             <span class="n">limit</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
-                <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                 <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
                     <span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()[:</span><span class="mi">32</span><span class="p">]</span>
@@ -858,7 +858,7 @@
 <div class="viewcode-block" id="DilationSurfaces.ParentMethods.affine_automorphism_group">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.affine_automorphism_group">[docs]</a>
         <span class="nd">@cached_surface_method</span>
-        <span class="k">def</span> <span class="nf">affine_automorphism_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">affine_automorphism_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the group of affine automorphisms of this surface, i.e., the</span>
 <span class="sd">            group of homeomorphisms that can be locally expressed as affine</span>
@@ -884,7 +884,7 @@
                     <span class="s2">&quot;affine automorphism group only implemented for immutable surfaces&quot;</span>
                 <span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.veech_group</span> <span class="kn">import</span> <span class="n">AffineAutomorphismGroup_generic</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.veech_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">AffineAutomorphismGroup_generic</span>
 
             <span class="k">return</span> <span class="n">AffineAutomorphismGroup_generic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -892,7 +892,7 @@
 <div class="viewcode-block" id="DilationSurfaces.ParentMethods.veech_group">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.veech_group">[docs]</a>
         <span class="nd">@cached_surface_method</span>
-        <span class="k">def</span> <span class="nf">veech_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">veech_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the Veech group of this surface, i.e., the group of matrices</span>
 <span class="sd">            that fix the vertices of this surface.</span>
@@ -917,7 +917,7 @@
                     <span class="s2">&quot;affine automorphism group only implemented for immutable surfaces&quot;</span>
                 <span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">flatsurf.geometry.veech_group</span> <span class="kn">import</span> <span class="n">VeechGroup_generic</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.veech_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">VeechGroup_generic</span>
 
             <span class="k">return</span> <span class="n">VeechGroup_generic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 </div>
@@ -925,7 +925,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.FiniteType">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType">[docs]</a>
-    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of dilation surfaces built from a finite number of polygons.</span>
 
@@ -943,7 +943,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.FiniteType.ParentMethods">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType.ParentMethods">[docs]</a>
-        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all dilation surfaces built from</span>
 <span class="sd">            finitely many polygons.</span>
@@ -954,7 +954,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.FiniteType.ParentMethods.l_infinity_delaunay_triangulation">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType.ParentMethods.l_infinity_delaunay_triangulation">[docs]</a>
-            <span class="k">def</span> <span class="nf">l_infinity_delaunay_triangulation</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">l_infinity_delaunay_triangulation</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span>
             <span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1051,7 +1051,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">triangulated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.&quot;</span>
@@ -1062,7 +1062,7 @@
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the direction parameter of l_infinity_delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf&quot;</span>
@@ -1073,7 +1073,7 @@
 
 <div class="viewcode-block" id="DilationSurfaces.FiniteType.ParentMethods.veering_triangulation">
 <a class="viewcode-back" href="../../../../geometry/categories/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType.ParentMethods.veering_triangulation">[docs]</a>
-            <span class="k">def</span> <span class="nf">veering_triangulation</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">veering_triangulation</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span> <span class="n">l_infinity</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span>
             <span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1141,7 +1141,7 @@
 <span class="sd">                    sage: assert t.is_veering_triangulated()</span>
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="kn">import</span> <span class="nn">warnings</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="s2">&quot;the direction parameter of veering_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf&quot;</span>
@@ -1149,7 +1149,7 @@
 
                 <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
 
                 <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
                     <span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">DilationSurfaces</span><span class="p">()</span>

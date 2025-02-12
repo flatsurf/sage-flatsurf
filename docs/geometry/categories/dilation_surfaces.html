@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>dilation_surfaces - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
@@ -361,12 +361,12 @@ category framework in sage-flatsurf.</p>
 <p>Normally, you won’t create this (or any other) category directly. The correct
 category is automatically determined for immutable surfaces.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">DilationSurfaces</span><span class="p">())</span>
 <span class="kc">True</span>
 </pre></div>
@@ -377,7 +377,7 @@ category is automatically determined for immutable surfaces.</p>
 <dd><p>The category of surfaces built from polygons with edges identified by
 translations and homothety.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">DilationSurfaces</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">dilation</span> <span class="n">surfaces</span>
 </pre></div>
@@ -387,11 +387,11 @@ translations and homothety.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FiniteType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/dilation_surfaces.html#DilationSurfaces.FiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType" title="Link to this definition">¶</a></dt>
 <dd><p>The category of dilation surfaces built from a finite number of polygons.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="ow">in</span> <span class="n">DilationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -426,7 +426,7 @@ triangles have opposite signs. Labels are chosen so that this sign is
 preserved (as a function of labels).</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s0</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">field</span> <span class="o">=</span> <span class="n">s0</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
@@ -499,7 +499,7 @@ triangles have opposite signs. Labels are chosen so that this sign is
 preserved (as a function of labels).</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s0</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">field</span> <span class="o">=</span> <span class="n">s0</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
@@ -561,10 +561,10 @@ to put it here.</p>
 group of homeomorphisms that can be locally expressed as affine
 transformations.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">dilation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">dilation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">dilation_surfaces</span><span class="o">.</span><span class="n">genus_two_square</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">A</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">affine_automorphism_group</span><span class="p">();</span> <span class="n">A</span>
-<span class="n">AffineAutomorphismGroup</span><span class="p">(</span><span class="n">Genus</span> <span class="mi">2</span> <span class="n">Positive</span> <span class="n">Dilation</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">right</span> <span class="n">triangles</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">hexagon</span><span class="p">)</span>
+<span class="n">AffineAutomorphismGroup</span><span class="p">(</span><span class="n">Genus</span> <span class="mi">2</span> <span class="n">Positive</span> <span class="n">Dilation</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="mi">2</span> <span class="n">right</span> <span class="n">triangles</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">hexagon</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -576,7 +576,7 @@ transformations.</p>
 <p>See <a class="reference internal" href="similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface()</span></code></a>
 for details.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_dilation_surface</span><span class="p">(</span><span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -594,7 +594,7 @@ for details.</p>
 <p>A triangulation is <em>veering</em> if none of its triangles are made of
 three edges of the same slope (positive or negative).</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Polygon</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Polygon</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)]))</span>
@@ -621,10 +621,10 @@ three edges of the same slope (positive or negative).</p>
 <dd><p>Return the Veech group of this surface, i.e., the group of matrices
 that fix the vertices of this surface.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">dilation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">dilation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">dilation_surfaces</span><span class="o">.</span><span class="n">genus_two_square</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">V</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">veech_group</span><span class="p">();</span> <span class="n">V</span>
-<span class="n">VeechGroup</span><span class="p">(</span><span class="n">Genus</span> <span class="mi">2</span> <span class="n">Positive</span> <span class="n">Dilation</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">right</span> <span class="n">triangles</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">hexagon</span><span class="p">)</span>
+<span class="n">VeechGroup</span><span class="p">(</span><span class="n">Genus</span> <span class="mi">2</span> <span class="n">Positive</span> <span class="n">Dilation</span> <span class="n">Surface</span> <span class="n">built</span> <span class="kn">from</span><span class="w"> </span><span class="mi">2</span> <span class="n">right</span> <span class="n">triangles</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">hexagon</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -637,7 +637,7 @@ that fix the vertices of this surface.</p>
 <dd><p>The axiom satisfied by dilation surfaces that use homothety with
 positive scaling.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="s1">&#39;Positive&#39;</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -670,7 +670,7 @@ for details.</p>
 <span class="sig-name descname"><span class="pre">Positive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/dilation_surfaces.html#DilationSurfaces.SubcategoryMethods.Positive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.SubcategoryMethods.Positive" title="Link to this definition">¶</a></dt>
 <dd><p>Return the subcategory of surfaces glued by positive dilation.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">DilationSurfaces</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">Positive</span><span class="p">()</span>
 <span class="n">Category</span> <span class="n">of</span> <span class="n">positive</span> <span class="n">dilation</span> <span class="n">surfaces</span>
@@ -686,7 +686,7 @@ for details.</p>
 <dd><p>Return the categories that a dilation surfaces is also always a member
 of.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">DilationSurfaces</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.categories</span><span class="w"> </span><span class="kn">import</span> <span class="n">DilationSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">DilationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()</span>
 <span class="p">[</span><span class="n">Category</span> <span class="n">of</span> <span class="n">rational</span> <span class="n">similarity</span> <span class="n">surfaces</span><span class="p">]</span>
 </pre></div>

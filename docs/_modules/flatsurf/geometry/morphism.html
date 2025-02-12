@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.morphism - sage-flatsurf 0.7.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
@@ -435,17 +435,17 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ********************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">sage.categories.homset</span> <span class="kn">import</span> <span class="n">Homset</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
-<span class="kn">from</span> <span class="nn">sage.categories.morphism</span> <span class="kn">import</span> <span class="n">Morphism</span><span class="p">,</span> <span class="n">IdentityMorphism</span> <span class="k">as</span> <span class="n">IdentityMorphism_sage</span>
-<span class="kn">from</span> <span class="nn">sage.structure.unique_representation</span> <span class="kn">import</span> <span class="n">UniqueRepresentation</span>
-<span class="kn">from</span> <span class="nn">sage.rings.ring</span> <span class="kn">import</span> <span class="n">Ring</span>
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">OrientedSimilaritySurface</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.homset</span><span class="w"> </span><span class="kn">import</span> <span class="n">Homset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.misc.cachefunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.categories.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">Morphism</span><span class="p">,</span> <span class="n">IdentityMorphism</span> <span class="k">as</span> <span class="n">IdentityMorphism_sage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.structure.unique_representation</span><span class="w"> </span><span class="kn">import</span> <span class="n">UniqueRepresentation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sage.rings.ring</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrientedSimilaritySurface</span>
 
 
 <div class="viewcode-block" id="UnknownRing">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownRing">[docs]</a>
-<span class="k">class</span> <span class="nc">UnknownRing</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">Ring</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownRing</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">Ring</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A placeholder for a SageMath ring that has been lost in the process of</span>
 <span class="sd">    creating a morphism.</span>
@@ -492,13 +492,13 @@
 
 <div class="viewcode-block" id="UnknownRing.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownRing.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZ</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ZZ</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this ring.</span>
 
@@ -522,7 +522,7 @@
 
 <div class="viewcode-block" id="UnknownSurface">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">UnknownSurface</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownSurface</span><span class="p">(</span><span class="n">UniqueRepresentation</span><span class="p">,</span> <span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A placeholder surface for a morphism&#39;s domain or codomain when that</span>
 <span class="sd">    codomain is unknown or mutable.</span>
@@ -569,7 +569,7 @@
 
 <div class="viewcode-block" id="UnknownSurface.is_mutable">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface.is_mutable">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_mutable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface can be mutated.</span>
 
@@ -588,7 +588,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a point on this surface for testing.</span>
 
@@ -610,7 +610,7 @@
 
 <div class="viewcode-block" id="UnknownSurface.roots">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface.roots">[docs]</a>
-    <span class="k">def</span> <span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the root labels of the connected components of this surface.</span>
 
@@ -633,7 +633,7 @@
 
 <div class="viewcode-block" id="UnknownSurface.is_finite_type">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface.is_finite_type">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_finite_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_finite_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is built from a finite number of polygons.</span>
 
@@ -659,7 +659,7 @@
 
 <div class="viewcode-block" id="UnknownSurface.is_compact">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface.is_compact">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is compact as a topological space.</span>
 
@@ -683,7 +683,7 @@
 
 <div class="viewcode-block" id="UnknownSurface.is_with_boundary">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface.is_with_boundary">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface has a boundary of unglued edges.</span>
 
@@ -714,7 +714,7 @@
 
 <div class="viewcode-block" id="UnknownSurface.opposite_edge">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface.opposite_edge">[docs]</a>
-    <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the edge that is glued to the ``edge`` of the polygon with</span>
 <span class="sd">        ``label``.</span>
@@ -739,7 +739,7 @@
 
 <div class="viewcode-block" id="UnknownSurface.polygon">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.UnknownSurface.polygon">[docs]</a>
-    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the polygon with ``label``.</span>
 
@@ -760,63 +760,63 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot determine polygons of the unknown surface&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_test_an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_eq_reflexive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_eq_reflexive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_eq_symmetric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_eq_symmetric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_eq_transitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_eq_transitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_neq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_neq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_labels_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_labels_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_eq_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_eq_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_test_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># This generic tests does not make sense on the unknown surface and is herefore disabled.</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this surface.</span>
 
@@ -836,7 +836,7 @@
 
 <div class="viewcode-block" id="MorphismSpace">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.MorphismSpace">[docs]</a>
-<span class="k">class</span> <span class="nc">MorphismSpace</span><span class="p">(</span><span class="n">Homset</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MorphismSpace</span><span class="p">(</span><span class="n">Homset</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A set of morphisms between structures attached to surfaces.</span>
 
@@ -871,7 +871,7 @@
 
 <div class="viewcode-block" id="MorphismSpace.base_ring">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.MorphismSpace.base_ring">[docs]</a>
-    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the base ring of this morphism space.</span>
 
@@ -894,7 +894,7 @@
         <span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
 
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;This morphism set has no base ring. Are you trying to get the base ring of a surface? Use .codomain().base_ring() instead.&quot;</span>
@@ -902,7 +902,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a morphism in this set (for testing).</span>
 
@@ -922,7 +922,7 @@
 
 <div class="viewcode-block" id="MorphismSpace.identity">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.MorphismSpace.identity">[docs]</a>
-    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the identical morphism from the domain to the codomain of this</span>
 <span class="sd">        space.</span>
@@ -941,7 +941,7 @@
 
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_structure_preserving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_structure_preserving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether morphisms in this space are preserving all structure</span>
 <span class="sd">        (that can be preserved).</span>
@@ -956,14 +956,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># We don&#39;t use category_of because it adds a layer of caching that is</span>
         <span class="c1"># incompatible with our non-uniqueness of surfaces.</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Hom</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hom</span>
 
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">homset_category</span><span class="p">()</span>
             <span class="o">==</span> <span class="n">Hom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span><span class="o">.</span><span class="n">homset_category</span><span class="p">()</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test whether :meth:`_an_element_` has been implemented correctly.</span>
 
@@ -983,7 +983,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_an_element</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test whether the morphims in this space are functional.</span>
 
@@ -1004,7 +1004,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_elements</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_eq_reflexive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_eq_reflexive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test whether the morphisms implement `==` correctly.</span>
 
@@ -1025,7 +1025,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_elements_eq_reflexive</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_eq_symmetric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_eq_symmetric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test whether the morphisms implement `==` correctly.</span>
 
@@ -1046,7 +1046,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_elements_eq_symmetric</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_eq_transitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_eq_transitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test whether the morphisms implement `==` correctly.</span>
 
@@ -1067,7 +1067,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_elements_eq_transitive</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_elements_neq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_elements_neq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test whether the morphisms implement `!=` correctly.</span>
 
@@ -1088,7 +1088,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_elements_neq</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test whether the morphisms implement :meth:`some_elements` correctly.</span>
 
@@ -1111,7 +1111,7 @@
 
 <div class="viewcode-block" id="MorphismSpace.__reduce__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.MorphismSpace.__reduce__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a serializable version of this morphism.</span>
 
@@ -1130,7 +1130,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphismSpace">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphismSpace">[docs]</a>
-<span class="k">class</span> <span class="nc">SurfaceMorphismSpace</span><span class="p">(</span><span class="n">MorphismSpace</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SurfaceMorphismSpace</span><span class="p">(</span><span class="n">MorphismSpace</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The set of morphisms from surface ``domain`` to surface ``codomain``.</span>
 
@@ -1170,7 +1170,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphismSpace.identity">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphismSpace.identity">[docs]</a>
-    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the identical morphism from the domain to the codomain of this</span>
 <span class="sd">        space.</span>
@@ -1190,7 +1190,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphismSpace.__repr__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphismSpace.__repr__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this space.</span>
 
@@ -1216,7 +1216,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphismSpace.__reduce__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphismSpace.__reduce__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a serializable version of this morphism.</span>
 
@@ -1237,7 +1237,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphismSpace.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphismSpace.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this space is indistinguishable from ``other``.</span>
 
@@ -1262,7 +1262,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphismSpace.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphismSpace.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this space that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -1283,7 +1283,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">SurfaceMorphism</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SurfaceMorphism</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for all morphisms that map from a ``domain`` surface to</span>
 <span class="sd">    a ``codomain`` surface.</span>
@@ -1318,7 +1318,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_parent</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parent</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the homset containing the surface morphisms from ``domain`` to</span>
 <span class="sd">        ``codomain``.</span>
@@ -1353,7 +1353,7 @@
         <span class="k">return</span> <span class="n">SurfaceMorphismSpace</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_category</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_category</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the category for a morphism of this type from ``domain`` to</span>
 <span class="sd">        ``codomain``.</span>
@@ -1376,7 +1376,7 @@
         <span class="k">return</span> <span class="n">domain</span><span class="o">.</span><span class="n">category</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">codomain</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a morphism of this type from ``domain`` to ``codomain``.</span>
 
@@ -1403,7 +1403,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism.__getattr__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism.__getattr__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Redirect attribute lookup to the codomain.</span>
 
@@ -1443,7 +1443,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; has no attribute &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;This methods returns a morphism instead of a surface. Use .codomain().</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> to access the surface instead of the morphism.&quot;</span>
@@ -1454,7 +1454,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism.section">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a section of this morphism from its codomain to its domain.</span>
 
@@ -1474,7 +1474,7 @@
         <span class="k">return</span> <span class="n">SectionMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1482,7 +1482,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism.__call__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``x`` under this morphism.</span>
 
@@ -1518,7 +1518,7 @@
 <span class="sd">            NotImplementedError: cannot map Integer through ...</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SurfacePoint</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.surface_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfacePoint</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SurfacePoint</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">():</span>
@@ -1530,7 +1530,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot map </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> through </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> yet&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of the surface point ``p`` under this morphism.</span>
 
@@ -1555,7 +1555,7 @@
             <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> cannot compute the image of a point yet&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a preimage of the surface point ``q`` under this morphism.</span>
 
@@ -1579,7 +1579,7 @@
             <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> cannot compute a preimage of a point yet&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`_section_point` actually produces a section.</span>
 
@@ -1599,7 +1599,7 @@
         <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">tester</span><span class="o">.</span><span class="n">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">some_elements</span><span class="p">()):</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">identity</span><span class="p">(</span><span class="n">q</span><span class="p">),</span> <span class="n">q</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of the homology class ``g`` under this morphism.</span>
 
@@ -1650,7 +1650,7 @@
             <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">,</span>
         <span class="p">)(</span><span class="n">g</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a preimage of the homology class ``h`` under this morphism.</span>
 
@@ -1687,7 +1687,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">SurfaceMorphism</span><span class="o">.</span><span class="n">_image_homology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">(),</span> <span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`_section_homology` actually produces a</span>
 <span class="sd">        section.</span>
@@ -1711,7 +1711,7 @@
             <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">identity</span><span class="p">)(</span><span class="n">q</span><span class="p">),</span> <span class="n">q</span><span class="p">)</span>
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the matrix `M` describing how this morphism acts on homology,</span>
 <span class="sd">        i.e., for a homology class given by a vector `c` with respect to a</span>
@@ -1750,7 +1750,7 @@
         <span class="n">domain_gens</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
         <span class="n">codomain_gens</span> <span class="o">=</span> <span class="n">codomain</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">ZZ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">ZZ</span>
 
         <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">ZZ</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">codomain_gens</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">domain_gens</span><span class="p">),</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1762,7 +1762,7 @@
         <span class="n">M</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">M</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the matrix describing a section of this morphism on the level of</span>
 <span class="sd">        homology, see :meth:`_image_homology_matrix`.</span>
@@ -1791,7 +1791,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">M</span><span class="o">.</span><span class="n">pseudoinverse</span><span class="p">()</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of a generator of homology ``gen``.</span>
 
@@ -1836,7 +1836,7 @@
 
         <span class="k">return</span> <span class="n">codomain</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a preimage of the homology generator ``gen``.</span>
 
@@ -1866,7 +1866,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">(),</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of the homology class generated by ``edge`` in the</span>
 <span class="sd">        polygon ``label`` under this morphism.</span>
@@ -1899,7 +1899,7 @@
             <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> cannot compute the image of an edge yet&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a preimage of an edge in homology.</span>
 
@@ -1935,7 +1935,7 @@
             <span class="s2">&quot;not a single edge maps to this edge, cannot implement preimage of this edge yet&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the composition of this morphism and ``other``.</span>
 
@@ -1977,7 +1977,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -1998,7 +1998,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -2021,7 +2021,7 @@
 
 <div class="viewcode-block" id="SectionMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SectionMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">SectionMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SectionMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The formal section of a morphism.</span>
 
@@ -2051,14 +2051,14 @@
 
 <div class="viewcode-block" id="SectionMorphism.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SectionMorphism.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">morphism</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">morphism</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span> <span class="o">=</span> <span class="n">morphism</span></div>
 
 
 <div class="viewcode-block" id="SectionMorphism.section">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SectionMorphism.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a section of this section.</span>
 
@@ -2076,7 +2076,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">morphism</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">morphism</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a formal section of ``morphism``.</span>
 
@@ -2100,35 +2100,35 @@
             <span class="n">morphism</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">morphism</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="n">morphism</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_point`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._section_point`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_section_point</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_point`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._image_point`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_image_point</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._section_homology`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_section_homology</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_homology`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._image_homology`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_image_homology</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_gen`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._section_homology_gen`.</span>
@@ -2137,7 +2137,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_section_homology_gen</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_homology_gen`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._image_homology_gen`.</span>
@@ -2146,7 +2146,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_image_homology_gen</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_matrix`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._section_homology_matrix`.</span>
@@ -2156,7 +2156,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_section_homology_matrix</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_homology_matrix`, see</span>
 <span class="sd">        :meth:`SurfaceMorphism._image_homology_matrix`.</span>
@@ -2166,7 +2166,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_image_homology_matrix</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -2183,7 +2183,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_section_homology_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_homology_edge`.</span>
 
@@ -2202,7 +2202,7 @@
 
 <div class="viewcode-block" id="SectionMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SectionMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this section is indistinguishable from ``other``.</span>
 
@@ -2223,7 +2223,7 @@
 
 <div class="viewcode-block" id="SectionMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SectionMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -2240,7 +2240,7 @@
         <span class="k">return</span> <span class="o">-</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -2255,7 +2255,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Section&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -2279,7 +2279,7 @@
 
 <div class="viewcode-block" id="CompositionMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.CompositionMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">CompositionMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CompositionMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The formal composition of two morphisms between surfaces.</span>
 
@@ -2315,7 +2315,7 @@
 
 <div class="viewcode-block" id="CompositionMorphism.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.CompositionMorphism.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="c1"># The morphisms as they are executed (in chronological order).</span>
@@ -2332,7 +2332,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a composition of ``lhs`` to be executed after ``rhs``.</span>
 
@@ -2353,7 +2353,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="n">rhs</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="n">lhs</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluate this morphism on the point ``p``.</span>
 
@@ -2378,7 +2378,7 @@
             <span class="n">p</span> <span class="o">=</span> <span class="n">morphism</span><span class="o">.</span><span class="n">_image_point</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">p</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a preimage of the point ``q``.</span>
 
@@ -2403,7 +2403,7 @@
             <span class="n">q</span> <span class="o">=</span> <span class="n">morphism</span><span class="o">.</span><span class="n">_section_point</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">q</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to compute the image of homology under this morphism.</span>
 
@@ -2450,7 +2450,7 @@
 
         <span class="k">return</span> <span class="n">matrix</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -2470,7 +2470,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">homology</span><span class="p">()((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)),</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -2487,7 +2487,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Composite&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -2513,7 +2513,7 @@
 <div class="viewcode-block" id="CompositionMorphism.section">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.CompositionMorphism.section">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a section of this morphism.</span>
 
@@ -2544,14 +2544,14 @@
 <span class="sd">                              To:   Triangulation of Translation Surface in H_2(2) built from a regular octagon</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">prod</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">prod</span>
 
         <span class="k">return</span> <span class="n">prod</span><span class="p">(</span><span class="n">morphism</span><span class="o">.</span><span class="n">section</span><span class="p">()</span> <span class="k">for</span> <span class="n">morphism</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphisms</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CompositionMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.CompositionMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -2575,7 +2575,7 @@
 
 <div class="viewcode-block" id="CompositionMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.CompositionMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -2598,7 +2598,7 @@
 
 <div class="viewcode-block" id="IdentityMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.IdentityMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">IdentityMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">,</span> <span class="n">IdentityMorphism_sage</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IdentityMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">,</span> <span class="n">IdentityMorphism_sage</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The identity morphism from a surface to itself.</span>
 
@@ -2631,7 +2631,7 @@
 
 <div class="viewcode-block" id="IdentityMorphism.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.IdentityMorphism.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">parent</span><span class="o">.</span><span class="n">codomain</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;domain and codomain of identity must be identical&quot;</span><span class="p">)</span>
 
@@ -2639,7 +2639,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the identity morphism on ``domain``.</span>
 
@@ -2658,7 +2658,7 @@
 
 <div class="viewcode-block" id="IdentityMorphism.section">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.IdentityMorphism.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an inverse of this morphism, i.e., this morphism itself.</span>
 
@@ -2674,7 +2674,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``p`` under this morphism.</span>
 
@@ -2689,7 +2689,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">p</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to compute the image of homology under this morphism.</span>
 
@@ -2706,7 +2706,7 @@
 
         <span class="k">return</span> <span class="n">codomain</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this morphism.</span>
 
@@ -2723,7 +2723,7 @@
 
 <div class="viewcode-block" id="IdentityMorphism.__reduce__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.IdentityMorphism.__reduce__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a serializable version of this morphism.</span>
 
@@ -2742,7 +2742,7 @@
 
 <div class="viewcode-block" id="IdentityMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.IdentityMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -2770,7 +2770,7 @@
 
 <div class="viewcode-block" id="IdentityMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.IdentityMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -2789,7 +2789,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism_factorization">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism_factorization">[docs]</a>
-<span class="k">class</span> <span class="nc">SurfaceMorphism_factorization</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SurfaceMorphism_factorization</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism between surfaces that is backed by another morphism, usually a</span>
 <span class="sd">    :class:`CompositionMorphism`.</span>
@@ -2825,7 +2825,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology` by invoking the</span>
 <span class="sd">        underlying morphism of this factorization.</span>
@@ -2843,7 +2843,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span><span class="o">.</span><span class="n">_image_homology</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_homology` by invoking the</span>
 <span class="sd">        underlying morphism of this factorization.</span>
@@ -2861,7 +2861,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span><span class="o">.</span><span class="n">_section_homology</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_matrix` by invoking</span>
 <span class="sd">        the underlying morphism of this factorization.</span>
@@ -2884,7 +2884,7 @@
             <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_matrix` by invoking</span>
 <span class="sd">        the underlying morphism of this factorization.</span>
@@ -2907,7 +2907,7 @@
             <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_gen` by invoking the</span>
 <span class="sd">        underlying morphism of this factorization.</span>
@@ -2927,7 +2927,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span><span class="o">.</span><span class="n">_image_homology_gen</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_homology_gen` by invoking the</span>
 <span class="sd">        underlying morphism of this factorization.</span>
@@ -2947,7 +2947,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span><span class="o">.</span><span class="n">_section_homology_gen</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implement :meth:`SurfaceMorphism._image_homology_edge` by invoking the</span>
 <span class="sd">        underlying morphism of this factorization.</span>
@@ -2966,7 +2966,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span><span class="o">.</span><span class="n">_image_homology_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implement :meth:`SurfaceMorphism._section_homology_edge` by invoking the</span>
 <span class="sd">        underlying morphism of this factorization.</span>
@@ -2985,7 +2985,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span><span class="o">.</span><span class="n">_section_homology_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of a point under this morphism by invoking the</span>
 <span class="sd">        underlying morphism of this factorization.</span>
@@ -3001,7 +3001,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span><span class="o">.</span><span class="n">_image_point</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a preimage of a point under this morphism by determining a</span>
 <span class="sd">        preimage of the underlying morphism of this factorization.</span>
@@ -3019,7 +3019,7 @@
 
 <div class="viewcode-block" id="SurfaceMorphism_factorization._factorization">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SurfaceMorphism_factorization._factorization">[docs]</a>
-    <span class="k">def</span> <span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the morphism underlying this morphism.</span>
 
@@ -3046,7 +3046,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_test_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`_factorization` has been implemented correctly.</span>
 
@@ -3068,7 +3068,7 @@
 
 <div class="viewcode-block" id="NamedUnknownMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedUnknownMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">NamedUnknownMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NamedUnknownMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism that is not functional, typically a placeholder for</span>
 <span class="sd">    functionality that has not been implemented yet.</span>
@@ -3095,12 +3095,12 @@
 
 <div class="viewcode-block" id="NamedUnknownMorphism.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedUnknownMorphism.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -3116,7 +3116,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not test whether this implements :meth:`_section_point` correctly.</span>
 
@@ -3129,7 +3129,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not test whether this implements :meth:`_section_homology` correctly.</span>
 
@@ -3144,7 +3144,7 @@
 
 <div class="viewcode-block" id="NamedUnknownMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedUnknownMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -3164,7 +3164,7 @@
 
 <div class="viewcode-block" id="NamedUnknownMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedUnknownMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -3181,7 +3181,7 @@
 
 <div class="viewcode-block" id="NamedUnknownMorphism.__reduce__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedUnknownMorphism.__reduce__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a serializable version of this morphism.</span>
 
@@ -3204,7 +3204,7 @@
 
 <div class="viewcode-block" id="unpickle_NamedUnknownMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.unpickle_NamedUnknownMorphism">[docs]</a>
-<span class="k">def</span> <span class="nf">unpickle_NamedUnknownMorphism</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unpickle_NamedUnknownMorphism</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unpickle a :class:`NamedUnknownMorphism`.</span>
 
@@ -3227,7 +3227,7 @@
 
 <div class="viewcode-block" id="NamedFactorizationMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedFactorizationMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">NamedFactorizationMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism_factorization</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NamedFactorizationMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism_factorization</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism that is implement by another morphism but has a more appealing</span>
 <span class="sd">    name when printing.</span>
@@ -3262,7 +3262,7 @@
 
 <div class="viewcode-block" id="NamedFactorizationMorphism.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedFactorizationMorphism.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">factorization</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">factorization</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
@@ -3274,7 +3274,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;factorization must end at the codomain of the morphism&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth;`__repr__`.</span>
 
@@ -3296,7 +3296,7 @@
 
 <div class="viewcode-block" id="NamedFactorizationMorphism._factorization">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedFactorizationMorphism._factorization">[docs]</a>
-    <span class="k">def</span> <span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the morphism underlying this morphism.</span>
 
@@ -3329,7 +3329,7 @@
 
 <div class="viewcode-block" id="NamedFactorizationMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedFactorizationMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -3358,7 +3358,7 @@
 
 <div class="viewcode-block" id="NamedFactorizationMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.NamedFactorizationMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -3384,7 +3384,7 @@
 
 <div class="viewcode-block" id="TriangulationMorphism_base">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.TriangulationMorphism_base">[docs]</a>
-<span class="k">class</span> <span class="nc">TriangulationMorphism_base</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TriangulationMorphism_base</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for morphisms from a surface to its triangulation.</span>
 
@@ -3409,7 +3409,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of the ``edge`` of the polygon with ``label`` in the</span>
 <span class="sd">        codomain of this triangulation.</span>
@@ -3433,7 +3433,7 @@
             <span class="s2">&quot;this triangulation morphism is not functional because it does not implement _image_edge() yet&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a preimage of the ``edge`` of the polygon with ``label`` in the</span>
 <span class="sd">        domain of this triangulation.</span>
@@ -3465,7 +3465,7 @@
 
         <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;triangle must come from a polygon before triangulation&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :class:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -3483,7 +3483,7 @@
 
         <span class="k">return</span> <span class="n">codomain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_point`.</span>
 
@@ -3516,7 +3516,7 @@
             <span class="kc">False</span>
         <span class="p">),</span> <span class="s2">&quot;point must be in one of the polygons that split up the original polygon&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_point`.</span>
 
@@ -3558,7 +3558,7 @@
             <span class="kc">False</span>
         <span class="p">),</span> <span class="s2">&quot;point must be in the polygon from which the triangulation originated&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -3579,7 +3579,7 @@
 
 <div class="viewcode-block" id="TriangulationMorphism_LazyTriangulatedSurface">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.TriangulationMorphism_LazyTriangulatedSurface">[docs]</a>
-<span class="k">class</span> <span class="nc">TriangulationMorphism_LazyTriangulatedSurface</span><span class="p">(</span><span class="n">TriangulationMorphism_base</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TriangulationMorphism_LazyTriangulatedSurface</span><span class="p">(</span><span class="n">TriangulationMorphism_base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A triangulation that maps a surface into a class :class:`~flatsurf.geometry.lazy.LazyTriangulatedSurface`.</span>
 
@@ -3606,7 +3606,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`TriangulationMorphism_base._image_edge`.</span>
 
@@ -3623,7 +3623,7 @@
 
 <div class="viewcode-block" id="TriangulationMorphism_LazyTriangulatedSurface.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.TriangulationMorphism_LazyTriangulatedSurface.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this triangulation is indistinguishable from ``other``.</span>
 
@@ -3643,7 +3643,7 @@
 
 <div class="viewcode-block" id="TriangulationMorphism_LazyTriangulatedSurface.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.TriangulationMorphism_LazyTriangulatedSurface.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this triangulation that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -3663,7 +3663,7 @@
 
 <div class="viewcode-block" id="DelaunayTriangulationMorphism_delaunay_decomposition">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayTriangulationMorphism_delaunay_decomposition">[docs]</a>
-<span class="k">class</span> <span class="nc">DelaunayTriangulationMorphism_delaunay_decomposition</span><span class="p">(</span><span class="n">TriangulationMorphism_base</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DelaunayTriangulationMorphism_delaunay_decomposition</span><span class="p">(</span><span class="n">TriangulationMorphism_base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A triangulation that maps a a Delaunay decomposition into the Delaunay</span>
 <span class="sd">    triangulation from which it was created.</span>
@@ -3697,7 +3697,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`TriangulationMorphism_base._image_edge.`</span>
 
@@ -3715,7 +3715,7 @@
 
 <div class="viewcode-block" id="DelaunayTriangulationMorphism_delaunay_decomposition.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayTriangulationMorphism_delaunay_decomposition.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -3737,7 +3737,7 @@
 
 <div class="viewcode-block" id="DelaunayTriangulationMorphism_delaunay_decomposition.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayTriangulationMorphism_delaunay_decomposition.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with</span>
 <span class="sd">        :meth:`__eq__`.</span>
@@ -3759,7 +3759,7 @@
 
 <div class="viewcode-block" id="DelaunayTriangulationMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayTriangulationMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">DelaunayTriangulationMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DelaunayTriangulationMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism from a triangulated surface to its Delaunay triangulation.</span>
 
@@ -3787,7 +3787,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -3811,7 +3811,7 @@
         <span class="p">)</span>
 
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_image_homology_edge_chain_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge_chain_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the matrix that describes the action of this morphism in</span>
 <span class="sd">        homology on the generators of the chain module.</span>
@@ -3840,7 +3840,7 @@
 
         <span class="n">gens</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">identity_matrix</span><span class="p">,</span> <span class="n">ZZ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">identity_matrix</span><span class="p">,</span> <span class="n">ZZ</span>
 
         <span class="n">chain_matrix</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="n">ZZ</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">),</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -3849,7 +3849,7 @@
 
         <span class="k">return</span> <span class="n">gens</span><span class="p">,</span> <span class="n">chain_matrix</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge_chain_matrix_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flip</span><span class="p">,</span> <span class="n">gens</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge_chain_matrix_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flip</span><span class="p">,</span> <span class="n">gens</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the matrix that describes the action of a single ``flip`` on</span>
 <span class="sd">        homology on the generators ``gens`` of the chain module.</span>
@@ -3879,7 +3879,7 @@
 <span class="sd">            False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">zero_matrix</span><span class="p">,</span> <span class="n">ZZ</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">zero_matrix</span><span class="p">,</span> <span class="n">ZZ</span>
 
         <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">),</span> <span class="p">(</span><span class="n">opposite_label</span><span class="p">,</span> <span class="n">opposite_edge</span><span class="p">)</span> <span class="o">=</span> <span class="n">flip</span>
 
@@ -3890,8 +3890,8 @@
                 <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="k">continue</span>
 
-        <span class="k">def</span> <span class="nf">image</span><span class="p">(</span><span class="n">preimage</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">):</span>
-            <span class="k">def</span> <span class="nf">denormalize</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">image</span><span class="p">(</span><span class="n">preimage</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">denormalize</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">lbl</span> <span class="o">==</span> <span class="n">label</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">lbl</span><span class="p">,</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="n">edge</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span>
                 <span class="k">if</span> <span class="n">lbl</span> <span class="o">==</span> <span class="n">opposite_label</span><span class="p">:</span>
@@ -3913,7 +3913,7 @@
 
         <span class="k">return</span> <span class="n">matrix</span>
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``p`` under this retriangulation.</span>
 
@@ -3949,7 +3949,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()(</span><span class="o">*</span><span class="n">p</span><span class="o">.</span><span class="n">representative</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the preimage of ``q`` under this retriangulation.</span>
 
@@ -3986,7 +3986,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()(</span><span class="o">*</span><span class="n">q</span><span class="o">.</span><span class="n">representative</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_flips</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_flips</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sequence of flips performed by this retriangulation.</span>
 
@@ -4012,7 +4012,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">_flips</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -4031,7 +4031,7 @@
 
 <div class="viewcode-block" id="DelaunayTriangulationMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayTriangulationMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -4053,7 +4053,7 @@
 
 <div class="viewcode-block" id="DelaunayTriangulationMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayTriangulationMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -4074,7 +4074,7 @@
 
 <div class="viewcode-block" id="DelaunayDecompositionMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">DelaunayDecompositionMorphism</span><span class="p">(</span><span class="n">SectionMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DelaunayDecompositionMorphism</span><span class="p">(</span><span class="n">SectionMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism describing the Delaunay decomposition of a Delaunay triangulation.</span>
 
@@ -4113,7 +4113,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -4130,7 +4130,7 @@
         <span class="k">return</span> <span class="s2">&quot;Delaunay decomposition&quot;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_morphism</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a morphism from ``domain`` to ``codomain``.</span>
 
@@ -4152,7 +4152,7 @@
 
 <div class="viewcode-block" id="DelaunayDecompositionMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -4175,7 +4175,7 @@
 
 <div class="viewcode-block" id="DelaunayDecompositionMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -4197,7 +4197,7 @@
 
 <div class="viewcode-block" id="DelaunayDecompositionIsomorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionIsomorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">DelaunayDecompositionIsomorphism</span><span class="p">(</span><span class="n">SurfaceMorphism_factorization</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DelaunayDecompositionIsomorphism</span><span class="p">(</span><span class="n">SurfaceMorphism_factorization</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An isomorphism between Delaunay decompositions.</span>
 
@@ -4238,7 +4238,7 @@
 <div class="viewcode-block" id="DelaunayDecompositionIsomorphism._factorization">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionIsomorphism._factorization">[docs]</a>
     <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_factorization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sequence of morphism that implement this isomorphism.</span>
 
@@ -4273,12 +4273,12 @@
 <span class="sd">                              To:   Triangulation of Translation Surface in H_1(0) built from a square</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.surface</span> <span class="kn">import</span> <span class="n">Surface_pyflatsurf</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.pyflatsurf.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surface_pyflatsurf</span>
 
         <span class="n">domain_to_pyflatsurf</span> <span class="o">=</span> <span class="n">Surface_pyflatsurf</span><span class="o">.</span><span class="n">_from_flatsurf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">())</span>
         <span class="n">codomain_to_pyflatsurf</span> <span class="o">=</span> <span class="n">Surface_pyflatsurf</span><span class="o">.</span><span class="n">_from_flatsurf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span>
 
-        <span class="kn">from</span> <span class="nn">pyflatsurf</span> <span class="kn">import</span> <span class="n">flatsurf</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyflatsurf</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatsurf</span>
 
         <span class="n">deformation</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">domain_to_pyflatsurf</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
@@ -4290,7 +4290,7 @@
             <span class="o">.</span><span class="n">value</span><span class="p">()</span>
         <span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.morphism</span> <span class="kn">import</span> <span class="n">Morphism_Deformation</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.pyflatsurf.morphism</span><span class="w"> </span><span class="kn">import</span> <span class="n">Morphism_Deformation</span>
 
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">codomain_to_pyflatsurf</span><span class="o">.</span><span class="n">section</span><span class="p">()</span>
@@ -4305,7 +4305,7 @@
 
 <div class="viewcode-block" id="DelaunayDecompositionIsomorphism.__reduce__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionIsomorphism.__reduce__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a picklable version of this morphism.</span>
 
@@ -4322,7 +4322,7 @@
         <span class="k">return</span> <span class="n">DelaunayDecompositionIsomorphism</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -4339,7 +4339,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Delaunay decomposition&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not test whether :meth:`_section_point` has been implemented correctly.</span>
 
@@ -4358,7 +4358,7 @@
 
 <div class="viewcode-block" id="DelaunayDecompositionIsomorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionIsomorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this isomorphism is indistinguishable from ``other``.</span>
 
@@ -4379,7 +4379,7 @@
 
 <div class="viewcode-block" id="DelaunayDecompositionIsomorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.DelaunayDecompositionIsomorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this isomorphism that is compatible with :meth:`__eq__`.</span>
 
@@ -4399,7 +4399,7 @@
 
 <div class="viewcode-block" id="GL2RMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.GL2RMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">GL2RMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GL2RMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism that describes the application of a matrix in `GL_2(\mathbb{R})`</span>
 <span class="sd">    on each polygon of a surface.</span>
@@ -4432,17 +4432,17 @@
 
 <div class="viewcode-block" id="GL2RMorphism.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.GL2RMorphism.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">m</span><span class="p">,</span> <span class="n">immutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GL2RMorphism.section">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.GL2RMorphism.section">[docs]</a>
-    <span class="k">def</span> <span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an inverse of this morphism.</span>
 
@@ -4462,7 +4462,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of the ``point`` under this morphism.</span>
 
@@ -4478,10 +4478,10 @@
         <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()(</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">*</span> <span class="n">coordinates</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">()</span><span class="o">.</span><span class="n">_image_point</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -4498,7 +4498,7 @@
 
         <span class="k">return</span> <span class="n">codomain</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -4514,7 +4514,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Linear&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -4535,7 +4535,7 @@
 
 <div class="viewcode-block" id="GL2RMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.GL2RMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphis is indistinguishable from ``other``</span>
 
@@ -4557,7 +4557,7 @@
 
 <div class="viewcode-block" id="GL2RMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.GL2RMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`.</span>
 
@@ -4578,7 +4578,7 @@
 
 <div class="viewcode-block" id="SubdivideEdgesMorphism">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SubdivideEdgesMorphism">[docs]</a>
-<span class="k">class</span> <span class="nc">SubdivideEdgesMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SubdivideEdgesMorphism</span><span class="p">(</span><span class="n">SurfaceMorphism</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A morphism that inserts marked points on edges.</span>
 
@@ -4608,12 +4608,12 @@
 
 <div class="viewcode-block" id="SubdivideEdgesMorphism.__init__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SubdivideEdgesMorphism.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">parts</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">parts</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parts</span> <span class="o">=</span> <span class="n">parts</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of ``p`` in the codomain of this surface.</span>
 
@@ -4632,7 +4632,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()(</span><span class="o">*</span><span class="n">p</span><span class="o">.</span><span class="n">representative</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._section_point`.</span>
 
@@ -4650,7 +4650,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()(</span><span class="o">*</span><span class="n">q</span><span class="o">.</span><span class="n">representative</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_homology_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">codomain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements :meth:`SurfaceMorphism._image_homology_edge`.</span>
 
@@ -4668,7 +4668,7 @@
             <span class="n">codomain</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parts</span> <span class="o">+</span> <span class="n">p</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parts</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`__repr__`.</span>
 
@@ -4687,7 +4687,7 @@
 
 <div class="viewcode-block" id="SubdivideEdgesMorphism.__eq__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SubdivideEdgesMorphism.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
 
@@ -4707,7 +4707,7 @@
 
 <div class="viewcode-block" id="SubdivideEdgesMorphism.__hash__">
 <a class="viewcode-back" href="../../../geometry/morphism.html#flatsurf.geometry.morphism.SubdivideEdgesMorphism.__hash__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this morphism that is compatible with :meth:`__eq__`</span>
 
