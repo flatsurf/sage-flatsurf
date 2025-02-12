@@ -4,6 +4,17 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.7.3
+====================
+
+**Fixed:**
+
+* Fixed pyproject.toml file for pixi 0.40.3.
+* Updated installer to ship SageMath 10.5.
+* Updated surface-dynamics available in the installer to 0.7.0.
+
+
+
 v0.7.2
 ====================
 
