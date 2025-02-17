@@ -296,6 +296,9 @@ class EuclideanPolygon(Parent):
         # subcategory since computation of angles can be very costly.
         # The category gets further refined when angles() is invoked.
 
+    def is_compact(self):
+        return True
+
     def _an_element_(self):
         r"""
         Return a point of this polygon.
