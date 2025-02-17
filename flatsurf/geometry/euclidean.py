@@ -2166,6 +2166,29 @@ class EuclideanLine(EuclideanFacade):
         x, y = point.vector()
         return self._a + self._b * x + self._c * y == 0
 
+    def __eq__(self, other):
+        # TODO: This is literally identical to __eq__ of hyperbolic geodesics. One should call the other instead.
+        if type(self) is not type(other):
+            return False
+
+        other = self.parent()(other)
+
+        # See note in the docstring. We should use specialized geometry here.
+        equal = self.parent().geometry._equal
+        sgn = self.parent().geometry._sgn
+
+        if sgn(self._b):
+            return (
+                (not self.is_oriented() or sgn(self._b) == sgn(other._b))
+                and equal(self._a * other._b, other._a * self._b)
+                and equal(self._c * other._b, other._c * self._b)
+            )
+        else:
+            return (
+                (not self.is_oriented() or sgn(self._c) == sgn(other._c))
+                and equal(self._a * other._c, other._a * self._c)
+                and equal(self._b * other._c, other._b * self._c)
+            )
 
 class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
     r"""
