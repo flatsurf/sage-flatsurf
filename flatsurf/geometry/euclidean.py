@@ -706,20 +706,14 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         base = self(base)
         direction = self.vector_space()(direction)
 
-        if self.geometry._is_zero(direction):
+        if self.geometry._zero(direction):
             raise ValueError("direction must be distinguishable from the zero vector")
 
         if not isinstance(base, EuclideanPoint):
             raise TypeError("base must be a point")
 
-        
-        ray = self.__make_element_class__(EuclideanRay)(self, base, direction)
-
-        if check:
-            ray = ray._normalize()
-            ray._check()
-
-        return ray
+        line = self.line(base, base.translate(direction), check=check)
+        return self.segment(line, base, None, check=check)
 
     @cached_method
     def norm(self):
@@ -1251,6 +1245,11 @@ class EuclideanOrientedSet(EuclideanSet):
         :meth:`EuclideanSet.is_oriented`
 
     """
+    def __contains__(self, point):
+        return point in self.unoriented()
+
+    def unoriented(self):
+        return self.change(oriented=False)
 
 
 class EuclideanFacade(EuclideanSet, Parent):
@@ -2139,7 +2138,7 @@ class EuclideanLine(EuclideanFacade):
 
         return self.parent().point(*p).translate(shift.vector())
 
-    def contains_point(self, point):
+    def __contains__(self, point):
         x, y = point.vector()
         return self._a + self._b * x + self._c * y == 0
 
@@ -2295,11 +2294,9 @@ class EuclideanSegment(EuclideanFacade):
             return start
 
         if start is None:
-            start, end = end, start
-            line = -line
-
-        if end is None:
-            return self.parent().ray(start, line.direction())
+            if not self.is_oriented():
+                start, end = end, start
+                line = -line
 
         return self
 
@@ -2313,20 +2310,36 @@ class EuclideanSegment(EuclideanFacade):
         # the endpoints of the segment.
         norm = self.parent().norm()
         p = self._line.projection(point)
-        if self.contains_point(p):
+        if p in self:
             return norm.from_vector(point.vector() - p.vector())
         return min(
             norm.from_vector(point.vector() - self._start.vector()),
             norm.from_vector(point.vector() - self._end.vector()),
         )
 
-    def contains_point(self, point):
-        if not self._line.contains_point(point):
-            return False
+    def change(self, ring=None, geometry=None, oriented=None):
+        if ring is not None or geometry is not None:
+            self = (
+                self.parent()
+                .change_ring(ring, geometry=geometry)
+                .segment(
+                    self._line,
+                    self._start,
+                    self._end,
+                    check=False,
+                    oriented=self.is_oriented(),
+                )
+            )
 
-        return bool(
-            time_on_segment((self._start.vector(), self._end.vector()), point.vector())
-        )
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            self = self.parent().segment(
+                self._line, self._start, self._end, check=False, oriented=oriented
+            )
+
+        return self
 
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
@@ -2409,44 +2422,20 @@ class EuclideanUnorientedSegment(EuclideanSegment):
         """
         return f"{self._start!r} — {self._end!r}"
 
+    def __contains__(self, point):
+        if point not in self._line:
+            return False
 
-class EuclideanRay(EuclideanFacade):
-    r"""
-    A ray emanating from a base point in the Euclidean plane.
+        if self._start is not None:
+            t, _ = time_on_ray(self._start.vector(), self._line.direction(), point)
+            if t < 0:
+                return False
+        if self._end is not None:
+            t, _ = time_on_ray(self._end.vector(), -self._line.direction(), point)
+            if t < 0:
+                return False
 
-    EXAMPLES::
-
-        sage: from flatsurf import EuclideanPlane
-        sage: E = EuclideanPlane()
-        sage: ray = E.ray((0, 0), (1, 1))
-
-    TESTS::
-
-        sage: from flatsurf.geometry.euclidean import EuclideanRay
-        sage: isinstance(ray, EuclideanRay)
-        True
-        sage: TestSuite(ray).run()
-
-    """
-
-    def __init__(self, parent, base, direction):
-        super().__init__(parent)
-
-        self._base = base
-        self._direction = direction
-
-    def _repr_(self):
-        r"""
-        Return a printable representation of this ray.
-
-        EXAMPLES::
-
-            sage: from flatsurf import EuclideanPlane
-            sage: E = EuclideanPlane()
-            sage: E.ray((0, 0), (1, 1))
-
-        """
-        return f"Ray from {self._base!r} in direction {self._direction!r}"
+        return True
 
 
 class EuclideanDistance_base(Element):
@@ -3567,7 +3556,7 @@ class OrientedSegment:
         else:
             raise NotImplementedError
 
-    def contains_point(self, point):
+    def __contains__(self, point):
         r"""
         Return whether this segment contains ``point``.
 
@@ -3575,11 +3564,11 @@ class OrientedSegment:
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
             sage: S = OrientedSegment((0, 0), (1, 1))
-            sage: S.contains_point((0, 0))
+            sage: (0, 0) in S
             True
-            sage: S.contains_point((-1, -1))
+            sage: (-1, -1) in S
             False
-            sage: S.contains_point((-1, 0))
+            sage: (-1, 0) in S
             False
 
         """
@@ -3923,14 +3912,14 @@ class HalfSpace:
         # Orient segments such that the interior is on the left hand side.
         segments = [
             segment
-            if segment.left_half_space().contains_point(interior_point)
+            if interior_point in segment.left_half_space()
             else -segment
             for segment in segments
         ]
 
         return segments
 
-    def contains_point(self, point):
+    def __contains__(self, point):
         r"""
         Return whether the ``point`` is in this set.
 
@@ -3938,7 +3927,7 @@ class HalfSpace:
 
             sage: from flatsurf.geometry.euclidean import HalfSpace
             sage: H = HalfSpace(0, 1, 2)
-            sage: H.contains_point((0, 0))
+            sage: (0, 0) in H
             True
 
         """
@@ -4029,12 +4018,12 @@ class OrientedLine:
                 return None
             if intersection == self:
                 return other
-            if other.contains_point(intersection):
+            if intersection in other:
                 return intersection
             return None
         raise NotImplementedError("cannot intersect a line with this object yet")
 
-    def contains_point(self, point):
+    def __contains__(self, point):
         r"""
         Return whether ``point`` is on this line.
 
@@ -4042,7 +4031,7 @@ class OrientedLine:
 
             sage: from flatsurf.geometry.euclidean import OrientedLine
             sage: L = OrientedLine(1, 2, 3)
-            sage: L.contains_point((-1/2, 0))
+            sage: (-1/2, 0) in L
             True
 
         """
