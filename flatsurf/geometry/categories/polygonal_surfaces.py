@@ -109,13 +109,13 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import polygons
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
-                sage: S.refined_category()
-                Category of connected with boundary finite type translation surfaces
+
+                Category of compact connected with boundary finite type translation surfaces
 
                 sage: S.glue((0, 0), (0, 2))
                 sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
-                Category of connected without boundary finite type translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
             from flatsurf.geometry.categories.topological_surfaces import (
@@ -1053,15 +1053,15 @@ class PolygonalSurfaces(SurfaceCategory):
 
         def extra_super_categories(self):
             r"""
-            Return the categories that surfaces built from finitely many
-            polygons are additionally contained in; namely such a surface is a
-            compact space.
+            Return the categories that compact surfaces built from polygons are
+            additionally contained in; namely such a surface is built from
+            finitely many polygons.
 
             EXAMPLES::
 
                 sage: from flatsurf.geometry.categories import PolygonalSurfaces
-                sage: PolygonalSurfaces().FiniteType().extra_super_categories()
-                (Category of compact topological spaces,)
+                sage: PolygonalSurfaces().Compact().extra_super_categories()
+                (Category of finite type polygonal surfaces,)
 
             """
             return (PolygonalSurfaces().FiniteType(),)
@@ -1380,6 +1380,9 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 """
                 return False
+
+        def extra_super_categories(self):
+            return (PolygonalSurfaces().NotCompact(),)
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""

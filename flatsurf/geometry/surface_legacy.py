@@ -2293,7 +2293,7 @@ def SimilaritySurface(surface, *args, **kwargs):
         Category of connected without boundary finite type oriented similarity surfaces
         sage: S.set_immutable()
         sage: S.category()
-        Category of connected without boundary finite type translation surfaces
+        Category of compact connected without boundary finite type translation surfaces
 
     """
     from flatsurf.geometry.categories import SimilaritySurfaces
@@ -2328,7 +2328,7 @@ def HalfDilationSurface(surface, *args, **kwargs):
         Category of connected without boundary finite type oriented dilation surfaces
         sage: S.set_immutable()
         sage: S.category()
-        Category of connected without boundary finite type translation surfaces
+        Category of compact connected without boundary finite type translation surfaces
 
     """
     from flatsurf.geometry.categories import DilationSurfaces
@@ -2363,7 +2363,7 @@ def DilationSurface(surface, *args, **kwargs):
         Category of connected without boundary finite type oriented positive dilation surfaces
         sage: S.set_immutable()
         sage: S.category()
-        Category of connected without boundary finite type translation surfaces
+        Category of compact connected without boundary finite type translation surfaces
 
     """
     from flatsurf.geometry.categories import DilationSurfaces
@@ -2398,7 +2398,7 @@ def ConeSurface(surface, *args, **kwargs):
         Category of connected without boundary finite type oriented cone surfaces
         sage: S.set_immutable()
         sage: S.category()
-        Category of connected without boundary finite type translation surfaces
+        Category of compact connected without boundary finite type translation surfaces
 
     """
     from flatsurf.geometry.categories import ConeSurfaces
@@ -2431,7 +2431,7 @@ def RationalConeSurface(surface, *args, **kwargs):
         Category of connected without boundary finite type oriented rational cone surfaces
         sage: S.set_immutable()
         sage: S.category()
-        Category of connected without boundary finite type translation surfaces
+        Category of compact connected without boundary finite type translation surfaces
 
     """
     from flatsurf.geometry.categories import ConeSurfaces
@@ -2466,7 +2466,7 @@ def HalfTranslationSurface(surface, *args, **kwargs):
         Category of connected without boundary finite type oriented half translation surfaces
         sage: S.set_immutable()
         sage: S.category()
-        Category of connected without boundary finite type translation surfaces
+        Category of compact connected without boundary finite type translation surfaces
 
     """
     from flatsurf.geometry.categories import HalfTranslationSurfaces
@@ -2501,7 +2501,7 @@ def TranslationSurface(surface, *args, **kwargs):
         Category of connected without boundary finite type translation surfaces
         sage: S.set_immutable()
         sage: S.category()
-        Category of connected without boundary finite type translation surfaces
+        Category of compact connected without boundary finite type translation surfaces
 
     """
     from flatsurf.geometry.categories import TranslationSurfaces

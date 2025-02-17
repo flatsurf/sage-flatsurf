@@ -133,24 +133,6 @@ class EInfinitySurface(OrientedSimilaritySurface):
             category=TranslationSurfaces().InfiniteType().Connected().WithoutBoundary(),
         )
 
-    def is_compact(self):
-        r"""
-        Return whether this surface is compact as a topological space, i.e.,
-        return ``False``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.e_infinity_surface()
-            sage: S.is_compact()
-            False
-
-        """
-        return False
-
     def is_mutable(self):
         r"""
         Return whether this surface is mutable, i.e., return ``False``.

@@ -100,7 +100,7 @@ class Surface_base(Parent):
 
             sage: S._refine_category_(S.refined_category())
             sage: S.category()
-            Category of connected without boundary finite type translation surfaces
+            Category of compact connected without boundary finite type translation surfaces
 
         """
         from sage.structure.debug_options import debug
@@ -430,7 +430,7 @@ class MutablePolygonalSurface(Surface_base):
 
             sage: S.set_immutable()
             sage: S.category()
-            Category of connected without boundary finite type translation surfaces
+            Category of compact connected without boundary finite type translation surfaces
             sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
             sage: new_methods - old_methods
             {'affine_automorphism_group',

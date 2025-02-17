@@ -280,7 +280,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.octagon_and_squares()
             sage: s.category()
-            Category of connected without boundary finite type translation surfaces
+            Category of compact connected without boundary finite type translation surfaces
 
         """
 
@@ -333,7 +333,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: from flatsurf import translation_surfaces
                 sage: s = translation_surfaces.octagon_and_squares()
                 sage: s.category()
-                Category of connected without boundary finite type translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
 

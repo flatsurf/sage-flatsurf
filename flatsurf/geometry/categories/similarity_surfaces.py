@@ -66,7 +66,7 @@ to its test suite::
     Category of finite type oriented similarity surfaces
     sage: S.set_immutable()
     sage: S.category()
-    Category of connected without boundary finite type oriented rational similarity surfaces
+    Category of compact connected without boundary finite type oriented rational similarity surfaces
 
     sage: TestSuite(S).run()
 
@@ -83,7 +83,7 @@ than two edges to each other; however, edges get unglued automatically::
 
     sage: S.set_immutable()
     sage: S.category()
-    Category of with boundary finite type oriented rational similarity surfaces
+    Category of compact with boundary finite type oriented rational similarity surfaces
     sage: TestSuite(S).run()
 
 If we don't glue all the edges, we get a surface with boundary::
@@ -194,12 +194,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of connected with boundary finite type translation surfaces
+                Category of compact connected with boundary finite type translation surfaces
 
                 sage: S.glue((0, 0), (0, 2))
                 sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
-                Category of connected without boundary finite type translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
             from flatsurf.geometry.categories.polygonal_surfaces import (

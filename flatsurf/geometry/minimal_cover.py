@@ -140,14 +140,13 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
         if _is_finite(self._ss):
             category = category.FiniteType()
+            if similarity_surface.is_compact():
+                category = category.Compact()
         else:
             category = category.InfiniteType()
 
         if similarity_surface.is_connected():
             category = category.Connected()
-
-        if self.is_compact():
-            category = category.Compact()
 
         OrientedSimilaritySurface.__init__(
             self, self._ss.base_ring(), category=category
@@ -190,36 +189,6 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
         """
         return False
-
-    def is_compact(self):
-        r"""
-        Return whether this surface is compact as a topological space.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().minimal_cover("translation")
-            sage: S.is_compact()
-            False
-
-        ::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
-            sage: S.is_compact()
-            True
-
-        """
-        if not self._ss.is_compact():
-            return False
-
-        if not self._ss.is_rational_surface():
-            return False
-
-        return True
 
     @cached_method
     def polygon(self, label):
@@ -399,8 +368,13 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
         category &= HalfTranslationSurfaces()
 
+        if not similarity_surface.is_compact():
+            category = category.NotCompact()
+
         if _is_finite(self._ss):
             category = category.FiniteType()
+            if similarity_surface.is_compact():
+                category = category.Compact()
         else:
             category = category.InfiniteType()
 
@@ -635,12 +609,17 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         if category is None:
             category = TranslationSurfaces()
 
-        category &= TranslationSurfaces().InfiniteType()
-
         category = category.WithoutBoundary()
 
         if similarity_surface.is_connected():
             category = category.Connected()
+
+        if similarity_surface.is_compact():
+            category = category.InfiniteType()
+        elif not similarity_surface.is_finite_type():
+            category = category.NotCompact()
+        else:
+            raise NotImplementedError("cannot determine category of planar cover of non-compact surface yet")
 
         OrientedSimilaritySurface.__init__(
             self, self._ss.base_ring(), category=category
@@ -659,24 +638,6 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
 
         """
         return f"Minimal Planar Cover of {repr(self._ss)}"
-
-    def is_compact(self):
-        r"""
-        Return whether this surface is compact as a topological space, i.e.,
-        return ``False``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
-            sage: S.is_compact()
-            False
-
-        """
-        return False
 
     def roots(self):
         r"""
