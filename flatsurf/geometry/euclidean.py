@@ -1273,7 +1273,7 @@ class EuclideanFacade(EuclideanSet, Parent):
         True
         sage: q = c.an_element()
         sage: q
-        I
+        (1, 0)
         sage: q in c
         True
         sage: q.parent() is E
@@ -1390,6 +1390,10 @@ class EuclideanCircle(EuclideanFacade):
             return False
 
         return self._center == other._center and self._radius_squared == other._radius_squared
+
+    def _an_element_(self):
+        # TODO: Maybe try to be smarter to construct an element without taking a field extension here.
+        return self.parent()(self._center.vector() + self.parent().vector_space()((self._radius_squared.sqrt(), 0)))
 
     def __hash__(self):
         return hash((self._center, self._radius_squared))
