@@ -2,8 +2,9 @@ r"""
 The category of surfaces built from polygons.
 
 This module provides shared functionality for all surfaces in sage-flatsurf
-that are built from polygons (such as Euclidean polygons or hyperbolic
-polygons).
+that are built from polygons in the plane and whose edges are glued by
+projective transformations. Most notably, this includes similarity surfaces
+and hyperbolic surfaces.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -51,9 +52,10 @@ from sage.misc.abstract_method import abstract_method
 
 class PolygonalSurfaces(SurfaceCategory):
     r"""
-    The category of surfaces built by gluing polygons defined in some space
-    such as the real plane (see
-    :mod:`~flatsurf.geometry.categories.euclidean_polygonal_surfaces`).
+    The category of surfaces built by gluing polygons in the plane using
+    projective transformations.
+
+    See :mod:`~flatsurf.geometry.categories.euclidean_polygonal_surfaces`.
 
     EXAMPLES::
 
@@ -95,9 +97,9 @@ class PolygonalSurfaces(SurfaceCategory):
             consulting which edges are glued to each other.
 
             Note that this does not take into account how the edges are glued
-            to each other exactly (e.g., by which similarity) since at this
-            level (i.e., without knowing about the space in which the polygons
-            live) the gluing is just described combinatorially.
+            to each other exactly (e.g., by which projective transformation)
+            since at this level (i.e., without knowing about the space in which
+            the polygons live) the gluing is just described combinatorially.
 
             EXAMPLES::
 
