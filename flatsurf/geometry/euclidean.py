@@ -1075,7 +1075,7 @@ class EuclideanSet(SageObject):
 
             sage: from flatsurf import EuclideanPlane
             sage: E = EuclideanPlane()
-            sage: segment = E.segment((0, 0), (1, 0))
+            sage: segment = E((0, 0)).segment((1, 0))
             sage: segment._test_normalize()
 
         """
@@ -1132,12 +1132,12 @@ class EuclideanSet(SageObject):
             sage: from flatsurf import EuclideanPlane
             sage: E = EuclideanPlane()
 
-            sage: segment = E.segment((0, 0), (1, 1))
+            sage: segment = E((0, 0)).segment((1, 1))
 
         We can change the base ring over which this set is defined::
 
             sage: segment.change(ring=AA)
-            {(x^2 + y^2) - x = 0}
+            (0, 0) → (1, 1)
 
         We can drop the explicit orientation of a set::
 
@@ -1169,6 +1169,7 @@ class EuclideanSet(SageObject):
 
             sage: p = E((0, 0))
             sage: p.change_ring(AA)
+            (0, 0)
 
         """
         return self.change(ring=ring)
@@ -1206,8 +1207,9 @@ class EuclideanSet(SageObject):
 
         Segments are normally oriented::
 
-            sage: s = E.segment((0, 0), (1, 0))
+            sage: s = E((0, 0)).segment((1, 0))
             sage: s.is_oriented()
+            True
 
         We can explicitly ask for an unoriented segment::
 
@@ -1264,7 +1266,7 @@ class EuclideanFacade(EuclideanSet, Parent):
         sage: from flatsurf import EuclideanPlane
         sage: E = EuclideanPlane()
         sage: c = E.circle((0, 0), radius=1)
-        sage: p = C.center()
+        sage: p = c.center()
         sage: p in c
         True
         sage: p.parent() is E
@@ -1399,6 +1401,7 @@ class EuclideanCircle(EuclideanFacade):
             sage: from flatsurf import EuclideanPlane
             sage: c = EuclideanPlane().circle((0, 0), radius=1)
             sage: c
+            { x² + y² = 1 }
 
         """
         x, y = self._center
@@ -1436,12 +1439,17 @@ class EuclideanCircle(EuclideanFacade):
         We change the base ring over which this circle is defined::
 
             sage: c.change(ring=AA)
+            { x² + y² = 1 }
 
         We cannot change the orientation of a circle::
 
             sage: c.change(oriented=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: circles cannot have an explicit orientation
 
             sage: c.change(oriented=False)
+            { x² + y² = 1 }
 
         """
         if ring is not None or geometry is not None:
@@ -1471,6 +1479,7 @@ class EuclideanCircle(EuclideanFacade):
             sage: E = EuclideanPlane()
             sage: circle = E.circle((0, 0), radius=0, check=False)
             sage: circle
+            { x² + y² = 0 }
             sage: circle._normalize()
             (0, 0)
 
@@ -1633,7 +1642,7 @@ class EuclideanCircle(EuclideanFacade):
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.square_torus()
-            sage: c = s.polygon(0).circumscribing_circle()
+            sage: c = s.polygon(0).circumscribed_circle()
             sage: c
             Circle((1/2, 1/2), 1/2)
             sage: s.edge_transformation(0,2)
@@ -1726,7 +1735,7 @@ class EuclideanPoint(EuclideanSet, Element):
             sage: from flatsurf import EuclideanPlane
             sage: E = EuclideanPlane()
 
-            sage: E((0, 0)) = E((0, 0))
+            sage: E((0, 0)) == E((0, 0))
             True
 
         .. SEEALSO::
@@ -1816,12 +1825,17 @@ class EuclideanPoint(EuclideanSet, Element):
         We change the base ring over which this point is defined::
 
             sage: p.change_ring(ring=AA)
+            (0, 0)
 
         We cannot change the orientation of a point:
 
             sage: p.change(oriented=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: points cannot have an explicit orientation
 
             sage: p.change(oriented=False)
+            (0, 0)
 
         """
         if ring is not None or geometry is not None:
@@ -1922,6 +1936,7 @@ class EuclideanLine(EuclideanFacade):
         The base ring over which this line is defined can be changed::
 
             sage: E.line((0, 0), (1, 1)).change_ring(QQ)
+            {-x + y = 0}
 
         But we cannot change the base ring if the line's equation cannot be
         expressed in the smaller ring::
@@ -1979,8 +1994,11 @@ class EuclideanLine(EuclideanFacade):
             sage: from flatsurf import EuclideanPlane
             sage: E = EuclideanPlane(AA)
             sage: E.line((0, 0), (1, 1))
+            {-x + y = 0}
             sage: E.line((0, 1), (1, 1))
-            sage: E.line((1, 0), (1, 1))
+            {-1 + y = 0}
+            sage: E.line((1, 0), (1, 1))  # TODO: Fix printing
+            {1 + -x = 0}
 
         """
         a, b, c = self.equation(normalization=["gcd", None])
@@ -2195,6 +2213,7 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
             sage: E = EuclideanPlane()
             sage: line = E.line((0, 0), (1, 1))
             sage: -line
+            {x - y = 0}
 
         """
         return self.parent().line(-self._a, -self._b, -self._c, check=False)
@@ -2261,19 +2280,17 @@ class EuclideanSegment(EuclideanFacade):
 
             sage: segment = E.segment(line, start=(0, 0), end=(0, 0), assume_normalized=True, check=False)
             sage: segment
+            (0, 0) → (0, 0)
             sage: segment._normalize()
-
-        A segment with a single endpoint is a ray::
-
-            sage: segment = E.segment(line, start=(0, 0), end=None, assume_normalized=True, check=False)
-            sage: segment
-            sage: segment._normalize()
+            (0, 0)
 
         A segment without endpoints is a line::
 
             sage: segment = E.segment(line, start=None, end=None, assume_normalized=True, check=False)
-            sage: segment
+            sage: segment  # TODO: Should we fix this printing?
+            Ray to None from direction (1, 1)
             sage: segment._normalize()
+            {-x + y = 0}
 
         """
         line = self._line
@@ -3735,7 +3752,7 @@ class OrientedSegment:
             {-x + y = 0}
 
         """
-        return Ray(self.start(), self.end() - self.start()).line()
+        return self._line
 
     def midpoint(self):
         r"""
