@@ -1391,12 +1391,12 @@ class EuclideanCircle(EuclideanFacade):
 
         return self._center == other._center and self._radius_squared == other._radius_squared
 
+    def __hash__(self):
+        return hash((self._center, self._radius_squared))
+
     def _an_element_(self):
         # TODO: Maybe try to be smarter to construct an element without taking a field extension here.
         return self.parent()(self._center.vector() + self.parent().vector_space()((self._radius_squared.sqrt(), 0)))
-
-    def __hash__(self):
-        return hash((self._center, self._radius_squared))
 
     def _repr_(self):
         r"""
@@ -2190,6 +2190,15 @@ class EuclideanLine(EuclideanFacade):
                 and equal(self._b * other._c, other._b * self._c)
             )
 
+    def __hash__(self):
+        if not self.parent().base_ring().is_exact():
+            raise TypeError("cannot hash geodesic defined over inexact base ring")
+
+        return hash(
+            (type(self), self.equation(normalization=["one", "gcd"]))
+        )
+        
+
 class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
     r"""
     A line in the Euclidean plane with an explicit orientation.
@@ -2439,6 +2448,9 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
             self._line == other._line and self._start == other._start and self._end == other._end
         )
 
+    def __hash__(self):
+        return hash((self._line, self._start, self._end))
+
 
 class EuclideanUnorientedSegment(EuclideanSegment):
     r"""
@@ -2501,6 +2513,9 @@ class EuclideanUnorientedSegment(EuclideanSegment):
         return (
             self._line.unoriented() == other._line.unoriented() and {self._start, self._end} == {other._start, other._end}
         )
+
+    def __hash__(self):
+        return hash((self._line.unoriented(), {self._start, self._end}))
 
 class EuclideanDistance_base(Element):
     def _acted_upon_(self, other, self_on_left):
