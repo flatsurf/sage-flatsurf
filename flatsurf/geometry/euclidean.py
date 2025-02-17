@@ -533,7 +533,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: E.segment(line, start=(0, 0))
             Ray from (0, 0) in direction (1, 1)
             sage: E.segment(line, end=(0, 0))
-            Ray from (0, 0) in direction (-1, -1)
+            Ray to (0, 0) from direction (1, 1)
 
         A segment without endpoints is a line::
 
@@ -701,6 +701,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         The direction must be non-zero::
 
             sage: E.ray((0, 0), (0, 0))
+            Traceback (most recent call last):
+            ...
+            ValueError: direction must be distinguishable from the zero vector
 
         """
         base = self(base)
@@ -2379,6 +2382,11 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
             (0, 0) → (1, 0)
 
         """
+        if self._start is None:
+            return f"Ray to {self._end!r} from direction {self._line.direction()!r}"
+        if self._end is None:
+            return f"Ray from {self._start!r} in direction {self._line.direction()!r}"
+
         return f"{self._start!r} → {self._end!r}"
 
 
