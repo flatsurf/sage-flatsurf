@@ -1028,16 +1028,16 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 tester.assertTrue(opposite in edges)
 
-    class FiniteType(SurfaceCategoryWithAxiom):
+    class Compact(SurfaceCategoryWithAxiom):
         r"""
-        The axiom satisfied by surfaces built from finitely many polygons.
+        The axiom satisfied by surfaces that are compact as topological spaces.
 
         EXAMPLES::
 
             sage: from flatsurf import Polygon, similarity_surfaces
             sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
-            sage: 'FiniteType' in S.category().axioms()
+            sage: 'Compact' in S.category().axioms()
             True
 
         """
@@ -1055,9 +1055,21 @@ class PolygonalSurfaces(SurfaceCategory):
                 (Category of compact topological spaces,)
 
             """
-            from sage.categories.topological_spaces import TopologicalSpaces
+            return (PolygonalSurfaces().FiniteType(),)
 
-            return (TopologicalSpaces().Compact(),)
+    class FiniteType(SurfaceCategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces built from finitely many polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: S = similarity_surfaces.self_glued_polygon(P)
+            sage: 'FiniteType' in S.category().axioms()
+            True
+
+        """
 
         class InfiniteType(SurfaceCategoryWithAxiom):
             r"""
