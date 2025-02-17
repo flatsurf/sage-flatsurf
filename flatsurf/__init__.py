@@ -24,6 +24,7 @@ from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
 from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
+from flatsurf.geometry.euclidean import EuclideanPlane
 from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
 from flatsurf.geometry.homology import SimplicialHomology
