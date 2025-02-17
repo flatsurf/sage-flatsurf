@@ -2064,7 +2064,7 @@ class EuclideanLine(EuclideanFacade):
 
         Some normalizations might not be possible over some base rings::
 
-            sage; E = EuclideanPlane(ZZ)
+            sage: E = EuclideanPlane(ZZ)
             sage: line = E.line((1, 3), (6, 8))
             sage: line
             {-2 + -x + y = 0}
@@ -2118,6 +2118,7 @@ class EuclideanLine(EuclideanFacade):
         while normalization:
             strategy = normalization.pop()
 
+            # TODO: Do not call into the hyperbolic machinery (but maybe the other way round.)
             from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
 
             try:
