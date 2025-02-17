@@ -60,7 +60,7 @@ def _is_finite(surface):
         polygon = surface.polygon(label)
 
         for e in range(len(polygon.vertices())):
-            m = surface.edge_matrix(label, e)
+            m = surface.edge_matrix(label, e, projective=False)
 
             from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
 
@@ -264,7 +264,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         """
         pp, a, b = label  # this is the polygon m * ss.polygon(p)
         p2, e2 = self._ss.opposite_edge(pp, edge)
-        m = self._ss.edge_matrix(p2, e2)
+        m = self._ss.edge_matrix(p2, e2, projective=False)
         aa = a * m[0][0] - b * m[1][0]
         bb = b * m[0][0] + a * m[1][0]
         return ((p2, aa, bb), e2)
@@ -507,7 +507,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         """
         pp, a, b = label  # this is the polygon m * ss.polygon(p)
         p2, e2 = self._ss.opposite_edge(pp, edge)
-        m = self._ss.edge_matrix(pp, edge)
+        m = self._ss.edge_matrix(pp, edge, projective=False)
         aa = a * m[0][0] + b * m[1][0]
         bb = b * m[0][0] - a * m[1][0]
         if aa > 0 or (aa == 0 and bb > 0):

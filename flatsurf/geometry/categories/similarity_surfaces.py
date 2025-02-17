@@ -1321,14 +1321,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 return turns + angle(start, end, numerical=numerical)
 
             @cached_surface_method
-            def edge_matrix(self, p, e=None):
+            def edge_matrix(self, p, e=None, projective=None):
                 r"""
-                Returns the 2x2 matrix representing a similarity which when
-                applied to the polygon with label `p` makes it so the edge `e`
-                can be glued to its opposite edge by translation.
-
-                If `e` is not provided, then `p` should be a pair consisting of
-                a polygon label and an edge.
+                Returns the 3x3 matrix representing the projective
+                transformation which when applied to the polygon with label `p`
+                makes it so the edge `e` can be glued to its opposite edge.
 
                 EXAMPLES::
 
@@ -1338,16 +1335,51 @@ class SimilaritySurfaces(SurfaceCategory):
                     Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
                     sage: s.polygon(1)
                     Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
-                    sage: s.opposite_edge(0,0)
+                    sage: s.opposite_edge(0, 0)
                     (1, 1)
-                    sage: m = s.edge_matrix(0, 0)
+                    sage: m = s.edge_matrix(0, 0, projective=True)
                     sage: m
-                    [   1  1/2]
-                    [-1/2    1]
-                    sage: m * vector((2,-2)) == -vector((-1, 3))
+                    [   1  1/2    1]
+                    [-1/2    1    3]
+                    [   0    0    1]
+                    sage: A0 = vector((0, 0, 1))
+                    sage: B0 = vector((2, -2, 1))
+                    sage: A1 = vector((2, 0, 1))
+                    sage: B1 = vector((1, 3, 1))
+                    sage: m * A0 == B1
+                    True
+                    sage: m * B0 == A1
                     True
 
+                For similarity surfaces, you can access the linear part of the similarity using
+                ``projective=False``::
+
+                    sage: s.edge_matrix(0, 0, projective=False)
+                    [   1  1/2]
+                    [-1/2    1]
+
+                At the moment, not specifying the ``projective`` keyword raises a warning::
+
+                    sage: s.edge_matrix(0, 0)
+                    doctest:warning
+                    ...
+                    UserWarning: the behavior of edge_matrix for similarity surfaces will change behavior in future version of sage-flatsurf; call with with projective=False to keep the old behavior or projective=True to switch to the forward compatible default version
+                    [   1  1/2]
+                    [-1/2    1]
+
+                A translation surface example::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: s = translation_surfaces.square_torus()
+                    sage: s.edge_matrix(0, 0, projective=True)
+                    [1 0 0]
+                    [0 1 1]
+                    [0 0 1]
+                    sage: s.edge_matrix(0, 0, projective=False)
+                    [1 0]
+                    [0 1]
                 """
+
                 if e is None:
                     import warnings
 
@@ -1355,6 +1387,18 @@ class SimilaritySurfaces(SurfaceCategory):
                         "passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead"
                     )
                     p, e = p
+
+                if projective is None:
+                    import warnings
+
+                    warnings.warn(
+                        "the behavior of edge_matrix for similarity surfaces will change behavior in future version of sage-flatsurf; call with with projective=False to keep the old behavior or projective=True to switch to the forward compatible default version"
+                    )
+
+                    projective = False
+
+                if e < 0 or e >= len(self.polygon(p).vertices()):
+                    raise ValueError("invalid edge index for this polygon")
 
                 u = self.polygon(p).edge(e)
                 pp, ee = self.opposite_edge(p, e)
@@ -1364,7 +1408,17 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.similarity import similarity_from_vectors
                 from sage.matrix.matrix_space import MatrixSpace
 
-                return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
+                m2 = similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
+                if not projective:
+                    m2.set_immutable()
+                    return m2
+                else:
+                    m3 = MatrixSpace(self.base_ring(), 3)()
+                    m3[:2, :2] = m2
+                    m3[2, 2] = 1
+                    m3[:2, 2] = self.polygon(pp).vertex(ee + 1) - self.polygon(p).vertex(e)
+                    m3.set_immutable()
+                    return m3
 
             def underlying_surface(self):
                 r"""
@@ -3603,14 +3657,17 @@ class SimilaritySurfaces(SurfaceCategory):
                         # and we want to deduce the matrix from the attached polygon
                         # edges instead.
                         matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                            surface, label, edge
+                            surface, label, edge, projective=True
                         )
 
-                        if matrix.is_diagonal():
+                        if matrix[2, 0] or matrix[2, 1]:
+                            return False
+
+                        if matrix[0, 0] == matrix[1, 1] and not matrix[1, 0] and not matrix[0, 1]:
                             continue
 
-                        a = AA(matrix[0, 0])
-                        b = AA(matrix[1, 0])
+                        a = AA(matrix[0, 0] / matrix[2, 2])
+                        b = AA(matrix[1, 0] / matrix[2, 2])
                         q = (a**2 + b**2).sqrt()
 
                         from flatsurf.geometry.euclidean import (

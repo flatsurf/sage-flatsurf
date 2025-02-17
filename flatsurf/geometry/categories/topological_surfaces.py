@@ -558,6 +558,23 @@ class TopologicalSurfaces(SurfaceCategory):
 
         """
 
+        def extra_super_categories(self):
+            r"""
+            Return the categories that surfaces built from finitely many
+            polygons are additionally contained in; namely such a surface is a
+            compact space.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
+                sage: PolygonalSurfaces().FiniteType().extra_super_categories()
+                (Category of compact topological spaces,)
+
+            """
+            from sage.categories.topological_spaces import TopologicalSpaces
+
+            return (TopologicalSpaces().FiniteType(),)
+
         class ParentMethods:
             r"""
             Provides methods available to all compact surfaces in

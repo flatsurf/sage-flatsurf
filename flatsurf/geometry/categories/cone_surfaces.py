@@ -208,7 +208,7 @@ class ConeSurfaces(SurfaceCategory):
                     from flatsurf.geometry.categories import SimilaritySurfaces
 
                     matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                        surface, label, edge
+                        surface, label, edge, projective=False
                     )
 
                     if matrix * matrix.transpose() != 1:
