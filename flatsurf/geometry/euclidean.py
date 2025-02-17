@@ -1282,7 +1282,7 @@ class EuclideanFacade(EuclideanSet, Parent):
     TESTS::
 
         sage: from flatsurf.geometry.euclidean import EuclideanFacade
-        sage: isinstance(v, EuclideanFacade)
+        sage: isinstance(c, EuclideanFacade)
         True
 
     """
