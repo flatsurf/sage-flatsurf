@@ -2432,6 +2432,13 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
 
         return f"{self._start!r} → {self._end!r}"
 
+    def __eq__(self, other):
+        if type(self) is not type(other):
+            return False
+        return (
+            self._line == other._line and self._start == other._start and self._end == other._end
+        )
+
 
 class EuclideanUnorientedSegment(EuclideanSegment):
     r"""
@@ -2488,6 +2495,12 @@ class EuclideanUnorientedSegment(EuclideanSegment):
 
         return True
 
+    def __eq__(self, other):
+        if type(self) is not type(other):
+            return False
+        return (
+            self._line.unoriented() == other._line.unoriented() and {self._start, self._end} == {other._start, other._end}
+        )
 
 class EuclideanDistance_base(Element):
     def _acted_upon_(self, other, self_on_left):
