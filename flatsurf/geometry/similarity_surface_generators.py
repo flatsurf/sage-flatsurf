@@ -386,7 +386,6 @@ class TFractalSurface(OrientedSimilaritySurface):
             category=TranslationSurfaces()
             .InfiniteType()
             .WithoutBoundary()
-            .Compact()
             .Connected(),
         )
 
