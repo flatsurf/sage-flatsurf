@@ -1798,6 +1798,9 @@ class EuclideanPoint(EuclideanSet, Element):
             sage: p[1]
             2
             sage: p[2]
+            Traceback (most recent call last):
+            ...
+            KeyError
 
         """
         if i == 0:
@@ -1805,7 +1808,7 @@ class EuclideanPoint(EuclideanSet, Element):
         if i == 1:
             return self._y
 
-        raise NotImplementedError
+        raise KeyError
 
     def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
