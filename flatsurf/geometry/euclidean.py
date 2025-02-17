@@ -1099,7 +1099,7 @@ class EuclideanSet(SageObject):
             sage: E = EuclideanPlane()
             sage: c = E.circle((0, 0), radius=1)
             sage: E((0, 0)) in c
-            True
+            False
 
         """
         raise NotImplementedError(
@@ -1268,12 +1268,14 @@ class EuclideanFacade(EuclideanSet, Parent):
         sage: c = E.circle((0, 0), radius=1)
         sage: p = c.center()
         sage: p in c
-        True
+        False
         sage: p.parent() is E
         True
         sage: q = c.an_element()
         sage: q
         I
+        sage: q in c
+        True
         sage: q.parent() is E
         True
 
@@ -1314,7 +1316,7 @@ class EuclideanFacade(EuclideanSet, Parent):
             sage: c = E.circle((0, 0), radius=1)
             sage: c((1, 0))
             (1, 0)
-            sage: v((0, 0))
+            sage: c((0, 0))
             Traceback (most recent call last):
             ...
             ValueError: point not contained in this set
@@ -1666,6 +1668,10 @@ class EuclideanCircle(EuclideanFacade):
     ##         + " and radius squared "
     ##         + str(self._radius_squared)
     ##     )
+
+    def __contains__(self, point):
+        v = self._center.vector() - point.vector()
+        return v.dot_product(v) == self._radius_squared
 
 
 class EuclideanPoint(EuclideanSet, Element):
