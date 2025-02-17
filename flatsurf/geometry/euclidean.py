@@ -731,10 +731,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: norm = E.norm()
             sage: norm(2)
             2
-            sage: norm.from_square(2)
-            sqrt(2)
+            sage: norm.from_norm_squared(2)
+            1.414213562373095?
             sage: norm.from_vector((1, 1))
-            sqrt(2)
+            1.414213562373095?
 
         """
         return EuclideanDistances(self)
@@ -1063,16 +1063,6 @@ class EuclideanSet(SageObject):
         Such sets might have been created in a non-canonical way, e.g., when
         creating a :class:`OrientedSegment` whose start and end point is
         identical.
-
-        EXAMPLES::
-
-            sage: from flatsurf import EuclideanPlane
-            sage: E = EuclideanPlane()
-            sage: segment = E.segment((0, 0), (0, 0), check=False, assume_normalized=True)
-            sage: segment
-            {-x - 1 = 0} ∩ {x - 1 ≥ 0} ∩ {x - 1 ≤ 0}
-            sage: segment._normalize()
-            (0, 0)
 
         """
         return self
@@ -2528,6 +2518,11 @@ class EuclideanDistance_squared(EuclideanDistance_base):
         return self.parent().from_sum(self, other)
 
     def _repr_(self):
+        try:
+            return repr(self.norm())
+        except (NotImplementedError, ValueError):
+            pass
+
         return f"√{self.norm_squared()}"
 
 
@@ -2571,7 +2566,7 @@ class EuclideanDistances(Parent):
             sage: from flatsurf import EuclideanPlane
             sage: E = EuclideanPlane()
             sage: E.norm().infinite()
-            oo
+            ∞
 
         """
         return self.__make_element_class__(EuclideanDistance_infinite)(self)
@@ -2583,14 +2578,16 @@ class EuclideanDistances(Parent):
         return self.__make_element_class__(EuclideanDistance_squared)(self, x)
 
     def from_vector(self, v):
-        return self.from_norm_squared(v[0] ** 2 + v[1] ** 2)
+        v = self._euclidean_plane.vector_space()(v)
+        return self.from_norm_squared(v.dot_product(v))
 
     def _element_constructor_(self, x):
-        from sage.all import vector
+        from sage.all import parent
 
-        x = vector(x)
+        if self.base_ring().has_coerce_map_from(parent(x)):
+            return self.from_norm_squared(x**2)
 
-        return self.from_norm_squared(x.dot_product(x))
+        return self.from_vector(x)
 
 
 ### TODO: PRE-EUCLIDEAN-PLANE CODE HERE
