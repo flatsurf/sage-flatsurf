@@ -1406,7 +1406,7 @@ class MutableOrientedSimilaritySurface(
         if B1[2] * imA0 != imA0[2] * B1 or A1[2] * imB0 != imB0[2] * A1:
             raise ValueError("invalid transformation")
 
-        inverse_transformation = transformation.inverse()
+        inverse_transformation = transformation.inverse_of_unit()
         inverse_transformation.set_immutable()
 
         self._gluings[x[0]][x[1]] = y
