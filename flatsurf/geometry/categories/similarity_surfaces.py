@@ -1216,12 +1216,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: H.angles()
                     [1/2, 1/2, 1/2, 5/2]
                     sage: S.angles()
-                    [1, 1, 5, 1]
+                    [5, 1, 1, 1]
 
                     sage: H.angles(return_adjacent_edges=True)
                     [(1/2, [...]), (1/2, [...]), (1/2, [...]), (5/2, [...])]
                     sage: S.angles(return_adjacent_edges=True)
-                    [(1, [...]), (1, [...]), (5, [...]), (1, [...])]
+                    [(5, [...]), (1, [...]), (1, [...]), (1, [...])]
 
                 For self-glued edges, no angle is reported for the
                 "vertex" at the midpoint of the edge::
@@ -1400,8 +1400,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 if e < 0 or e >= len(self.polygon(p).vertices()):
                     raise ValueError("invalid edge index for this polygon")
 
+                op_edge = self.opposite_edge(p, e)
+                if op_edge is None:
+                    return None
+                pp, ee = op_edge
+
                 u = self.polygon(p).edge(e)
-                pp, ee = self.opposite_edge(p, e)
                 v = self.polygon(pp).edge(ee)
 
                 # note the orientation, it is -v and not v
@@ -1416,7 +1420,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     m3 = MatrixSpace(self.base_ring(), 3)()
                     m3[:2, :2] = m2
                     m3[2, 2] = 1
-                    m3[:2, 2] = self.polygon(pp).vertex(ee + 1) - self.polygon(p).vertex(e)
+                    m3[:2, 2] = self.polygon(pp).vertex(ee + 1) - m2 * self.polygon(p).vertex(e)
                     m3.set_immutable()
                     return m3
 
@@ -2366,7 +2370,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: cs = s
                     sage: ts = cs.minimal_cover(cover_type="translation")
                     sage: ts
-                    Minimal Translation Cover of Rational Cone Surface built from a square
+                    Minimal Translation Cover of Genus 0 Rational Cone Surface built from a square
                     sage: from flatsurf.geometry.categories import TranslationSurfaces
                     sage: ts in TranslationSurfaces()
                     True

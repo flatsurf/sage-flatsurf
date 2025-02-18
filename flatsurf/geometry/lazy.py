@@ -1926,7 +1926,7 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
             sage: from flatsurf.geometry.chamanara import chamanara_surface
             sage: S = chamanara_surface(1/2)
             sage: S._to_reference_label(0)
-            (0, 1, 0)
+            (0, (1, 0))
 
         """
         return self._reference.labels()[label]
@@ -1939,7 +1939,7 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
 
             sage: from flatsurf.geometry.chamanara import chamanara_surface
             sage: S = chamanara_surface(1/2)
-            sage: S._from_reference_label((0, 1, 0))
+            sage: S._from_reference_label((0, (1, 0)))
             0
 
         """

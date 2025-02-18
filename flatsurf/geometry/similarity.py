@@ -387,7 +387,7 @@ class Similarity(MultiplicativeGroupElement):
     def __ne__(self, other):
         return not (self == other)
 
-    def matrix(self):
+    def matrix(self, projective=True):
         r"""
         Return the 3x3 matrix representative of this element
 
@@ -400,24 +400,33 @@ class Similarity(MultiplicativeGroupElement):
             [   1 -2/3    1]
             [-2/3   -1    1]
             [   0    0    1]
+            sage: S((1,-2/3,1,1,-1)).matrix(projective=False)
+            [   1 -2/3]
+            [-2/3   -1]
+
         """
         P = self.parent()
-        M = P._matrix_space_3x3()
         z = P._ring.zero()
         o = P._ring.one()
-        return M(
-            [
-                self._a,
-                -self._sign * self._b,
-                self._s,
-                self._b,
-                +self._sign * self._a,
-                self._t,
-                z,
-                z,
-                o,
-            ]
-        )
+
+        if projective:
+            M = P._matrix_space_3x3()
+            return M(
+                [
+                    self._a,
+                    -self._sign * self._b,
+                    self._s,
+                    self._b,
+                    +self._sign * self._a,
+                    self._t,
+                    z,
+                    z,
+                    o,
+                ]
+            )
+        else:
+            M = P._matrix_space_2x2()
+            return M([self._a, -self._sign * self._b, self._b, self._sign * self._a])
 
     def derivative(self):
         r"""

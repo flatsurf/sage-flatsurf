@@ -1645,7 +1645,8 @@ class MutableOrientedSimilaritySurface(
 
         EXAMPLES::
 
-            sage: from flatsurf import MutableOrientedSimilaritySurface, SimilarityGroup, polygons
+            sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
 
             sage: M = MutableOrientedSimilaritySurface(QQ)
             sage: S = SimilarityGroup(QQ)
@@ -3001,7 +3002,7 @@ class ComponentLabels(LabeledCollection):
             sage: C = translation_surfaces.cathedral(1, 2)
             sage: component = C.component(0)
             sage: list(component.traversal_bfs())
-            [(0, None, None), (1, 0, 1), (3, 0, 3), (2, 3, 7)]
+            [(0, None, None), (1, 0, 1), (3, 0, 3), (2, 1, 4)]
 
         """
         from collections import deque
@@ -3065,8 +3066,7 @@ class Labels(LabeledCollection, collections.abc.Sequence):
 
         sage: labels = S.labels()
         sage: labels
-        ((0, 1, 0), (1, 1, 0), (1, 0, -1), (1, 1/2*c0, 1/2*c0), (0, 1/2*c0, -1/2*c0), (0, 0, 1), (0, -1/2*c0, -1/2*c0), (0, 0, -1), (0, -1/2*c0, 1/2*c0), (0, 1/2*c0, 1/2*c0),
-         (1, 1/2*c0, -1/2*c0), (1, -1/2*c0, -1/2*c0), (1, 0, 1), (1, -1/2*c0, 1/2*c0), (1, -1, 0), (0, -1, 0))
+        ((0, (1, 0)), (1, (1, 0)), (1, (0, -1)), (1, (1/2*c0, 1/2*c0)), (0, (1/2*c0, -1/2*c0)), (0, (0, 1)), (0, (-1/2*c0, -1/2*c0)), (0, (0, -1)), (0, (-1/2*c0, 1/2*c0)), (0, (1/2*c0, 1/2*c0)), (1, (1/2*c0, -1/2*c0)), (1, (-1/2*c0, -1/2*c0)), (1, (0, 1)), (1, (-1/2*c0, 1/2*c0)), (1, (-1, 0)), (0, (-1, 0)))
 
     TESTS::
 
