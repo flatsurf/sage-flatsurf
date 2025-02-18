@@ -16,7 +16,7 @@ EXAMPLES::
     sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
     sage: S0 = translation_surfaces.square_torus()
     sage: S = MutableOrientedSimilaritySurface.from_surface(S0, category=S0.category())
-    sage: S.pyflatsurf() is S.pyflatsurf()
+    sage: S.pyflatsurf() is S.pyflatsurf()  # optional - pyflatsurf
     False
 
 When we call
@@ -24,7 +24,7 @@ When we call
 caching is enabled for this method::
 
     sage: S.set_immutable()
-    sage: S.pyflatsurf() is S.pyflatsurf()
+    sage: S.pyflatsurf() is S.pyflatsurf()  # optional - pyflatsurf
     True
 
 """
