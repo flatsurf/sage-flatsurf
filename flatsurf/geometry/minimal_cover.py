@@ -237,6 +237,7 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
         vertices_aff = [V2((x / z, y / z)) for x, y, z in vertices_proj]
         return Polygon(vertices=vertices_aff)
 
+    @cached_method
     def edge_matrix(self, p, e=None, projective=None):
         r"""
         EXAMPLES::
