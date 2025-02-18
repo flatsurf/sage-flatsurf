@@ -421,6 +421,10 @@ class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
         # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
+    def _test_edge_matrix(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        pass
+
     def _test_gluings(self, **options):
         # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
