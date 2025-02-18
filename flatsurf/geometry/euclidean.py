@@ -152,6 +152,47 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         self._base_ring = geometry.base_ring()
         self.geometry = geometry
 
+    def _coerce_map_from_(self, other):
+        r"""
+        Return a coercion map from ``other`` to this hyperbolic plane.
+
+        EXAMPLES:
+
+        Coercions between base rings induce coercion between hyperbolic planes::
+
+            sage: from flatsurf import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+            sage: HyperbolicPlane(AA).has_coerce_map_from(H)
+            True
+
+        Base ring elements coerce as points on the real line::
+
+            sage: H.has_coerce_map_from(QQ)
+            True
+            sage: H.has_coerce_map_from(ZZ)
+            True
+
+        Complex numbers do not coerce into the hyperbolic plane since that
+        coercion would not be total::
+
+            sage: H.has_coerce_map_from(CC)
+            False
+            sage: H.has_coerce_map_from(I.parent())
+            False
+            sage: HyperbolicPlane(RR).has_coerce_map_from(CC)
+            False
+
+        """
+        if self.base_ring().has_coerce_map_from(other):
+            return True
+
+        if isinstance(other, EuclideanPlane):
+            # TODO: Should we not take geometry into account?
+            return self.base_ring().has_coerce_map_from(other.base_ring())
+
+        return False
+
     def change_ring(self, ring, geometry=None):
         r"""
         Return the Euclidean plane over a different base ``ring``.
@@ -736,8 +777,6 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         INPUT:
 
-        # TODO: Allow vertices to be points in the plane and not just vectors.
-
         - ``vertices`` -- a sequence of vertices or ``None`` (default: ``None``); the
           vertices of the polygon as points in the real plane
 
@@ -778,6 +817,27 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: E.polygon(vertices=[(1, 0), (2, 0), (1, 1)])
             Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
 
+        Vertices can also be actual points of the Euclidean plane::
+
+            sage: E.polygon(vertices=[E.point(1, 0), (-1, 1), E.point(0, -1)])
+            Polygon(vertices=[(1, 0), (-1, 1), (0, -1)])
+
+        Edges can also be segments in the Euclidean plane::
+
+            sage: E.polygon(edges=[
+            ....:     E.point(0, 0).segment(E.point(1, 0)),
+            ....:     E.point(1, 0).segment(E.point(0, 1)),
+            ....:     E.point(0, 1).segment(E.point(0, 0))])
+            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+
+        Or a mix of segments and vectors::
+
+            sage: E.polygon(edges=[
+            ....:     E.point(0, 0).segment(E.point(1, 0)),
+            ....:     (-1, 1),
+            ....:     E.point(0, 1).segment(E.point(0, 0))])
+            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+
         A right triangle at the origin, specified by giving the edge vectors::
 
             sage: E.polygon(edges=[(1, 0), (-1, 1), (0, -1)])
@@ -801,7 +861,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: E.polygon(edges=[(1, 0), (0, 1), (1, 1)])
             Traceback (most recent call last):
             ...
-            ValueError: polygon not closed
+            ValueError: polygon is not closed
 
         A polygon with prescribed angles::
 
@@ -836,7 +896,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: E.polygon(angles=[1, 1, 1, 1], lengths=[1])
             Traceback (most recent call last):
             ...
-            NotImplementedError: cannot construct a quadrilateral from 4 angles and 2 vertices
+            NotImplementedError: cannot construct a quadrilateral from 4 angles and 1 edges
 
         Equally, we deduce vertices or edges::
 
@@ -935,7 +995,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             if n == 3:
                 category = category.Convex()
 
-        # We now rewrite the given data into vertices. Whenever there is
+        # We now rewrite the given data into edges. Whenever there is
         # redundancy, we check that things are compatible. Note that much of the
         # complication of the below comes from the "angles" keyword. When angles
         # are given, some of the vertex coordinates can be deduced automatically.
@@ -944,23 +1004,18 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             category, n, vertices, edges, angles, lengths
         )
 
-        assert vertices
+        assert edges
 
-        from sage.all import vector
-        vertices = tuple(vector(self.base_ring(), vertex) for vertex in vertices)
+        # Deduce missing edges for prescribed angles
+        edges = self._polygon_complete_edges(n, edges, angles, choice=choice)
 
-        # Deduce missing vertices for prescribed angles
-        if angles and len(vertices) != n:
-            vertices = self._polygon_complete_vertices(n, vertices, angles, choice=choice)
-            angles = None
-
-        for v in vertices: v.set_immutable()
+        edges = tuple(edges)
 
         assert (
-            len(vertices) == n
-        ), f"expected to build {n}-gon from {n} vertices but found {vertices}"
+            len(edges) == n
+        ), f"expected to build {n}-gon from {n} edges but found {edges}"
 
-        polygon = EuclideanPolygon(self, vertices=vertices, category=category)
+        polygon = EuclideanPolygon(self, edges=edges, category=category)
 
         if check:
             polygon = polygon._normalize()
@@ -1047,19 +1102,34 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
             angles = None
 
-        # Rewrite edges as vertices.
-        if edges and not vertices:
-            from sage.all import vector
-            vertices = [vector(base_ring, (0, 0))]
-            for edge in edges:
-                vertices.append(vertices[-1] + vector(base_ring, edge))
+        if vertices:
+            vertices = [self.point(*v) for v in vertices]
 
-            if len(vertices) == n + 1:
-                if vertices[-1]:
-                    raise ValueError("polygon not closed")
-                vertices.pop()
+        # Rewrite vertices as edges
+        if vertices and not edges:
+            edges = [v.segment(w) for v, w in zip(vertices, vertices[1:])]
+            vertices = None
 
-            edges = None
+        # TODO: Make sure that everything are lists until the very end when we turn everything into tuples.
+        edges = list(edges)
+
+        # Rewrite edges as segments (and lines)
+        pos = None
+        if vertices:
+            pos = self(vertices[0])
+        for e in range(len(edges)):
+            if not isinstance(edges[e], EuclideanFacade):
+                # edge is a vector, turn it into a segment
+                if pos is None:
+                    choice = True
+                    pos = self.point(0, 0)
+                
+                edges[e] = pos.segment(pos.translate(edges[e]))
+
+            if not edges[e].is_oriented():
+                raise ValueError("edges must be oriented segments, rays, or lines")
+
+            pos = edges[e].end()
 
         return choice, vertices, edges, angles, lengths
 
@@ -1091,7 +1161,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         if any(edge == 0 for edge in polygon.edges()):
             raise ValueError("polygon has zero edge")
 
-        for i in range(len(polygon.vertices())):
+        for i in range(len(polygon.edges())):
             from flatsurf.geometry.euclidean import is_anti_parallel
 
             if is_anti_parallel(polygon.edge(i), polygon.edge(i + 1)):
@@ -1103,15 +1173,12 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             raise NotImplementedError("polygon self-intersects")
 
         # Check that any redundant data is compatible
-        if edges:
-            # Check compatibility of vertices and edges
-            from sage.all import vector
-            edges = [vector(polygon.base_ring(), edge) for edge in edges]
+        if vertices:
             if len(edges) != len(vertices):
                 raise ValueError("vertices and edges must have the same length")
 
-            for i in range(len(polygon.vertices())):
-                if vertices[i - 1] + edges[i - 1] != vertices[i]:
+            for v, e in zip(vertices, polygon.edge_segments()):
+                if v != e.start():
                     raise ValueError("vertices and edges are not compatible")
 
         if angles:
@@ -1136,51 +1203,58 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                 if edge.norm() != length:
                     raise ValueError("polygon does not have the prescribed lengths")
 
-    def _polygon_complete_vertices(self, n, vertices, angles, choice):
+    def _polygon_complete_edges(self, n, edges, angles, choice):
         r"""
-        Return vertices that define a polygon by completing the ``vertices`` to an
+        Return edges that define a polygon by completing the ``edges`` to an
         ``n``-gon with ``angles``.
 
         This is a helper function for :func:`Polygon`.
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.polygon import _Polygon_complete_vertices
-            sage: _Polygon_complete_vertices(3, [vector((0, 0)), vector((1, 0))], [1, 1, 1], choice=False)
-            [(0, 0), (1, 0), (1/2, 1/2*c)]
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane(AA)
+
+            sage: E._polygon_complete_edges(3, [E((0, 0)).segment((1, 0))], [1, 1, 1], choice=False)
+            [(0, 0) → (1, 0),
+             (1, 0) → (1/2, 0.866025403784439?),
+             (1/2, 0.866025403784439?) → (0, 0)]
 
         """
-        if len(vertices) == n - 1:
-            # We do not use category.slopes() since the matrix formed by such
-            # slopes might not be invertible (because exact-reals do not have a
-            # fraction field implemented).
-            from flatsurf.geometry.polygon import EuclideanPolygonsWithAngles
-            slopes = EuclideanPolygonsWithAngles(angles).slopes()
+        if angles:
+            if len(angles) == n and  len(edges) == n - 2:
+                # We do not use category.slopes() since the matrix formed by such
+                # slopes might not be invertible (because exact-reals do not have a
+                # fraction field implemented).
+                from flatsurf.geometry.polygon import EuclideanPolygonsWithAngles
+                slopes = EuclideanPolygonsWithAngles(angles).slopes()
 
-            # We do not use solve_left() because the vertices might not live in
-            # a ring that has a fraction field implemented (such as an
-            # exact-real ring).
-            from sage.all import matrix
-            s, t = (vertices[0] - vertices[n - 2]) * matrix(
-                [slopes[-1], slopes[n - 2]]
-            ).inverse()
-            assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
+                # We do not use solve_left() because the vertices might not live in
+                # a ring that has a fraction field implemented (such as an
+                # exact-real ring).
+                from sage.all import matrix
+                s, t = (edges[0].start().vector() - edges[-1].end().vector()) * matrix(
+                    [slopes[-1], slopes[n - 2]]
+                ).inverse()
+                assert edges[0].start().vector() - s * slopes[-1] == edges[-1].end().vector() + t * slopes[n - 2]
 
-            if s <= 0 or t <= 0:
-                raise (NotImplementedError if choice else ValueError)(
-                    "cannot determine polygon with these angles from the given data"
+                if s <= 0 or t <= 0:
+                    raise (NotImplementedError if choice else ValueError)(
+                        "cannot determine polygon with these angles from the given data"
+                    )
+
+                edges.append(edges[-1].end().segment(edges[0].start().vector() - s * slopes[-1]))
+            if len(edges) < n - 1:
+                from flatsurf.geometry.categories import Polygons
+
+                raise NotImplementedError(
+                    f"cannot construct {' '.join(Polygons._describe_polygon(n)[:2])} from {n} angles and {len(edges)} edges"
                 )
 
-            vertices = vertices + (vertices[0] - s * slopes[-1],)
+        if len(edges) == n - 1:
+            edges.append(edges[-1].end().segment(edges[0].start()))
 
-        if len(vertices) != n:
-            from flatsurf.geometry.categories import Polygons
-
-            raise NotImplementedError(
-                f"cannot construct {' '.join(Polygons._describe_polygon(n)[:2])} from {n} angles and {len(vertices)} vertices"
-            )
-
-        return vertices
+        return edges
 
     @cached_method
     def norm(self):
@@ -2187,7 +2261,9 @@ class EuclideanPoint(EuclideanSet, Element):
         yield self._y
 
     def vector(self):
-        return self.parent().vector_space()((self._x, self._y))
+        v = self.parent().vector_space()((self._x, self._y))
+        v.set_immutable()
+        return v
 
     def translate(self, v):
         v = self.parent().vector_space()(v)
@@ -2660,6 +2736,9 @@ class EuclideanLine(EuclideanFacade):
             (type(self), self.equation(normalization=["one", "gcd"]))
         )
         
+    def translate(self, v):
+        return self.parent().line(self._a - self._b * v[0] - self._c * v[1], self._b, self._c, oriented=self.is_oriented(), check=False)
+
 
 class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
     r"""
@@ -2858,6 +2937,9 @@ class EuclideanSegment(EuclideanFacade):
 
         return self
 
+    def translate(self, v):
+        return self.parent().segment(self._line.translate(v), None if self._start is None else self._start.translate(v), None if self._end is None else self._end.translate(v), oriented=self.is_oriented(), check=False)
+
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
     r"""
@@ -2912,6 +2994,18 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
 
     def __hash__(self):
         return hash((self._line, self._start, self._end))
+
+    def start(self):
+        if self._start is None:
+            raise NotImplementedError("ray has no finite Euclidean starting point")
+
+        return self._start
+
+    def end(self):
+        if self._end is None:
+            raise NotImplementedError("ray has no finite Euclidean end point")
+
+        return self._end
 
 
 class EuclideanUnorientedSegment(EuclideanSegment):
@@ -3004,7 +3098,7 @@ class EuclideanPolygon(EuclideanFacade):
 
     """
 
-    def __init__(self, parent, vertices, category=None):
+    def __init__(self, parent, edges, category=None):
         from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
         if category is None:
             category = EuclideanPolygons(parent.base_ring())
@@ -3013,7 +3107,7 @@ class EuclideanPolygon(EuclideanFacade):
 
         super().__init__(parent, category=category)
 
-        self._vertices = vertices
+        self._edges = edges
 
         if "Convex" not in category.axioms() and self.is_convex():
             self._refine_category_(category.Convex())
@@ -3038,11 +3132,11 @@ class EuclideanPolygon(EuclideanFacade):
             (0, 0)
 
         """
-        return self.parent()(self._vertices[0])
+        return self.parent()(self.vertices()[0])
 
     @cached_method
     def __hash__(self):
-        return hash(self._vertices)
+        return hash(self._edges)
 
     def __eq__(self, other):
         r"""
@@ -3050,11 +3144,11 @@ class EuclideanPolygon(EuclideanFacade):
 
             sage: from flatsurf import polygons, Polygon
             sage: p1 = polygons.square()
-            sage: p2 = Polygon(edges=[(1,0),(0,1),(-1,0),(0,-1)], base_ring=AA)
+            sage: p2 = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)], base_ring=AA)
             sage: p1 == p2
             True
 
-            sage: p3 = Polygon(edges=[(2,0),(-1,1),(-1,-1)])
+            sage: p3 = Polygon(edges=[(2, 0), (-1, 1), (-1, -1)])
             sage: p1 == p3
             False
 
@@ -3062,18 +3156,19 @@ class EuclideanPolygon(EuclideanFacade):
 
             sage: from flatsurf import Polygon, polygons
             sage: p1 = polygons.square()
-            sage: p2 = Polygon(edges=[(1,0),(0,1),(-1,0),(0,-1)], base_ring=AA)
+            sage: p2 = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)], base_ring=AA)
             sage: p1 != p2
             False
 
-            sage: p3 = Polygon(edges=[(2,0),(-1,1),(-1,-1)])
+            sage: p3 = Polygon(edges=[(2, 0), (-1, 1), (-1, -1)])
             sage: p1 != p3
             True
+
         """
         if not isinstance(other, EuclideanPolygon):
             return False
 
-        return self._vertices == other._vertices
+        return self._edges == other._edges
 
     # TODO: Do we need this?
     def cmp(self, other):
@@ -3122,10 +3217,9 @@ class EuclideanPolygon(EuclideanFacade):
             Polygon(vertices=[(3, -2), (5, -2), (4, -1)])
 
         """
-        u = self.parent().vector_space()(u)
         # TODO: Require in base class. Implement partially in base class. Probably more generally as apply_matrix or something like that.
         return self.parent().polygon(
-            vertices=[v + u for v in self._vertices],
+            edges=[e.translate(u) for e in self._edges],
             check=False
         )
 
@@ -3144,6 +3238,7 @@ class EuclideanPolygon(EuclideanFacade):
         return f"Polygon(vertices={repr(list(self.vertices()))})"
 
     def vertices(self, marked_vertices=True):
+        # TODO: Expose as points as well.
         r"""
         Return the vertices of this polygon in counterclockwise order as
         vectors in the real plane.
@@ -3165,11 +3260,14 @@ class EuclideanPolygon(EuclideanFacade):
             return tuple(
                 vertex
                 # TODO: Test this code path.
-                for (vertex, slope) in zip(self._vertices, self.slopes(relative=True))
+                for (vertex, slope) in zip(self.vertices(), self.slopes(relative=True))
                 if slope[1] != 0
             )
 
-        return self._vertices
+        return tuple(e.start().vector() for e in self.edge_segments())
+
+    def edge_segments(self):
+        return self._edges
 
     def _check(self, require_normalized=True):
         r"""
@@ -3202,6 +3300,11 @@ class EuclideanPolygon(EuclideanFacade):
 
                 if is_anti_parallel(self.edge(i), self.edge(i + 1)):
                     raise ValueError("polygon has anti-parallel edges")
+
+        for e in range(len(self._edges)):
+            # TODO: Check only for finite points. For infinite points check that things are ccw.
+            if self._edges[e - 1].end() != self._edges[e].start():
+                raise ValueError("polygon is not closed")
 
         from flatsurf.geometry.categories import EuclideanPolygons
 

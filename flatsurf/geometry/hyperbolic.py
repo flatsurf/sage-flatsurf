@@ -453,6 +453,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return True
 
         if isinstance(other, HyperbolicPlane):
+            # TODO: Should we not take geometry into account?
             return self.base_ring().has_coerce_map_from(other.base_ring())
 
         return False
@@ -5972,6 +5973,7 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         """
         if not isinstance(other, HyperbolicHalfSpace):
             return False
+
         return self._geodesic == other._geodesic
 
     def plot(self, model="half_plane", **kwds):

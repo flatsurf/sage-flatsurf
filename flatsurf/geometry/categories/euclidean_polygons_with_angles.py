@@ -989,7 +989,7 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
                 sage: Polygon(angles=[2, 2, 3, 13], lengths=r0 + r1)
                 Traceback (most recent call last):
                 ...
-                ValueError: polygon not closed
+                ValueError: polygon has negative area; probably the vertices are not in counter-clockwise order
                 sage: Polygon(angles=[2, 2, 3, 13], edges=[length * slope for (length, slope) in zip(r0 + r1, P.slopes())])
                 Polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
 

@@ -476,7 +476,7 @@ def Polygon(
         sage: Polygon(edges=[(1, 0), (0, 1), (1, 1)])
         Traceback (most recent call last):
         ...
-        ValueError: polygon not closed
+        ValueError: polygon is not closed
 
     A polygon with prescribed angles::
 
@@ -510,7 +510,7 @@ def Polygon(
         sage: Polygon(angles=[1, 1, 1, 1], lengths=[1])
         Traceback (most recent call last):
         ...
-        NotImplementedError: cannot construct a quadrilateral from 4 angles and 2 vertices
+        NotImplementedError: cannot construct a quadrilateral from 4 angles and 1 edges
 
     Equally, we deduce vertices or edges::
 
