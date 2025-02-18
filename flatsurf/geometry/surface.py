@@ -2732,6 +2732,9 @@ class LabeledView(LabeledCollection):
         super().__init__(surface, finite=finite)
         self._view = view
 
+    def traversal_bfs(self):
+        return self._view.traversal_bfs()
+
     def __iter__(self):
         return iter(self._view)
 
@@ -2831,6 +2834,37 @@ class ComponentLabels(LabeledCollection):
         super().__init__(surface, finite=finite)
         self._root = root
 
+    def traversal_bfs(self):
+        r"""
+        Iterate through triple ``(polygon_label, parent_polygon_label, edge)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: component = C.component(0)
+            sage: list(component.traversal_bfs())
+            [(0, None, None), (1, 0, 1), (3, 0, 3), (2, 3, 7)]
+
+        """
+        from collections import deque
+
+        seen = set([self._root])
+        pending = deque([self._root])
+        yield (self._root, None, None)
+
+        while pending:
+            label = pending.popleft()
+
+            for e in range(len(self._surface.polygon(label).vertices())):
+                cross = self._surface.opposite_edge(label, e)
+                if cross is None:
+                    continue
+                if cross[0] not in seen:
+                    yield (cross[0], label, e)
+                    seen.add(cross[0])
+                    pending.append(cross[0])
+
     def __iter__(self):
         r"""
         Return an iterator of this component that enumerates labels starting
@@ -2845,23 +2879,7 @@ class ComponentLabels(LabeledCollection):
             [0, 1, 3, 2]
 
         """
-        from collections import deque
-
-        seen = set()
-        pending = deque([self._root])
-
-        while pending:
-            label = pending.popleft()
-            if label in seen:
-                continue
-
-            seen.add(label)
-
-            yield label
-            for e in range(len(self._surface.polygon(label).vertices())):
-                cross = self._surface.opposite_edge(label, e)
-                if cross is not None:
-                    pending.append(cross[0])
+        yield from (x[0] for x in self.traversal_bfs())
 
 
 class Labels(LabeledCollection, collections.abc.Sequence):
@@ -2900,10 +2918,12 @@ class Labels(LabeledCollection, collections.abc.Sequence):
         True
 
     """
+    def traversal_bfs(self):
+        for component in self._surface.components():
+            yield from component.traversal_bfs()
 
     def __iter__(self):
-        for component in self._surface.components():
-            yield from component
+        yield from (x[0] for x in self.traversal_bfs())
 
     def __getitem__(self, key):
         r"""
