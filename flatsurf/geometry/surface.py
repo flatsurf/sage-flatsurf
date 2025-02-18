@@ -1694,6 +1694,7 @@ class MutableOrientedSimilaritySurface(
             self._transformations[label][edge].set_immutable()
             self._transformations[label2][edge2].set_immutable()
 
+    # TODO: this method could probably go away
     def replace_polygon(self, label, polygon):
         r"""
         Replace the polygon ``label`` with ``polygon`` while keeping its
@@ -1715,6 +1716,7 @@ class MutableOrientedSimilaritySurface(
             sage: S.glue((0, 1), (0, 3))
 
             sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
+            sage: TestSuite(S).run()
 
         The replacement of a polygon must have the same number of sides::
 
@@ -1723,7 +1725,7 @@ class MutableOrientedSimilaritySurface(
             ...
             ValueError: polygon must be a quadrilateral
 
-        To replace the polygon without keeping its glueings, remove the polygon
+        To replace the polygon without keeping its gluings, remove the polygon
         first and then add a new one::
 
             sage: S.remove_polygon(0)
@@ -1740,6 +1742,13 @@ class MutableOrientedSimilaritySurface(
             raise ValueError(f"polygon must be {article} {singular}")
 
         self._polygons[label] = polygon
+
+        # we "redo" the gluings since self._transformations became outdated
+        for e, cross in enumerate(self._gluings[label]):
+            if cross is None:
+                continue
+            pp, ee = cross
+            self.glue((label, e), cross)
 
     def opposite_edge(self, label, edge=None):
         r"""
