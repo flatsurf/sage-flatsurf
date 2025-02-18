@@ -800,8 +800,8 @@ class PolygonalSurfaces(SurfaceCategory):
             """
             tester = self._tester(**options)
 
-            from sage.modules.free_module import VectorSpace
-            V = VectorSpace(self.base_ring(), 3)
+            from sage.modules.free_module import FreeModule
+            V = FreeModule(self.base_ring(), 3)
 
             labels = self.labels()
 
