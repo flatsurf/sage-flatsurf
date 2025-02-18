@@ -40,7 +40,7 @@ Usually, you do not interact with the types in this module directly but call
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent
 from sage.matrix.constructor import matrix
-from sage.modules.free_module import VectorSpace
+from sage.modules.free_module import FreeModule
 
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.polygon import Polygon
@@ -231,8 +231,8 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
         # TODO: change this when we have proper projective action of 3x3 matrices on polygons
         if m.det() < 0:
             raise NotImplementedError
-        V3 = VectorSpace(self.base_ring(), 3)
-        V2 = VectorSpace(self.base_ring(), 2)
+        V3 = FreeModule(self.base_ring(), 3)
+        V2 = FreeModule(self.base_ring(), 2)
         vertices_proj = [m * V3((x, y, 1)) for x, y in self.base_surface().polygon(base_label).vertices()]
         vertices_aff = [V2((x / z, y / z)) for x, y, z in vertices_proj]
         return Polygon(vertices=vertices_aff)

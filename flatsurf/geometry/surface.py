@@ -64,7 +64,7 @@ from sage.structure.parent import Parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import Matrix
 from sage.matrix.matrix_space import MatrixSpace
-from sage.modules.free_module import VectorSpace
+from sage.modules.free_module import FreeModule
 
 from flatsurf.geometry.polygon import Polygon
 from flatsurf.geometry.surface_objects import SurfacePoint
@@ -1392,7 +1392,7 @@ class MutableOrientedSimilaritySurface(
 
         # TODO: clean this check once projective action on 3x3 matrices has been
         # implemented on objects in the EuclideanPlane
-        V = VectorSpace(self.base_ring(), 3)
+        V = FreeModule(self.base_ring(), 3)
         A0 = V(tuple(self.polygon(x[0]).vertex(x[1])) + (1,))
         B0 = V(tuple(self.polygon(x[0]).vertex(x[1] + 1)) + (1,))
         A1 = V(tuple(self.polygon(y[0]).vertex(y[1])) + (1,))
