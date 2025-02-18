@@ -385,6 +385,49 @@ class PolygonalSurfaces(SurfaceCategory):
             for label, polygon in zip(labels, polygons):
                 tester.assertEqual(self.polygon(label), polygon)
 
+        def _test_edge_matrix(self, **options):
+            r"""
+            Verify that the edge matrix does map edges to edges
+            """
+            tester = self._tester(**options)
+
+            from sage.modules.free_module import VectorSpace
+            V = VectorSpace(self.base_ring(), 3)
+
+            labels = self.labels()
+
+            if not self.is_finite_type():
+                labels = labels[:32]
+
+            for label in labels:
+                p = self.polygon(label)
+                for edge in range(len(p.vertices())):
+                    op_edge = self.opposite_edge(label, edge)
+                    if op_edge is None:
+                        continue
+                    label2, edge2 = op_edge
+                    p2 = self.polygon(label2)
+                    # TODO: clean this up when we have proper action of projective transformation
+                    # on planar objects
+                    A0 = V(tuple(p.vertex(edge)) + (1,))
+                    B0 = V(tuple(p.vertex(edge + 1)) + (1,))
+                    A1 = V(tuple(p2.vertex(edge2)) + (1,))
+                    B1 = V(tuple(p2.vertex(edge2 + 1)) + (1,))
+                    m = self.edge_matrix(label, edge, projective=True)
+                    imA0 = m * A0
+                    imB0 = m * B0
+                    tester.assertTrue(imA0[2])
+                    tester.assertTrue(B1[2])
+                    tester.assertTrue(imB0[2])
+                    tester.assertTrue(A1[2])
+                    tester.assertTrue(m.det())
+                    if m.det() > 0:
+                        tester.assertEqual(B1[2] * imA0, imA0[2] * B1)
+                        tester.assertEqual(A1[2] * imB0, imB0[2] * A1)
+                    else:
+                        tester.assertEqual(A1[2] * imA0, imA0[2] * A1)
+                        tester.assertEqual(B1[2] * imB0, imB0[2] * B1)
+
         def num_polygons(self):
             r"""
             Return the number of polygons that make up this surface.
