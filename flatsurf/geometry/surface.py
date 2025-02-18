@@ -1852,7 +1852,7 @@ class MutableOrientedSimilaritySurface(
         from flatsurf import Polygon
 
         pp = Polygon(
-            edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring()
+            edges=[p.edge((i + v) % n) for i in range(n)], parent=us.euclidean_plane()
         )
 
         for i in range(n):
@@ -3311,12 +3311,3 @@ class Gluings(LabeledSet):
             return False
 
         return y == cross
-
-
-# Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
-from flatsurf.geometry.surface_legacy import (  # noqa, we import at the bottom of the file to break a circular import  # pylint: disable=wrong-import-position
-    Surface,
-    Surface_list,
-    Surface_dict,
-    surface_list_from_polygons_and_gluings,
-)

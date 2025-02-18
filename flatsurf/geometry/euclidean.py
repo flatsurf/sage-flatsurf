@@ -141,7 +141,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                 f"geometry base ring must be base ring of Euclidean plane but {geometry.base_ring()} is not {base_ring}"
             )
 
-        if not RR.has_coerce_map_from(geometry.base_ring()):
+        if type(geometry.base_ring()).__name__ == "ExactReals_with_category":
+            # TODO: Fix this properly in exact-real?
+            pass
+        elif not RR.has_coerce_map_from(geometry.base_ring()):
             # We should check that the coercion is an embedding but this is not possible currently.
             raise ValueError("base ring must embed into the reals")
 
@@ -381,6 +384,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             Vector space of dimension 2 over Rational Field
 
         """
+        # TODO: Remove this method. It's unclear if this goes to the fraction field or not.
         return self.base_ring() ** 2
 
     def point(self, x, y):
@@ -718,6 +722,466 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         line = self.line(base, base.translate(direction), check=check)
         return self.segment(line, base, None, check=check)
 
+    def polygon(
+        self,
+        vertices=None,
+        edges=None,
+        angles=None,
+        lengths=None,
+        check=True,
+        category=None,
+    ):
+        r"""
+        Return a polygon from the given ``vertices``, ``edges``, or ``angles``.
+
+        INPUT:
+
+        # TODO: Allow vertices to be points in the plane and not just vectors.
+
+        - ``vertices`` -- a sequence of vertices or ``None`` (default: ``None``); the
+          vertices of the polygon as points in the real plane
+
+        # TODO: Allow edges to be segments and lines and not just vectors.
+
+        - ``edges`` -- a sequence of vectors or ``None`` (default: ``None``); the
+          vectors connecting the vertices of the polygon
+
+        - ``angles`` -- a sequence of numbers that prescribe the inner angles of
+          the polygon or ``None`` (default: ``None``); the angles are rescaled so
+          that their sum matches the sum of the angles in an ngon.
+
+        # TODO: Allow lengths to be norms?
+
+        - ``lengths`` -- a sequence of numbers that prescribe the lengths of the
+          edges of the polygon or ``None`` (default: ``None``)
+
+        # TODO: Replace with the standard meaning of check in the EuclideanPlane.
+        - ``check`` -- a boolean (default: ``True``); whether to check the
+          consistency of the parameters or blindly trust them. Setting this to
+          ``False`` allows creation of degenerate polygons in some cases. While
+          they might be somewhat functional, no guarantees are made about such
+          polygons.
+
+        # TODO: Document category.
+
+        EXAMPLES:
+
+        A right triangle::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane(QQ)
+            sage: E.polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+
+        A right triangle that is not based at the origin::
+
+            sage: E.polygon(vertices=[(1, 0), (2, 0), (1, 1)])
+            Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
+
+        A right triangle at the origin, specified by giving the edge vectors::
+
+            sage: E.polygon(edges=[(1, 0), (-1, 1), (0, -1)])
+            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+
+        When redundant information is given, it is checked for consistency::
+
+            sage: E.polygon(vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
+            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            sage: E.polygon(vertices=[(1, 0), (2, 0), (1, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
+            Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
+            sage: E.polygon(vertices=[(0, 0), (2, 0), (1, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
+            Traceback (most recent call last):
+            ...
+            ValueError: vertices and edges are not compatible
+
+        Polygons given by edges must be closed (in particular we do not add an edge
+        automatically to close things up since this is often not what the user
+        wanted)::
+
+            sage: E.polygon(edges=[(1, 0), (0, 1), (1, 1)])
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon not closed
+
+        A polygon with prescribed angles::
+
+            sage: E.polygon(angles=[2, 1, 1])
+            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+
+        Again, if vertices and edges are also specified, they must be compatible
+        with the angles::
+
+            sage: E.polygon(angles=[2, 1, 1], vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
+            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+
+            sage: E.polygon(angles=[1, 2, 3], vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon does not have the prescribed angles
+
+        When angles are specified, side lengths can also be prescribed::
+
+            sage: E = EuclideanPlane(QuadraticField(3))
+            sage: E.polygon(angles=[1, 1, 1], lengths=[1, 1, 1])
+            Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
+
+        The function will deduce lengths if one or two are missing::
+
+            sage: E.polygon(angles=[1, 1, 1, 1], lengths=[1, 1, 1])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: E.polygon(angles=[1, 1, 1, 1], lengths=[1, 1])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: E.polygon(angles=[1, 1, 1, 1], lengths=[1])
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot construct a quadrilateral from 4 angles and 2 vertices
+
+        Equally, we deduce vertices or edges::
+
+            sage: E.polygon(angles=[1, 1, 1, 1], vertices=[(0, 0), (1, 0), (1, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: E.polygon(angles=[1, 1, 1, 1], edges=[(1, 0), (0, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        When the angles are incompatible with the data, an error is reported (that
+        might be somewhat cryptic at times)::
+
+            sage: E.polygon(angles=[1, 1, 1, 1], edges=[(1, 0), (0, 1), (1, 2)])
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot recover a rational angle from these numerical results
+
+        When lengths are given in addition to vertices or edges, they are checked for consistency::
+
+            sage: E.polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], lengths=[1, 1, 1, 1])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: E.polygon(vertices=[(0, 0), (1, 0), (0, 1)], lengths=[1, 1, 1])
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon does not have the prescribed lengths
+
+        Currently, we cannot create a polygon from just lengths::
+
+            sage: E.polygon(lengths=[1, 1, 1])
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: one of vertices, edges, or angles must be set
+
+        Polygons do not have to be convex::
+
+            sage: p = E.polygon(vertices=[(0, 0), (1, 1), (2, 0), (2, 4), (0, 4)])
+            sage: p.describe_polygon()
+            ('a', 'non-convex pentagon', 'non-convex pentagons')
+
+        Polygons must be positively oriented::
+
+            sage: E.polygon(vertices=[(0, 0), (0, 1), (1, 0)])
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon has negative area; probably the vertices are not in counter-clockwise order
+
+        Polygons must have at least three sides::
+
+            sage: E.polygon(vertices=[(0, 0), (1, 0)])
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon must have at least three sides
+
+            sage: E.polygon(vertices=[(0, 0), (1, 0), (2, 0)])
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon has zero area
+
+        Currently, polygons must not self-intersect::
+
+            sage: p = E.polygon(vertices=[(0, 0), (2, 0), (0, 1), (1, -1), (2, 1)])
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: polygon self-intersects
+
+        Currently, all angles must be less than 2π::
+
+            sage: p = E.polygon(angles=[14, 1, 1, 1, 1])
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: each angle must be in (0, 2π)
+
+        """
+        # Determine the number of sides of this polygon.
+        if angles:
+            n = len(angles)
+        elif edges:
+            n = len(edges)
+        elif vertices:
+            n = len(vertices)
+        else:
+            raise NotImplementedError("one of vertices, edges, or angles must be set")
+
+        if n < 3:
+            raise ValueError("polygon must have at least three sides")
+
+        if category is None:
+            from flatsurf.geometry.categories import EuclideanPolygons
+
+            # Currently, all polygons are assumed to be without self-intersection, i.e., simple.
+            category = EuclideanPolygons(self.base_ring()).Simple()
+            if angles:
+                category = category.WithAngles(angles)
+
+            if n == 3:
+                category = category.Convex()
+
+        # We now rewrite the given data into vertices. Whenever there is
+        # redundancy, we check that things are compatible. Note that much of the
+        # complication of the below comes from the "angles" keyword. When angles
+        # are given, some of the vertex coordinates can be deduced automatically.
+
+        choice, vertices, edges, angles, lengths = self._polygon_normalize_arguments(
+            category, n, vertices, edges, angles, lengths
+        )
+
+        assert vertices
+
+        from sage.all import vector
+        vertices = tuple(vector(self.base_ring(), vertex) for vertex in vertices)
+
+        # Deduce missing vertices for prescribed angles
+        if angles and len(vertices) != n:
+            vertices = self._polygon_complete_vertices(n, vertices, angles, choice=choice)
+            angles = None
+
+        for v in vertices: v.set_immutable()
+
+        assert (
+            len(vertices) == n
+        ), f"expected to build {n}-gon from {n} vertices but found {vertices}"
+
+        polygon = EuclideanPolygon(self, vertices=vertices, category=category)
+
+        if check:
+            polygon = polygon._normalize()
+            polygon._check()
+            self._polygon_check(polygon, vertices=vertices, edges=edges, angles=angles, lengths=lengths)
+
+        return polygon
+
+    def rectangle(self, width, height, **kwargs):
+        from flatsurf.geometry.polygon import polygons
+        return polygons.rectangle(width, height, parent=self, **kwargs)
+
+    def square(self, side, **kwargs):
+        from flatsurf.geometry.polygon import polygons
+        return polygons.square(side, parent=self, **kwargs)
+
+    # TODO: Add triangle
+    # TODO: Add regular_ngon
+    # TODO: Add right_triangle
+
+    def _polygon_normalize_arguments(self, category, n, vertices, edges, angles, lengths):
+        r"""
+        Return the normalized arguments defining a polygon. Additionally, a flag is
+        returned that indicates whether we made a choice in normalizing these
+        arguments.
+
+        This is a helper function for :func:`Polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import _Polygon_normalize_arguments
+            sage: from flatsurf.geometry.categories import EuclideanPolygons
+            sage: category = EuclideanPolygons(AA)
+            sage: _Polygon_normalize_arguments(category=category, n=3, vertices=[(0, 0), (1, 0), (0, 1)], edges=None, angles=None, lengths=None)
+            (False, [(0, 0), (1, 0), (0, 1)], None, None, None)
+            sage: _Polygon_normalize_arguments(category=category, n=3, vertices=None, edges=[(1, 0), (-1, 1), (0, -1)], angles=None, lengths=None)
+            (False, [(0, 0), (1, 0), (0, 1)], None, None, None)
+
+            sage: category = category.WithAngles([1, 1, 1])
+            sage: _Polygon_normalize_arguments(category=category, n=3, vertices=None, edges=None, angles=[1, 1, 1], lengths=None)
+            (True, [(0, 0), (1, 0), (1/2, 0.866025403784439?)], None, None, None)
+            sage: _Polygon_normalize_arguments(category=category, n=3, vertices=None, edges=None, angles=[1, 1, 1], lengths=[AA(2).sqrt(), 1])
+            (False,
+             [(0, 0), (1.414213562373095?, 0), (0.9142135623730951?, 0.866025403784439?)],
+             None,
+             [1, 1, 1],
+             None)
+
+        """
+        base_ring = category.base_ring()
+
+        # Track whether we made a choice that possibly is the reason that we fail
+        # to find a polygon with the given data.
+        choice = False
+
+        # Rewrite angles and lengths as angles and edges.
+        if angles and lengths and not edges:
+            edges = []
+            for slope, length in zip(category.slopes(), lengths):
+                scale = base_ring((length**2 / (slope[0] ** 2 + slope[1] ** 2)).sqrt())
+                edges.append(scale * slope)
+
+            if len(edges) == n:
+                angles = 0
+
+            lengths = None
+
+        # Deduce edges if only angles are given
+        if angles and not edges and not vertices:
+            assert not lengths
+
+            choice = True
+
+            # We pick the edges such that they form a closed polygon with the
+            # prescribed angles. However, there might be self-intersection which
+            # currently leads to an error.
+            edges = [
+                length * slope
+                for (length, slope) in zip(
+                    sum(r.vector() for r in category.lengths_polytope().rays()),
+                    category.slopes(),
+                )
+            ]
+
+            angles = None
+
+        # Rewrite edges as vertices.
+        if edges and not vertices:
+            from sage.all import vector
+            vertices = [vector(base_ring, (0, 0))]
+            for edge in edges:
+                vertices.append(vertices[-1] + vector(base_ring, edge))
+
+            if len(vertices) == n + 1:
+                if vertices[-1]:
+                    raise ValueError("polygon not closed")
+                vertices.pop()
+
+            edges = None
+
+        return choice, vertices, edges, angles, lengths
+
+    def _polygon_check(self, polygon, vertices, edges, angles, lengths):
+        r"""
+        Verify that ``p`` is a valid polygon and that it satisfies the constraints
+        given.
+
+        This is a helper function for :func:`Polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import _Polygon_check, Polygon
+            sage: p = Polygon(angles=[1, 1, 1])
+            sage: _Polygon_check(p, vertices=None, edges=None, angles=[1, 1, 1], lengths=None, convex=None)
+
+        """
+        # Check that the polygon satisfies the assumptions of EuclideanPolygon
+        area = polygon.area()
+
+        if area < 0:
+            raise ValueError(
+                "polygon has negative area; probably the vertices are not in counter-clockwise order"
+            )
+
+        if area == 0:
+            raise ValueError("polygon has zero area")
+
+        if any(edge == 0 for edge in polygon.edges()):
+            raise ValueError("polygon has zero edge")
+
+        for i in range(len(polygon.vertices())):
+            from flatsurf.geometry.euclidean import is_anti_parallel
+
+            if is_anti_parallel(polygon.edge(i), polygon.edge(i + 1)):
+                raise ValueError("polygon has anti-parallel edges")
+
+        from flatsurf.geometry.categories import EuclideanPolygons
+
+        if not EuclideanPolygons.ParentMethods.is_simple(polygon):
+            raise NotImplementedError("polygon self-intersects")
+
+        # Check that any redundant data is compatible
+        if edges:
+            # Check compatibility of vertices and edges
+            from sage.all import vector
+            edges = [vector(polygon.base_ring(), edge) for edge in edges]
+            if len(edges) != len(vertices):
+                raise ValueError("vertices and edges must have the same length")
+
+            for i in range(len(polygon.vertices())):
+                if vertices[i - 1] + edges[i - 1] != vertices[i]:
+                    raise ValueError("vertices and edges are not compatible")
+
+        if angles:
+            # Check that the polygon has the prescribed angles
+            from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
+                EuclideanPolygonsWithAngles,
+            )
+            from flatsurf.geometry.categories.euclidean_polygons import (
+                EuclideanPolygons,
+            )
+
+            # Use EuclideanPolygon's angle() so we do not use the precomputed angles set by the category.
+            from flatsurf.geometry.categories.euclidean_polygons_with_angles import EuclideanPolygonsWithAngles
+            if EuclideanPolygonsWithAngles._normalize_angles(angles) != tuple(
+                EuclideanPolygons.ParentMethods.angle(polygon, i)
+                for i in range(len(polygon.vertices()))
+            ):
+                raise ValueError("polygon does not have the prescribed angles")
+
+        if lengths:
+            for edge, length in zip(polygon.edges(), lengths):
+                if edge.norm() != length:
+                    raise ValueError("polygon does not have the prescribed lengths")
+
+    def _polygon_complete_vertices(self, n, vertices, angles, choice):
+        r"""
+        Return vertices that define a polygon by completing the ``vertices`` to an
+        ``n``-gon with ``angles``.
+
+        This is a helper function for :func:`Polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import _Polygon_complete_vertices
+            sage: _Polygon_complete_vertices(3, [vector((0, 0)), vector((1, 0))], [1, 1, 1], choice=False)
+            [(0, 0), (1, 0), (1/2, 1/2*c)]
+
+        """
+        if len(vertices) == n - 1:
+            # We do not use category.slopes() since the matrix formed by such
+            # slopes might not be invertible (because exact-reals do not have a
+            # fraction field implemented).
+            from flatsurf.geometry.polygon import EuclideanPolygonsWithAngles
+            slopes = EuclideanPolygonsWithAngles(angles).slopes()
+
+            # We do not use solve_left() because the vertices might not live in
+            # a ring that has a fraction field implemented (such as an
+            # exact-real ring).
+            from sage.all import matrix
+            s, t = (vertices[0] - vertices[n - 2]) * matrix(
+                [slopes[-1], slopes[n - 2]]
+            ).inverse()
+            assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
+
+            if s <= 0 or t <= 0:
+                raise (NotImplementedError if choice else ValueError)(
+                    "cannot determine polygon with these angles from the given data"
+                )
+
+            vertices = vertices + (vertices[0] - s * slopes[-1],)
+
+        if len(vertices) != n:
+            from flatsurf.geometry.categories import Polygons
+
+            raise NotImplementedError(
+                f"cannot construct {' '.join(Polygons._describe_polygon(n)[:2])} from {n} angles and {len(vertices)} vertices"
+            )
+
+        return vertices
+
     @cached_method
     def norm(self):
         r"""
@@ -738,10 +1202,6 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         """
         return EuclideanDistances(self)
-
-    def polygon(self):
-        # TODO
-        raise NotImplementedError
 
     def empty_set(self):
         # TODO
@@ -1730,6 +2190,7 @@ class EuclideanPoint(EuclideanSet, Element):
         return self.parent().vector_space()((self._x, self._y))
 
     def translate(self, v):
+        v = self.parent().vector_space()(v)
         return self.parent().point(*(self.vector() + v))
 
     def _richcmp_(self, other, op):
@@ -2517,6 +2978,251 @@ class EuclideanUnorientedSegment(EuclideanSegment):
 
     def __hash__(self):
         return hash((self._line.unoriented(), {self._start, self._end}))
+
+
+class EuclideanPolygon(EuclideanFacade):
+    r"""
+    A (possibly non-convex) simple polygon in the plane `\mathbb{R}^2`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import polygons, Polygon
+        sage: s = polygons.square()
+        sage: s
+        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        sage: Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanPolygon
+        sage: isinstance(s, EuclideanPolygon)
+        True
+
+        sage: TestSuite(s).run()
+
+    """
+
+    def __init__(self, parent, vertices, category=None):
+        from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
+        if category is None:
+            category = EuclideanPolygons(parent.base_ring())
+
+        category &= EuclideanPolygons(parent.base_ring())
+
+        super().__init__(parent, category=category)
+
+        self._vertices = vertices
+
+        if "Convex" not in category.axioms() and self.is_convex():
+            self._refine_category_(category.Convex())
+
+        # The category is not refined automatically to the WithAngles()
+        # subcategory since computation of angles can be very costly.
+        # The category gets further refined when angles() is invoked.
+
+    def is_compact(self):
+        # TODO: Require in base class.
+        return True
+
+    def _an_element_(self):
+        r"""
+        Return a point of this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: s = polygons.square()
+            sage: s.an_element()
+            (0, 0)
+
+        """
+        return self.parent()(self._vertices[0])
+
+    @cached_method
+    def __hash__(self):
+        return hash(self._vertices)
+
+    def __eq__(self, other):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygons, Polygon
+            sage: p1 = polygons.square()
+            sage: p2 = Polygon(edges=[(1,0),(0,1),(-1,0),(0,-1)], base_ring=AA)
+            sage: p1 == p2
+            True
+
+            sage: p3 = Polygon(edges=[(2,0),(-1,1),(-1,-1)])
+            sage: p1 == p3
+            False
+
+        TESTS::
+
+            sage: from flatsurf import Polygon, polygons
+            sage: p1 = polygons.square()
+            sage: p2 = Polygon(edges=[(1,0),(0,1),(-1,0),(0,-1)], base_ring=AA)
+            sage: p1 != p2
+            False
+
+            sage: p3 = Polygon(edges=[(2,0),(-1,1),(-1,-1)])
+            sage: p1 != p3
+            True
+        """
+        if not isinstance(other, EuclideanPolygon):
+            return False
+
+        return self._vertices == other._vertices
+
+    # TODO: Do we need this?
+    def cmp(self, other):
+        r"""
+        Implement a total order on polygons
+        """
+        if not isinstance(other, EuclideanPolygon):
+            raise TypeError("__cmp__ only implemented for ConvexPolygons")
+        if not self.base_ring() == other.base_ring():
+            raise ValueError(
+                "__cmp__ only implemented for ConvexPolygons defined over the same base_ring"
+            )
+        sign = len(self.vertices()) - len(other.vertices())
+        if sign > 0:
+            return 1
+        if sign < 0:
+            return -1
+        sign = self.area() - other.area()
+        if sign > self.base_ring().zero():
+            return 1
+        if sign < self.base_ring().zero():
+            return -1
+        for v in range(1, len(self.vertices())):
+            p = self.vertex(v)
+            q = other.vertex(v)
+            sign = p[0] - q[0]
+            if sign > self.base_ring().zero():
+                return 1
+            if sign < self.base_ring().zero():
+                return -1
+            sign = p[1] - q[1]
+            if sign > self.base_ring().zero():
+                return 1
+            if sign < self.base_ring().zero():
+                return -1
+        return 0
+
+    def translate(self, u):
+        r"""
+        Return a copy of this polygon that has been translated by ``u``.
+
+        TESTS::
+
+            sage: from flatsurf import Polygon
+            sage: Polygon(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
+            Polygon(vertices=[(3, -2), (5, -2), (4, -1)])
+
+        """
+        u = self.parent().vector_space()(u)
+        # TODO: Require in base class. Implement partially in base class. Probably more generally as apply_matrix or something like that.
+        return self.parent().polygon(
+            vertices=[v + u for v in self._vertices],
+            check=False
+        )
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+            sage: S
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        """
+        return f"Polygon(vertices={repr(list(self.vertices()))})"
+
+    def vertices(self, marked_vertices=True):
+        r"""
+        Return the vertices of this polygon in counterclockwise order as
+        vectors in the real plane.
+
+        INPUT:
+
+        - ``marked_vertices`` -- a boolean (default: ``True``); whether to
+          include vertices with a π angle in the output.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: s = polygons.square()
+            sage: s.vertices()
+            ((0, 0), (1, 0), (1, 1), (0, 1))
+
+        """
+        if not marked_vertices:
+            return tuple(
+                vertex
+                # TODO: Test this code path.
+                for (vertex, slope) in zip(self._vertices, self.slopes(relative=True))
+                if slope[1] != 0
+            )
+
+        return self._vertices
+
+    def _check(self, require_normalized=True):
+        r"""
+        Verify that this is a valid polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import _Polygon_check, Polygon
+            sage: p = Polygon(angles=[1, 1, 1])
+            sage: _Polygon_check(p, vertices=None, edges=None, angles=[1, 1, 1], lengths=None, convex=None)
+
+        """
+        # Check that the polygon satisfies the assumptions of EuclideanPolygon
+        area = self.area()
+
+        if area < 0:
+            raise ValueError(
+                "polygon has negative area; probably the vertices are not in counter-clockwise order"
+            )
+
+        if require_normalized:
+            if area == 0:
+                raise ValueError("polygon has zero area")
+
+            if any(edge == 0 for edge in self.edges()):
+                raise ValueError("polygon has zero edge")
+
+            for i in range(len(self.vertices())):
+                from flatsurf.geometry.euclidean import is_anti_parallel
+
+                if is_anti_parallel(self.edge(i), self.edge(i + 1)):
+                    raise ValueError("polygon has anti-parallel edges")
+
+        from flatsurf.geometry.categories import EuclideanPolygons
+
+        if not EuclideanPolygons.ParentMethods.is_simple(self):
+            raise NotImplementedError("polygon self-intersects")
+
+    def change(self, ring=None, geometry=None, oriented=None):
+        if ring is not None or geometry is not None:
+            self = (
+                self.parent()
+                .change_ring(ring, geometry=geometry)
+                .polygon(vertices=self.vertices()))
+
+        if oriented:
+            raise ValueError("polygons cannot be oriented")
+
+        return self
+
+    def __contains__(self, point):
+        return self.get_point_position(point).is_inside()
+
 
 class EuclideanDistance_base(Element):
     def _acted_upon_(self, other, self_on_left):

@@ -1363,7 +1363,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s.edge_matrix(0, 0)
                     doctest:warning
                     ...
-                    UserWarning: the behavior of edge_matrix for similarity surfaces will change behavior in future version of sage-flatsurf; call with with projective=False to keep the old behavior or projective=True to switch to the forward compatible default version
+                    UserWarning: the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior
                     [   1  1/2]
                     [-1/2    1]
 
@@ -1392,7 +1392,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     import warnings
 
                     warnings.warn(
-                        "the behavior of edge_matrix for similarity surfaces will change behavior in future version of sage-flatsurf; call with with projective=False to keep the old behavior or projective=True to switch to the forward compatible default version"
+                        "the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior"
                     )
 
                     projective = False
@@ -1641,227 +1641,6 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return S
 
-            def copy(
-                self,
-                relabel=False,
-                mutable=False,
-                lazy=None,
-                new_field=None,
-                optimal_number_field=False,
-            ):
-                r"""
-                Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
-
-                If relabel is True, then instead of returning an exact copy, it returns a copy indexed by the
-                non-negative integers. This uses the Surface_list implementation. If relabel is False (default),
-                then we return an exact copy. The returned surface uses the Surface_dict implementation.
-
-                The mutability flag returns if the resulting surface should be mutable or not. By default, the
-                resulting surface will not be mutable.
-
-                If lazy is True, then the surface is copied by reference. This is the only type of copy
-                possible for infinite surfaces. The parameter defaults to False for finite surfaces, and
-                defaults to True for infinite surfaces.
-
-                The new_field parameter can be used to place the vertices in a larger field than the basefield
-                for the original surface.
-
-                The optimal_number_field option can be used to find a best NumberField containing the
-                (necessarily finite) surface.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import translation_surfaces
-                    sage: ss=translation_surfaces.ward(3)
-                    sage: ss.is_mutable()
-                    False
-                    sage: s=ss.copy(mutable=True)
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    sage: s.is_mutable()
-                    True
-                    sage: TestSuite(s).run()
-                    sage: s == ss
-                    False
-
-                Changing the base field::
-
-                    sage: s=translation_surfaces.veech_double_n_gon(5)
-                    sage: ss=s.copy(mutable=False,new_field=AA)
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
-                    sage: TestSuite(ss).run()
-                    sage: ss.base_ring()
-                    Algebraic Real Field
-
-                Optimization of number field::
-
-                    sage: s = translation_surfaces.arnoux_yoccoz(3)
-                    sage: ss = s.copy(new_field=AA).copy(optimal_number_field=True)
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    Use set_immutable() to make the resulting surface immutable. There is currently no replacement for optimal number field.
-                    If you are relying on this features, let the authors of sage-flatsurf know and we will try to make it available again.
-                    sage: TestSuite(ss).run()
-                    sage: ss.base_ring().discriminant()
-                    -44
-                """
-                message = "copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead."
-
-                if not mutable:
-                    message += (
-                        " Use set_immutable() to make the resulting surface immutable."
-                    )
-
-                if relabel:
-                    message += " Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels."
-
-                if not self.is_finite_type():
-                    message += " However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs."
-
-                if new_field is not None:
-                    message += " Use change_ring() to change the field over which the surface is defined."
-
-                if optimal_number_field:
-                    message += " There is currently no replacement for optimal number field. If you are relying on this features, let the authors of sage-flatsurf know and we will try to make it available again."
-
-                import warnings
-
-                warnings.warn(message)
-
-                category = self.category()
-                s = None  # This will be the surface we copy. (Likely we will set s=self below.)
-                if new_field is not None and optimal_number_field:
-                    raise ValueError(
-                        "You can not set a new_field and also set optimal_number_field=True."
-                    )
-                if optimal_number_field is True:
-                    if not self.is_finite_type():
-                        raise NotImplementedError(
-                            "can only optimize_number_field for a finite surface"
-                        )
-                    if lazy:
-                        raise NotImplementedError(
-                            "lazy copying is unavailable when optimize_number_field=True"
-                        )
-                    coordinates_AA = []
-                    for label, p in zip(self.labels(), self.polygons()):
-                        for e in p.edges():
-                            coordinates_AA.append(AA(e[0]))
-                            coordinates_AA.append(AA(e[1]))
-                    from sage.rings.qqbar import number_field_elements_from_algebraics
-
-                    field, coordinates_NF, hom = number_field_elements_from_algebraics(
-                        coordinates_AA, minimal=True
-                    )
-                    if field is QQ:
-                        new_field = QQ
-                        # We pretend new_field = QQ was passed as a parameter.
-                        # It will now get picked up by the "if new_field is not None:" line below.
-                    else:
-                        # Unfortunately field doesn't come with an real embedding (which is given by hom!)
-                        # So, we make a copy of the field, and add the embedding.
-                        from sage.all import NumberField
-
-                        field2 = NumberField(
-                            field.polynomial(), name="a", embedding=hom(field.gen())
-                        )
-                        # The following converts from field to field2:
-                        hom2 = field.hom(im_gens=[field2.gen()])
-
-                        from flatsurf.geometry.surface import (
-                            MutableOrientedSimilaritySurface,
-                        )
-
-                        ss = MutableOrientedSimilaritySurface(field2)
-                        index = 0
-
-                        from flatsurf import Polygon
-
-                        for label, p in zip(self.labels(), self.polygons()):
-                            new_edges = []
-                            for i in range(len(p.vertices())):
-                                new_edges.append(
-                                    (
-                                        hom2(coordinates_NF[index]),
-                                        hom2(coordinates_NF[index + 1]),
-                                    )
-                                )
-                                index += 2
-                            pp = Polygon(edges=new_edges, base_ring=field2)
-                            ss.add_polygon(pp, label=label)
-                        ss.set_roots(self.roots())
-                        for (l1, e1), (l2, e2) in self.gluings():
-                            ss.glue((l1, e1), (l2, e2))
-                        s = ss
-                        if not relabel:
-                            if not mutable:
-                                s.set_immutable()
-                            return s
-                        # Otherwise we are supposed to relabel. We will make a relabeled copy of s below.
-                if new_field is not None:
-                    s = self.change_ring(new_field)
-                if s is None:
-                    s = self
-                if s.is_finite_type():
-                    if relabel:
-                        from flatsurf.geometry.surface import Surface_list
-
-                        return Surface_list(
-                            surface=s,
-                            copy=not lazy,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
-                    else:
-                        from flatsurf.geometry.surface import Surface_dict
-
-                        return Surface_dict(
-                            surface=s,
-                            copy=not lazy,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
-                else:
-                    if lazy is False:
-                        raise ValueError(
-                            "Only lazy copying available for infinite surfaces."
-                        )
-                    if self.is_mutable():
-                        raise ValueError(
-                            "An infinite surface can only be copied if it is immutable."
-                        )
-                    if relabel:
-                        from flatsurf.geometry.surface import Surface_list
-
-                        return Surface_list(
-                            surface=s,
-                            copy=False,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
-                    else:
-                        from flatsurf.geometry.surface import Surface_dict
-
-                        return Surface_dict(
-                            surface=s,
-                            copy=False,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
-
             def change_ring(self, ring):
                 r"""
                 Return a copy of this surface whose polygons are defined over
@@ -2092,8 +1871,11 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 sim = self.edge_transformation(opposite_label, opposite_edge)
                 p2 = self.polygon(opposite_label)
+
+
+                from flatsurf.geometry.euclidean import EuclideanPlane
                 p2 = Polygon(
-                    vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring()
+                    vertices=[sim(v) for v in p2.vertices()], parent=EuclideanPlane(p1.base_ring())
                 )
 
                 p = p1.join(p2, edge, opposite_edge)
@@ -2362,7 +2144,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
                     sage: s = MutableOrientedSimilaritySurface(QQ)
-                    sage: square = polygons.square(base_ring=QQ)
+                    sage: square = polygons.square()
                     sage: s.add_polygon(square)
                     0
                     sage: s.glue((0,0), (0,1))

@@ -5248,6 +5248,9 @@ class HyperbolicConvexSet(SageObject):
 
         return HyperbolicEdges(edges)
 
+    # For compatibility with Euclidean polygons we expose the edges() as edge_segments().
+    edge_segments = edges
+
     def _test_edges(self, **options):
         r"""
         Verify that this set implements :meth:`edges` correctly.

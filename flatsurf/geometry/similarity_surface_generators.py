@@ -27,7 +27,6 @@ from sage.structure.sequence import Sequence
 
 from flatsurf.geometry.polygon import (
     polygons,
-    EuclideanPolygon,
     Polygon,
 )
 
@@ -770,9 +769,6 @@ class SimilaritySurfaceGenerators:
             True
 
         """
-        if not isinstance(P, EuclideanPolygon):
-            raise TypeError("invalid input")
-
         if rational is not None:
             import warnings
 
@@ -786,11 +782,13 @@ class SimilaritySurfaceGenerators:
         if P.is_rational():
             category = category.Rational()
 
-        V = P.base_ring() ** 2
+        base_ring = P.base_ring()
+        surface = MutableOrientedSimilaritySurface(base_ring, category=category)
+        E = surface.euclidean_plane()
+        V = E.vector_space()
 
         if not P.is_convex():
             # triangulate non-convex ones
-            base_ring = P.base_ring()
             comb_edges = P.triangulation()
             vertices = P.vertices()
             comb_triangles = SimilaritySurfaceGenerators._billiard_build_faces(
@@ -804,7 +802,7 @@ class SimilaritySurfaceGenerators:
                 triangles.append(
                     Polygon(
                         vertices=[vertices[i], vertices[j], vertices[k]],
-                        base_ring=base_ring,
+                        parent=E,
                     )
                 )
                 edge_to_lab[(i, j)] = (num, 0)
@@ -830,10 +828,7 @@ class SimilaritySurfaceGenerators:
         else:
             internal_edges = []
             external_edges = [(0, i) for i in range(len(P.vertices()))]
-            base_ring = P.base_ring()
             P = [P]
-
-        surface = MutableOrientedSimilaritySurface(base_ring, category=category)
 
         m = len(P)
 
@@ -841,7 +836,7 @@ class SimilaritySurfaceGenerators:
             surface.add_polygon(p)
         for p in P:
             surface.add_polygon(
-                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edges())])
+                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edges())], parent=E)
             )
         for p1, e1, p2, e2 in internal_edges:
             surface.glue((p1, e1), (p2, e2))
@@ -1044,16 +1039,19 @@ class DilationSurfaceGenerators:
         """
         field = Sequence([a, b, c, d]).universe().fraction_field()
         s = MutableOrientedSimilaritySurface(QQ)
+        E = s.euclidean_plane()
 
         hexagon = Polygon(
             edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)],
-            base_ring=field,
+            parent=E,
         )
+        # TODO: We need to check everywhere that the polygon lives in the
+        # euclidean plane for the surface. (Or convert it there.)
         s.add_polygon(hexagon, label=0)
         s.set_roots([0])
-        triangle1 = Polygon(base_ring=field, edges=[(1 - a, 0), (0, b), (a - 1, -b)])
+        triangle1 = Polygon(parent=E, edges=[(1 - a, 0), (0, b), (a - 1, -b)])
         s.add_polygon(triangle1, label=1)
-        triangle2 = Polygon(base_ring=field, edges=[(1 - c, d), (c - 1, 0), (0, -d)])
+        triangle2 = Polygon(parent=E, edges=[(1 - c, d), (c - 1, 0), (0, -d)])
         s.add_polygon(triangle2, label=2)
         s.glue((0, 0), (0, 3))
         s.glue((0, 2), (0, 5))
@@ -1234,7 +1232,9 @@ class TranslationSurfaceGenerators:
         if not field.is_field():
             field = field.fraction_field()
         s = MutableOrientedSimilaritySurface(field)
-        p = Polygon(vertices=[(0, 0), u, u + v, v], base_ring=field)
+
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        p = Polygon(vertices=[(0, 0), u, u + v, v], parent=EuclideanPlane(field))
         s.add_polygon(p)
         s.glue((0, 0), (0, 2))
         s.glue((0, 1), (0, 3))
@@ -1418,9 +1418,13 @@ class TranslationSurfaceGenerators:
         try:
             rel = K(rel)
         except TypeError:
+            from sage.all import parent
             K = get_coercion_model().common_parent(K, parent(rel))
             λ = K(λ)
             rel = K(rel)
+
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        parent = EuclideanPlane(K)
 
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)
@@ -1429,7 +1433,7 @@ class TranslationSurfaceGenerators:
             if rel < 0 or rel > w - λ:
                 raise ValueError("invalid rel argument")
             s.add_polygon(
-                Polygon(vertices=[(0, 0), (λ, 0), (λ + rel, λ), (rel, λ)], base_ring=K)
+                Polygon(vertices=[(0, 0), (λ, 0), (λ + rel, λ), (rel, λ)], parent=parent)
             )
             s.add_polygon(
                 Polygon(
@@ -1443,7 +1447,7 @@ class TranslationSurfaceGenerators:
                         (t + λ, h),
                         (t, h),
                     ],
-                    base_ring=K,
+                    parent=parent,
                 )
             )
             s.glue((0, 1), (0, 3))
@@ -1454,12 +1458,12 @@ class TranslationSurfaceGenerators:
             s.glue((1, 0), (1, 5))
         else:
             s.add_polygon(
-                Polygon(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], base_ring=K)
+                Polygon(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], parent=parent)
             )
             s.add_polygon(
                 Polygon(
                     vertices=[(0, 0), (λ, 0), (w, 0), (w + t, h), (λ + t, h), (t, h)],
-                    base_ring=K,
+                    parent=parent,
                 )
             )
             s.glue((0, 1), (0, 3))
@@ -1545,7 +1549,7 @@ class TranslationSurfaceGenerators:
         s.add_polygon(
             Polygon(
                 vertices=[(0, 0), (λ, 0), (w, 0), (w + t, h), (λ + t, h), (t, h)],
-                base_ring=K,
+                parent=s.euclidean_plane(),
             )
         )
         s.add_polygon(Polygon(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], base_ring=K))
@@ -1559,7 +1563,7 @@ class TranslationSurfaceGenerators:
                     (w - λ + t, h),
                     (t, h),
                 ],
-                base_ring=K,
+                parent=s.euclidean_plane(),
             )
         )
         s.glue((0, 0), (2, 3))
@@ -1742,15 +1746,18 @@ class TranslationSurfaceGenerators:
         if not field.is_field():
             field = field.fraction_field()
 
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        parent = EuclideanPlane(field)
+
         s = MutableOrientedSimilaritySurface(field)
         s.add_polygon(
-            Polygon(edges=[(l3, 0), (0, l2), (-l3, 0), (0, -l2)], base_ring=field)
+            Polygon(edges=[(l3, 0), (0, l2), (-l3, 0), (0, -l2)], parent=parent)
         )
         s.add_polygon(
-            Polygon(edges=[(l3, 0), (0, l1), (-l3, 0), (0, -l1)], base_ring=field)
+            Polygon(edges=[(l3, 0), (0, l1), (-l3, 0), (0, -l1)], parent=parent)
         )
         s.add_polygon(
-            Polygon(edges=[(l4, 0), (0, l2), (-l4, 0), (0, -l2)], base_ring=field)
+            Polygon(edges=[(l4, 0), (0, l2), (-l4, 0), (0, -l2)], parent=parent)
         )
         s.glue((0, 0), (1, 2))
         s.glue((0, 1), (2, 3))
@@ -1865,13 +1872,17 @@ class TranslationSurfaceGenerators:
             ring = py_scalar_parent(ring)
         if not ring.has_coerce_map_from(QQ):
             ring = ring.fraction_field()
+
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        parent = EuclideanPlane(ring)
+
         a = ring(a)
         b = ring(b)
         s = MutableOrientedSimilaritySurface(ring)
         half = QQ((1, 2))
-        p0 = Polygon(base_ring=ring, vertices=[(0, 0), (a, 0), (a, 1), (0, 1)])
+        p0 = Polygon(parent=parent, vertices=[(0, 0), (a, 0), (a, 1), (0, 1)])
         p1 = Polygon(
-            base_ring=ring,
+            parent=parent,
             vertices=[
                 (a, 0),
                 (a, -b),
@@ -1886,11 +1897,11 @@ class TranslationSurfaceGenerators:
             ],
         )
         p2 = Polygon(
-            base_ring=ring,
+            parent=parent,
             vertices=[(a + 1, 0), (2 * a + 1, 0), (2 * a + 1, 1), (a + 1, 1)],
         )
         p3 = Polygon(
-            base_ring=ring,
+            parent=parent,
             vertices=[
                 (2 * a + 1, 0),
                 (2 * a + 1 + half, -half),
@@ -2009,14 +2020,14 @@ class TranslationSurfaceGenerators:
             # T_i is (P_0,Q_i,Q_{i-1})
             T[i] = s.add_polygon(
                 Polygon(
-                    base_ring=field,
+                    parent=s.euclidean_plane(),
                     edges=[q[i] - p[0], q[i - 1] - q[i], p[0] - q[i - 1]],
                 )
             )
             # T_{g+i} is (P_i,Q_{i-1},Q_{i})
             T[g + i] = s.add_polygon(
                 Polygon(
-                    base_ring=field,
+                    parent=s.euclidean_plane(),
                     edges=[q[i - 1] - p[i], q[i] - q[i - 1], p[i] - q[i]],
                 )
             )
@@ -2111,10 +2122,11 @@ class TranslationSurfaceGenerators:
         from flatsurf import MutableOrientedSimilaritySurface
 
         S = MutableOrientedSimilaritySurface(K)
+        E = S.euclidean_plane()
 
         for i, t in enumerate(f.triangulation):
             try:
-                poly = Polygon(base_ring=K, edges=[edge_vectors[i] for i in tuple(t)])
+                poly = Polygon(parent=E, edges=[edge_vectors[i] for i in tuple(t)])
             except ValueError:
                 raise ValueError(
                     "t = {}, edges = {}".format(

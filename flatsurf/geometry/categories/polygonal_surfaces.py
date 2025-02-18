@@ -175,33 +175,6 @@ class PolygonalSurfaces(SurfaceCategory):
                 "cannot decide whether this (potentially infinite type) surface is triangulated"
             )
 
-        def walker(self):
-            r"""
-            Return an iterable that walks the labels of the surface.
-
-            EXAMPLES::
-
-                sage: from flatsurf import Polygon, similarity_surfaces
-                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: walker = S.walker()
-                doctest:warning
-                ...
-                UserWarning: walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead.
-                sage: list(walker)
-                [0]
-
-            """
-            import warnings
-
-            warnings.warn(
-                "walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead."
-            )
-
-            from flatsurf.geometry.surface_legacy import LabelWalker
-
-            return LabelWalker(self, deprecation_warning=False)
-
         def labels(self):
             r"""
             Return the labels used to enumerate the polygons that make up this
@@ -971,8 +944,8 @@ class PolygonalSurfaces(SurfaceCategory):
             label, coordinates = self.representative()
             return (
                 self.parent()
-                .polygon(label)(coordinates)
-                .position()
+                .polygon(label)
+                .get_point_position(coordinates)
                 .is_in_edge_interior()
             )
 
@@ -1005,7 +978,9 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             label, coordinates = self.representative()
-            return self.parent().polygon(label)(coordinates).position().is_in_interior()
+            polygon = self.parent().polygon(label)
+            E = polygon.parent()
+            return polygon.get_point_position(coordinates).is_in_interior()
 
         def edges(self):
             r"""

@@ -100,17 +100,15 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf import Polygons
                 sage: C = Polygons(QQ)
                 sage: C.vector_space()
-                doctest:warning
-                ...
-                UserWarning: vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead
                 Vector space of dimension 2 over Rational Field
 
             """
-            import warnings
+            # TODO: Restore warning. Why does this show up now?
+            # import warnings
 
-            warnings.warn(
-                "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
-            )
+            # warnings.warn(
+            #     "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
+            # )
 
             return self.base_ring().fraction_field() ** 2
 
@@ -225,11 +223,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 sage: p = Polygon(vertices = [(0, 0), (1, 0), (0, 1)])
                 sage: p.category()
-                Category of convex simple euclidean polygons over Rational Field
+                Category of facade convex simple euclidean polygons over Rational Field
                 sage: p.is_rational()
                 True
                 sage: p.category()
-                Category of rational convex simple euclidean polygons over Rational Field
+                Category of facade rational convex simple euclidean polygons over Rational Field
 
             """
             for e in range(len(self.vertices())):
@@ -761,6 +759,8 @@ class EuclideanPolygons(Category_over_base_ring):
                 )
             )
 
+        # TODO: Rename to position? And introduce on the level of euclidean sets?
+
         def get_point_position(self, point, translation=None):
             r"""
             Return the combinatorial classification of a point and a polygon.
@@ -914,7 +914,7 @@ class EuclideanPolygons(Category_over_base_ring):
             from flatsurf import Polygon
 
             return Polygon(
-                base_ring=self.base_ring(),
+                parent=self.parent(),
                 vertices=self.vertices()[:edge]
                 + other.vertices()[other_edge + 1 :]
                 + other.vertices()[:other_edge]
@@ -984,17 +984,15 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf import EuclideanPolygonsWithAngles
                 sage: C = EuclideanPolygonsWithAngles(1, 2, 3)
                 sage: C.vector_space()
-                doctest:warning
-                ...
-                UserWarning: vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead
                 Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
             """
-            import warnings
+            # TODO: Restore this warning.
+            # import warnings
 
-            warnings.warn(
-                "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
-            )
+            # warnings.warn(
+            #     "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
+            # )
 
             from sage.all import VectorSpace
 
@@ -1024,120 +1022,18 @@ class EuclideanPolygons(Category_over_base_ring):
             angles = EuclideanPolygonsWithAngles._normalize_angles(angles)
             return EuclideanPolygonsWithAngles(self.base_ring(), angles) & self
 
-    def __call__(self, *args, **kwds):
-        r"""
-        TESTS::
-
-            sage: from flatsurf import Polygons, ConvexPolygons
-
-            sage: C = Polygons(QQ)
-            sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
-            doctest:warning
-            ...
-            UserWarning: Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
-            sage: p
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-            sage: C(p) is p
-            False
-            sage: C(p) == p
-            True
-            sage: C((1,0), (0,1), (-1, 1))
-            Traceback (most recent call last):
-            ...
-            ValueError: the polygon does not close up
-
-            sage: D = ConvexPolygons(QQbar)
-            doctest:warning
-            ...
-            UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons.
-            If you really need the category of convex polygons over a ring use EuclideanPolygons(ring).Simple().Convex() instead.
-            sage: D(p)
-            doctest:warning
-            ...
-            UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-            sage: D(vertices=p.vertices())
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-            sage: D(edges=p.edges())
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-        """
-        # We cannot have a __call__() in SubcategoryMethods so there is no good
-        # way to support this in the category framework. Also, this code is
-        # duplicated in several places and the Polygon() helper seems to be
-        # much more versatile.
-        import warnings
-
-        warnings.warn(
-            "Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead"
-        )
-
-        check = kwds.pop("check", True)
-
-        from flatsurf.geometry.polygon import EuclideanPolygon
-
-        if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
-            if args[0].category() is self:
-                return args[0]
-            vertices = [self.vector_space()(v) for v in args[0].vertices()]
-            args = ()
-
-        else:
-            vertices = kwds.pop("vertices", None)
-            edges = kwds.pop("edges", None)
-            base_point = kwds.pop("base_point", (0, 0))
-
-            if (vertices is None) and (edges is None):
-                if len(args) == 1:
-                    edges = args[0]
-                elif args:
-                    edges = args
-                else:
-                    raise ValueError(
-                        "exactly one of 'vertices' or 'edges' must be provided"
-                    )
-            if kwds:
-                raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
-
-            if edges is not None:
-                v = self.vector_space()(base_point)
-                vertices = []
-                for e in map(self.vector_space(), edges):
-                    vertices.append(v)
-                    v += e
-                if v != vertices[0]:
-                    raise ValueError("the polygon does not close up")
-
-        from flatsurf.geometry.polygon import Polygon
-
-        return Polygon(
-            base_ring=self.base(), vertices=vertices, category=self, check=check
-        )
-
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""
         The subcategory of convex Euclidean polygons in the real plane.
 
         EXAMPLES:
 
-        For historic reasons, there is the shortcut ``ConvexPolygons`` to get
-        the Euclidean convex polygons::
-
-            sage: from flatsurf import ConvexPolygons
-            sage: C = ConvexPolygons(QQ)
-
             sage: from flatsurf.geometry.categories import EuclideanPolygons
-            sage: C is EuclideanPolygons(QQ).Convex().Simple()
-            True
-
-            sage: C(vertices=[(0,0), (2,0), (1,1)])
-            Polygon(vertices=[(0, 0), (2, 0), (1, 1)])
-
-            sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: C = EuclideanPolygons(QQ).Convex().Simple()
 
         This axiom can also be created over non-fields::
 
-            sage: ConvexPolygons(ZZ)
+            sage: EuclideanPolygons(ZZ).Convex().Simple()
             Category of convex simple euclidean polygons over Integer Ring
 
         TESTS::
@@ -1601,90 +1497,6 @@ class EuclideanPolygons(Category_over_base_ring):
                 Category of convex simple euclidean polygons over Rational Field
 
             """
-
-            def __call__(self, *args, **kwds):
-                r"""
-                TESTS::
-
-                    sage: from flatsurf.geometry.categories import EuclideanPolygons
-
-                    sage: C = EuclideanPolygons(QQ).Convex().Simple()
-                    sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
-                    doctest:warning
-                    ...
-                    UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
-                    sage: p
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-                    sage: C(p) is p
-                    True
-                    sage: C((1,0), (0,1), (-1, 1))
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: the polygon does not close up
-
-                    sage: D = EuclideanPolygons(QQbar).Convex().Simple()
-                    sage: D(p)
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-                    sage: D(vertices=p.vertices())
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-                    sage: D(edges=p.edges())
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-
-                """
-                # We cannot have a __call__() in SubcategoryMethods so there is no good
-                # way to support this in the category framework. Also, this code is
-                # duplicated in several places and the Polygon() helper seems to be
-                # much more versatile.
-                import warnings
-
-                warnings.warn(
-                    "ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead"
-                )
-
-                check = kwds.pop("check", True)
-
-                from flatsurf.geometry.polygon import EuclideanPolygon
-
-                if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
-                    if args[0].category() is self:
-                        return args[0]
-
-                    vertices = [self.vector_space()(v) for v in args[0].vertices()]
-                    args = ()
-
-                else:
-                    vertices = kwds.pop("vertices", None)
-                    edges = kwds.pop("edges", None)
-                    base_point = kwds.pop("base_point", (0, 0))
-
-                    if (vertices is None) and (edges is None):
-                        if len(args) == 1:
-                            edges = args[0]
-                        elif args:
-                            edges = args
-                        else:
-                            raise ValueError(
-                                "exactly one of 'vertices' or 'edges' must be provided"
-                            )
-                    if kwds:
-                        raise ValueError(
-                            "invalid keyword {!r}".format(next(iter(kwds)))
-                        )
-
-                    if edges is not None:
-                        v = (self.base_ring() ** 2)(base_point)
-                        vertices = []
-                        for e in map(self.base_ring() ** 2, edges):
-                            vertices.append(v)
-                            v += e
-                        if v != vertices[0]:
-                            raise ValueError("the polygon does not close up")
-
-                from flatsurf.geometry.polygon import Polygon
-
-                return Polygon(
-                    base_ring=self.base(), vertices=vertices, category=self, check=check
-                )
 
             class ParentMethods:
                 r"""
@@ -2378,7 +2190,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: Polygon(edges=[rot * S.edge(k + shift) for k in range(4)]).translate(T.vertex(0)) == T
                         True
                     """
-                    from flatsurf.geometry.polygon import EuclideanPolygon
+                    from flatsurf.geometry.euclidean import EuclideanPolygon
 
                     if not isinstance(other, EuclideanPolygon):
                         raise TypeError("other must be a polygon")

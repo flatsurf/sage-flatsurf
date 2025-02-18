@@ -258,3 +258,9 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                         el = edge_labels[e]
                     plt += gp.plot_edge_label(e, el, **o)
             return plt
+
+        def euclidean_plane(self):
+            # TODO: This should not be implemented here but required by the surfaces to be implemented.
+            # TODO: Check that we are using euclidean_plane() everywhere instead of constructing it from scratch.
+            from flatsurf.geometry.euclidean import EuclideanPlane
+            return EuclideanPlane(self.base_ring())
