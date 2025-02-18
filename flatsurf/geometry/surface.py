@@ -1816,7 +1816,7 @@ class MutableOrientedSimilaritySurface(
             import warnings
 
             warnings.warn(
-                "the behavior of edge_matrix for similarity surfaces will change behavior in future version of sage-flatsurf; call with with projective=False to keep the old behavior or projective=True to switch to the forward compatible default version"
+                "the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior"
             )
 
             projective = False

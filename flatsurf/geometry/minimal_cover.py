@@ -254,7 +254,7 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
             sage: S.edge_matrix((1, (1, 0)), 1)
             doctest:warning
             ...
-            UserWarning: the behavior of edge_matrix for similarity surfaces will change behavior in future version of sage-flatsurf; call with with projective=False to keep the old behavior or projective=True to switch to the forward compatible default version
+            UserWarning: the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior
             [-1  0]
             [ 0 -1]
 
@@ -271,7 +271,7 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
             import warnings
 
             warnings.warn(
-                "the behavior of edge_matrix for similarity surfaces will change behavior in future version of sage-flatsurf; call with with projective=False to keep the old behavior or projective=True to switch to the forward compatible default version"
+                "the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior"
             )
 
             projective = False
