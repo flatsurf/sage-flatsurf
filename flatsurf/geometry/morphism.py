@@ -394,63 +394,63 @@ class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
         raise NotImplementedError("cannot determine polygons of the unknown surface")
 
     def _test_an_element(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_components(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_eq_reflexive(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_eq_symmetric(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_eq_transitive(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_neq(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_edge_matrix(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_gluings(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_labels_polygons(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_refined_category(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_some_elements(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_polygons(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_eq_surface(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_labels(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _repr_(self):
