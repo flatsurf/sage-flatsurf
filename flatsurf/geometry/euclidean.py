@@ -3017,11 +3017,15 @@ class EuclideanPoint(EuclideanSet, Element):
         return v
 
     def translate(self, v):
+        if self.is_ideal():
+            return self
         v = self.parent().vector_space()(v)
         return self.parent().point(*(self.vector() + v))
 
     def _apply_scalar(self, r):
-        return self.parent().point(r * self._x, r * self._y, r * self._z)
+        if not self._z:
+            return self
+        return self.parent().point(r * self._x, r * self._y, self._z)
 
     def _apply_similarity(self, g):
         return self._apply_3x3_matrix(g.matrix())
