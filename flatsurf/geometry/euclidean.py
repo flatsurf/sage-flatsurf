@@ -3185,7 +3185,15 @@ class EuclideanPoint(EuclideanSet, Element):
         return self.parent().segment(line, start=self, end=end)
 
     def __hash__(self):
-        return hash((self._x, self._y))
+        r"""
+        TESTS::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: len(set(map(hash, [E.point(0, 0), E.point(1, 0), E.point(0, 1), E.point(1, 0, 0), E.point(0, 1, 0)]))) == 5
+            True
+        """
+        return hash((self._x, self._y, self._z))
 
 
 class EuclideanLine(EuclideanFacade):
@@ -3237,6 +3245,9 @@ class EuclideanLine(EuclideanFacade):
 
     def is_compact(self):
         return False
+
+    def is_ideal(self):
+        return not self._b and not self._c
 
     def dimension(self):
         return 1
@@ -3329,6 +3340,8 @@ class EuclideanLine(EuclideanFacade):
             {-1 + y = 0}
             sage: E.line((1, 0), (1, 1))  # TODO: Fix printing
             {1 + -x = 0}
+            sage: E.line(1, 0, 0)  # TODO: should we keep this for the line at infinity?
+            {1 + 0 = 0}
 
         """
         a, b, c = self.equation(normalization=["gcd", None])
@@ -3965,6 +3978,8 @@ class EuclideanUnorientedSegment(EuclideanSegment):
         return hash((self._line.unoriented(), {self._start, self._end}))
 
 
+# TODO: should we allow the "complement" of a polygon to be a proper polygon?
+# (ie the complement of a unit square)
 class EuclideanPolygon(EuclideanFacade):
     r"""
     A (possibly non-convex) simple polygon in the plane `\mathbb{R}^2`.
@@ -4282,8 +4297,9 @@ class EuclideanPolygon(EuclideanFacade):
         return self
 
     def __contains__(self, point):
+        # TODO: make a proper implementation
         if point.is_ideal():
-            # TODO: double check that this is the right thing to do
+            # TODO: include point at infinity in the polygon
             return False
         return self.get_point_position(point).is_inside()
 
