@@ -442,10 +442,13 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         # TODO: Remove this method. It's unclear if this goes to the fraction field or not.
         return self.base_ring() ** 2
 
-    def point(self, x, y):
+    def point(self, x, y, z=None):
         r"""
         Return the point in the Euclidean plane with coordinates ``x`` and
         ``y``.
+
+        If ``z`` is provided, return the projective point with homogeneous
+        coordinates ``x``, ``y`` and ``z``.
 
         EXAMPLES::
 
@@ -453,6 +456,18 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: E = EuclideanPlane()
             sage: E.point(1, 2)
             (1, 2)
+            sage: E.point(-1, 3, 2)
+            (-1/2, 3/2)
+            sage: E.point(2, 0, 2)
+            (1, 0)
+            sage: E.point(0, 3, 2)
+            (0, 3/2)
+            sage: E.point(2, 2, 0)
+            [1:1:0]
+            sage: E.point(0, 2, 0)
+            [0:1:0]
+            sage: E.point(2, 0, 0)
+            [1:0:0]
 
         ::
 
@@ -461,12 +476,46 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             ...
             TypeError: unable to convert sqrt(2) to a rational
 
+        ::
+
+            sage: EuclideanPlane(ZZ).point(3, 0, 2)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: no available coordinate normalization
+
         """
         x = self._base_ring(x)
         y = self._base_ring(y)
 
-        point = self.__make_element_class__(EuclideanPoint)(self, x, y)
+        if z is None:
+            z = self._base_ring.one()
+        else:
+            z = self._base_ring(z)
+            if not z:
+                if not y:
+                    x = self._base_ring.one()
+                else:
+                    try:
+                        yi = y.inverse_of_unit()
+                    except Exception:
+                        raise NotImplementedError("no available coordinate normalization")
+                    x *= yi
+                    y = self._base_ring.one()
 
+            else:
+                try:
+                    zi = z.inverse_of_unit()
+                except Exception:
+                    raise NotImplementedError("no available coordinate normalization")
+                x *= zi
+                y *= zi
+                z = self._base_ring.one()
+
+
+        if not x and not y and not z:
+            raise ValueError("invalid coordinates to create a point")
+
+        point = self.__make_element_class__(EuclideanPoint)(self, x, y, z)
         return point
 
     def circle(self, center, *, radius=None, radius_squared=None, check=True):
@@ -1621,15 +1670,16 @@ class EuclideanGeometry(Geometry):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.euclidean import EuclideanExactGeometry
+            sage: from flatsurf.geometry.euclidean import EuclideanPlane, EuclideanExactGeometry
+            sage: E = EuclideanPlane(QQ)
             sage: G = EuclideanExactGeometry(QQ)
-            sage: G._equal_point((0, 0), (0, 0))
+            sage: G._equal_point(E.point(0, 0), E.point(0, 0))
             True
-            sage: G._equal_point((0, 0), (0, 1/1024))
+            sage: G._equal_point(E.point(0, 0), E.point(0, 1/1024))
             False
 
         """
-        return self._equal_vector(tuple(p), tuple(q))
+        return self._equal_vector((p._x, p._y, p._z), (q._x, q._y, q._z))
 
 
 class EuclideanExactGeometry(UniqueRepresentation, EuclideanGeometry, ExactGeometry):
@@ -1711,12 +1761,13 @@ class EuclideanEpsilonGeometry(
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+            sage: from flatsurf.geometry.euclidean import EuclideanPlane, EuclideanEpsilonGeometry
             sage: G = EuclideanEpsilonGeometry(RR, 1e-3)
+            sage: E = EuclideanPlane(RR, geometry=G)
 
-            sage: G._equal_point((0, 0), (0, 0))
+            sage: G._equal_point(E.point(0, 0), E.point(0, 0))
             True
-            sage: G._equal_point((0, 0), (0, 1/1024))
+            sage: G._equal_point(E.point(0, 0), E.point(0, 1/1024))
             True
 
             sage: G._equal_vector((0, 0), (0, 0))
@@ -1939,6 +1990,20 @@ class EuclideanSet(SageObject):
     # TODO: Add plot and test_plot()
 
     def _acted_upon_(self, g, self_on_left):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: p = E.point(1, 1)
+
+            sage: matrix(ZZ, 2, 2, [2, 3, 5, 7]) * p
+            (5, 12)
+            sage: matrix(ZZ, 2, 3, [0, 0, 3, 1, 1, 1]) * p
+            (3, 3)
+            sage: matrix(ZZ, 3, 3, [1, 2, 3, 1, 1, -1, 2, 0, 1]) * p
+            (2, 1/3)
+        """
         # NOTE: it might have been preferable to implement a proper action on subsets
         # of the hyperbolic plane via sage.categories.action.Action. However, it does
         # not work in our context since subsets are (facade) parents.
@@ -1960,19 +2025,27 @@ class EuclideanSet(SageObject):
 
         M3 = MatrixSpace(R, 3)
         if P is M3:
-            return self._apply_3x3_matrix(g)
+            # NOTE: call the method without underscore that performs a sanity
+            # check on orientation
+            return self.apply_3x3_matrix(g)
+
+        M23 = MatrixSpace(R, 2, 3)
+        if P is M23:
+            return self.apply_3x3_matrix(to_3x3_matrix(g))
 
         if R.has_coerce_map_from(P):
-            g = R(g)
-            return self._apply_scalar(g)
+            return self._apply_scalar(R(g))
 
         if M2.has_coerce_map_from(P):
-            g = M2(g)
-            return self._apply_2x2_matrix(g)
+            return self._apply_2x2_matrix(M2(g))
 
         if M3.has_coerce_map_from(P):
-            g = M3(g)
-            return self._apply_3x3_matrix(g)
+            # NOTE: call the method without underscore that performs a sanity
+            # check on orientation
+            return self._apply_3x3_matrix(M3(g))
+
+        if M23.has_coerce_map_from(P):
+            return self._apply_3x3_matrix(to_3x3_matrix(M23(g)))
 
     def _apply_scalar(self, r):
         raise NotImplementedError
@@ -2066,6 +2139,9 @@ class EuclideanSet(SageObject):
             sage: point3 = E.point(1, 1)
             sage: point4 = E.point(-1, 0)
             sage: point5 = E.point(0, -1)
+            sage: point6 = E.point(1, 0, 0)
+            sage: point7 = E.point(1, 1, 0)
+            sage: point8 = E.point(1, -1, 0)
             sage: line0 = E.line(point0, point1)
             sage: line1 = E.line(point1, point2)
             sage: line2 = E.line(point0, point2)
@@ -2074,7 +2150,7 @@ class EuclideanSet(SageObject):
             sage: segment2 = E.segment(line0, end=point0)
             sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
 
-            sage: points = [point0, point1, point2, point3, point4, point5]
+            sage: points = [point0, point1, point2, point3, point4, point5, point6, point7, point8]
             sage: lines = [line0, line1, line2]
             sage: segments = [segment0, segment1, segment2]
             sage: polygons = [polygon0]
@@ -2087,9 +2163,8 @@ class EuclideanSet(SageObject):
 
             sage: for obj in points + lines + segments + polygons:
             ....:     assert g0 * (g1 * obj) == (g0 * g1) * obj
-            ....:     assert g0 * (g1 * (g2 * obj)) == (g0 * g1 * g2) * obj
-            ....:     assert g2 * (g3 * (g0 * obj)) == (g2 * g3 * g0) * obj
-
+            ....:     assert g0 * (g1 * (g2 * obj)) == (g0 * g1 * g2) * obj, obj
+            ....:     assert g2 * (g3 * (g0 * obj)) == (g2 * g3 * g0) * obj, obj
 
             sage: from itertools import product
             sage: for p, obj, g in product(points, lines + segments + polygons, similarities):
@@ -2133,6 +2208,14 @@ class EuclideanSet(SageObject):
             (0, -1)
             sage: A(m, point)
             (0, -1)
+
+        Action on an ideal point::
+
+            sage: ideal_point = E.point(2, 1, 0)
+            sage: ideal_point.apply_2x2_matrix(m)
+            [5/3:1:0]
+            sage: m * ideal_point
+            [5/3:1:0]
 
         Action on a line::
 
@@ -2193,6 +2276,9 @@ class EuclideanSet(SageObject):
             sage: point3 = E.point(1, 1)
             sage: point4 = E.point(-1, 0)
             sage: point5 = E.point(0, -1)
+            sage: point6 = E.point(1, 0, 0)
+            sage: point7 = E.point(1, 1, 0)
+            sage: point8 = E.point(1, -1, 0)
             sage: line0 = E.line(point0, point1)
             sage: line1 = E.line(point1, point2)
             sage: line2 = E.line(point0, point2)
@@ -2201,7 +2287,7 @@ class EuclideanSet(SageObject):
             sage: segment2 = E.segment(line0, end=point0)
             sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
 
-            sage: points = [point0, point1, point2, point3, point4, point5]
+            sage: points = [point0, point1, point2, point3, point4, point5, point6, point7, point8]
             sage: lines = [line0, line1, line2]
             sage: segments = [segment0, segment1, segment2]
             sage: polygons = [polygon0]
@@ -2263,6 +2349,14 @@ class EuclideanSet(SageObject):
             sage: A(m, point)
             (1, 0)
 
+        Action on an ideal point::
+
+            sage: ideal_point = E.point(1, 1, 0)
+            sage: ideal_point.apply_3x3_matrix(m)
+            [3/2:1:0]
+            sage: m * ideal_point
+            [3/2:1:0]
+
         Action on a line::
 
             sage: line = E.line((1, 1), (3, -2))
@@ -2322,6 +2416,9 @@ class EuclideanSet(SageObject):
             sage: point3 = E.point(1, 1)
             sage: point4 = E.point(-1, 0)
             sage: point5 = E.point(0, -1)
+            sage: point6 = E.point(1, 0, 0)
+            sage: point7 = E.point(1, 1, 0)
+            sage: point8 = E.point(1, -1, 0)
             sage: line0 = E.line(point0, point1)
             sage: line1 = E.line(point1, point2)
             sage: line2 = E.line(point0, point2)
@@ -2330,7 +2427,7 @@ class EuclideanSet(SageObject):
             sage: segment2 = E.segment(line0, end=point0)
             sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
 
-            sage: points = [point0, point1, point2, point3, point4, point5]
+            sage: points = [point0, point1, point2, point3, point4, point5, point6, point7, point8]
             sage: lines = [line0, line1, line2]
             sage: segments = [segment0, segment1, segment2]
             sage: polygons = [polygon0]
@@ -2349,6 +2446,9 @@ class EuclideanSet(SageObject):
             sage: for p, obj, m in product(points, lines, matrices):
             ....:     assert ((m * p) in (m * obj)) == (p in obj), (p, obj, m)
         """
+        if self.is_oriented():
+            if m[2, 0] or m[2, 1] or m[2, 2] < 0:
+                raise ValueError("ambiguous action of 3x3 matrix on oriented Euclidean set")
         return self._apply_3x3_matrix(m)
 
     def _apply_3x3_matrix(self, m):
@@ -2846,6 +2946,8 @@ class EuclideanCircle(EuclideanFacade):
     ##     )
 
     def __contains__(self, point):
+        if point.is_ideal():
+            return False
         v = self._center.vector() - point.vector()
         return v.dot_product(v) == self._radius_squared
 
@@ -2875,11 +2977,18 @@ class EuclideanPoint(EuclideanSet, Element):
 
     """
 
-    def __init__(self, parent, x, y):
+    def __init__(self, parent, x, y, z):
         super().__init__(parent)
 
         self._x = x
         self._y = y
+        self._z = z
+
+        # TODO: handle non-normalized coordinates
+        assert self._z.is_one() or (self._z.is_zero() and self._y.is_one() or (self._y.is_zero() and self._x.is_one()))
+
+    def is_ideal(self):
+        return not self._z
 
     def __iter__(self):
         r"""
@@ -2895,10 +3004,14 @@ class EuclideanPoint(EuclideanSet, Element):
             [1, 2]
 
         """
+        if not self._z:
+            raise ValueError("ideal point")
         yield self._x
         yield self._y
 
     def vector(self):
+        if not self._z:
+            raise ValueError("ideal point")
         v = self.parent().vector_space()((self._x, self._y))
         v.set_immutable()
         return v
@@ -2908,19 +3021,19 @@ class EuclideanPoint(EuclideanSet, Element):
         return self.parent().point(*(self.vector() + v))
 
     def _apply_scalar(self, r):
-        return self.parent().point(r * self._x, r * self._y)
+        return self.parent().point(r * self._x, r * self._y, r * self._z)
 
     def _apply_similarity(self, g):
-        return self.parent().point(*g(self.vector()))
+        return self._apply_3x3_matrix(g.matrix())
 
     def _apply_2x2_matrix(self, m):
-        return self.parent().point(*(m * self.vector()))
+        V = self.parent().base_ring() ** 2
+        x, y = m * V((self._x, self._y))
+        return self.parent().point(x, y, self._z)
 
     def _apply_3x3_matrix(self, m):
         V = self.parent().base_ring() ** 3
-        x, y, z = m * V((self._x, self._y, 1))
-        zi = z.inverse_of_unit()
-        return self.parent().point(x * zi, y * zi)
+        return self.parent().point(*(m * V((self._x, self._y, self._z))))
 
     def _richcmp_(self, other, op):
         r"""
@@ -2969,8 +3082,12 @@ class EuclideanPoint(EuclideanSet, Element):
             sage: p = E.point(0, 0)
             sage: p
             (0, 0)
+            sage: E.point(1, 0, 0)
+            [1:0:0]
 
         """
+        if not self._z:
+            return f"[{self._x}:{self._y}:0]"
         return repr(tuple(self))
 
     def __getitem__(self, i):
@@ -3379,7 +3496,6 @@ class EuclideanLine(EuclideanFacade):
         CC = B * m[0, 1] + C * m[1, 1]
         return self.parent().line(AA, BB, CC, oriented=self.is_oriented(), check=False)
 
-    # TODO: check whether the action on orientation makes sense
     def _apply_3x3_matrix(self, m):
         V = self.parent().base_ring() ** 3
         BB, CC, AA = V((self._b, self._c, self._a)) * m.inverse_of_unit()
@@ -3405,8 +3521,7 @@ class EuclideanLine(EuclideanFacade):
         return self.parent().point(*p).translate(shift.vector())
 
     def __contains__(self, point):
-        x, y = point.vector()
-        return self._a + self._b * x + self._c * y == 0
+        return (self._a * point._z + self._b * point._x + self._c * point._y).is_zero()
 
     def __eq__(self, other):
         # TODO: This is literally identical to __eq__ of hyperbolic geodesics. One should call the other instead.
@@ -3560,10 +3675,10 @@ class EuclideanSegment(EuclideanFacade):
 
         if not isinstance(line, EuclideanLine):
             raise TypeError("line must be a Euclidean line")
-        if start is not None and not isinstance(start, EuclideanPoint):
-            raise TypeError("start must be a Euclidean point")
-        if end is not None and not isinstance(end, EuclideanPoint):
-            raise TypeError("end must be a Euclidean point")
+        if start is not None and not (isinstance(start, EuclideanPoint) and start in line):
+            raise TypeError("start must be a Euclidean point on line")
+        if end is not None and not (isinstance(end, EuclideanPoint) and end in line):
+            raise TypeError("end must be a Euclidean point on line")
 
         self._line = line
         self._start = start
@@ -3639,11 +3754,12 @@ class EuclideanSegment(EuclideanFacade):
             start, end = end, start
         return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
 
-    # TODO: check whether the action make sense
     def _apply_3x3_matrix(self, m):
         line = self._line._apply_3x3_matrix(m)
         start = None if self._start is None else self._start._apply_3x3_matrix(m)
         end = None if self._end is None else self._end._apply_3x3_matrix(m)
+        if m.det() < 0:
+            start, end = end, start
         return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
 
     def distance(self, point):
@@ -3812,6 +3928,9 @@ class EuclideanUnorientedSegment(EuclideanSegment):
     def __contains__(self, point):
         if point not in self._line:
             return False
+
+        if point.is_ideal():
+            return self._start is None or self._end is None
 
         if self._start is not None:
             t, _ = time_on_ray(self._start.vector(), self._line.direction(), point)
@@ -4016,11 +4135,16 @@ class EuclideanPolygon(EuclideanFacade):
                 edges=[e._apply_2x2_matrix(m) for e in reversed(self._edges)],
                 check=True)
 
-    # TODO: check whether the action on orientation makes sense
     def _apply_3x3_matrix(self, m):
-        return self.parent().polygon(
-            edges=[e._apply_3x3_matrix(m) for e in self._edges],
-            check=False)
+        if m.det() > 0:
+            return self.parent().polygon(
+                edges=[e._apply_3x3_matrix(m) for e in self._edges],
+                check=False)
+        else:
+            # TODO: set check=False below
+            return self.parent().polygon(
+                edges=[e._apply_3x3_matrix(m) for e in reversed(self._edges)],
+                check=True)
 
     def _repr_(self):
         r"""
@@ -4147,6 +4271,9 @@ class EuclideanPolygon(EuclideanFacade):
         return self
 
     def __contains__(self, point):
+        if point.is_ideal():
+            # TODO: double check that this is the right thing to do
+            return False
         return self.get_point_position(point).is_inside()
 
 
