@@ -1382,29 +1382,18 @@ class MutableOrientedSimilaritySurface(
             transformation[1, 1] = cos_uv
             transformation[2, 2] = 1
             transformation[:2, 2] = self.polygon(y[0]).vertex(y[1] + 1) - transformation[:2, :2] * self.polygon(x[0]).vertex(x[1])
-        elif isinstance(transformation, Similarity):
-            transformation = transformation.matrix()
-
-        if not isinstance(transformation, Matrix) or transformation.nrows() != 3 or transformation.ncols() != 3:
-            raise ValueError("transformation must be a 3x3 matrix")
+        else:
+            from flatsurf.geometry.euclidean import to_3x3_matrix
+            transformation = to_3x3_matrix(transformation)
 
         transformation.set_immutable()
 
-        # TODO: clean this check once projective action on 3x3 matrices has been
-        # implemented on objects in the EuclideanPlane
-        V = FreeModule(self.base_ring(), 3)
-        A0 = V(tuple(self.polygon(x[0]).vertex(x[1])) + (1,))
-        B0 = V(tuple(self.polygon(x[0]).vertex(x[1] + 1)) + (1,))
-        A1 = V(tuple(self.polygon(y[0]).vertex(y[1])) + (1,))
-        B1 = V(tuple(self.polygon(y[0]).vertex(y[1] + 1)) + (1,))
+        # TODO: clean this when there is an API to access the segments of the polygon
+        AB0 = self.polygon(x[0])._edges[x[1]]
+        AB1 = self.polygon(y[0])._edges[y[1]]
 
-        if transformation.det() < 0:
-            raise ValueError("transformation must have positive determinant")
-        imA0 = transformation * A0
-        imB0 = transformation * B0
-        assert imA0[2] and B1[2] and imB0[2] and A1[2]
-        if B1[2] * imA0 != imA0[2] * B1 or A1[2] * imB0 != imB0[2] * A1:
-            raise ValueError("invalid transformation")
+        if transformation * AB0 != -AB1:
+            raise ValueError(f"invalid transformation AB0={AB0} AB1={AB1} transformation * AB0 = {transformation * AB0}")
 
         inverse_transformation = transformation.inverse_of_unit()
         inverse_transformation.set_immutable()
@@ -1673,24 +1662,18 @@ class MutableOrientedSimilaritySurface(
         """
         old = self.polygon(label)
 
-        # TODO: clean this up once we have action of projective transformations
-        # implemented on plane objects
-        if isinstance(transformation, Matrix):
-            raise NotImplementedError
-        elif isinstance(transformation, Similarity):
-            vertices = [transformation(v) for v in old.vertices()]
-        else:
-            raise ValueError("transformation must be a matrix")
+        from flatsurf.geometry.euclidean import to_3x3_matrix
+        transformation = to_3x3_matrix(transformation)
 
-        self._polygons[label] = Polygon(vertices=vertices, category=old.category())
+        self._polygons[label] = old._apply_3x3_matrix(transformation)
 
-        inverse_transformation = transformation.inverse()
+        inverse_transformation = transformation.inverse_of_unit()
         for edge, opposite_edge in enumerate(self._gluings[label]):
             if opposite_edge is None:
                 continue
-            self._transformations[label][edge] = self._transformations[label][edge] * inverse_transformation.matrix()
+            self._transformations[label][edge] = self._transformations[label][edge] * inverse_transformation
             label2, edge2 = opposite_edge
-            self._transformations[label2][edge2] = transformation.matrix() * self._transformations[label2][edge2]
+            self._transformations[label2][edge2] = transformation * self._transformations[label2][edge2]
             self._transformations[label][edge].set_immutable()
             self._transformations[label2][edge2].set_immutable()
 
