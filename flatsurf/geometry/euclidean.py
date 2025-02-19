@@ -193,6 +193,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         return False
 
+    def similarity_group(self):
+        from flatsurf.geometry.similarity import SimilarityGroup
+        return SimilarityGroup(self.base_ring())
+
     def change_ring(self, ring, geometry=None):
         r"""
         Return the Euclidean plane over a different base ``ring``.
@@ -1712,7 +1716,271 @@ class EuclideanSet(SageObject):
 
     # TODO: Add plot and test_plot()
 
-    # TODO: Add apply_similarity() and a test method.
+    def _acted_upon_(self, g, self_on_left):
+        # NOTE: it might have been preferable to implement a proper action on subsets
+        # of the hyperbolic plane via sage.categories.action.Action. However, it does
+        # not work in our context since subsets are (facade) parents.
+        from sage.structure.element import parent
+        from sage.matrix.matrix_space import MatrixSpace
+        E = self.parent()
+        P = parent(g)
+        if P is E.similarity_group():
+            return self.apply_similarity(g)
+        if P is MatrixSpace(E.base_ring(), 2):
+            return self.apply_2x2_matrix(g)
+        if P is MatrixSpace(E.base_ring(), 3):
+            return self.apply_3x3_matrix(g)
+
+    # TODO: fix failing tests marked as not tested
+    # TODO: carefully implement similarity reversing orientations and tests
+    def apply_similarity(self, g):
+        r"""
+        Apply the similarity ``g`` on this Euclidean set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: E = EuclideanPlane()
+            sage: G = E.similarity_group()
+            sage: g = G(1, -1, 3, 2)
+
+        Action on a point::
+
+            sage: point = E.point(1, -2)
+            sage: point.apply_similarity(g)
+            (2, -1)
+
+        Note that this function is also registered as an action so that one can also use the multiplicative syntax::
+
+            sage: A = get_coercion_model().get_action(G, E)
+            sage: A
+            Left action by Similarity group over Rational Field on Euclidean Plane over Rational Field
+            sage: g * point
+            (2, -1)
+            sage: A(g, point)
+            (2, -1)
+
+        Action on a line::
+
+            sage: line = E.line((1, 1), (3, -2))
+            sage: line.apply_similarity(g)
+            {-23 + 5*x - y = 0}
+            sage: g * line
+            {-23 + 5*x - y = 0}
+
+        Action on segments::
+
+            sage: segment = E.segment(line, start=(1, 1), end=(3, -2))
+            sage: segment.apply_similarity(g)
+            (5, 2) → (4, -3)
+            sage: g * segment
+            (5, 2) → (4, -3)
+
+            sage: right_ray = E.segment(line, start=(3, -2))
+            sage: right_ray.apply_similarity(g)
+            Ray from (4, -3) in direction (-1/2, -5/2)
+            sage: g * right_ray
+            Ray from (4, -3) in direction (-1/2, -5/2)
+
+            sage: left_ray = E.segment(line, end=(3, -2))
+            sage: left_ray.apply_similarity(g)
+            Ray to (4, -3) from direction (-1/2, -5/2)
+            sage: g * left_ray
+            Ray to (4, -3) from direction (-1/2, -5/2)
+
+        Note that the action does not apply on more complicated subsets than
+        points due to SageMath limitations::
+
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(g, line)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(g, segment)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(g, right_ray)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(g, left_ray)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+
+        TESTS::
+
+            sage: point0 = E.point(0, 0)
+            sage: point1 = E.point(1, 0)
+            sage: point2 = E.point(0, 1)
+            sage: point3 = E.point(1, 1)
+            sage: point4 = E.point(-1, 0)
+            sage: line0 = E.line(point0, point1)
+            sage: line1 = E.line(point1, point2)
+            sage: line2 = E.line(point0, point2)
+            sage: segment0 = E.segment(line0, start=point0, end=point1)
+            sage: segment1 = E.segment(line0, start=point0)
+            sage: segment2 = E.segment(line0, end=point0)
+            sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
+
+            sage: points = [point0, point1, point2, point3, point4]
+            sage: lines = [line0, line1, line2]
+            sage: segments = [segment0, segment1, segment2]
+            sage: polygons = [polygon0]
+
+            sage: g0 = G(1, 1, 0, 1)
+            sage: g1 = G(1, -1, 3, 1)
+            sage: g2 = G(1, 0, 2, -3)
+            sage: g3 = G(0, 1, 0, 0)
+            sage: similarities = [g0, g1, g2, g3]
+
+            sage: for obj in points + lines + segments + polygons:
+            ....:     assert g0 * (g1 * obj) == (g0 * g1) * obj
+            ....:     assert g0 * (g1 * (g2 * obj)) == (g0 * g1 * g2) * obj
+
+            sage: from itertools import product
+            sage: for p, l, g in product(points, lines + segments + polygons, similarities):  # not tested
+            ....:     assert (g * p) in (g * l) == (p in l)
+        """
+        return self._apply_similarity(g)
+
+    def _apply_similarity(self, g):
+        r"""
+        Concrete implementation of :meth:`apply_similarity` that must be
+        overriden in subclasses.
+        """
+        raise NotImplementedError
+
+    # TODO: fix failing tests marked as not tested
+    # TODO: carefully implement similarity reversing orientations and tests
+    def apply_2x2_matrix(self, g):
+        r"""
+        Apply the 2x2 matrix ``g`` on this Euclidean set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: E = EuclideanPlane()
+            sage: M = MatrixSpace(QQ, 2)
+            sage: m = M([2, 1, 1, 1])
+
+        Action on a point::
+
+            sage: point = E.point(1, -2)
+            sage: point.apply_2x2_matrix(m)
+            (0, -1)
+
+        Note that this function is also registered as an action so that one can also use the multiplicative syntax::
+
+            sage: A = get_coercion_model().get_action(M, E)
+            sage: A
+            Left action by Full MatrixSpace of 2 by 2 dense matrices over Rational Field on Euclidean Plane over Rational Field
+            sage: m * point
+            (0, -1)
+            sage: A(m, point)
+            (0, -1)
+
+        Action on a line::
+
+            sage: line = E.line((1, 1), (3, -2))
+            sage: line.apply_2x2_matrix(m)
+            {-5 + x + y = 0}
+            sage: m * line
+            {-5 + x + y = 0}
+
+        Action on segments::
+
+            sage: segment = E.segment(line, start=(1, 1), end=(3, -2))
+            sage: segment.apply_2x2_matrix(m)
+            (4, 1) → (3, 2)
+            sage: m * segment
+            (4, 1) → (3, 2)
+
+            sage: right_ray = E.segment(line, start=(3, -2))
+            sage: right_ray.apply_2x2_matrix(m)
+            Ray to (4, 1) from direction (1, -1)
+            sage: m * right_ray
+            Ray to (4, 1) from direction (1, -1)
+
+            sage: left_ray = E.segment(line, end=(3, -2))
+            sage: left_ray.apply_2x2_matrix(m)
+            Ray from (4, 1) in direction (1, -1)
+            sage: m * left_ray
+            Ray from (4, 1) in direction (1, -1)
+
+        Note that the action does not apply on more complicated subsets than
+        points due to SageMath limitations::
+
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, line)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, segment)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, right_ray)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, left_ray)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+
+        TESTS::
+
+            sage: point0 = E.point(0, 0)
+            sage: point1 = E.point(1, 0)
+            sage: point2 = E.point(0, 1)
+            sage: point3 = E.point(1, 1)
+            sage: point4 = E.point(-1, 0)
+            sage: line0 = E.line(point0, point1)
+            sage: line1 = E.line(point1, point2)
+            sage: line2 = E.line(point0, point2)
+            sage: segment0 = E.segment(line0, start=point0, end=point1)
+            sage: segment1 = E.segment(line0, start=point0)
+            sage: segment2 = E.segment(line0, end=point0)
+            sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
+
+            sage: points = [point0, point1, point2, point3, point4]
+            sage: lines = [line0, line1, line2]
+            sage: segments = [segment0, segment1, segment2]
+            sage: polygons = [polygon0]
+
+            sage: m0 = M([2, 1, 1, 1])
+            sage: m1 = M([2, 0, 0, 2])
+            sage: m2 = M([1, -1, 0, 1])
+            sage: m3 = M([0, 1, 1, 0])
+            sage: matrices = [m0, m1, m2, m3]
+
+            sage: for obj in points + lines + segments + polygons:  # not tested
+            ....:     assert m0 * (m1 * obj) == (m0 * m1) * obj
+            ....:     assert m0 * (m1 * (m2 * obj)) == (m0 * m1 * m2) * obj
+
+            sage: from itertools import product
+            sage: for p, l, m in product(points, lines + segments + polygons, matrices):  # not tested
+            ....:     assert ((m * p) in (m * l)) == (p in l)
+        """
+        return self._apply_2x2_matrix(g)
+
+    def _apply_2x2_matrix(self, m):
+        raise NotImplementedError
+
+    def apply_3x3_matrix(self, g):
+        return self._apply_3x3_matrix(g)
+
+    # TODO: implement in subclasses
+    def _apply_3x3_matrix(self, g):
+        raise NotImplementedError
 
     # TODO: Add _acted_upon and a test method
 
@@ -2269,6 +2537,18 @@ class EuclideanPoint(EuclideanSet, Element):
         v = self.parent().vector_space()(v)
         return self.parent().point(*(self.vector() + v))
 
+    def _apply_similarity(self, g):
+        return self.parent().point(*g(self.vector()))
+
+    def _apply_2x2_matrix(self, m):
+        return self.parent().point(*(m * self.vector()))
+
+    def _apply_3x3_matrix(self, m):
+        P = self.parent()
+        F = P.base_ring() ** 3
+        x, y, z = m * F((self._x, self._y, 1))
+        return P.point(x, y) if z.is_one() else P.point(x / z, y / z)
+
     def _richcmp_(self, other, op):
         r"""
         Return how this point compares to ``other`` with respect to the ``op``
@@ -2580,7 +2860,7 @@ class EuclideanLine(EuclideanFacade):
           list of such values which are then tried in order and exceptions are
           silently ignored unless they happen at the last option.
 
-        If this line :meth;`is_oriented`, then the sign of the coefficients
+        If this line :meth:`is_oriented`, then the sign of the coefficients
         is chosen to encode the orientation of this line. The sign is such
         that the half plane obtained by replacing ``=`` with ``≥`` in the
         equation is on the left of the line.
@@ -2680,6 +2960,39 @@ class EuclideanLine(EuclideanFacade):
 
         assert self._c
         return self.parent().point(-self._a / self._c, 0)
+
+    def _apply_similarity(self, g):
+        A = self._a
+        B = self._b
+        C = self._c
+        g = ~g
+        a = g._a
+        b = g._b
+        s = g._s
+        t = g._t
+        sign = g._sign
+        if sign.is_one():
+            AA = A + B*s + C*t
+            BB = B*a + C*b
+            CC = -B*b + C*a
+        else:
+            raise NotImplementedError
+        return self.parent().line(AA, BB, CC, oriented=self.is_oriented(), check=False)
+
+    def _apply_2x2_matrix(self, m):
+        A = self._a
+        B = self._b
+        C = self._c
+        m = m.inverse_of_unit()
+        a, b = m[0]
+        c, d = m[1]
+        if m.det() > 0:
+            AA = A
+            BB = B * m[0, 0] + C * m[1, 0]
+            CC = B * m[0, 1] + C * m[1, 1]
+        else:
+            raise NotImplementedError
+        return self.parent().line(AA, BB, CC, oriented=self.is_oriented(), check=False)
 
     def projection(self, point):
         # Move the line to the origin, i.e., instead of a + bx + cy = 0,
@@ -2895,6 +3208,22 @@ class EuclideanSegment(EuclideanFacade):
                 line = -line
 
         return self
+
+    def _apply_similarity(self, g):
+        line = self._line._apply_similarity(g)
+        start = None if self._start is None else self._start._apply_similarity(g)
+        end = None if self._end is None else self._end._apply_similarity(g)
+        if not g.sign().is_one():
+            start, end = end, start
+        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
+
+    def _apply_2x2_matrix(self, m):
+        line = self._line._apply_2x2_matrix(m)
+        start = None if self._start is None else self._start._apply_2x2_matrix(m)
+        end = None if self._end is None else self._end._apply_2x2_matrix(m)
+        if not m.det() < 0:
+            start, end = end, start
+        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
 
     def distance(self, point):
         point = self.parent()(point)
@@ -3222,6 +3551,16 @@ class EuclideanPolygon(EuclideanFacade):
             edges=[e.translate(u) for e in self._edges],
             check=False
         )
+
+    def _apply_similarity(self, g):
+        if g.sign().is_one():
+            return self.parent().polygon(
+                edges=[e.apply_similarity(g) for e in self._edges],
+                check=False)
+        else:
+            return self.parent().polygon(
+                edges=[e.apply_similarity(g) for e in self._edges],
+                check=False)
 
     def _repr_(self):
         r"""
