@@ -4799,6 +4799,9 @@ class HyperbolicConvexSet(SageObject):
             sage: assert p * (m0 * m1) == (p * m0) * m1
 
         """
+        # NOTE: it might have been preferable to implement a proper action on subsets
+        # of the hyperbolic plane via sage.categories.action.Action. However, it does
+        # not work in our context since subsets are (facade) parents.
         return self.apply_isometry(x, on_right=self_on_left)
 
     def is_subset(self, other):
