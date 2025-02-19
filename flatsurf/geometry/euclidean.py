@@ -1731,7 +1731,7 @@ class EuclideanSet(SageObject):
         if P is MatrixSpace(E.base_ring(), 3):
             return self.apply_3x3_matrix(g)
 
-    # TODO: fix failing tests marked as not tested
+    # TODO: move TESTS as pytest
     # TODO: carefully implement similarity reversing orientations and tests
     def apply_similarity(self, g):
         r"""
@@ -1819,6 +1819,7 @@ class EuclideanSet(SageObject):
             sage: point2 = E.point(0, 1)
             sage: point3 = E.point(1, 1)
             sage: point4 = E.point(-1, 0)
+            sage: point5 = E.point(0, -1)
             sage: line0 = E.line(point0, point1)
             sage: line1 = E.line(point1, point2)
             sage: line2 = E.line(point0, point2)
@@ -1827,7 +1828,7 @@ class EuclideanSet(SageObject):
             sage: segment2 = E.segment(line0, end=point0)
             sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
 
-            sage: points = [point0, point1, point2, point3, point4]
+            sage: points = [point0, point1, point2, point3, point4, point5]
             sage: lines = [line0, line1, line2]
             sage: segments = [segment0, segment1, segment2]
             sage: polygons = [polygon0]
@@ -1841,10 +1842,12 @@ class EuclideanSet(SageObject):
             sage: for obj in points + lines + segments + polygons:
             ....:     assert g0 * (g1 * obj) == (g0 * g1) * obj
             ....:     assert g0 * (g1 * (g2 * obj)) == (g0 * g1 * g2) * obj
+            ....:     assert g2 * (g3 * (g0 * obj)) == (g2 * g3 * g0) * obj
+
 
             sage: from itertools import product
-            sage: for p, l, g in product(points, lines + segments + polygons, similarities):  # not tested
-            ....:     assert (g * p) in (g * l) == (p in l)
+            sage: for p, obj, g in product(points, lines + segments + polygons, similarities):
+            ....:     assert ((g * p) in (g * obj)) == (p in obj), (p, obj, g)
         """
         return self._apply_similarity(g)
 
@@ -1855,7 +1858,7 @@ class EuclideanSet(SageObject):
         """
         raise NotImplementedError
 
-    # TODO: fix failing tests marked as not tested
+    # TODO: move TESTS as pytest
     # TODO: carefully implement similarity reversing orientations and tests
     def apply_2x2_matrix(self, g):
         r"""
@@ -1897,21 +1900,21 @@ class EuclideanSet(SageObject):
 
             sage: segment = E.segment(line, start=(1, 1), end=(3, -2))
             sage: segment.apply_2x2_matrix(m)
-            (4, 1) → (3, 2)
+            (3, 2) → (4, 1)
             sage: m * segment
-            (4, 1) → (3, 2)
+            (3, 2) → (4, 1)
 
             sage: right_ray = E.segment(line, start=(3, -2))
             sage: right_ray.apply_2x2_matrix(m)
-            Ray to (4, 1) from direction (1, -1)
+            Ray from (4, 1) in direction (1, -1)
             sage: m * right_ray
-            Ray to (4, 1) from direction (1, -1)
+            Ray from (4, 1) in direction (1, -1)
 
             sage: left_ray = E.segment(line, end=(3, -2))
             sage: left_ray.apply_2x2_matrix(m)
-            Ray from (4, 1) in direction (1, -1)
+            Ray to (4, 1) from direction (1, -1)
             sage: m * left_ray
-            Ray from (4, 1) in direction (1, -1)
+            Ray to (4, 1) from direction (1, -1)
 
         Note that the action does not apply on more complicated subsets than
         points due to SageMath limitations::
@@ -1943,6 +1946,7 @@ class EuclideanSet(SageObject):
             sage: point2 = E.point(0, 1)
             sage: point3 = E.point(1, 1)
             sage: point4 = E.point(-1, 0)
+            sage: point5 = E.point(0, -1)
             sage: line0 = E.line(point0, point1)
             sage: line1 = E.line(point1, point2)
             sage: line2 = E.line(point0, point2)
@@ -1951,7 +1955,7 @@ class EuclideanSet(SageObject):
             sage: segment2 = E.segment(line0, end=point0)
             sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
 
-            sage: points = [point0, point1, point2, point3, point4]
+            sage: points = [point0, point1, point2, point3, point4, point5]
             sage: lines = [line0, line1, line2]
             sage: segments = [segment0, segment1, segment2]
             sage: polygons = [polygon0]
@@ -1959,16 +1963,16 @@ class EuclideanSet(SageObject):
             sage: m0 = M([2, 1, 1, 1])
             sage: m1 = M([2, 0, 0, 2])
             sage: m2 = M([1, -1, 0, 1])
-            sage: m3 = M([0, 1, 1, 0])
+            sage: m3 = M([0, 1, -1, 0])
             sage: matrices = [m0, m1, m2, m3]
 
-            sage: for obj in points + lines + segments + polygons:  # not tested
-            ....:     assert m0 * (m1 * obj) == (m0 * m1) * obj
-            ....:     assert m0 * (m1 * (m2 * obj)) == (m0 * m1 * m2) * obj
+            sage: for obj in points + lines + segments + polygons:
+            ....:     assert m0 * (m1 * obj) == (m0 * m1) * obj, obj
+            ....:     assert m0 * (m1 * (m2 * obj)) == (m0 * m1 * m2) * obj, obj
 
             sage: from itertools import product
-            sage: for p, l, m in product(points, lines + segments + polygons, matrices):  # not tested
-            ....:     assert ((m * p) in (m * l)) == (p in l)
+            sage: for p, obj, m in product(points, lines + segments + polygons, matrices):
+            ....:     assert ((m * p) in (m * obj)) == (p in obj), (p, obj, m)
         """
         return self._apply_2x2_matrix(g)
 
@@ -3214,15 +3218,15 @@ class EuclideanSegment(EuclideanFacade):
         start = None if self._start is None else self._start._apply_similarity(g)
         end = None if self._end is None else self._end._apply_similarity(g)
         if not g.sign().is_one():
-            start, end = end, start
+            raise NotImplementedError
         return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
 
     def _apply_2x2_matrix(self, m):
         line = self._line._apply_2x2_matrix(m)
         start = None if self._start is None else self._start._apply_2x2_matrix(m)
         end = None if self._end is None else self._end._apply_2x2_matrix(m)
-        if not m.det() < 0:
-            start, end = end, start
+        if m.det() < 0:
+            raise NotImplementedError
         return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
 
     def distance(self, point):
@@ -3558,9 +3562,15 @@ class EuclideanPolygon(EuclideanFacade):
                 edges=[e.apply_similarity(g) for e in self._edges],
                 check=False)
         else:
+            raise NotImplementedError
+
+    def _apply_2x2_matrix(self, m):
+        if m.det() > 0:
             return self.parent().polygon(
-                edges=[e.apply_similarity(g) for e in self._edges],
+                edges=[e._apply_2x2_matrix(m) for e in self._edges],
                 check=False)
+        else:
+            raise NotImplementedError
 
     def _repr_(self):
         r"""
