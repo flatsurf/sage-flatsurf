@@ -1945,13 +1945,37 @@ class EuclideanSet(SageObject):
         from sage.structure.element import parent
         from sage.matrix.matrix_space import MatrixSpace
         E = self.parent()
+        R = E.base_ring()
         P = parent(g)
+
+        if P is R:
+            return self._apply_scalar(g)
+
         if P is E.similarity_group():
-            return self.apply_similarity(g)
-        if P is MatrixSpace(E.base_ring(), 2):
-            return self.apply_2x2_matrix(g)
-        if P is MatrixSpace(E.base_ring(), 3):
-            return self.apply_3x3_matrix(g)
+            return self._apply_similarity(g)
+
+        M2 = MatrixSpace(R, 2)
+        if P is M2:
+            return self._apply_2x2_matrix(g)
+
+        M3 = MatrixSpace(R, 3)
+        if P is M3:
+            return self._apply_3x3_matrix(g)
+
+        if R.has_coerce_map_from(P):
+            g = R(g)
+            return self._apply_scalar(g)
+
+        if M2.has_coerce_map_from(P):
+            g = M2(g)
+            return self._apply_2x2_matrix(g)
+
+        if M3.has_coerce_map_from(P):
+            g = M3(g)
+            return self._apply_3x3_matrix(g)
+
+    def _apply_scalar(self, r):
+        raise NotImplementedError
 
     # TODO: move TESTS as pytest
     # TODO: carefully implement similarity reversing orientations and tests
@@ -2082,9 +2106,9 @@ class EuclideanSet(SageObject):
 
     # TODO: move TESTS as pytest
     # TODO: carefully implement similarity reversing orientations and tests
-    def apply_2x2_matrix(self, g):
+    def apply_2x2_matrix(self, m):
         r"""
-        Apply the 2x2 matrix ``g`` on this Euclidean set.
+        Apply the 2x2 matrix ``m`` on this Euclidean set.
 
         EXAMPLES::
 
@@ -2195,20 +2219,140 @@ class EuclideanSet(SageObject):
             sage: from itertools import product
             sage: for p, obj, m in product(points, lines + segments + polygons, matrices):
             ....:     assert ((m * p) in (m * obj)) == (p in obj), (p, obj, m)
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: p = E.polygon(vertices = [(1,0),(0,1),(-1,-1)])
+            sage: p
+            Polygon(vertices=[(1, 0), (0, 1), (-1, -1)])
+            sage: matrix(ZZ, [[0, 1], [1, 0]]) * p
+            Polygon(vertices=[(0, 1), (-1, -1), (1, 0)])
+            sage: matrix(ZZ,[[2, 0], [0, 1]]) * p
+            Polygon(vertices=[(2, 0), (0, 1), (-2, -1)])
         """
-        return self._apply_2x2_matrix(g)
+        return self._apply_2x2_matrix(m)
 
     def _apply_2x2_matrix(self, m):
         raise NotImplementedError
 
-    def apply_3x3_matrix(self, g):
-        return self._apply_3x3_matrix(g)
+    def apply_3x3_matrix(self, m):
+        r"""
+        Apply the 3x3 matrix ``m`` on this Euclidean set.
 
-    # TODO: implement in subclasses
-    def _apply_3x3_matrix(self, g):
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: E = EuclideanPlane()
+            sage: M = MatrixSpace(QQ, 3)
+            sage: m = M([2, 1, 1, 1, 1, 1, 0, 0, 1])
+
+        Action on a point::
+
+            sage: point = E.point(1, -2)
+            sage: point.apply_3x3_matrix(m)
+            (1, 0)
+
+        Note that this function is also registered as an action so that one can also use the multiplicative syntax::
+
+            sage: A = get_coercion_model().get_action(M, E)
+            sage: A
+            Left action by Full MatrixSpace of 3 by 3 dense matrices over Rational Field on Euclidean Plane over Rational Field
+            sage: m * point
+            (1, 0)
+            sage: A(m, point)
+            (1, 0)
+
+        Action on a line::
+
+            sage: line = E.line((1, 1), (3, -2))
+            sage: line.apply_3x3_matrix(m)
+            {-7 + x + y = 0}
+            sage: m * line
+            {-7 + x + y = 0}
+
+        Action on segments::
+
+            sage: segment = E.segment(line, start=(1, 1), end=(3, -2))
+            sage: segment.apply_3x3_matrix(m)
+            (4, 3) → (5, 2)
+            sage: m * segment
+            (4, 3) → (5, 2)
+
+            sage: right_ray = E.segment(line, start=(3, -2))
+            sage: right_ray.apply_3x3_matrix(m)
+            Ray from (5, 2) in direction (1, -1)
+            sage: m * right_ray
+            Ray from (5, 2) in direction (1, -1)
+
+            sage: left_ray = E.segment(line, end=(3, -2))
+            sage: left_ray.apply_3x3_matrix(m)
+            Ray to (5, 2) from direction (1, -1)
+            sage: m * left_ray
+            Ray to (5, 2) from direction (1, -1)
+
+        Note that the action does not apply on more complicated subsets than
+        points due to SageMath limitations::
+
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, line)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, segment)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, right_ray)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+            sage: A(m, left_ray)
+            Traceback (most recent call last):
+            ...
+            TypeError: embedding must be a parent or map
+
+        TESTS::
+
+            sage: point0 = E.point(0, 0)
+            sage: point1 = E.point(1, 0)
+            sage: point2 = E.point(0, 1)
+            sage: point3 = E.point(1, 1)
+            sage: point4 = E.point(-1, 0)
+            sage: point5 = E.point(0, -1)
+            sage: line0 = E.line(point0, point1)
+            sage: line1 = E.line(point1, point2)
+            sage: line2 = E.line(point0, point2)
+            sage: segment0 = E.segment(line0, start=point0, end=point1)
+            sage: segment1 = E.segment(line0, start=point0)
+            sage: segment2 = E.segment(line0, end=point0)
+            sage: polygon0 = E.polygon(vertices=[point0, point1, point2])
+
+            sage: points = [point0, point1, point2, point3, point4, point5]
+            sage: lines = [line0, line1, line2]
+            sage: segments = [segment0, segment1, segment2]
+            sage: polygons = [polygon0]
+
+            sage: m0 = M([2, 1, 1, 1, 1, -2, 0, 0, 1])
+            sage: m1 = M([2, 0, 0, 0, 2, 0, 0, 0, 1])
+            sage: m2 = M([1, -1, 1, 0, 1, 0, 0, 0, 1])
+            sage: m3 = M([0, 1, 0, -1, 0, 1, 0, 0, 1])
+            sage: matrices = [m0, m1, m2, m3]
+
+            sage: for obj in points + lines:
+            ....:     assert m0 * (m1 * obj) == (m0 * m1) * obj, obj
+            ....:     assert m0 * (m1 * (m2 * obj)) == (m0 * m1 * m2) * obj, obj
+
+            sage: from itertools import product
+            sage: for p, obj, m in product(points, lines, matrices):
+            ....:     assert ((m * p) in (m * obj)) == (p in obj), (p, obj, m)
+        """
+        return self._apply_3x3_matrix(m)
+
+    def _apply_3x3_matrix(self, m):
         raise NotImplementedError
-
-    # TODO: Add _acted_upon and a test method
 
     # TODO: Add is_subset() and a test method.
 
@@ -2763,6 +2907,9 @@ class EuclideanPoint(EuclideanSet, Element):
         v = self.parent().vector_space()(v)
         return self.parent().point(*(self.vector() + v))
 
+    def _apply_scalar(self, r):
+        return self.parent().point(r * self._x, r * self._y)
+
     def _apply_similarity(self, g):
         return self.parent().point(*g(self.vector()))
 
@@ -2770,10 +2917,10 @@ class EuclideanPoint(EuclideanSet, Element):
         return self.parent().point(*(m * self.vector()))
 
     def _apply_3x3_matrix(self, m):
-        P = self.parent()
-        F = P.base_ring() ** 3
-        x, y, z = m * F((self._x, self._y, 1))
-        return P.point(x, y) if z.is_one() else P.point(x / z, y / z)
+        V = self.parent().base_ring() ** 3
+        x, y, z = m * V((self._x, self._y, 1))
+        zi = z.inverse_of_unit()
+        return self.parent().point(x * zi, y * zi)
 
     def _richcmp_(self, other, op):
         r"""
@@ -3193,6 +3340,14 @@ class EuclideanLine(EuclideanFacade):
         assert self._c
         return self.parent().point(-self._a / self._c, 0)
 
+    def _apply_scalar(self, r):
+        if not r:
+            return self.parent().point(0, 0)
+        elif r > 0:
+            return self
+        else:
+            return -self
+
     def _apply_similarity(self, g):
         A = self._a
         B = self._b
@@ -3218,12 +3373,16 @@ class EuclideanLine(EuclideanFacade):
         m = m.inverse_of_unit()
         a, b = m[0]
         c, d = m[1]
-        if m.det() > 0:
-            AA = A
-            BB = B * m[0, 0] + C * m[1, 0]
-            CC = B * m[0, 1] + C * m[1, 1]
-        else:
-            raise NotImplementedError
+        # TODO: check that it does actually make sense for matrices reversing orientation
+        AA = A
+        BB = B * m[0, 0] + C * m[1, 0]
+        CC = B * m[0, 1] + C * m[1, 1]
+        return self.parent().line(AA, BB, CC, oriented=self.is_oriented(), check=False)
+
+    # TODO: check whether the action on orientation makes sense
+    def _apply_3x3_matrix(self, m):
+        V = self.parent().base_ring() ** 3
+        BB, CC, AA = V((self._b, self._c, self._a)) * m.inverse_of_unit()
         return self.parent().line(AA, BB, CC, oriented=self.is_oriented(), check=False)
 
     def projection(self, point):
@@ -3454,12 +3613,22 @@ class EuclideanSegment(EuclideanFacade):
 
         return self
 
+    def _apply_scalar(self, r):
+        if not r:
+            return self.parent().point(0, 0)
+        line = self._line._apply_scalar(r)
+        start = None if self._start is None else self._start._apply_scalar(r)
+        end = None if self._end is None else self._end._apply_scalar(r)
+        if r < 0:
+            start, end = end, start
+        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
+
     def _apply_similarity(self, g):
         line = self._line._apply_similarity(g)
         start = None if self._start is None else self._start._apply_similarity(g)
         end = None if self._end is None else self._end._apply_similarity(g)
         if not g.sign().is_one():
-            raise NotImplementedError
+            start, end = end, start
         return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
 
     def _apply_2x2_matrix(self, m):
@@ -3467,7 +3636,14 @@ class EuclideanSegment(EuclideanFacade):
         start = None if self._start is None else self._start._apply_2x2_matrix(m)
         end = None if self._end is None else self._end._apply_2x2_matrix(m)
         if m.det() < 0:
-            raise NotImplementedError
+            start, end = end, start
+        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
+
+    # TODO: check whether the action make sense
+    def _apply_3x3_matrix(self, m):
+        line = self._line._apply_3x3_matrix(m)
+        start = None if self._start is None else self._start._apply_3x3_matrix(m)
+        end = None if self._end is None else self._end._apply_3x3_matrix(m)
         return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
 
     def distance(self, point):
@@ -3513,6 +3689,9 @@ class EuclideanSegment(EuclideanFacade):
 
     def translate(self, v):
         return self.parent().segment(self._line.translate(v), None if self._start is None else self._start.translate(v), None if self._end is None else self._end.translate(v), oriented=self.is_oriented(), check=False)
+
+    def __neg__(self):
+        return self.parent().segment(-self._line, self._end, self._start, oriented=self.is_oriented(), check=False)
 
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
@@ -3804,13 +3983,27 @@ class EuclideanPolygon(EuclideanFacade):
             check=False
         )
 
+    def _apply_scalar(self, r):
+        if not r:
+            return self.parent().point()(0, 0)
+        elif r > 0:
+            return self.parent().polygon(
+                edges=[e._apply_scalar(r) for e in self._edges],
+                check=False)
+        else:
+            return self.parent().polygon(
+                edges=[e._apply_scalar(r) for e in reversed(self._edges)],
+                check=False)
+
     def _apply_similarity(self, g):
         if g.sign().is_one():
             return self.parent().polygon(
-                edges=[e.apply_similarity(g) for e in self._edges],
+                edges=[e._apply_similarity(g) for e in self._edges],
                 check=False)
         else:
-            raise NotImplementedError
+            return self.parent().polygon(
+                edges=[e._apply_similarity(g) for e in reversed(self._edges)],
+                check=False)
 
     def _apply_2x2_matrix(self, m):
         if m.det() > 0:
@@ -3818,7 +4011,16 @@ class EuclideanPolygon(EuclideanFacade):
                 edges=[e._apply_2x2_matrix(m) for e in self._edges],
                 check=False)
         else:
-            raise NotImplementedError
+            # TODO: set check=False below
+            return self.parent().polygon(
+                edges=[e._apply_2x2_matrix(m) for e in reversed(self._edges)],
+                check=True)
+
+    # TODO: check whether the action on orientation makes sense
+    def _apply_3x3_matrix(self, m):
+        return self.parent().polygon(
+            edges=[e._apply_3x3_matrix(m) for e in self._edges],
+            check=False)
 
     def _repr_(self):
         r"""
@@ -4934,3 +5136,20 @@ def slope(a, rotate=1):
     if rotate == -1:
         return 1 if y else -1
     raise ValueError("invalid argument rotate={}".format(rotate))
+
+
+def to_3x3_matrix(g):
+    from sage.matrix.constructor import matrix
+    from sage.structure.element import Matrix
+    from flatsurf.geometry.similarity import Similarity
+    if isinstance(g, Similarity):
+        return g.matrix()
+    elif isinstance(g, Matrix):
+        if g.nrows() == g.ncols() == 2:
+            return matrix(g.base_ring(), 3, [g[0, 0], g[0, 1], 0, g[1, 0], g[1, 1], 0, 0, 0, 1])
+        elif g.nrows() == 2 and g.ncols() == 3:
+            return matrix(g.base_ring(), 3, [g[0, 0], g[0, 1], g[0, 2], g[1, 0], g[1, 1], g[1, 2], 0, 0, 1])
+        elif g.nrows() != 3 or g.ncols() != 3:
+            raise ValueError(f"invalid element g={g}")
+    else:
+        raise TypeError(f"invalid element g={g} of type={type(g)}")

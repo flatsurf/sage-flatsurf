@@ -156,55 +156,6 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return self.base_ring().fraction_field()
 
-        def _mul_(self, g, switch_sides=None):
-            r"""
-            Apply the 2x2 matrix `g` to this polygon.
-
-            The matrix must have non-zero determinant. If the determinant is
-            negative, then the vertices and edges are relabeled according to the
-            involutions `v \mapsto (n-v)%n` and  `e \mapsto n-1-e` respectively.
-
-            EXAMPLES::
-
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices = [(1,0),(0,1),(-1,-1)])
-                sage: p
-                Polygon(vertices=[(1, 0), (0, 1), (-1, -1)])
-
-                sage: matrix(ZZ,[[0, 1], [1, 0]]) * p
-                Polygon(vertices=[(0, 1), (-1, -1), (1, 0)])
-
-                sage: matrix(ZZ,[[2, 0], [0, 1]]) * p
-                Polygon(vertices=[(2, 0), (0, 1), (-2, -1)])
-
-            """
-            from flatsurf import Polygon
-
-            if g in self.base_ring():
-                from sage.all import MatrixSpace
-
-                g = MatrixSpace(self.base_ring(), 2)(g)
-
-            det = g.det()
-            if det == 0:
-                raise ValueError(
-                    "Can not act on a polygon with matrix with zero determinant"
-                )
-
-            if det < 0:
-                # Note that in this case we reverse the order
-                vertices = [g * self.vertex(0)]
-                for i in range(len(self.vertices()) - 1, 0, -1):
-                    vertices.append(g * self.vertex(i))
-
-                return Polygon(vertices=vertices, check=False)
-
-            return Polygon(
-                vertices=[g * v for v in self.vertices()],
-                check=False,
-                category=self.category(),
-            )
-
         @cached_method
         def is_rational(self):
             r"""

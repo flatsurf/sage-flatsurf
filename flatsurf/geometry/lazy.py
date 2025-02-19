@@ -896,7 +896,7 @@ class LazyMutableOrientedSimilaritySurface(
         sage: p = T.polygon(0)
         sage: p
         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
-        sage: q = p * 2
+        sage: q = 2 * p
 
         sage: S.replace_polygon(0, q)
         Traceback (most recent call last):
