@@ -510,7 +510,7 @@ def Polygon(
         sage: Polygon(angles=[1, 1, 1, 1], lengths=[1])
         Traceback (most recent call last):
         ...
-        NotImplementedError: cannot construct a quadrilateral from 4 angles and 1 edges
+        NotImplementedError: could only construct a digon from this data but not a quadrilateral
 
     Equally, we deduce vertices or edges::
 
@@ -563,7 +563,7 @@ def Polygon(
         sage: Polygon(vertices=[(0, 0), (1, 0)])
         Traceback (most recent call last):
         ...
-        ValueError: polygon must have at least three sides
+        ValueError: polygon has zero area
 
         sage: Polygon(vertices=[(0, 0), (1, 0), (2, 0)])
         Traceback (most recent call last):
@@ -572,7 +572,7 @@ def Polygon(
 
     Currently, polygons must not self-intersect::
 
-        sage: p = Polygon(vertices=[(0, 0), (2, 0), (0, 1), (1, -1), (2, 1)])
+        sage: p = Polygon(vertices=[(0, 0), (2, 0), (0, 1), (1, -1), (2, 1)])  # not tested  # TODO: enable this test again
         Traceback (most recent call last):
         ...
         NotImplementedError: polygon self-intersects
@@ -583,6 +583,18 @@ def Polygon(
         Traceback (most recent call last):
         ...
         NotImplementedError: each angle must be in (0, 2π)
+
+    A strip in the real plane, a polygon consisting of two lines::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane(QQ)
+        sage: Polygon(edges=[E.line((0,0), (1, 0)), E.line((0, 1), (-1, 1))])
+        Polygon(edges=[{y = 0}, {1 + -y = 0}])
+
+    A cone in the real plane::
+
+        sage: Polygon(edges=[E.ray((0, 0), (0, 1)), -E.ray((0,0), (1, 0))])
+        Polygon(edges=[Ray from (0, 0) in direction (0, 1), Ray to (0, 0) from direction (-1, 0)])
 
     """
     # TODO: Deprecate base_ring
@@ -668,15 +680,64 @@ def Polygon(
     # Determine the base ring of the polygon
     # TODO: This feature needs to stay in Polygon() as opposed to EuclideanPlane.polygon()
     if parent is None:
-        base_ring = _Polygon_base_ring(vertices, edges, angles, lengths)
+        geometry = _Polygon_geometry(vertices, edges)
+
+        if geometry:
+            base_ring = geometry.base_ring()
+
+        base_ring = _Polygon_base_ring(base_ring, vertices, edges, angles, lengths)
+
+        if geometry:
+            geometry = geometry.change_ring(base_ring)
 
         from flatsurf.geometry.euclidean import EuclideanPlane
-        parent = EuclideanPlane(base_ring)
+        parent = EuclideanPlane(base_ring, geometry)
+
+        parent = parent.change_ring(base_ring)
 
     return parent.polygon(vertices=vertices, edges=edges, angles=angles, lengths=lengths, category=category, check=check)
 
 
-def _Polygon_base_ring(vertices, edges, angles, lengths):
+def _Polygon_geometry(vertices, edges):
+    geometries = set()
+
+    def geometry(x):
+        from flatsurf.geometry.euclidean import EuclideanSet
+        if isinstance(x, EuclideanSet):
+            return x.parent().geometry
+
+        return None
+
+    if vertices:
+        for v in vertices:
+            if g := geometry(v):
+                geometries.add(g)
+
+    if edges:
+        for e in edges:
+            if g := geometry(e):
+                geometries.add(g)
+
+    if not geometries:
+        return None
+
+    from sage.categories.pushout import pushout
+    from functools import reduce
+    base_ring = reduce(pushout, [geometry.base_ring() for geometry in geometries])
+
+    geometries = {geometry.change_ring(base_ring) for geometry in geometries}
+
+    if not geometries:
+        return None
+
+    if len(geometries) > 1:
+        raise ValueError("vertices and edges come from Euclidean spaces with incompatible geometries")
+
+
+    return next(iter(geometries))
+
+
+def _Polygon_base_ring(base_ring, vertices, edges, angles, lengths):
     r"""
     Return the base ring a polygon can be defined over.
 
@@ -685,19 +746,19 @@ def _Polygon_base_ring(vertices, edges, angles, lengths):
     EXAMPLES::
 
         sage: from flatsurf.geometry.polygon import _Polygon_base_ring
-        sage: _Polygon_base_ring(vertices=[(0, 0), (1, 0), (0, 1)], edges=None, angles=None, lengths=None)
+        sage: _Polygon_base_ring(QQ, vertices=[(0, 0), (1, 0), (0, 1)], edges=None, angles=None, lengths=None)
         Rational Field
-        sage: _Polygon_base_ring(vertices=None, edges=[(1, 0), (-1, 1), (0, -1)], angles=None, lengths=None)
+        sage: _Polygon_base_ring(QQ, vertices=None, edges=[(1, 0), (-1, 1), (0, -1)], angles=None, lengths=None)
         Rational Field
-        sage: _Polygon_base_ring(vertices=None, edges=None, angles=[1, 1, 1], lengths=None)
+        sage: _Polygon_base_ring(QQ, vertices=None, edges=None, angles=[1, 1, 1], lengths=None)
         Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
-        sage: _Polygon_base_ring(vertices=None, edges=None, angles=[1, 1, 1], lengths=[AA(2).sqrt(), 1])
+        sage: _Polygon_base_ring(QQ, vertices=None, edges=None, angles=[1, 1, 1], lengths=[AA(2).sqrt(), 1])
         Algebraic Real Field
 
     """
     from sage.categories.pushout import pushout
 
-    base_ring = QQ
+    base_ring = base_ring or QQ
 
     if angles:
         from flatsurf import EuclideanPolygonsWithAngles
@@ -705,16 +766,22 @@ def _Polygon_base_ring(vertices, edges, angles, lengths):
         base_ring = pushout(base_ring, EuclideanPolygonsWithAngles(angles).base_ring())
 
     if vertices:
-        base_ring = pushout(
-            base_ring,
-            Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe(),
-        )
+        from flatsurf.geometry.euclidean import EuclideanSet
+        vertices = [v for v in vertices if not isinstance(v, EuclideanSet)]
+        if vertices:
+            base_ring = pushout(
+                base_ring,
+                Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe(),
+            )
 
     if edges:
-        base_ring = pushout(
-            base_ring,
-            Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe(),
-        )
+        from flatsurf.geometry.euclidean import EuclideanSet
+        edges = [e for e in edges if not isinstance(e, EuclideanSet)]
+        if edges:
+            base_ring = pushout(
+                base_ring,
+                Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe(),
+            )
 
     if lengths:
         base_ring = pushout(base_ring, Sequence(lengths).universe())

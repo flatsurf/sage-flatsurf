@@ -4776,6 +4776,8 @@ class HyperbolicConvexSet(SageObject):
         - ``self_on_left`` -- a boolean; whether this is the right action or
           the left action
 
+        TODO: Document that we cannot register actions in __init__ because this is a facade.
+
         EXAMPLES:
 
         We apply the Möbius transformation that sends `z` to `(1 + 2z)/(3 +
@@ -4799,7 +4801,7 @@ class HyperbolicConvexSet(SageObject):
             sage: assert p * (m0 * m1) == (p * m0) * m1
 
         """
-        # NOTE: it might have been preferable to implement a proper action on subsets
+        # TODO: it might have been preferable to implement a proper action on subsets
         # of the hyperbolic plane via sage.categories.action.Action. However, it does
         # not work in our context since subsets are (facade) parents.
         return self.apply_isometry(x, on_right=self_on_left)
