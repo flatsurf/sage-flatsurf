@@ -2731,11 +2731,10 @@ class EuclideanCircle(EuclideanFacade):
 
         """
         if ring is not None or geometry is not None:
-            self = (
-                self.parent()
-                .change_ring(ring, geometry=geometry)
-                .circle(self._center, radius_squared=self._radius_squared, check=False)
-            )
+            P = self.parent()
+            Q = P.change_ring(ring, geometry=geometry)
+            if P is not Q:
+                self = Q.circle(self._center, radius_squared=self._radius_squared, check=False)
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -3161,13 +3160,27 @@ class EuclideanPoint(EuclideanSet, Element):
             sage: p.change(oriented=False)
             (0, 0)
 
+        Ideal points::
+
+            sage: E.point(1, 0, 0).change_ring(AA)
+            [1:0:0]
+
+        TESTS:
+
+        Test that trivial changes do not trigger a copy::
+
+            sage: point = E.point(1, 0)
+            sage: point.change_ring(QQ) is point
+            True
+            sage: point.change(geometry=point.parent().geometry) is point
+            True
+
         """
         if ring is not None or geometry is not None:
-            self = (
-                self.parent()
-                .change_ring(ring, geometry=geometry)
-                .point(self._x, self._y)
-            )
+            P = self.parent()
+            Q = P.change_ring(ring, geometry=geometry)
+            if P is not Q:
+                self = Q.point(self._x, self._y, self._z)
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -3302,19 +3315,28 @@ class EuclideanLine(EuclideanFacade):
             sage: line.is_oriented()
             True
 
+
+        TESTS:
+
+        Test that trivial changes do not trigger a copy::
+
+            sage: line = E.line((0, 0), (1, 1))
+            sage: line.change_ring(AA) is line
+            True
+            sage: line.change(geometry=line.parent().geometry) is line
+            True
         """
         if ring is not None or geometry is not None:
-            self = (
-                self.parent()
-                .change_ring(ring, geometry=geometry)
-                .line(
+            P = self.parent()
+            Q = P.change_ring(ring, geometry=geometry)
+            if P is not Q:
+                self = Q.line(
                     self._a,
                     self._b,
                     self._c,
                     check=False,
                     oriented=self.is_oriented(),
                 )
-            )
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -3805,17 +3827,16 @@ class EuclideanSegment(EuclideanFacade):
 
     def change(self, ring=None, geometry=None, oriented=None):
         if ring is not None or geometry is not None:
-            self = (
-                self.parent()
-                .change_ring(ring, geometry=geometry)
-                .segment(
-                    self._line,
-                    self._start,
-                    self._end,
-                    check=False,
-                    oriented=self.is_oriented(),
-                )
-            )
+            P = self.parent()
+            Q = P.change_ring(ring, geometry=geometry)
+            if P is not Q:
+                self = Q.segment(
+                        self._line,
+                        self._start,
+                        self._end,
+                        check=False,
+                        oriented=self.is_oriented(),
+                    )
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -4286,10 +4307,11 @@ class EuclideanPolygon(EuclideanFacade):
 
     def change(self, ring=None, geometry=None, oriented=None):
         if ring is not None or geometry is not None:
-            self = (
-                self.parent()
-                .change_ring(ring, geometry=geometry)
-                .polygon(vertices=self.vertices()))
+            P = self.parent()
+            Q = P.change_ring(ring, geometry=geometry)
+            if P is not Q:
+                # TODO: this is not good enough to rebuild a polygon
+                self = Q.polygon(vertices=self.vertices())
 
         if oriented:
             raise ValueError("polygons cannot be oriented")
