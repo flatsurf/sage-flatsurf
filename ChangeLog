@@ -4,6 +4,15 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.7.4
+====================
+
+**Fixed:**
+
+* Fixed Windows installer to point to the new location for Ubuntu WSL images.
+
+
+
 v0.7.3
 ====================
 

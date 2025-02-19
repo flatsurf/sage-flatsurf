@@ -18108,8 +18108,8 @@ packages:
   - sphinx
 - pypi: .
   name: sage-flatsurf
-  version: 0.7.3
-  sha256: d0b1936201247e1fc4e58cfe95e1fe9045a27562fed7a37242471514ba5ea7bd
+  version: 0.7.4
+  sha256: ed486749de43a6358cb4f9dc3e45484207f0cadc0545cbba2e4e589cc680a87d
   requires_dist:
   - bidict
   - more-itertools
