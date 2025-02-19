@@ -3462,12 +3462,19 @@ class EuclideanLine(EuclideanFacade):
         return self.parent().point(-self._a / self._c, 0)
 
     def _apply_scalar(self, r):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane(QQ)
+            sage: E.line(1, 1, 1)
+            {1 + x + y = 0}
+            sage: 2 * E.line(1, 1, 1)
+            {2 + x + y = 0}
+        """
         if not r:
             return self.parent().point(0, 0)
-        elif r > 0:
-            return self
-        else:
-            return -self
+        return self.parent().line(self._a, self._b / r, self._c / r, oriented=self.is_oriented(), check=False)
 
     def _apply_similarity(self, g):
         A = self._a
