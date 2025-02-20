@@ -576,6 +576,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         return circle
 
+    # TODO: segment should accept the more straightforward syntax segment(finite_point_start, finite_point_end)
     def segment(
         self,
         line,
@@ -2098,15 +2099,15 @@ class EuclideanSet(SageObject):
 
             sage: right_ray = E.segment(line, start=(3, -2))
             sage: right_ray.apply_similarity(g)
-            Ray from (4, -3) in direction (-1/2, -5/2)
+            Ray from (4, -3) in direction (-1, -5)
             sage: g * right_ray
-            Ray from (4, -3) in direction (-1/2, -5/2)
+            Ray from (4, -3) in direction (-1, -5)
 
             sage: left_ray = E.segment(line, end=(3, -2))
             sage: left_ray.apply_similarity(g)
-            Ray to (4, -3) from direction (-1/2, -5/2)
+            Ray to (4, -3) from direction (-1, -5)
             sage: g * left_ray
-            Ray to (4, -3) from direction (-1/2, -5/2)
+            Ray to (4, -3) from direction (-1, -5)
 
         Note that the action does not apply on more complicated subsets than
         points due to SageMath limitations::
@@ -3639,7 +3640,7 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
 
     """
 
-    def direction(self):
+    def direction(self, normalization=None):
         r"""
         Return a vector pointing in the direction of this oriented line.
 
@@ -3650,9 +3651,15 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
             sage: line = E.line((0, 0), (1, 1))
             sage: line.direction()
             (1, 1)
+            sage: line = E.line((0, 0), (2, 2))
+            sage: line.direction()
+            (2, 2)
+            sage: line.direction(normalization="gcd")
+            (1, 1)
 
         """
-        return self.parent().vector_space()((self._c, -self._b))
+        a, b, c = self.equation(normalization=normalization)
+        return self.parent().vector_space()((c, -b))
 
     def ccw(self, other):
         # TODO: Check for intersection and make sure other is an oriented line. This is identical to geodesic ccw.
@@ -3892,10 +3899,12 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
             (0, 0) → (1, 0)
 
         """
+        # TODO: we reproduce the call in EuclideanLine._repr_, maybe this could be abstracted
+        d = self._line.direction(normalization=["gcd", None])
         if self._start is None:
-            return f"Ray to {self._end!r} from direction {self._line.direction()!r}"
+            return f"Ray to {self._end!r} from direction {d!r}"
         if self._end is None:
-            return f"Ray from {self._start!r} in direction {self._line.direction()!r}"
+            return f"Ray from {self._start!r} in direction {d!r}"
 
         return f"{self._start!r} → {self._end!r}"
 
