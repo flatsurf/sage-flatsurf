@@ -579,9 +579,9 @@ class Polygons(Category_over_base_ring):
                 sage: s = polygons.square()
                 sage: C = s.category()
                 sage: C
-                Category of convex simple euclidean rectangles over Rational Field
+                Category of facade convex simple euclidean rectangles over Rational Field
                 sage: C.change_ring(AA)
-                Category of convex simple euclidean rectangles over Algebraic Real Field
+                Category of facade convex simple euclidean rectangles over Algebraic Real Field
 
             """
             from sage.categories.category import JoinCategory
@@ -590,7 +590,7 @@ class Polygons(Category_over_base_ring):
                 from sage.categories.category import Category
 
                 return Category.join(
-                    [S.change_ring(ring) for S in self.super_categories()]
+                    [S.change_ring(ring) if isinstance(S, Category_over_base_ring) else S for S in self.super_categories()]
                 )
 
             # This is a hack to make the change ring of EuclideanPolygonsWithAngles subcategories work

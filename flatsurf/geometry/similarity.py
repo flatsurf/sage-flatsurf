@@ -277,28 +277,27 @@ class Similarity(MultiplicativeGroupElement):
             sage: g(p)
             Polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).category()
-            Category of convex simple euclidean polygons over Algebraic Real Field
+            Category of facade convex simple euclidean polygons over Algebraic Real Field
 
         """
+        # TODO: Remove the ring feature.
+        # TODO: This code is really odd. These things should be actions on the
+        # objects and not just randomly try to do stuff with whatever comes in.
         if ring is not None and ring not in Rings():
             raise TypeError("ring must be a ring")
 
-        from flatsurf.geometry.polygon import EuclideanPolygon
+        from flatsurf.geometry.euclidean import EuclideanPolygon
 
-        if isinstance(w, EuclideanPolygon) and w.is_convex():
-            if ring is None:
-                ring = self.parent().base_ring()
+        if isinstance(w, EuclideanPolygon):
+            if not self._sign.is_one():
+                raise ValueError("Similarity must be orientation preserving.")
 
-            from flatsurf import Polygon
+            parent = w.parent()
 
-            try:
-                return Polygon(vertices=[self(v) for v in w.vertices()], base_ring=ring)
-            except ValueError:
-                if not self._sign.is_one():
-                    raise ValueError("Similarity must be orientation preserving.")
+            if ring is not None:
+                parent = parent.change_ring(ring)
 
-                # Not sure why this would happen:
-                raise
+            return parent.polygon(vertices=[self(v) for v in w.vertices()])
 
         if ring is None:
             if self._sign.is_one():
@@ -387,7 +386,7 @@ class Similarity(MultiplicativeGroupElement):
     def __ne__(self, other):
         return not (self == other)
 
-    def matrix(self):
+    def matrix(self, projective=True):
         r"""
         Return the 3x3 matrix representative of this element
 
@@ -400,24 +399,33 @@ class Similarity(MultiplicativeGroupElement):
             [   1 -2/3    1]
             [-2/3   -1    1]
             [   0    0    1]
+            sage: S((1,-2/3,1,1,-1)).matrix(projective=False)
+            [   1 -2/3]
+            [-2/3   -1]
+
         """
         P = self.parent()
-        M = P._matrix_space_3x3()
         z = P._ring.zero()
         o = P._ring.one()
-        return M(
-            [
-                self._a,
-                -self._sign * self._b,
-                self._s,
-                self._b,
-                +self._sign * self._a,
-                self._t,
-                z,
-                z,
-                o,
-            ]
-        )
+
+        if projective:
+            M = P._matrix_space_3x3()
+            return M(
+                [
+                    self._a,
+                    -self._sign * self._b,
+                    self._s,
+                    self._b,
+                    +self._sign * self._a,
+                    self._t,
+                    z,
+                    z,
+                    o,
+                ]
+            )
+        else:
+            M = P._matrix_space_2x2()
+            return M([self._a, -self._sign * self._b, self._b, self._sign * self._a])
 
     def derivative(self):
         r"""

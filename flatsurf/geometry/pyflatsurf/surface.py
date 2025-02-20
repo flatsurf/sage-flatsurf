@@ -126,7 +126,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         from flatsurf.geometry.categories import TranslationSurfaces
 
-        category = TranslationSurfaces().FiniteType()
+        category = TranslationSurfaces().FiniteType().Compact()
         if flat_triangulation.hasBoundary():
             category = category.WithBoundary()
         else:

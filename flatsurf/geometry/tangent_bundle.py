@@ -430,7 +430,7 @@ class SimilaritySurfaceTangentVector:
                 if code:
                     codes.append(vertex)
                 label2, edge2 = s.opposite_edge(label, vertex)
-                der = der * s.edge_matrix(label2, edge2)
+                der = der * s.edge_matrix(label2, edge2, projective=False)
                 v1 = der * (-s.polygon(label2).edge(edge2))
                 label = label2
                 vertex = (edge2 + 1) % len(s.polygon(label2).vertices())
@@ -510,7 +510,7 @@ class SimilaritySurfaceTangentVector:
                     label2, edge2 = s.opposite_edge(label, previous_vertex)
                     if code:
                         codes.append(previous_vertex)
-                    der = der * s.edge_matrix(label2, edge2)
+                    der = der * s.edge_matrix(label2, edge2, projective=False)
                     label = label2
                     vertex = edge2
                     previous_vertex = (
