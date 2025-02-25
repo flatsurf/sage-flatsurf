@@ -3438,22 +3438,21 @@ class SimilaritySurfaces(SurfaceCategory):
 
                         checked.add((label, edge))
 
-                        # We do not call self.edge_matrix() since the surface might
-                        # have overridden this (just returning the identity matrix e.g.)
-                        # and we want to deduce the matrix from the attached polygon
-                        # edges instead.
-                        matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                            surface, label, edge, projective=True
-                        )
-
-                        if matrix[2, 0] or matrix[2, 1]:
-                            return False
+                        # TODO: double check that the it is ok to override the old implementation
+                        ## We do not call self.edge_matrix() since the surface might
+                        ## have overridden this (just returning the identity matrix e.g.)
+                        ## and we want to deduce the matrix from the attached polygon
+                        ## edges instead.
+                        # matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
+                        #     surface, label, edge, projective=True
+                        # )
+                        matrix = surface.edge_matrix(label, edge, projective=False)
 
                         if matrix[0, 0] == matrix[1, 1] and not matrix[1, 0] and not matrix[0, 1]:
                             continue
 
-                        a = AA(matrix[0, 0] / matrix[2, 2])
-                        b = AA(matrix[1, 0] / matrix[2, 2])
+                        a = AA(matrix[0, 0])
+                        b = AA(matrix[1, 0])
                         q = (a**2 + b**2).sqrt()
 
                         from flatsurf.geometry.euclidean import (
