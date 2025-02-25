@@ -50,11 +50,10 @@ class AbstractOrigami(OrientedSimilaritySurface):
 
         category &= TranslationSurfaces().WithoutBoundary().Connected()
 
-        finite = domain.is_finite()
-        if finite:
-            category &= category.FiniteType()
+        if domain.is_finite():
+            category = category.FiniteType().Compact()
         else:
-            category &= category.InfiniteType()
+            category = category.InfiniteType()
 
         from flatsurf.geometry.polygon import polygons
 

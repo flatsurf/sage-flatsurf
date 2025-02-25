@@ -445,9 +445,6 @@ class CubeSurf(OrientedSimilaritySurface):
     def is_mutable(self):
         return False
 
-    def is_compact(self):
-        return False
-
     def roots(self):
         return ((0, 0, IntegerModRing(3)(0)),)
 

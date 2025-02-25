@@ -265,7 +265,7 @@ class DilationSurfaces(SurfaceCategory):
             checked = set()
 
             for label in labels:
-                for edge in range(len(surface.polygon(label).vertices())):
+                for edge in range(len(surface.polygon(label).sides())):
                     cross = surface.opposite_edge(label, edge)
 
                     if cross is None:
@@ -276,15 +276,17 @@ class DilationSurfaces(SurfaceCategory):
 
                     checked.add((label, edge))
 
-                    # We do not call self.edge_matrix() since the surface might
-                    # have overridden this (just returning the identity matrix e.g.)
-                    # and we want to deduce the matrix from the attached polygon
-                    # edges instead.
-                    from flatsurf.geometry.categories import SimilaritySurfaces
-
-                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                        surface, label, edge
-                    )
+                    # TODO: double check that the it is ok to override the old implementation
+                    ## We do not call self.edge_matrix() since the surface might
+                    ## have overridden this (just returning the identity matrix e.g.)
+                    ## and we want to deduce the matrix from the attached polygon
+                    ## edges instead.
+                    # from flatsurf.geometry.categories import SimilaritySurfaces
+                    #
+                    # matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
+                    #     surface, label, edge, projective=False
+                    # )
+                    matrix = surface.edge_matrix(label, edge, projective=False)
 
                     if not matrix.is_diagonal():
                         return False

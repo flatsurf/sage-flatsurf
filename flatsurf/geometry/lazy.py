@@ -896,7 +896,7 @@ class LazyMutableOrientedSimilaritySurface(
         sage: p = T.polygon(0)
         sage: p
         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
-        sage: q = p * 2
+        sage: q = 2 * p
 
         sage: S.replace_polygon(0, q)
         Traceback (most recent call last):
@@ -962,11 +962,14 @@ class LazyMutableOrientedSimilaritySurface(
         self._ensure_polygon(label)
         return self._surface.replace_polygon(label, polygon)
 
-    def glue(self, x, y):
+    def glue(self, x, y, transformation=None):
         r"""
         Glue the (label, edge) pair ``x`` with the pair ``y`` in this surface.
 
         This unglues any existing gluings of these edges.
+
+        If ``transformation`` is provided, the gluing is done via the given
+        transformation.
 
         .. NOTE::
 
@@ -991,7 +994,7 @@ class LazyMutableOrientedSimilaritySurface(
              ((-1, 1), (0, 3)), ((-1, 2), (-2, 0)), ((-1, 3), (0, 1)), ((2, 0), (3, 2)), ((2, 1), (1, 3)), ((2, 2), (3, 0)), ((2, 3), (1, 1)), …)
 
         """
-        return self._surface.glue(x, y)
+        return self._surface.glue(x, y, transformation)
 
     def _ensure_gluings(self, label):
         r"""
@@ -1923,7 +1926,7 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
             sage: from flatsurf.geometry.chamanara import chamanara_surface
             sage: S = chamanara_surface(1/2)
             sage: S._to_reference_label(0)
-            (0, 1, 0)
+            (0, (1, 0))
 
         """
         return self._reference.labels()[label]
@@ -1936,7 +1939,7 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
 
             sage: from flatsurf.geometry.chamanara import chamanara_surface
             sage: S = chamanara_surface(1/2)
-            sage: S._from_reference_label((0, 1, 0))
+            sage: S._from_reference_label((0, (1, 0)))
             0
 
         """
