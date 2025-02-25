@@ -135,10 +135,7 @@ class PolygonalSurfaces(SurfaceCategory):
             if not self.is_finite_type():
                 return False
 
-            if all(polygon.is_compact() for polygon in self.polygons()):
-                return True
-
-            return super().is_compact()
+            return all(polygon.is_compact() for polygon in self.polygons())
 
         def is_triangulated(self, limit=None):
             r"""
