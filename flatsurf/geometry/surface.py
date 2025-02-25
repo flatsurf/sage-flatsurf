@@ -2508,6 +2508,12 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
         """
         return self._reference.opposite_edge(label, edge)
 
+    def edge_matrix(self, *args, **kwds):
+        r"""
+        Return the edge matrix used to glue the given edge.
+        """
+        return self._reference.edge_matrix(*args, **kwds).change_ring(self.base_ring())
+
     def change_ring(self, ring):
         r"""
         Return a copy of this surface whose polygons are defined over
