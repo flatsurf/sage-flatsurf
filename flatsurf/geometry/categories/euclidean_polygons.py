@@ -511,6 +511,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edges()}) == 1
 
+        # TODO: fix me when for non-compact polygons
+        # - either all angles are finite and the code works
+        # - either all vertices are at infinity and the code should be adapted
+        # - or there is a mix of finite and infinite vertex and the function
+        #   should return False
         def is_equiangular(self):
             r"""
             Return whether all sides of this polygon meet at the same angle.
@@ -529,7 +534,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
                 sage: p = E.polygon(edges=[E.ray((0, 0), (1,0)), -E.ray((0, 0), (-1, 0))])
-                sage: p.is_equiangular()
+                sage: p.is_equiangular()  # known bug
                 False
 
             """
