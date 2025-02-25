@@ -1104,7 +1104,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         from flatsurf.geometry.polygon import polygons
         return polygons.rectangle(width, height, parent=self, **kwargs)
 
-    def square(self, side, **kwargs):
+    def square(self, side=1, **kwargs):
         from flatsurf.geometry.polygon import polygons
         return polygons.square(side, parent=self, **kwargs)
 
@@ -3926,6 +3926,11 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
         # TODO: The EuclideanPlane should Model RP², so this should not be None but an ideal point.
         return self._end
 
+    def vector(self):
+        if self._start is None or self._end is None:
+            raise ValueError("infinite segment")
+        return self._end.vector() - self._start.vector()
+
     def __neg__(self):
         return self.parent().segment(-self._line, self._end, self._start, check=False)
 
@@ -4259,6 +4264,14 @@ class EuclideanPolygon(EuclideanFacade):
         return self._edges
 
     def corners(self):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: E = EuclideanPlane()
+            sage: p.corners()
+            [((0, 1), (0, 0), (1, 0)), ((-1, 0), None, (0, -1))]
+        """
         # TODO: Make this faster by caching?
         corners = []
 

@@ -1412,7 +1412,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.similarity import similarity_from_vectors
                 from sage.matrix.matrix_space import MatrixSpace
 
-                m2 = similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
+                m2 = similarity_from_vectors(u.vector(), (-v).vector(), MatrixSpace(self.base_ring(), 2))
                 if not projective:
                     m2.set_immutable()
                     return m2

@@ -1325,10 +1325,17 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 return False
 
-            def vertices(self):
+            def vertices(self, finite=None):
                 r"""
                 Return the equivalence classes of the vertices of the polygons
                 that make up this surface.
+
+                INPUT:
+
+                - ``finite`` -- ``None`` or boolean (default: ``None``);
+                  whether to return both finite and infinite vertices (when
+                  ``finite=None``), only finite vertices (when ``finite=True``)
+                  or only infinite ones (when ``finite=False``).
 
                 EXAMPLES::
 

@@ -229,7 +229,7 @@ class EuclideanPolygons(Category_over_base_ring):
             # return True
 
         @abstract_method
-        def vertices(self, marked_vertices=True):
+        def vertices(self, marked_vertices=True, finite=None):
             r"""
             Return the vertices of this polygon in counterclockwise order as
             vectors in the real plane.
@@ -239,6 +239,11 @@ class EuclideanPolygons(Category_over_base_ring):
             - ``marked_vertices`` -- a boolean (default: ``True``); whether to
               include marked vertices that are not actually corners of the
               polygon.
+
+            - ``finite`` -- a boolean or ``None`` (default: ``None``); whether to
+              return both finite and infinite vertices (when ``finite=None``),
+              only finite ones (when ``finite=True``) or only infinite ones
+              (when ``finite=False``).
 
             EXAMPLES::
 
