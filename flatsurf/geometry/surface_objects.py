@@ -41,6 +41,7 @@ from sage.structure.sage_object import SageObject
 from sage.structure.element import Element
 
 from flatsurf.geometry.similarity import SimilarityGroup
+from flatsurf.geometry.euclidean import EuclideanPoint
 
 
 def Singularity(similarity_surface, label, v, limit=None):
@@ -178,7 +179,10 @@ class SurfacePoint(Element):
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
-        point = (ring**2)(point)
+        if isinstance(point, EuclideanPoint):
+            point = point.vector()
+        else:
+            point = (ring**2)(point)
         point.set_immutable()
 
         position = polygon.get_point_position(point)
