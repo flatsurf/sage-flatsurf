@@ -5339,5 +5339,126 @@ def to_3x3_matrix(g):
             return matrix(g.base_ring(), 3, [g[0, 0], g[0, 1], g[0, 2], g[1, 0], g[1, 1], g[1, 2], 0, 0, 1])
         elif g.nrows() != 3 or g.ncols() != 3:
             raise ValueError(f"invalid element g={g}")
+    elif isinstance(g, (tuple, list)):
+        if len(g) == 4:
+            # 2 x 2 matrix?
+            return matrix(3, 3, [g[0], g[1], 0, g[2], g[3], 0, 0, 0, 1])
+        elif len(g) == 6:
+            # 2 x 3 matrix?
+            return matrix(3, 3, [g[0], g[1], g[2], g[3], g[4], g[5], 0, 0, 1])
+        elif len(g) == 9:
+            # 3 x 3 matrix?
+            return matrix(3, 3, g)
+        else:
+            return to_3x3_matrix(matrix(g))
+
     else:
         raise TypeError(f"invalid element g={g} of type={type(g)}")
+
+
+# TODO: this should be part of the category as it depends in which situation we are
+# TODO: we should also support things such as subsets of points, vectors, etc
+def find_similarity(s, t, unique=True):
+    r"""
+    Return a similarity mapping the Euclidean subset ``s`` to ``t``.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: from flatsurf.geometry.euclidean import find_similarity
+
+    Mapping segments::
+
+        sage: E = EuclideanPlane()
+        sage: s = E.segment(E.line((1, -1), (2, 3)), (1, -1), (2, 3))
+        sage: t = E.segment(E.line((0, 1), (2, 1)), (0, 1), (2, 1))
+        sage: m = find_similarity(s, t)
+        sage: m
+        [ 2/17  8/17  6/17]
+        [-8/17  2/17 27/17]
+        [    0     0     1]
+        sage: m * s == t
+        True
+
+    Mapping rays::
+
+        sage: E = EuclideanPlane()
+        sage: s = E.segment(E.line((1, -1), (2, 3)), (1, -1), None)
+        sage: t = E.segment(E.line((0, 1), (2, 1)), (0, 1), None)
+        sage: m = find_similarity(s, t, unique=True)
+        Traceback (most recent call last):
+        ...
+        ValueError: no unique similarity mapping Ray from (1, -1) in direction (1, 4) to Ray from (0, 1) in direction (1, 0)
+        sage: m = find_similarity(s, t, unique=False)
+        sage: m
+        [ 2  8  6]
+        [-8  2 11]
+        [ 0  0  1]
+        sage: m * s == t
+        True
+
+    """
+    from sage.matrix.matrix_space import MatrixSpace
+    E = s.parent()
+    R = E.base_ring()
+    M = MatrixSpace(R, 3)
+
+    if E != t.parent() or not isinstance(E, EuclideanPlane):
+        raise ValueError("invalid input")
+
+    if isinstance(s, EuclideanPoint):
+        if not isinstance(t, EuclideanPoint):
+            raise ValueError("no mapping")
+        if unique:
+            raise ValueError(f"no unique similarity mapping {s} to {t}")
+
+        raise NotImplementedError
+
+    elif isinstance(s, EuclideanSegment):
+        if not isinstance(t, EuclideanSegment) or (s.is_compact() != t.is_compact()):
+            raise ValueError(f"no similarity mapping {s} to {t}")
+
+        if not s.is_oriented() or not t.is_oriented():
+            raise NotImplementedError
+
+        transformation = M()
+        if s.is_compact():
+            assert t.is_compact()
+            u = s.end().vector() - s.start().vector()
+            v = t.end().vector() - t.start().vector()
+            sqnorm_u = u[0] * u[0] + u[1] * u[1]
+            cos_uv = (u[0] * v[0] + u[1] * v[1]) / sqnorm_u
+            sin_uv = (u[0] * v[1] - u[1] * v[0]) / sqnorm_u
+            transformation[0, 0] = cos_uv
+            transformation[1, 0] = sin_uv
+            transformation[0, 1] = -sin_uv
+            transformation[1, 1] = cos_uv
+            transformation[2, 2] = 1
+            transformation[:2, 2] = t.start().vector() - (transformation * s.start()).vector()
+            return transformation
+
+        elif not s.is_compact():
+            assert not t.is_compact()
+            if s._start is None != t._start is None:
+                raise ValueError(f"no oriented similarity mapping {s} to {t}")
+            if s._start is None:
+                s = -s
+                t = -t
+            if unique:
+                raise ValueError(f"no unique similarity mapping {s} to {t}")
+
+            u = s.direction()
+            v = t.direction()
+            cos_uv = u[0] * v[0] + u[1] * v[1]
+            sin_uv = u[0] * v[1] - u[1] * v[0]
+            transformation = M()
+            transformation[0, 0] = cos_uv
+            transformation[1, 0] = sin_uv
+            transformation[0, 1] = -sin_uv
+            transformation[1, 1] = cos_uv
+            transformation[2, 2] = 1
+            transformation[:2, 2] = t.start().vector() - (transformation * s.start()).vector()
+            return transformation
+
+    else:
+        raise NotImplementedError

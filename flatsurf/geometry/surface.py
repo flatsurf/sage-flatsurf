@@ -1300,7 +1300,7 @@ class MutableOrientedSimilaritySurface(
 
         super().remove_polygon(label)
 
-    def glue(self, x, y, transformation=None):
+    def glue(self, x, y, transformation=None, check=True):
         r"""
         Glue ``x`` and ``y`` with an (orientation preserving) similarity.
 
@@ -1317,10 +1317,11 @@ class MutableOrientedSimilaritySurface(
 
         EXAMPLES::
 
-            sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+            sage: from flatsurf import MutableOrientedSimilaritySurface, EuclideanPlane
 
+            sage: E = EuclideanPlane(QQ)
             sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(polygons.square())
+            sage: S.add_polygon(E.square())
             0
 
         Glue two opposite sides of the square to each other::
@@ -1341,17 +1342,33 @@ class MutableOrientedSimilaritySurface(
             sage: S
             Translation Surface in H_1(0) built from a square
 
+        One can also glue infinite polygons along ray. Though, doing so
+        requires to specify the gluing map as there is no unique similarity
+        mapping a ray to another::
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
+            sage: S.add_polygon(p)
+            0
+            sage: S.glue((0, 0), (0, 1), [0, -1, 1, 0])
+            sage: S.set_immutable()
+            sage: S
+            sage: S.category()
+            Category of connected without boundary finite type oriented rational cone surfaces
+            sage: S.is_compact()
+            False
+
         """
         if not self._mutable:
             raise Exception(
                 "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
             )
 
-        if x[0] not in self._polygons:
-            raise ValueError
+        if x[0] not in self._polygons or not (0 <= x[1] < len(self.polygon(x[0]).sides())):
+            raise ValueError("invalid input edge")
 
-        if y[0] not in self._polygons:
-            raise ValueError
+        if y[0] not in self._polygons or not (0 <= y[1] < len(self.polygon(y[0]).sides())):
+            raise ValueError("invalid input edge")
 
         self.unglue(*x)
         self.unglue(*y)
@@ -1369,31 +1386,20 @@ class MutableOrientedSimilaritySurface(
                     assert False, "did not find any root to eliminate"
 
         if transformation is None:
-            # TODO: check that x and y are finite segments so that gluing is unambiguous
-            transformation = MatrixSpace(self.base_ring(), 3)()
-            u = self.polygon(x[0]).edge(x[1])
-            v = -self.polygon(y[0]).edge(y[1])
-            sqnorm_u = u[0] * u[0] + u[1] * u[1]
-            cos_uv = (u[0] * v[0] + u[1] * v[1]) / sqnorm_u
-            sin_uv = (u[0] * v[1] - u[1] * v[0]) / sqnorm_u
-            transformation[0, 0] = cos_uv
-            transformation[1, 0] = sin_uv
-            transformation[0, 1] = -sin_uv
-            transformation[1, 1] = cos_uv
-            transformation[2, 2] = 1
-            transformation[:2, 2] = self.polygon(y[0]).vertex(y[1] + 1) - transformation[:2, :2] * self.polygon(x[0]).vertex(x[1])
+            from flatsurf.geometry.euclidean import find_similarity
+            transformation = find_similarity(self.polygon(x[0]).side(x[1]), -self.polygon(y[0]).side(y[1]), unique=True)
+            transformation.set_immutable()
         else:
             from flatsurf.geometry.euclidean import to_3x3_matrix
             transformation = to_3x3_matrix(transformation)
+            transformation.set_immutable()
 
-        transformation.set_immutable()
+        if check:
+            AB0 = self.polygon(x[0]).side(x[1])
+            AB1 = self.polygon(y[0]).side(y[1])
 
-        # TODO: clean this when there is an API to access the segments of the polygon
-        AB0 = self.polygon(x[0])._edges[x[1]]
-        AB1 = self.polygon(y[0])._edges[y[1]]
-
-        if transformation * AB0 != -AB1:
-            raise ValueError(f"invalid transformation AB0={AB0} AB1={AB1} transformation * AB0 = {transformation * AB0}")
+            if transformation * AB0 != -AB1:
+                raise ValueError(f"invalid transformation AB0={AB0} AB1={AB1} transformation * AB0 = {transformation * AB0}")
 
         inverse_transformation = transformation.inverse_of_unit()
         inverse_transformation.set_immutable()
@@ -1804,7 +1810,7 @@ class MutableOrientedSimilaritySurface(
 
             projective = False
 
-        if e < 0 or e >= len(self.polygon(p).vertices()):
+        if e < 0 or e >= len(self.polygon(p).sides()):
             raise ValueError("invalid edge index for this polygon")
 
         if projective:
