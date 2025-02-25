@@ -634,7 +634,7 @@ class MutablePolygonalSurface(Surface_base):
 
         """
         polygons = [
-            (-len(p.erase_marked_vertices().vertices()), p.describe_polygon())
+            (-len(p.erase_marked_vertices().sides()), p.describe_polygon())
             for p in self.polygons()
         ]
         polygons.sort()
@@ -1353,6 +1353,7 @@ class MutableOrientedSimilaritySurface(
             sage: S.glue((0, 0), (0, 1), [0, -1, 1, 0])
             sage: S.set_immutable()
             sage: S
+            Genus 0 Rational Cone Surface built from a non-convex infinite digon
             sage: S.category()
             Category of connected without boundary finite type oriented rational cone surfaces
             sage: S.is_compact()

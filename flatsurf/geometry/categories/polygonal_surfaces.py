@@ -1226,7 +1226,7 @@ class PolygonalSurfaces(SurfaceCategory):
                         return parent
 
                     for label, edge in self.edges():
-                        previous = (edge - 1) % len(self.polygon(label).vertices())
+                        previous = (edge - 1) % len(self.polygon(label).sides())
                         cross = self.opposite_edge(label, previous)
                         if cross is None:
                             continue

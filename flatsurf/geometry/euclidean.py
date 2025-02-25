@@ -4224,6 +4224,27 @@ class EuclideanPolygon(EuclideanFacade):
         except (AttributeError, NotImplementedError):
             return f"Polygon(edges={repr(list(self.sides()))})"
 
+    def marked_vertices(self):
+        r"""
+        Return vertices in the polygon whose angle is flat (ie equal to pi).
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: s = polygons.square()
+            sage: s.marked_vertices()
+            ()
+
+        """
+        ans = []
+        n = len(self._edges)
+        for i in range(n):
+            s0 = self._edges[i]
+            s1 = self._edges[(i + 1) % n]
+            if s0.end() is not None and ccw(s0.direction(), s1.direction()) == 0:
+                ans.append(s0.end())
+        return tuple(ans)
+
     def vertices(self, marked_vertices=True):
         # TODO: Expose as points as well.
         r"""
@@ -4269,6 +4290,7 @@ class EuclideanPolygon(EuclideanFacade):
 
             sage: from flatsurf import *
             sage: E = EuclideanPlane()
+            sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
             sage: p.corners()
             [((0, 1), (0, 0), (1, 0)), ((-1, 0), None, (0, -1))]
         """

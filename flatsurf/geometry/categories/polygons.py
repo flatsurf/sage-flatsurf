@@ -169,6 +169,8 @@ class Polygons(Category_over_base_ring):
         if augment_if("a", "degenerate"):
             return description
 
+        augment_if("an", "infinite")
+
         if num_edges == 3:
             if not augment_if("an", "equilateral", "equiangular"):
                 if not augment_if("an", "isosceles"):
@@ -315,14 +317,13 @@ class Polygons(Category_over_base_ring):
                 ('a', 'square', 'squares')
 
             """
-            marked_vertices = set(self.vertices()).difference(
-                self.vertices(marked_vertices=False)
-            )
+            marked_vertices = self.marked_vertices()
 
             if marked_vertices and self.area() != 0:
                 self = self.erase_marked_vertices()
 
             properties = {
+                "infinite": not self.is_compact(),
                 "degenerate": self.is_degenerate(),
                 "equilateral": self.is_equilateral(),
                 "equiangular": self.is_equiangular(),
@@ -330,7 +331,7 @@ class Polygons(Category_over_base_ring):
                 "marked_vertices": len(marked_vertices),
             }
 
-            if len(self.vertices()) == 3:
+            if len(self.sides()) == 3:
                 slopes = self.slopes(relative=True)
                 properties["right"] = any(slope[0] == 0 for slope in slopes)
 
@@ -342,7 +343,7 @@ class Polygons(Category_over_base_ring):
                     or is_parallel(slopes[1], slopes[2])
                 )
 
-            return Polygons._describe_polygon(len(self.vertices()), **properties)
+            return Polygons._describe_polygon(len(self.sides()), **properties)
 
         def _test_refined_category(self, **options):
             r"""

@@ -406,7 +406,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if self.area() == 0:
                 return True
 
-            if self.vertices() != self.vertices(marked_vertices=False):
+            if self.marked_vertices():
                 return True
 
             return False
@@ -424,8 +424,10 @@ class EuclideanPolygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons
-                sage: s = polygons.square()
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane()
+
+                sage: s = E.square()
                 sage: s.slopes()
                 [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
@@ -434,20 +436,25 @@ class EuclideanPolygons(Category_over_base_ring):
 
             A polygon with a marked point::
 
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2)])
+                sage: p = E.polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2)])
                 sage: p.slopes()
                 [(2, 0), (2, 0), (-2, 2), (-2, -2)]
                 sage: p.slopes(relative=True)
                 [(-4, 4), (4, 0), (-4, 4), (0, 8)]
 
+            An infinite polygon::
+
+                sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
+                sage: p.slopes(relative=True)
+                [(0, 1), (0, -1)]
+
             """
             if not relative:
-                return self.edges()
+                return [side.direction() for side in self.sides()]
 
             edges = [
-                (self.edge((e - 1) % len(self.vertices())), self.edge(e))
-                for e in range(len(self.vertices()))
+                (self.side(e - 1).direction(), self.side(e).direction())
+                for e in range(len(self.sides()))
             ]
 
             cos = [u.dot_product(v) for (u, v) in edges]
@@ -463,15 +470,25 @@ class EuclideanPolygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2)])
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane(QQ)
+                sage: p = E.polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2), (-2, 0)])
                 sage: p.erase_marked_vertices()
-                Polygon(vertices=[(0, 0), (4, 0), (2, 2)])
+                Polygon(vertices=[(4, 0), (2, 2), (-2, 0)])
+
+                sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
+                sage: p.erase_marked_vertices()
+                Polygon(edges=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
+
+                sage: p = E.polygon(edges=[(1, 0), E.ray((1,0), (1,0)), -E.ray((0, 1), (0, 1)), (0, -1)])
+                sage: p.erase_marked_vertices()  # not tested
 
             """
-            from flatsurf import Polygon
+            if not self.marked_vertices():
+                return self
 
-            return Polygon(vertices=self.vertices(marked_vertices=False))
+            # TODO: make a general implementation handling infinite sides
+            return self.parent().polygon(vertices=self.vertices(marked_vertices=False))
 
         def is_equilateral(self):
             r"""
@@ -485,6 +502,13 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
+            if all(not side.is_compact() for side in self.sides()):
+                # TODO: this case is ambiguous as there are half-infinite and bi-infinite sides
+                return True
+
+            if not all(side.is_compact() for side in self.sides()):
+                return False
+
             return len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edges()}) == 1
 
         def is_equiangular(self):
@@ -493,10 +517,20 @@ class EuclideanPolygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane()
+
+                sage: p = E.polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
                 sage: p.is_equiangular()
                 True
+
+                sage: p = E.polygon(edges=[E.line((0, 0), (1,0))])
+                sage: p.is_equiangular()
+                True
+
+                sage: p = E.polygon(edges=[E.ray((0, 0), (1,0)), -E.ray((0, 0), (-1, 0))])
+                sage: p.is_equiangular()
+                False
 
             """
             slopes = self.slopes(relative=True)
