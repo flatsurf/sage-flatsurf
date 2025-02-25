@@ -1284,8 +1284,8 @@ class MutableOrientedSimilaritySurface(
         # Overrides add_polygon from MutablePolygonalSurface
         label = super().add_polygon(polygon, label=label)
         assert label not in self._gluings
-        self._gluings[label] = [None] * len(polygon.vertices())
-        self._transformations[label] = [None] * len(polygon.vertices())
+        self._gluings[label] = [None] * len(polygon.sides())
+        self._transformations[label] = [None] * len(polygon.sides())
 
         if self._roots:
             self._roots = self._roots + (label,)
@@ -3006,7 +3006,7 @@ class ComponentLabels(LabeledCollection):
         while pending:
             label = pending.popleft()
 
-            for e in range(len(self._surface.polygon(label).vertices())):
+            for e in range(len(self._surface.polygon(label).sides())):
                 cross = self._surface.opposite_edge(label, e)
                 if cross is None:
                     continue
@@ -3239,7 +3239,7 @@ class Edges(LabeledSet):
 
     def __iter__(self):
         for label, polygon in zip(self._surface.labels(), self._surface.polygons()):
-            for edge in range(len(polygon.vertices())):
+            for edge in range(len(polygon.sides())):
                 yield (label, edge)
 
     def __contains__(self, x):

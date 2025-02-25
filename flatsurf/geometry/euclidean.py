@@ -4252,6 +4252,9 @@ class EuclideanPolygon(EuclideanFacade):
 
         return tuple(v.vector() for v in vertices)
 
+    def side(self, e):
+        return self._edges[e % len(self._edges)]
+
     def sides(self):
         return self._edges
 

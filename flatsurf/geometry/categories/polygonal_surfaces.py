@@ -1321,7 +1321,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 """
                 for label in self.labels():
-                    for edge in range(len(self.polygon(label).vertices())):
+                    for edge in range(len(self.polygon(label).sides())):
                         cross = self.opposite_edge(label, edge)
                         if cross is None:
                             return True

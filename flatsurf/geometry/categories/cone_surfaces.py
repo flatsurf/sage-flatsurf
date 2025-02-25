@@ -190,7 +190,7 @@ class ConeSurfaces(SurfaceCategory):
             checked = set()
 
             for label in labels:
-                for edge in range(len(surface.polygon(label).vertices())):
+                for edge in range(len(surface.polygon(label).sides())):
                     cross = surface.opposite_edge(label, edge)
 
                     if cross is None:

@@ -1397,7 +1397,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     projective = False
 
-                if e < 0 or e >= len(self.polygon(p).vertices()):
+                if e < 0 or e >= len(self.polygon(p).sides()):
                     raise ValueError("invalid edge index for this polygon")
 
                 op_edge = self.opposite_edge(p, e)
@@ -1405,8 +1405,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     return None
                 pp, ee = op_edge
 
-                u = self.polygon(p).edge(e)
-                v = self.polygon(pp).edge(ee)
+                u = self.polygon(p).side(e)
+                v = self.polygon(pp).side(ee)
 
                 # note the orientation, it is -v and not v
                 from flatsurf.geometry.similarity import similarity_from_vectors
@@ -3427,7 +3427,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 checked = set()
 
                 for label in labels:
-                    for edge in range(len(surface.polygon(label).vertices())):
+                    for edge in range(len(surface.polygon(label).sides())):
                         cross = surface.opposite_edge(label, edge)
 
                         if cross is None:
