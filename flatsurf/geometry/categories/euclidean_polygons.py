@@ -1590,6 +1590,94 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 return triangulation, bidict(outer_edges)
 
+            def flow_to_exit(self, point, direction):
+                r"""
+                Flow a point in the direction of holonomy until the point leaves the
+                polygon.  Note that ValueErrors may be thrown if the point is not in the
+                polygon, or if it is on the boundary and the holonomy does not point
+                into the polygon.
+
+                INPUT:
+
+                - ``point`` -- a point in the closure of the polygon (as a vector)
+
+                - ``holonomy`` -- direction of motion (a vector of non-zero length)
+
+                OUTPUT:
+
+                - The point in the boundary of the polygon where the trajectory exits
+
+                - a PolygonPosition object representing the combinatorial position of the stopping point
+                """
+                from flatsurf.geometry.polygon import PolygonPosition
+
+                V = self.base_ring().fraction_field() ** 2
+                if direction == V.zero():
+                    raise ValueError("Zero vector provided as direction.")
+                v0 = self.vertex(0)
+                for i in range(len(self.vertices())):
+                    e = self.edge(i)
+                    from sage.all import matrix
+
+                    m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
+                    try:
+                        ret = m.inverse() * (point - v0)
+                        s = ret[0]
+                        t = ret[1]
+                        # What if the matrix is non-invertible?
+
+                        # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
+                        # to the direction.
+
+                        # s is location it intersects on edge, t is the portion of the direction to reach this intersection
+                        if t > 0 and 0 <= s and s <= 1:
+                            # The ray passes through edge i.
+                            if s == 1:
+                                # exits through vertex i+1
+                                v0 = v0 + e
+                                return v0, PolygonPosition(
+                                    PolygonPosition.VERTEX,
+                                    vertex=(i + 1) % len(self.vertices()),
+                                )
+                            if s == 0:
+                                # exits through vertex i
+                                return v0, PolygonPosition(
+                                    PolygonPosition.VERTEX, vertex=i
+                                )
+                                # exits through vertex i
+                            # exits through interior of edge i
+                            prod = t * direction
+                            return point + prod, PolygonPosition(
+                                PolygonPosition.EDGE_INTERIOR, edge=i
+                            )
+                    except ZeroDivisionError:
+                        # Here we know the edge and the direction are parallel
+                        if ccw(e, point - v0) == 0:
+                            # In this case point lies on the edge.
+                            # We need to work out which direction to move in.
+                            from flatsurf.geometry.euclidean import is_parallel
+
+                            if (point - v0).is_zero() or is_parallel(e, point - v0):
+                                # exits through vertex i+1
+                                return self.vertex(i + 1), PolygonPosition(
+                                    PolygonPosition.VERTEX,
+                                    vertex=(i + 1) % len(self.vertices()),
+                                )
+                            else:
+                                # exits through vertex i
+                                return v0, PolygonPosition(
+                                    PolygonPosition.VERTEX, vertex=i
+                                )
+                        pass
+                    v0 = v0 + e
+                # Our loop has terminated. This can mean one of several errors...
+                pos = self.get_point_position(point)
+                if pos.is_outside():
+                    raise ValueError("Started with point outside polygon")
+                raise ValueError(
+                    "Point on boundary of polygon and direction not pointed into the polygon."
+                )
+
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""
             The subcategory of the simple convex Euclidean polygons.
@@ -1753,94 +1841,6 @@ class EuclideanPolygons(Category_over_base_ring):
                     return self.get_point_position(
                         point, translation=translation
                     ).is_inside()
-
-                def flow_to_exit(self, point, direction):
-                    r"""
-                    Flow a point in the direction of holonomy until the point leaves the
-                    polygon.  Note that ValueErrors may be thrown if the point is not in the
-                    polygon, or if it is on the boundary and the holonomy does not point
-                    into the polygon.
-
-                    INPUT:
-
-                    - ``point`` -- a point in the closure of the polygon (as a vector)
-
-                    - ``holonomy`` -- direction of motion (a vector of non-zero length)
-
-                    OUTPUT:
-
-                    - The point in the boundary of the polygon where the trajectory exits
-
-                    - a PolygonPosition object representing the combinatorial position of the stopping point
-                    """
-                    from flatsurf.geometry.polygon import PolygonPosition
-
-                    V = self.base_ring().fraction_field() ** 2
-                    if direction == V.zero():
-                        raise ValueError("Zero vector provided as direction.")
-                    v0 = self.vertex(0)
-                    for i in range(len(self.vertices())):
-                        e = self.edge(i)
-                        from sage.all import matrix
-
-                        m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
-                        try:
-                            ret = m.inverse() * (point - v0)
-                            s = ret[0]
-                            t = ret[1]
-                            # What if the matrix is non-invertible?
-
-                            # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
-                            # to the direction.
-
-                            # s is location it intersects on edge, t is the portion of the direction to reach this intersection
-                            if t > 0 and 0 <= s and s <= 1:
-                                # The ray passes through edge i.
-                                if s == 1:
-                                    # exits through vertex i+1
-                                    v0 = v0 + e
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                if s == 0:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                                    # exits through vertex i
-                                # exits through interior of edge i
-                                prod = t * direction
-                                return point + prod, PolygonPosition(
-                                    PolygonPosition.EDGE_INTERIOR, edge=i
-                                )
-                        except ZeroDivisionError:
-                            # Here we know the edge and the direction are parallel
-                            if ccw(e, point - v0) == 0:
-                                # In this case point lies on the edge.
-                                # We need to work out which direction to move in.
-                                from flatsurf.geometry.euclidean import is_parallel
-
-                                if (point - v0).is_zero() or is_parallel(e, point - v0):
-                                    # exits through vertex i+1
-                                    return self.vertex(i + 1), PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                else:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                            pass
-                        v0 = v0 + e
-                    # Our loop has terminated. This can mean one of several errors...
-                    pos = self.get_point_position(point)
-                    if pos.is_outside():
-                        raise ValueError("Started with point outside polygon")
-                    raise ValueError(
-                        "Point on boundary of polygon and direction not pointed into the polygon."
-                    )
 
                 def flow_map(self, direction):
                     r"""
