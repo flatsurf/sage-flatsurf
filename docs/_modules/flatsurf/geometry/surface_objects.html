@@ -1069,6 +1069,17 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SaddleConnection</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a saddle connection on a SimilaritySurface.</span>
+
+<span class="sd">    TESTS:</span>
+
+<span class="sd">    Verify that #259 has been resolved::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.surface_objects import SaddleConnection</span>
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">        sage: S = translation_surfaces.cathedral(1, 2)</span>
+<span class="sd">        sage: SaddleConnection(S, (1, 8), (0, -1))</span>
+<span class="sd">        Saddle connection in direction (0, -1) with start data (1, 8) and end data (1, 5)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>

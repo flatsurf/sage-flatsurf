@@ -1124,23 +1124,6 @@ polygon.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit">
-<span class="sig-name descname"><span class="pre">flow_to_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit" title="Link to this definition">¶</a></dt>
-<dd><p>Flow a <code class="docutils literal notranslate"><span class="pre">point</span></code> in the <code class="docutils literal notranslate"><span class="pre">direction</span></code> of holonomy until the
-point leaves the polygon or hits a vertex of the polygon.</p>
-<p>INPUT:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">point</span></code> – a point in the closure of the polygon (as a vector)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">holonomy</span></code> – direction of motion (a vector of non-zero length)</p></li>
-</ul>
-<p>OUTPUT:</p>
-<p>A pair consisting of the point on the boundary where the
-flow ended (as a vector) and a
-<a class="reference internal" href="../polygon.html#flatsurf.geometry.polygon.PolygonPosition" title="flatsurf.geometry.polygon.PolygonPosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">geometry.polygon.PolygonPosition</span></code></a> object
-describing the combinatorial position of that point.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate">
 <span class="sig-name descname"><span class="pre">is_half_translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certificate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether <code class="docutils literal notranslate"><span class="pre">other</span></code> is a translate or half-translate of <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
@@ -1375,6 +1358,23 @@ uniform subdivision:</p>
 <p>If you want to add functionality to all polygons, independent of
 implementation, you probably want to put it here.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.flow_to_exit">
+<span class="sig-name descname"><span class="pre">flow_to_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.Simple.ParentMethods.flow_to_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.flow_to_exit" title="Link to this definition">¶</a></dt>
+<dd><p>Flow a <code class="docutils literal notranslate"><span class="pre">point</span></code> in the <code class="docutils literal notranslate"><span class="pre">direction</span></code> of holonomy until the
+point leaves the polygon or hits a vertex of the polygon.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">point</span></code> – a point in the closure of the polygon (as a vector)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">holonomy</span></code> – direction of motion (a vector of non-zero length)</p></li>
+</ul>
+<p>OUTPUT:</p>
+<p>A pair consisting of the point on the boundary where the
+flow ended (as a vector) and a
+<a class="reference internal" href="../polygon.html#flatsurf.geometry.polygon.PolygonPosition" title="flatsurf.geometry.polygon.PolygonPosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">geometry.polygon.PolygonPosition</span></code></a> object
+describing the combinatorial position of that point.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulate">
 <span class="sig-name descname"><span class="pre">triangulate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.Simple.ParentMethods.triangulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulate" title="Link to this definition">¶</a></dt>
 <dd><p>Return a triangulation of this polygon.</p>
@@ -1604,7 +1604,6 @@ the polygons.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.find_separatrix"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.find_separatrix()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.flow()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_map"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.flow_map()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_translate"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.is_translate()</span></code></a></li>
@@ -1616,6 +1615,7 @@ the polygons.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.flow_to_exit"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.ParentMethods.flow_to_exit()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulate"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.ParentMethods.triangulate()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.ParentMethods.triangulation()</span></code></a></li>
 </ul>
