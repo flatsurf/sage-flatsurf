@@ -1590,6 +1590,141 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 return triangulation, bidict(outer_edges)
 
+            def flow_to_exit(self, point, direction):
+                r"""
+                Flow a ``point`` in the ``direction`` of holonomy until the
+                point leaves the polygon or hits a vertex of the polygon.
+
+                INPUT:
+
+                - ``point`` -- a point in the closure of the polygon (as a vector)
+
+                - ``holonomy`` -- direction of motion (a vector of non-zero length)
+
+                OUTPUT:
+
+                A pair consisting of the point on the boundary where the
+                flow ended (as a vector) and a
+                :class:`.geometry.polygon.PolygonPosition` object
+                describing the combinatorial position of that point.
+
+                TESTS::
+
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
+                    sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
+                    ((2, 3), point positioned on vertex 6 of polygon)
+                    sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
+                    ((1, 1), point positioned on vertex 9 of polygon)
+
+                    sage: P.flow_to_exit(vector((2, 1)), vector((0, AA(2).sqrt())))
+                    doctest:warning
+                    ...
+                    UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. Instead, ...
+                    ((2, 3), point positioned on vertex 6 of polygon)
+
+                """
+                V = self.base_ring() ** 2
+                try:
+                    point = V(point)
+                except Exception:
+                    import warnings
+
+                    warnings.warn(
+                        "point must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. "
+                        "Instead, change_ring() your polygon to a ring that contains the coordinates of point."
+                    )
+
+                try:
+                    direction = V(direction)
+                except Exception:
+                    import warnings
+
+                    warnings.warn(
+                        "direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. "
+                        "Instead, change_ring() your polygon to a ring that contains the coordinates of direction."
+                    )
+
+                if not direction:
+                    raise ValueError("direction must not be zero")
+
+                vertices = self.vertices()
+
+                # Intersect the ray from the point in direction with each
+                # side of the polygon.
+                intersections = []
+
+                for v in range(len(vertices)):
+                    segment = vertices[v], vertices[(v + 1) % len(vertices)]
+
+                    from flatsurf.geometry.euclidean import ray_segment_intersection
+
+                    intersection = ray_segment_intersection(point, direction, segment)
+                    if intersection is None:
+                        continue
+
+                    if isinstance(intersection, tuple):
+                        # The ray and the segment overlap in a segment.
+                        if intersection[0] == point:
+                            # The ray starts on this side of the polygon
+                            # and is parallel to the side.
+                            intersection = intersection[1]
+                        else:
+                            # The ray hits one vertex of this side and is
+                            # then parallel to the side.
+                            # We could also "continue" here since the
+                            # previous side would handle this case.
+                            intersection = intersection[0]
+
+                        from flatsurf.geometry.polygon import PolygonPosition
+
+                        position = PolygonPosition(
+                            PolygonPosition.VERTEX,
+                            vertex=(
+                                v
+                                if intersection == vertices[v]
+                                else (v + 1) % len(vertices)
+                            ),
+                        )
+
+                        intersections.append((intersection, position))
+                        continue
+
+                    # The ray and the segment intersect in a point.
+                    if intersection == point:
+                        # But that's just the starting point of the ray.
+                        continue
+
+                    intersections.append((intersection, None))
+
+                if not intersections:
+                    if self.get_point_position(point).is_outside():
+                        raise ValueError("Cannot flow from point outside of polygon")
+
+                    raise ValueError(
+                        "Cannot flow from point on boundary if direction points out of the polygon"
+                    )
+
+                class Quotient:
+                    def __init__(self, num, den):
+                        self.num = num
+                        self.den = den
+
+                    def __lt__(self, other):
+                        # Note that denominators in time_on_ray are always positive.
+                        return self.num * other.den < other.num * self.den
+
+                from flatsurf.geometry.euclidean import time_on_ray
+
+                intersection, position = min(
+                    intersections,
+                    key=lambda intersection: Quotient(
+                        *time_on_ray(point, direction, intersection[0])
+                    ),
+                )
+
+                return intersection, position or self.get_point_position(intersection)
+
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""
             The subcategory of the simple convex Euclidean polygons.
@@ -1753,122 +1888,6 @@ class EuclideanPolygons(Category_over_base_ring):
                     return self.get_point_position(
                         point, translation=translation
                     ).is_inside()
-
-                def flow_to_exit(self, point, direction):
-                    r"""
-                    Flow a ``point`` in the ``direction`` of holonomy until the
-                    point leaves the polygon or hits a vertex of the polygon.
-
-                    INPUT:
-
-                    - ``point`` -- a point in the closure of the polygon (as a vector)
-
-                    - ``holonomy`` -- direction of motion (a vector of non-zero length)
-
-                    OUTPUT:
-
-                    A pair consisting of the point on the boundary where the
-                    flow ended (as a vector) and a
-                    :class:`.geometry.polygon.PolygonPosition` object
-                    describing the combinatorial position of that point.
-
-                    TESTS::
-
-                        sage: from flatsurf import Polygon
-                        sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
-                        sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
-                        ((2, 3), point positioned on vertex 6 of polygon)
-                        sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
-                        ((1, 0), point positioned on vertex 0 of polygon)
-
-                        sage: P.flow_to_exit(vector((2, 1)), vector((0, AA(2).sqrt())))
-                        doctest:warning
-                        ...
-                        UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. Instead, ...
-                        ((2, 3), point positioned on vertex 6 of polygon)
-
-                    """
-                    V = self.base_ring() ** 2
-                    try:
-                        point = V(point)
-                    except Exception:
-                        import warnings
-
-                        warnings.warn(
-                            "point must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. "
-                            "Instead, change_ring() your polygon to a ring that contains the coordinates of point."
-                        )
-
-                    try:
-                        direction = V(direction)
-                    except Exception:
-                        import warnings
-
-                        warnings.warn(
-                            "direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. "
-                            "Instead, change_ring() your polygon to a ring that contains the coordinates of direction."
-                        )
-
-                    if not direction:
-                        raise ValueError("direction must not be zero")
-
-                    vertices = self.vertices()
-
-                    # Intersect the ray from the point in direction with each
-                    # side of the polygon.
-                    # Note: to make this work in the non-convex case, instead
-                    # of returning the first hit, these candidates could be
-                    # sorted and the one closest to the point returned.
-                    for v in range(len(vertices)):
-                        segment = vertices[v], vertices[(v + 1) % len(vertices)]
-
-                        from flatsurf.geometry.euclidean import ray_segment_intersection
-
-                        intersection = ray_segment_intersection(
-                            point, direction, segment
-                        )
-                        if intersection is None:
-                            continue
-
-                        if isinstance(intersection, tuple):
-                            # The ray and the segment overlap in a segment.
-                            if intersection[0] == point:
-                                # The ray starts on this side of the polygon
-                                # and is parallel to the side.
-                                intersection = intersection[1]
-                            else:
-                                # The ray hits one vertex of this side and is
-                                # then parallel to the side.
-                                # We could also "continue" here since the
-                                # previous side would handle this case.
-                                intersection = intersection[0]
-
-                            from flatsurf.geometry.polygon import PolygonPosition
-
-                            position = PolygonPosition(
-                                PolygonPosition.VERTEX,
-                                vertex=(
-                                    v
-                                    if intersection == vertices[v]
-                                    else (v + 1) % len(vertices)
-                                ),
-                            )
-
-                            return intersection, position
-
-                        # The ray and the segment intersect in a point.
-                        if intersection == point:
-                            # But that's just the starting point of the ray.
-                            continue
-
-                        return intersection, self.get_point_position(intersection)
-
-                    if self.get_point_position(point).is_outside():
-                        raise ValueError("Cannot flow from point outside of polygon")
-
-                    raise ValueError(
-                        "Cannot flow from point on boundary if direction points out of the polygon"
-                    )
 
                 def flow_map(self, direction):
                     r"""
