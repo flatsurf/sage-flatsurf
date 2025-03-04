@@ -115,9 +115,9 @@ class GraphicalStraightLineTrajectory:
         .. jupyter-execute::
 
             sage: from flatsurf import similarity_surfaces
-            sage: s = similarity_surfaces.example()
-            sage: gs = s.graphical_surface()
             sage: K.<sqrt2>=NumberField(x^2-2,embedding=1)
+            sage: s = similarity_surfaces.example().change_ring(K)
+            sage: gs = s.graphical_surface()
             sage: v = s.tangent_vector(0, (1,-1), (sqrt2,-1),ring=K)
             sage: traj = v.straight_line_trajectory()
             sage: traj.flow(100)

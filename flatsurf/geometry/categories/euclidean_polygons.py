@@ -1756,10 +1756,8 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 def flow_to_exit(self, point, direction):
                     r"""
-                    Flow a point in the direction of holonomy until the point leaves the
-                    polygon.  Note that ValueErrors may be thrown if the point is not in the
-                    polygon, or if it is on the boundary and the holonomy does not point
-                    into the polygon.
+                    Flow a ``point`` in the ``direction`` of holonomy until the
+                    point leaves the polygon or hits a vertex of the polygon.
 
                     INPUT:
 
@@ -1769,77 +1767,88 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     OUTPUT:
 
-                    - The point in the boundary of the polygon where the trajectory exits
+                    A pair consisting of the point on the boundary where the
+                    flow ended (as a vector) and a :class:`PolygonPosition`
+                    object describing the combinatorial position of that point.
 
-                    - a PolygonPosition object representing the combinatorial position of the stopping point
+                    TESTS::
+
+                        sage: from flatsurf import Polygon
+                        sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
+                        sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
+                        ((2, 3), point positioned on vertex 6 of polygon)
+                        sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
+                        ((1, 0), point positioned on vertex 0 of polygon)
+
+                        sage: P.flow_to_exit(vector((2, 1)), vector((0, AA(2).sqrt())))
+                        doctest:warning
+                        ...
+                        UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. Instead, change_ring() your polygon to a ring that contains the coordinates of direction.
+                        ((2, 3), point positioned on vertex 6 of polygon)
+
                     """
-                    from flatsurf.geometry.polygon import PolygonPosition
+                    V = self.base_ring()**2
+                    try:
+                        point = V(point)
+                    except Exception:
+                        import warnings
+                        warnings.warn("point must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. Instead, change_ring() your polygon to a ring that contains the coordinates of point.")
 
-                    V = self.base_ring().fraction_field() ** 2
-                    if direction == V.zero():
-                        raise ValueError("Zero vector provided as direction.")
-                    v0 = self.vertex(0)
-                    for i in range(len(self.vertices())):
-                        e = self.edge(i)
-                        from sage.all import matrix
+                    try:
+                        direction = V(direction)
+                    except Exception:
+                        import warnings
+                        warnings.warn("direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. Instead, change_ring() your polygon to a ring that contains the coordinates of direction.")
 
-                        m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
-                        try:
-                            ret = m.inverse() * (point - v0)
-                            s = ret[0]
-                            t = ret[1]
-                            # What if the matrix is non-invertible?
+                    if not direction:
+                        raise ValueError("direction must not be zero")
 
-                            # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
-                            # to the direction.
+                    vertices = self.vertices()
 
-                            # s is location it intersects on edge, t is the portion of the direction to reach this intersection
-                            if t > 0 and 0 <= s and s <= 1:
-                                # The ray passes through edge i.
-                                if s == 1:
-                                    # exits through vertex i+1
-                                    v0 = v0 + e
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                if s == 0:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                                    # exits through vertex i
-                                # exits through interior of edge i
-                                prod = t * direction
-                                return point + prod, PolygonPosition(
-                                    PolygonPosition.EDGE_INTERIOR, edge=i
-                                )
-                        except ZeroDivisionError:
-                            # Here we know the edge and the direction are parallel
-                            if ccw(e, point - v0) == 0:
-                                # In this case point lies on the edge.
-                                # We need to work out which direction to move in.
-                                from flatsurf.geometry.euclidean import is_parallel
+                    # Intersect the ray from the point in direction with each
+                    # side of the polygon.
+                    # Note: to make this work in the non-convex case, instead
+                    # of returning the first hit, these candidates could be
+                    # sorted and the one closest to the point returned.
+                    for v in range(len(vertices)):
+                        segment = vertices[v], vertices[(v + 1) % len(vertices)]
 
-                                if (point - v0).is_zero() or is_parallel(e, point - v0):
-                                    # exits through vertex i+1
-                                    return self.vertex(i + 1), PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                else:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                            pass
-                        v0 = v0 + e
-                    # Our loop has terminated. This can mean one of several errors...
-                    pos = self.get_point_position(point)
-                    if pos.is_outside():
-                        raise ValueError("Started with point outside polygon")
+                        from flatsurf.geometry.euclidean import ray_segment_intersection
+
+                        intersection = ray_segment_intersection(point, direction, segment)
+                        if intersection is None:
+                            continue
+
+                        if isinstance(intersection, tuple):
+                            # The ray and the segment overlap in a segment.
+                            if intersection[0] == point:
+                                # The ray starts on this side of the polygon
+                                # and is parallel to the side.
+                                intersection = intersection[1]
+                            else:
+                                # The ray hits one vertex of this side and is
+                                # then parallel to the side.
+                                # We could also "continue" here since the
+                                # previous side would handle this case.
+                                intersection = intersection[0]
+
+                            from flatsurf.geometry.polygon  import PolygonPosition
+                            position = PolygonPosition(PolygonPosition.VERTEX, vertex=v if intersection == vertices[v] else (v + 1) % len(vertices))
+
+                            return intersection, position
+
+                        # The ray and the segment intersect in a point.
+                        if intersection == point:
+                            # But that's just the starting point of the ray.
+                            continue
+
+                        return intersection, self.get_point_position(intersection)
+
+                    if self.get_point_position(point).is_outside():
+                        raise ValueError("Cannot flow from point outside of polygon")
+
                     raise ValueError(
-                        "Point on boundary of polygon and direction not pointed into the polygon."
+                        "Cannot flow from point on boundary if direction points out of the polygon"
                     )
 
                 def flow_map(self, direction):
