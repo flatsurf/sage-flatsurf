@@ -1768,8 +1768,9 @@ class EuclideanPolygons(Category_over_base_ring):
                     OUTPUT:
 
                     A pair consisting of the point on the boundary where the
-                    flow ended (as a vector) and a :class:`PolygonPosition`
-                    object describing the combinatorial position of that point.
+                    flow ended (as a vector) and a
+                    :class:`.geometry.polygon.PolygonPosition` object
+                    describing the combinatorial position of that point.
 
                     TESTS::
 
