@@ -353,7 +353,7 @@ class SimilaritySurfaceTangentVector:
 
             sage: from flatsurf import translation_surfaces
 
-            sage: s = translation_surfaces.square_torus()
+            sage: s = translation_surfaces.square_torus().change_ring(AA)
             sage: v = s.tangent_vector(0, (0,0), (1,1))
             sage: v.straight_line_trajectory()
             Straight line trajectory made of 1 segments from (0, 0) in polygon 0 to (1, 1) in polygon 0
@@ -363,7 +363,7 @@ class SimilaritySurfaceTangentVector:
             sage: l.is_saddle_connection()
             True
 
-            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()), ring=AA)
+            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))
             sage: l = v.straight_line_trajectory()
             sage: l.flow(20)
             sage: l.segment(20)
