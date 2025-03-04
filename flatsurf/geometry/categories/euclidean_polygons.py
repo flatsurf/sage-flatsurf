@@ -1783,22 +1783,30 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: P.flow_to_exit(vector((2, 1)), vector((0, AA(2).sqrt())))
                         doctest:warning
                         ...
-                        UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. Instead, change_ring() your polygon to a ring that contains the coordinates of direction.
+                        UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf.Instead, ...
                         ((2, 3), point positioned on vertex 6 of polygon)
 
                     """
-                    V = self.base_ring()**2
+                    V = self.base_ring() ** 2
                     try:
                         point = V(point)
                     except Exception:
                         import warnings
-                        warnings.warn("point must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. Instead, change_ring() your polygon to a ring that contains the coordinates of point.")
+
+                        warnings.warn(
+                            "point must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. "
+                            "Instead, change_ring() your polygon to a ring that contains the coordinates of point."
+                        )
 
                     try:
                         direction = V(direction)
                     except Exception:
                         import warnings
-                        warnings.warn("direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. Instead, change_ring() your polygon to a ring that contains the coordinates of direction.")
+
+                        warnings.warn(
+                            "direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. "
+                            "Instead, change_ring() your polygon to a ring that contains the coordinates of direction."
+                        )
 
                     if not direction:
                         raise ValueError("direction must not be zero")
@@ -1815,7 +1823,9 @@ class EuclideanPolygons(Category_over_base_ring):
 
                         from flatsurf.geometry.euclidean import ray_segment_intersection
 
-                        intersection = ray_segment_intersection(point, direction, segment)
+                        intersection = ray_segment_intersection(
+                            point, direction, segment
+                        )
                         if intersection is None:
                             continue
 
@@ -1832,8 +1842,16 @@ class EuclideanPolygons(Category_over_base_ring):
                                 # previous side would handle this case.
                                 intersection = intersection[0]
 
-                            from flatsurf.geometry.polygon  import PolygonPosition
-                            position = PolygonPosition(PolygonPosition.VERTEX, vertex=v if intersection == vertices[v] else (v + 1) % len(vertices))
+                            from flatsurf.geometry.polygon import PolygonPosition
+
+                            position = PolygonPosition(
+                                PolygonPosition.VERTEX,
+                                vertex=(
+                                    v
+                                    if intersection == vertices[v]
+                                    else (v + 1) % len(vertices)
+                                ),
+                            )
 
                             return intersection, position
 
