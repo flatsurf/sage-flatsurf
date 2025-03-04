@@ -1784,7 +1784,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: P.flow_to_exit(vector((2, 1)), vector((0, AA(2).sqrt())))
                         doctest:warning
                         ...
-                        UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf.Instead, ...
+                        UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. Instead, ...
                         ((2, 3), point positioned on vertex 6 of polygon)
 
                     """
@@ -1795,7 +1795,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         import warnings
 
                         warnings.warn(
-                            "point must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. "
+                            "point must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. "
                             "Instead, change_ring() your polygon to a ring that contains the coordinates of point."
                         )
 
@@ -1805,7 +1805,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         import warnings
 
                         warnings.warn(
-                            "direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might function correctly, it will be an error in a future version of sage-flatsurf. "
+                            "direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. "
                             "Instead, change_ring() your polygon to a ring that contains the coordinates of direction."
                         )
 
