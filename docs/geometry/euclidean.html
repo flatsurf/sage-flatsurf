@@ -631,6 +631,33 @@ the returned coordinates have no denominator and no non-unit gcd.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.euclidean.ray_segment_intersection">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.euclidean.</span></span><span class="sig-name descname"><span class="pre">ray_segment_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/euclidean.html#ray_segment_intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.euclidean.ray_segment_intersection" title="Link to this definition">¶</a></dt>
+<dd><p>Return the intersection of the ray from <code class="docutils literal notranslate"><span class="pre">p</span></code> in <code class="docutils literal notranslate"><span class="pre">direction</span></code> with
+<code class="docutils literal notranslate"><span class="pre">segment</span></code>.</p>
+<p>If the segment and the ray intersect in a point, return that point as a
+vector.</p>
+<p>If the segment and the ray overlap in a segment, return the end points of
+that segment (in order.)</p>
+<p>If the segment and the ray do not intersect, return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">ray_segment_intersection</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">V</span> <span class="o">=</span> <span class="n">QQ</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">ray_segment_intersection</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ray_segment_intersection</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ray_segment_intersection</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))))</span>
+<span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ray_segment_intersection</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))))</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ray_segment_intersection</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.euclidean.slope">
 <span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.euclidean.</span></span><span class="sig-name descname"><span class="pre">slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/euclidean.html#slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.euclidean.slope" title="Link to this definition">¶</a></dt>
 <dd><p>Return either <code class="docutils literal notranslate"><span class="pre">1</span></code> (positive slope) or <code class="docutils literal notranslate"><span class="pre">-1</span></code> (negative slope).</p>
@@ -713,6 +740,40 @@ infinitesimally.</p>
 </div>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.euclidean.time_on_ray">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.euclidean.</span></span><span class="sig-name descname"><span class="pre">time_on_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/euclidean.html#time_on_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.euclidean.time_on_ray" title="Link to this definition">¶</a></dt>
+<dd><p>Return at what time the ray from point <code class="docutils literal notranslate"><span class="pre">p</span></code> in <code class="docutils literal notranslate"><span class="pre">direction</span></code> hits <code class="docutils literal notranslate"><span class="pre">q</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">p</span></code> – a point in the Euclidean plane as a vector</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code> – a direction in the Euclidean plane as a vector</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">q</span></code> – a point in the Euclidean plane that is on the ray, as a vector</p></li>
+</ul>
+<p>OUTPUT:</p>
+<p>A tuple <span class="math notranslate nohighlight">\((n, d)\)</span> with <span class="math notranslate nohighlight">\(d &gt; 0\)</span> such that <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">=</span> <span class="pre">p</span> <span class="pre">+</span> <span class="pre">n/d</span> <span class="pre">*</span> <span class="pre">direction</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">time_on_ray</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">V</span> <span class="o">=</span> <span class="n">QQ</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">time_on_ray</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">time_on_ray</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">time_on_ray</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that inputs are not checked for validity, so when <code class="docutils literal notranslate"><span class="pre">q</span></code> is not on the
+ray, the output is nonsensical:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">time_on_ray</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">V</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
         </article>
@@ -781,8 +842,10 @@ infinitesimally.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.is_segment_intersecting"><code class="docutils literal notranslate"><span class="pre">is_segment_intersecting()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.line_intersection"><code class="docutils literal notranslate"><span class="pre">line_intersection()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.projectivization"><code class="docutils literal notranslate"><span class="pre">projectivization()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.euclidean.ray_segment_intersection"><code class="docutils literal notranslate"><span class="pre">ray_segment_intersection()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.slope"><code class="docutils literal notranslate"><span class="pre">slope()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.solve"><code class="docutils literal notranslate"><span class="pre">solve()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.euclidean.time_on_ray"><code class="docutils literal notranslate"><span class="pre">time_on_ray()</span></code></a></li>
 </ul>
 </li>
 </ul>

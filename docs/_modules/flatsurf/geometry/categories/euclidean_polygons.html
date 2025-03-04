@@ -2223,10 +2223,8 @@
 <a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit">[docs]</a>
                 <span class="k">def</span><span class="w"> </span><span class="nf">flow_to_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                    Flow a point in the direction of holonomy until the point leaves the</span>
-<span class="sd">                    polygon.  Note that ValueErrors may be thrown if the point is not in the</span>
-<span class="sd">                    polygon, or if it is on the boundary and the holonomy does not point</span>
-<span class="sd">                    into the polygon.</span>
+<span class="sd">                    Flow a ``point`` in the ``direction`` of holonomy until the</span>
+<span class="sd">                    point leaves the polygon or hits a vertex of the polygon.</span>
 
 <span class="sd">                    INPUT:</span>
 
@@ -2236,77 +2234,107 @@
 
 <span class="sd">                    OUTPUT:</span>
 
-<span class="sd">                    - The point in the boundary of the polygon where the trajectory exits</span>
+<span class="sd">                    A pair consisting of the point on the boundary where the</span>
+<span class="sd">                    flow ended (as a vector) and a</span>
+<span class="sd">                    :class:`.geometry.polygon.PolygonPosition` object</span>
+<span class="sd">                    describing the combinatorial position of that point.</span>
 
-<span class="sd">                    - a PolygonPosition object representing the combinatorial position of the stopping point</span>
+<span class="sd">                    TESTS::</span>
+
+<span class="sd">                        sage: from flatsurf import Polygon</span>
+<span class="sd">                        sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])</span>
+<span class="sd">                        sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))</span>
+<span class="sd">                        ((2, 3), point positioned on vertex 6 of polygon)</span>
+<span class="sd">                        sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))</span>
+<span class="sd">                        ((1, 0), point positioned on vertex 0 of polygon)</span>
+
+<span class="sd">                        sage: P.flow_to_exit(vector((2, 1)), vector((0, AA(2).sqrt())))</span>
+<span class="sd">                        doctest:warning</span>
+<span class="sd">                        ...</span>
+<span class="sd">                        UserWarning: direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. Instead, ...</span>
+<span class="sd">                        ((2, 3), point positioned on vertex 6 of polygon)</span>
+
 <span class="sd">                    &quot;&quot;&quot;</span>
-                    <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.polygon</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolygonPosition</span>
+                    <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">point</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-                    <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span>
-                    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">V</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Zero vector provided as direction.&quot;</span><span class="p">)</span>
-                    <span class="n">v0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
-                        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                        <span class="kn">from</span><span class="w"> </span><span class="nn">sage.all</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                            <span class="s2">&quot;point must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. &quot;</span>
+                            <span class="s2">&quot;Instead, change_ring() your polygon to a ring that contains the coordinates of point.&quot;</span>
+                        <span class="p">)</span>
 
-                        <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
-                        <span class="k">try</span><span class="p">:</span>
-                            <span class="n">ret</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">point</span> <span class="o">-</span> <span class="n">v0</span><span class="p">)</span>
-                            <span class="n">s</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                            <span class="n">t</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                            <span class="c1"># What if the matrix is non-invertible?</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">direction</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-                            <span class="c1"># Answer: You&#39;ll get a ZeroDivisionError which means that the edge is parallel</span>
-                            <span class="c1"># to the direction.</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                            <span class="s2">&quot;direction must convert to a vector over the base ring of this polygon; while flow_to_exit() might seem to function correctly, it will be an error in a future version of sage-flatsurf. &quot;</span>
+                            <span class="s2">&quot;Instead, change_ring() your polygon to a ring that contains the coordinates of direction.&quot;</span>
+                        <span class="p">)</span>
 
-                            <span class="c1"># s is location it intersects on edge, t is the portion of the direction to reach this intersection</span>
-                            <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-                                <span class="c1"># The ray passes through edge i.</span>
-                                <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                                    <span class="c1"># exits through vertex i+1</span>
-                                    <span class="n">v0</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">+</span> <span class="n">e</span>
-                                    <span class="k">return</span> <span class="n">v0</span><span class="p">,</span> <span class="n">PolygonPosition</span><span class="p">(</span>
-                                        <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">VERTEX</span><span class="p">,</span>
-                                        <span class="n">vertex</span><span class="o">=</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()),</span>
-                                    <span class="p">)</span>
-                                <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                                    <span class="c1"># exits through vertex i</span>
-                                    <span class="k">return</span> <span class="n">v0</span><span class="p">,</span> <span class="n">PolygonPosition</span><span class="p">(</span>
-                                        <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">VERTEX</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="n">i</span>
-                                    <span class="p">)</span>
-                                    <span class="c1"># exits through vertex i</span>
-                                <span class="c1"># exits through interior of edge i</span>
-                                <span class="n">prod</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">direction</span>
-                                <span class="k">return</span> <span class="n">point</span> <span class="o">+</span> <span class="n">prod</span><span class="p">,</span> <span class="n">PolygonPosition</span><span class="p">(</span>
-                                    <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">EDGE_INTERIOR</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="n">i</span>
-                                <span class="p">)</span>
-                        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
-                            <span class="c1"># Here we know the edge and the direction are parallel</span>
-                            <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">point</span> <span class="o">-</span> <span class="n">v0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                                <span class="c1"># In this case point lies on the edge.</span>
-                                <span class="c1"># We need to work out which direction to move in.</span>
-                                <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_parallel</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">direction</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;direction must not be zero&quot;</span><span class="p">)</span>
 
-                                <span class="k">if</span> <span class="p">(</span><span class="n">point</span> <span class="o">-</span> <span class="n">v0</span><span class="p">)</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()</span> <span class="ow">or</span> <span class="n">is_parallel</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">point</span> <span class="o">-</span> <span class="n">v0</span><span class="p">):</span>
-                                    <span class="c1"># exits through vertex i+1</span>
-                                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">PolygonPosition</span><span class="p">(</span>
-                                        <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">VERTEX</span><span class="p">,</span>
-                                        <span class="n">vertex</span><span class="o">=</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()),</span>
-                                    <span class="p">)</span>
-                                <span class="k">else</span><span class="p">:</span>
-                                    <span class="c1"># exits through vertex i</span>
-                                    <span class="k">return</span> <span class="n">v0</span><span class="p">,</span> <span class="n">PolygonPosition</span><span class="p">(</span>
-                                        <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">VERTEX</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="n">i</span>
-                                    <span class="p">)</span>
-                            <span class="k">pass</span>
-                        <span class="n">v0</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">+</span> <span class="n">e</span>
-                    <span class="c1"># Our loop has terminated. This can mean one of several errors...</span>
-                    <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_outside</span><span class="p">():</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Started with point outside polygon&quot;</span><span class="p">)</span>
+                    <span class="n">vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
+
+                    <span class="c1"># Intersect the ray from the point in direction with each</span>
+                    <span class="c1"># side of the polygon.</span>
+                    <span class="c1"># Note: to make this work in the non-convex case, instead</span>
+                    <span class="c1"># of returning the first hit, these candidates could be</span>
+                    <span class="c1"># sorted and the one closest to the point returned.</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)):</span>
+                        <span class="n">segment</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">vertices</span><span class="p">[(</span><span class="n">v</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)]</span>
+
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">ray_segment_intersection</span>
+
+                        <span class="n">intersection</span> <span class="o">=</span> <span class="n">ray_segment_intersection</span><span class="p">(</span>
+                            <span class="n">point</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">segment</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">intersection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">intersection</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                            <span class="c1"># The ray and the segment overlap in a segment.</span>
+                            <span class="k">if</span> <span class="n">intersection</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">point</span><span class="p">:</span>
+                                <span class="c1"># The ray starts on this side of the polygon</span>
+                                <span class="c1"># and is parallel to the side.</span>
+                                <span class="n">intersection</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># The ray hits one vertex of this side and is</span>
+                                <span class="c1"># then parallel to the side.</span>
+                                <span class="c1"># We could also &quot;continue&quot; here since the</span>
+                                <span class="c1"># previous side would handle this case.</span>
+                                <span class="n">intersection</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.polygon</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolygonPosition</span>
+
+                            <span class="n">position</span> <span class="o">=</span> <span class="n">PolygonPosition</span><span class="p">(</span>
+                                <span class="n">PolygonPosition</span><span class="o">.</span><span class="n">VERTEX</span><span class="p">,</span>
+                                <span class="n">vertex</span><span class="o">=</span><span class="p">(</span>
+                                    <span class="n">v</span>
+                                    <span class="k">if</span> <span class="n">intersection</span> <span class="o">==</span> <span class="n">vertices</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                                    <span class="k">else</span> <span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span>
+                                <span class="p">),</span>
+                            <span class="p">)</span>
+
+                            <span class="k">return</span> <span class="n">intersection</span><span class="p">,</span> <span class="n">position</span>
+
+                        <span class="c1"># The ray and the segment intersect in a point.</span>
+                        <span class="k">if</span> <span class="n">intersection</span> <span class="o">==</span> <span class="n">point</span><span class="p">:</span>
+                            <span class="c1"># But that&#39;s just the starting point of the ray.</span>
+                            <span class="k">continue</span>
+
+                        <span class="k">return</span> <span class="n">intersection</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">intersection</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">point</span><span class="p">)</span><span class="o">.</span><span class="n">is_outside</span><span class="p">():</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot flow from point outside of polygon&quot;</span><span class="p">)</span>
+
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Point on boundary of polygon and direction not pointed into the polygon.&quot;</span>
+                        <span class="s2">&quot;Cannot flow from point on boundary if direction points out of the polygon&quot;</span>
                     <span class="p">)</span></div>
 
 

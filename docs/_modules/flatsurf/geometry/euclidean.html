@@ -1107,6 +1107,133 @@
         <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">y</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid argument rotate=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rotate</span><span class="p">))</span></div>
 
+
+
+<div class="viewcode-block" id="time_on_ray">
+<a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.time_on_ray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">time_on_ray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return at what time the ray from point ``p`` in ``direction`` hits ``q``.</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``p`` -- a point in the Euclidean plane as a vector</span>
+
+<span class="sd">    - ``direction`` -- a direction in the Euclidean plane as a vector</span>
+
+<span class="sd">    - ``q`` -- a point in the Euclidean plane that is on the ray, as a vector</span>
+
+<span class="sd">    OUTPUT:</span>
+
+<span class="sd">    A tuple `(n, d)` with `d &gt; 0` such that ``q = p + n/d * direction``.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import time_on_ray</span>
+<span class="sd">        sage: V = QQ**2</span>
+
+<span class="sd">        sage: time_on_ray(V((0, 0)), V((1, 0)), V((2, 0)))</span>
+<span class="sd">        (2, 1)</span>
+
+<span class="sd">        sage: time_on_ray(V((0, 0)), V((0, 1)), V((0, 2)))</span>
+<span class="sd">        (2, 1)</span>
+
+<span class="sd">        sage: time_on_ray(V((0, 0)), V((1, 1)), V((2, 2)))</span>
+<span class="sd">        (2, 1)</span>
+
+<span class="sd">    Note that inputs are not checked for validity, so when ``q`` is not on the</span>
+<span class="sd">    ray, the output is nonsensical::</span>
+
+<span class="sd">        sage: time_on_ray(V((0, 0)), V((1, 1)), V((2, 0)))</span>
+<span class="sd">        (2, 1)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">direction</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">delta</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">length</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">delta</span><span class="p">,</span> <span class="n">length</span></div>
+
+
+
+<div class="viewcode-block" id="ray_segment_intersection">
+<a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.ray_segment_intersection">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ray_segment_intersection</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">segment</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the intersection of the ray from ``p`` in ``direction`` with</span>
+<span class="sd">    ``segment``.</span>
+
+<span class="sd">    If the segment and the ray intersect in a point, return that point as a</span>
+<span class="sd">    vector.</span>
+
+<span class="sd">    If the segment and the ray overlap in a segment, return the end points of</span>
+<span class="sd">    that segment (in order.)</span>
+
+<span class="sd">    If the segment and the ray do not intersect, return ``None``.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import ray_segment_intersection</span>
+<span class="sd">        sage: V = QQ**2</span>
+
+<span class="sd">        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((1, -1)), V((1, 1))))</span>
+<span class="sd">        (1, 0)</span>
+<span class="sd">        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((0, 0)), V((1, 0))))</span>
+<span class="sd">        ((0, 0), (1, 0))</span>
+<span class="sd">        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((1, 0)), V((2, 0))))</span>
+<span class="sd">        ((1, 0), (2, 0))</span>
+<span class="sd">        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((-1, 0)), V((1, 0))))</span>
+<span class="sd">        ((0, 0), (1, 0))</span>
+<span class="sd">        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((-1, -1)), V((-1, 1))))</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: ray_segment_intersection(V((0, 0)), V((5, 1)), (V((3, 2)), V((3, 3))))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">intersection</span> <span class="o">=</span> <span class="n">line_intersection</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="n">direction</span><span class="p">,</span> <span class="o">*</span><span class="n">segment</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">intersection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># ray and segment are parallel.</span>
+        <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># ray and segment are not on the same line</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">t0</span><span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">time_on_ray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">t1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">time_on_ray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">t1</span> <span class="o">&lt;</span> <span class="n">t0</span><span class="p">:</span>
+            <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t0</span>
+
+        <span class="k">if</span> <span class="n">t1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">t1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p</span>
+
+        <span class="n">t0</span> <span class="o">/=</span> <span class="n">length</span>
+        <span class="n">t1</span> <span class="o">/=</span> <span class="n">length</span>
+
+        <span class="k">if</span> <span class="n">t0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="n">t1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">t0</span> <span class="o">*</span> <span class="n">direction</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="n">t1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">time_on_ray</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">intersection</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span> <span class="o">*</span> <span class="n">ccw</span><span class="p">(</span><span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">intersection</span></div>
+
 </pre></div>
         </article>
       </div>

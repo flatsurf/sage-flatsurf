@@ -1126,20 +1126,18 @@ polygon.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit">
 <span class="sig-name descname"><span class="pre">flow_to_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit" title="Link to this definition">¶</a></dt>
-<dd><p>Flow a point in the direction of holonomy until the point leaves the
-polygon.  Note that ValueErrors may be thrown if the point is not in the
-polygon, or if it is on the boundary and the holonomy does not point
-into the polygon.</p>
+<dd><p>Flow a <code class="docutils literal notranslate"><span class="pre">point</span></code> in the <code class="docutils literal notranslate"><span class="pre">direction</span></code> of holonomy until the
+point leaves the polygon or hits a vertex of the polygon.</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">point</span></code> – a point in the closure of the polygon (as a vector)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">holonomy</span></code> – direction of motion (a vector of non-zero length)</p></li>
 </ul>
 <p>OUTPUT:</p>
-<ul class="simple">
-<li><p>The point in the boundary of the polygon where the trajectory exits</p></li>
-<li><p>a PolygonPosition object representing the combinatorial position of the stopping point</p></li>
-</ul>
+<p>A pair consisting of the point on the boundary where the
+flow ended (as a vector) and a
+<a class="reference internal" href="../polygon.html#flatsurf.geometry.polygon.PolygonPosition" title="flatsurf.geometry.polygon.PolygonPosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">geometry.polygon.PolygonPosition</span></code></a> object
+describing the combinatorial position of that point.</p>
 </dd></dl>
 
 <dl class="py method">

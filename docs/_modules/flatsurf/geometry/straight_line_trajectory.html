@@ -1322,8 +1322,8 @@
 <span class="sd">            sage: from flatsurf import translation_surfaces</span>
 <span class="sd">            sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation</span>
 
-<span class="sd">            sage: s = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()), ring=AA)</span>
+<span class="sd">            sage: s = translation_surfaces.square_torus().change_ring(AA)</span>
+<span class="sd">            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))</span>
 <span class="sd">            sage: L = StraightLineTrajectoryTranslation(v)</span>
 <span class="sd">            sage: L.flow(2)</span>
 <span class="sd">            sage: L.segments()</span>

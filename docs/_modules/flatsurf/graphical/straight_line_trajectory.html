@@ -480,9 +480,9 @@
 <span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import similarity_surfaces</span>
-<span class="sd">            sage: s = similarity_surfaces.example()</span>
-<span class="sd">            sage: gs = s.graphical_surface()</span>
 <span class="sd">            sage: K.&lt;sqrt2&gt;=NumberField(x^2-2,embedding=1)</span>
+<span class="sd">            sage: s = similarity_surfaces.example().change_ring(K)</span>
+<span class="sd">            sage: gs = s.graphical_surface()</span>
 <span class="sd">            sage: v = s.tangent_vector(0, (1,-1), (sqrt2,-1),ring=K)</span>
 <span class="sd">            sage: traj = v.straight_line_trajectory()</span>
 <span class="sd">            sage: traj.flow(100)</span>
