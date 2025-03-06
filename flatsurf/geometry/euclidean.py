@@ -739,3 +739,124 @@ def rotate(v, direction):
 
     """
     return v.base_ring()((v.dot_product(v) / direction.dot_product(direction)).sqrt()) * direction
+
+
+def time_on_ray(p, direction, q):
+    r"""
+    Return at what time the ray from point ``p`` in ``direction`` hits ``q``.
+
+    INPUT:
+
+    - ``p`` -- a point in the Euclidean plane as a vector
+
+    - ``direction`` -- a direction in the Euclidean plane as a vector
+
+    - ``q`` -- a point in the Euclidean plane that is on the ray, as a vector
+
+    OUTPUT:
+
+    A tuple `(n, d)` with `d > 0` such that ``q = p + n/d * direction``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import time_on_ray
+        sage: V = QQ**2
+
+        sage: time_on_ray(V((0, 0)), V((1, 0)), V((2, 0)))
+        (2, 1)
+
+        sage: time_on_ray(V((0, 0)), V((0, 1)), V((0, 2)))
+        (2, 1)
+
+        sage: time_on_ray(V((0, 0)), V((1, 1)), V((2, 2)))
+        (2, 1)
+
+    Note that inputs are not checked for validity, so when ``q`` is not on the
+    ray, the output is nonsensical::
+
+        sage: time_on_ray(V((0, 0)), V((1, 1)), V((2, 0)))
+        (2, 1)
+
+    """
+    if direction[0]:
+        dim = 0
+    else:
+        dim = 1
+
+    delta = q[dim] - p[dim]
+    length = direction[dim]
+    if length < 0:
+        delta *= -1
+        length *= -1
+
+    return delta, length
+
+
+def ray_segment_intersection(p, direction, segment):
+    r"""
+    Return the intersection of the ray from ``p`` in ``direction`` with
+    ``segment``.
+
+    If the segment and the ray intersect in a point, return that point as a
+    vector.
+
+    If the segment and the ray overlap in a segment, return the end points of
+    that segment (in order.)
+
+    If the segment and the ray do not intersect, return ``None``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import ray_segment_intersection
+        sage: V = QQ**2
+
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((1, -1)), V((1, 1))))
+        (1, 0)
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((0, 0)), V((1, 0))))
+        ((0, 0), (1, 0))
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((1, 0)), V((2, 0))))
+        ((1, 0), (2, 0))
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((-1, 0)), V((1, 0))))
+        ((0, 0), (1, 0))
+        sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((-1, -1)), V((-1, 1))))
+
+    TESTS::
+
+        sage: ray_segment_intersection(V((0, 0)), V((5, 1)), (V((3, 2)), V((3, 3))))
+
+    """
+    intersection = line_intersection(p, p + direction, *segment)
+
+    if intersection is None:
+        # ray and segment are parallel.
+        if ccw(direction, segment[0] - p) != 0:
+            # ray and segment are not on the same line
+            return None
+
+        t0, length = time_on_ray(p, direction, segment[0])
+        t1, _ = time_on_ray(p, direction, segment[1])
+
+        if t1 < t0:
+            t0, t1 = t1, t0
+
+        if t1 < 0:
+            return None
+
+        if t1 == 0:
+            return p
+
+        t0 /= length
+        t1 /= length
+
+        if t0 < 0:
+            return (p, p + t1 * direction)
+
+        return (p + t0 * direction, p + t1 * direction)
+
+    if time_on_ray(p, direction, intersection)[0] < 0:
+        return None
+
+    if ccw(segment[0] - p, direction) * ccw(segment[1] - p, direction) > 0:
+        return None
+
+    return intersection

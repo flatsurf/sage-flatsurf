@@ -344,10 +344,7 @@ class GL2ROrbitClosure:
         return min([h1, h2, h3], key=lambda x: x.index())
 
     def __repr__(self):
-        return (
-            "GL(2,R)-orbit closure of dimension at least %d in %s (ambient dimension %d)"
-            % (self._U_rank, self.ambient_stratum(), self.d)
-        )
+        return f"GL(2,R)-orbit closure of dimension at least {self._U_rank} in {self.ambient_stratum()} (ambient dimension {self.d})"
 
     def holonomy(self, v):
         r"""
