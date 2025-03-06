@@ -701,6 +701,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, k, coefficients, relative, implementation, category
             )
 
+    class TangentBundleMethods:
+        pass
+
+    class TangentVectorMethods:
+        pass
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
@@ -2474,7 +2479,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if ring is not None:
                     import warnings
-                    warnings.warn("the ring parameter has been deprecated in tangent_bundle(); call change_ring() on the underlying surface instead")
+                    warnings.warn("the ring parameter has been deprecated in tangent_bundle() and will be removed in a future version of sage-flatsurf; call change_ring() on the underlying surface instead")
 
                 if ring is None:
                     ring = self.base_ring()

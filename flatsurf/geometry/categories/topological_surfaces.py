@@ -80,14 +80,6 @@ class TopologicalSurfaces(SurfaceCategory):
         """
         return [TopologicalSpaces()]
 
-    class TangentBundleMethods:
-        def foo(self):
-            print("X")
-
-    class TangentVectorMethods:
-        def goo(self):
-            print("Y")
-
     class ParentMethods:
         r"""
         Provides methods available to all surfaces in sage-flatsurf.
