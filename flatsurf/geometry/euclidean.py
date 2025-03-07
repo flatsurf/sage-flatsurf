@@ -11,7 +11,7 @@ A loose collection of tools for Euclidean geometry in the plane.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2023 Julian Rüth
+#                      2020-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -543,6 +543,12 @@ def is_between(e0, e1, f, strict=True):
         sage: from flatsurf.geometry.euclidean import is_between
         sage: is_between((1, 0), (1, 1), (2, 1))
         True
+        sage: is_between((1, 0), (1, 1), (2, 2))
+        False
+        sage: is_between((1, 0), (1, 1), (2, 2), strict=False)
+        True
+
+    TESTS::
 
         sage: from itertools import product
         sage: vecs = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
@@ -735,7 +741,24 @@ def slope(a, rotate=1):
 
 def rotate(v, direction):
     r"""
-    Return a rotated version of ``v`` that is parallel with ``w``.
+    Return a rotated version of ``v`` that is parallel with ``direction``.
+
+    EXAMPLES::
+
+       sage: from flatsurf.geometry.euclidean import rotate
+       sage: V = QQ**2
+       sage: v = V((1, 1))
+       sage: rotate(v, V((-2, -2)))
+       (-1, -1)
+       sage: rotate(v, V((1, 0)))
+       Traceback (most recent call last):
+       ...
+       TypeError: unable to convert sqrt(2) to a rational
+
+       sage: V = AA**2
+       sage: v = V((1, 1))
+       sage: rotate(v, V((1, 0)))
+       (1.414213562373095?, 0)
 
     """
     return v.base_ring()((v.dot_product(v) / direction.dot_product(direction)).sqrt()) * direction
