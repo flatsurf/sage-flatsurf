@@ -701,11 +701,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, k, coefficients, relative, implementation, category
             )
 
-    class TangentBundleMethods:
-        pass
-
-    class TangentVectorMethods:
-        pass
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
@@ -2517,7 +2512,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.tangent_vector(S.root(), (1/2,1/2), (1,sqrt2), ring=K)
                     doctest:warning
                     ...
-                    UserWarning: the ring parameter has been deprecated in tangent_bundle(); call change_ring() on the underlying surface instead
+                    UserWarning: the ring parameter has been deprecated in tangent_bundle() and will be removed in a future version of sage-flatsurf; call change_ring() on the underlying surface instead
                     (1, sqrt2) at (1/2, -3/2) of polygon 1
 
                 """
@@ -3577,6 +3572,24 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.morphism import SubdivideEdgesMorphism
 
                 return SubdivideEdgesMorphism._create_morphism(self, surface, parts)
+
+        class TangentBundleMethods:
+            r"""
+            Provides methods available to all tangent bundles over oriented
+            similarity surfaces.
+
+            If you want to add general functionality for such tangent bundles
+            you most likely want to put it here.
+            """
+
+        class TangentVectorMethods:
+            r"""
+            Provides methods available to all tangent vectors over oriented
+            similarity surfaces.
+
+            If you want to add general functionality for such tangent bundles
+            you most likely want to put it here.
+            """
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""
