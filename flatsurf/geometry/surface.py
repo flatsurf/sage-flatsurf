@@ -88,6 +88,12 @@ class Surface_base(Parent):
         True
 
     """
+    def __init__(self, base, category=None):
+        from sage.categories.all import Rings
+        if base not in Rings():
+            raise TypeError("base ring must be a ring")
+
+        super().__init__(base, category=category)
 
     def _refine_category_(self, category):
         r"""
@@ -140,7 +146,52 @@ class Surface_base(Parent):
         return super().an_element()
 
 
-class MutablePolygonalSurface(Surface_base):
+class PolygonalSurface(Surface_base):
+    r"""
+    A base class for all surfaces built from polygons.
+
+    INPUT:
+
+    - ``base`` -- a ring or an ambient space over which the polygons that make
+      up this surface are defined.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+
+        sage: from flatsurf.geometry.surface import PolygonalSurface
+        sage: isinstance(S, PolygonalSurface)
+        True
+
+    """
+    def __init__(self, base, category=None):
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        if isinstance(base, EuclideanPlane):
+            self._euclidean_plane = base
+            base = self._euclidean_plane.base_ring()
+        else:
+            self._euclidean_plane = EuclideanPlane(base)
+
+        super().__init__(base, category=category)
+
+    def euclidean_plane(self):
+        r"""
+        Return the Euclidean plane over which all polygons that make up this
+        surface are defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.euclidean_plane()
+            Euclidean Plane over Rational Field
+
+        """
+        return self._euclidean_plane
+
+
+class MutablePolygonalSurface(PolygonalSurface):
     r"""
     A base class for mutable surfaces that are built by gluing polygons.
 
@@ -911,7 +962,7 @@ class MutablePolygonalSurface(Surface_base):
         return Polygons_MutableOrientedSimilaritySurface(self)
 
 
-class OrientedSimilaritySurface(Surface_base):
+class OrientedSimilaritySurface(PolygonalSurface):
     r"""
     Base class for surfaces built from Euclidean polygons that are glued with
     orientation preserving similarities.
@@ -930,11 +981,6 @@ class OrientedSimilaritySurface(Surface_base):
     Element = SurfacePoint
 
     def __init__(self, base, category=None):
-        from sage.categories.all import Rings
-
-        if base not in Rings():
-            raise TypeError("base ring must be a ring")
-
         from flatsurf.geometry.categories import SimilaritySurfaces
 
         if category is None:

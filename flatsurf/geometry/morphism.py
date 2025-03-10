@@ -73,7 +73,7 @@ A non-singular point::
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2023-2024 Julian Rüth
+#        Copyright (C) 2023-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -143,9 +143,14 @@ class UnknownRing(UniqueRepresentation, Ring):
     """
 
     def __init__(self):
-        from sage.all import ZZ
+        from sage.all import ZZ, RR
 
         super().__init__(ZZ)
+        # We register a coercion from the unknown ring to the reals. All our
+        # rings underlying surfaces are expected to have an embedding into the
+        # reals. (And we don't want generic checks to fail that expect this to
+        # be the case.)
+        RR.register_coercion(Morphism(self, RR))
 
     def _repr_(self):
         r"""
@@ -450,6 +455,10 @@ class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
         pass
 
     def _test_labels(self, **options):
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
+        pass
+
+    def _test_euclidean_plane(self, **options):
         # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 

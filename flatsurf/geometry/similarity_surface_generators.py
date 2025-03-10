@@ -2,7 +2,7 @@
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2023 Julian Rüth
+#                      2020-2025 Julian Rüth
 #                           2023 Sam Freedman
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
@@ -1037,9 +1037,11 @@ class DilationSurfaceGenerators:
             True
             sage: TestSuite(ds).run()
         """
+        from flatsurf import EuclideanPlane
+        E = EuclideanPlane(QQ)
+
         field = Sequence([a, b, c, d]).universe().fraction_field()
-        s = MutableOrientedSimilaritySurface(QQ)
-        E = s.euclidean_plane()
+        s = MutableOrientedSimilaritySurface(E)
 
         hexagon = Polygon(
             edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)],

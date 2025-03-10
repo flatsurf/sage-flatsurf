@@ -28,7 +28,7 @@ EXAMPLES::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2023 Julian Rüth
+#                      2020-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -44,7 +44,12 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from flatsurf.geometry.categories.surface_category import SurfaceCategory
+from sage.misc.abstract_method import abstract_method
+
+from flatsurf.geometry.categories.surface_category import (
+    SurfaceCategory,
+    SurfaceCategoryWithAxiom,
+)
 
 
 class EuclideanPolygonalSurfaces(SurfaceCategory):
@@ -260,7 +265,65 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
             return plt
 
         def euclidean_plane(self):
-            # TODO: This should not be implemented here but required by the surfaces to be implemented.
+            r"""
+            Return the ambient Euclidean plane in which all the polygons that
+            make up this surface are defined.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S.euclidean_plane()
+                Euclidean Plane over Rational Field
+
+            """
             # TODO: Check that we are using euclidean_plane() everywhere instead of constructing it from scratch.
-            from flatsurf.geometry.euclidean import EuclideanPlane
+            polygons = self.polygons()
+
+            if not polygons:
+                raise NotImplementedError("this empty surface does not know how to determine its ambient Euclidean plane yet")
+
+            return next(iter(polygons)).parent()
             return EuclideanPlane(self.base_ring())
+
+    class FiniteType(SurfaceCategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces built from finitely many polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: C = S.category()
+            sage: 'FiniteType' in S.category().axioms()
+            True
+
+        """
+        class ParentMethods:
+            r"""
+            Provides methods available to all surfaces built from finitely many
+            Euclidean polygons.
+
+            If you want to add functionality for all such surfaces, you most
+            likely want to put it here.
+            """
+
+            def _test_euclidean_plane(self, **options):
+                r"""
+                Verify that
+                :meth:`EuclideanPolygonalSurfaces.ParentMethods.euclidean_plane`
+                has been implemented correctly.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S._test_euclidean_plane()
+
+                """
+                tester = self._tester(**options)
+
+                E = self.euclidean_plane()
+
+                for p in self.polygons():
+                    tester.assertEqual(E, p.parent())
