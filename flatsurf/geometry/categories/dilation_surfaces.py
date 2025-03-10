@@ -276,16 +276,9 @@ class DilationSurfaces(SurfaceCategory):
 
                     checked.add((label, edge))
 
-                    # TODO: double check that the it is ok to override the old implementation
-                    ## We do not call self.edge_matrix() since the surface might
-                    ## have overridden this (just returning the identity matrix e.g.)
-                    ## and we want to deduce the matrix from the attached polygon
-                    ## edges instead.
-                    # from flatsurf.geometry.categories import SimilaritySurfaces
-                    #
-                    # matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                    #     surface, label, edge, projective=False
-                    # )
+                    # We trust that edge_matrix is not lying to us here and do
+                    # not look at the actual polygons even though sometimes the
+                    # edge_matrix is hard coded to be just the identity.
                     matrix = surface.edge_matrix(label, edge, projective=False)
 
                     if not matrix.is_diagonal():
