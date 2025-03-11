@@ -103,12 +103,11 @@ class EuclideanPolygons(Category_over_base_ring):
                 Vector space of dimension 2 over Rational Field
 
             """
-            # TODO: Restore warning. Why does this show up now?
-            # import warnings
+            import warnings
 
-            # warnings.warn(
-            #     "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
-            # )
+            warnings.warn(
+                "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
+            )
 
             return self.base_ring().fraction_field() ** 2
 
