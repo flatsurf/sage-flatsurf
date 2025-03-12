@@ -50,6 +50,8 @@ these generic geometries::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+import collections.abc
+
 
 class Geometry:
     r"""
@@ -544,3 +546,406 @@ class EpsilonGeometry(Geometry):
 
         """
         return f"Epsilon geometry with ϵ={self._epsilon} over {self._ring}"
+
+
+class OrderedSet(collections.abc.Set):
+    r"""
+    A set of objects sorted by :meth:`OrderedSet._lt_`.
+
+    This is used to efficiently represent
+    :meth:`HyperbolicConvexSet.half_spaces`,
+    :meth:`HyperbolicConvexSet.vertices`, and
+    :meth:`HyperbolicConvexSet.edges`. In particular, it allows us to create
+    and merge such sets in linear time.
+
+    This is an abstract base class for specialized sets such as
+    :class:`HyperbolicHalfSpaces`, :class:`HyperbolicVertices`, and
+    :class:`HyperbolicEdges`.
+
+    INPUT:
+
+    - ``entries`` -- an iterable, the elements of this set
+
+    - ``assume_sorted`` -- a boolean or ``"rotated"`` (default: ``True``); whether to assume
+      that the ``entries`` are already sorted with respect to :meth:`_lt_`. If
+      ``"rotated"``, we assume that the entries are sorted modulo a cyclic permutation.
+
+    EXAMPLES::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+
+        sage: segment = H(I).segment(2*I)
+        sage: segment.vertices()
+        {I, 2*I}
+
+    """
+
+    def __init__(self, entries, assume_sorted=None):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import OrderedSet
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H(I).segment(2*I).vertices()
+
+            sage: isinstance(vertices, OrderedSet)
+            True
+
+        """
+        if assume_sorted is None:
+            assume_sorted = isinstance(entries, OrderedSet)
+
+        if assume_sorted == "rotated":
+            min = 0
+            for i, entry in enumerate(entries):
+                if self._lt_(entry, entries[min]):
+                    min = i
+
+            entries = entries[min:] + entries[:min]
+            assume_sorted = True
+
+        if not assume_sorted:
+            entries = self._merge(*[[entry] for entry in entries])
+
+        self._entries = tuple(entries)
+
+    def _lt_(self, lhs, rhs):
+        r"""
+        Return whether ``lhs`` should come before ``rhs`` in this set.
+
+        Subclasses must implement this method.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import OrderedSet
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H(I).segment(2*I).vertices()
+
+            sage: vertices._lt_(vertices[0], vertices[1])
+            True
+
+        """
+        raise NotImplementedError
+
+    def _merge(self, *sets):
+        r"""
+        Return the merge of sorted lists of ``sets`` using merge sort.
+
+        Note that this set itself is not part of the merge.
+
+        Naturally, when there are a lot of small sets, such a merge sort takes
+        quasi-linear time. However, when there are only a few sets, this runs
+        in linear time.
+
+        INPUT:
+
+        - ``sets`` -- iterables that are sorted with respect to :meth:`_lt_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
+            sage: H = HyperbolicPlane()
+
+            sage: HyperbolicHalfSpaces([])._merge()
+            []
+
+            sage: HyperbolicHalfSpaces([])._merge([H.vertical(0).left_half_space()], [H.vertical(0).left_half_space()])
+            [{x ≤ 0}]
+
+            sage: HyperbolicHalfSpaces([])._merge(*[[half_space] for half_space in H.real(0).half_spaces()])
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
+
+            sage: HyperbolicHalfSpaces([])._merge(list(H.real(0).half_spaces()), list(H.real(0).half_spaces()))
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
+
+            sage: HyperbolicHalfSpaces([])._merge(*[[half_space] for half_space in list(H.real(0).half_spaces()) * 2])
+            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
+
+        """
+        # A standard merge-sort implementation.
+        count = len(sets)
+
+        if count == 0:
+            return []
+
+        if count == 1:
+            return sets[0]
+
+        # The non-trivial base case.
+        if count == 2:
+            A = sets[0]
+            B = sets[1]
+            merged = []
+
+            while A and B:
+                if self._lt_(A[-1], B[-1]):
+                    merged.append(B.pop())
+                elif self._lt_(B[-1], A[-1]):
+                    merged.append(A.pop())
+                else:
+                    # Drop duplicate from set
+                    A.pop()
+
+            merged.reverse()
+
+            return A + B + merged
+
+        # Divide & Conquer recursively.
+        return self._merge(
+            *(self._merge(*sets[: count // 2]), self._merge(*sets[count // 2 :]))
+        )
+
+    def __eq__(self, other):
+        r"""
+        Return whether this set is equal to ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).vertices() == (-H.vertical(0)).vertices()
+            True
+
+        """
+        if type(other) is not type(self):
+            other = type(self)(other)
+
+        return self._entries == other._entries
+
+    def __ne__(self, other):
+        r"""
+        Return whether this set is not equal to ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).vertices() != H.vertical(1).vertices()
+            True
+
+        """
+        return not (self == other)
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this set that is consistent with :meth:`__eq__`
+        and :meth:`__ne__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: hash(H.vertical(0).vertices()) != hash(H.vertical(1).vertices())
+            True
+
+        """
+        return hash(tuple(self._entries))
+
+    def __add__(self, other):
+        r"""
+        Return the :meth:`_merge` of this set and ``other``.
+
+        INPUT:
+
+        - ``other`` -- another set of the same kind
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0).half_spaces() + H.vertical(1).half_spaces()
+            {{x ≤ 0}, {x - 1 ≤ 0}, {x ≥ 0}, {x - 1 ≥ 0}}
+
+        """
+        if type(self) is not type(other):
+            raise TypeError("both sets must be of the same type")
+        entries = self._merge(list(self._entries), list(other._entries))
+        return type(self)(entries, assume_sorted=True)
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.half_circle(0, 1).vertices()
+            {-1, 1}
+
+        """
+        return "{" + repr(self._entries)[1:-1] + "}"
+
+    def __iter__(self):
+        r"""
+        Return an iterator of this set.
+
+        Iteration happens in sorted order, consistent with :meth:`_lt_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices)
+            [-1, 1]
+
+        """
+        return iter(self._entries)
+
+    def __len__(self):
+        r"""
+        Return the cardinality of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: len(vertices)
+            2
+
+        """
+        return len(self._entries)
+
+    def pairs(self, repeat=False):
+        r"""
+        Return an iterable that iterates over all consecutive pairs of elements
+        in this set; including the pair formed by the last element and the
+        first element.
+
+        INPUT:
+
+        - ``repeat`` -- a boolean (default: ``False``); whether to produce pair
+          consisting of the first element twice if there is only one element
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices.pairs())
+            [(1, -1), (-1, 1)]
+
+        .. SEEALSO::
+
+            :meth:`triples`
+
+        """
+        if len(self._entries) <= 1 and not repeat:
+            return
+
+        for i in range(len(self._entries)):
+            yield self._entries[i - 1], self._entries[i]
+
+    def triples(self, repeat=False):
+        r"""
+        Return an iterable that iterates over all consecutive triples of
+        elements in this set; including the triples formed by wrapping around
+        the end of the set.
+
+        INPUT:
+
+        - ``repeat`` -- a boolean (default: ``False``); whether to produce
+          triples by wrapping around even if there are fewer than three
+          elements
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        There must be at least three elements to form any triples::
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices.triples())
+            []
+
+            sage: half_spaces = H(I).segment(2*I).half_spaces()
+            sage: list(half_spaces.triples())
+            [({(x^2 + y^2) - 1 ≥ 0}, {x ≤ 0}, {(x^2 + y^2) - 4 ≤ 0}),
+             ({x ≤ 0}, {(x^2 + y^2) - 4 ≤ 0}, {x ≥ 0}),
+             ({(x^2 + y^2) - 4 ≤ 0}, {x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}),
+             ({x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}, {x ≤ 0})]
+
+        However, we can force triples to be produced by wrapping around with
+        ``repeat``::
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: list(vertices.triples(repeat=True))
+            [(1, -1, 1), (-1, 1, -1)]
+
+        .. SEEALSO::
+
+            :meth:`pairs`
+
+        """
+        if len(self._entries) <= 2 and not repeat:
+            return
+
+        for i in range(len(self._entries)):
+            yield self._entries[i - 1], self._entries[i], self._entries[
+                (i + 1) % len(self._entries)
+            ]
+
+    def __getitem__(self, *args, **kwargs):
+        r"""
+        Return items from this set by index.
+
+        INPUT:
+
+        Any arguments that can be used to access a tuple are accepted.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+            sage: vertices[0]
+            -1
+
+        """
+        return self._entries.__getitem__(*args, **kwargs)
+
+    def __contains__(self, x):
+        r"""
+        Return whether this set contains ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: vertices = H.half_circle(0, 1).vertices()
+
+            sage: H(0) in vertices
+            False
+
+            sage: H(1) in vertices
+            True
+
+        .. NOTE::
+
+            Presently, this method is not used. It only exists to satisfy the
+            conditions of the Python abc for sets. It could be implemented more
+            efficiently.
+
+        """
+        return x in self._entries
+
+

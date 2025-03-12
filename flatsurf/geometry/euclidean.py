@@ -1,5 +1,7 @@
 # TODO: Benchmark how constructions here compare to constructions before we introduced the EuclideanPlane.
 
+# TODO: We should more aggressively share code between the Euclidean and the hyperbolic case, i.e., there should be a generic GeometricEmptySet or something like that that contains all the shared bits.
+
 
 r"""
 Two dimensional Euclidean geometry.
@@ -61,7 +63,7 @@ from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry
+from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry, OrderedSet
 
 
 class EuclideanPlane(Parent, UniqueRepresentation):
@@ -442,7 +444,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         # TODO: Remove this method. It's unclear if this goes to the fraction field or not.
         return self.base_ring() ** 2
 
-    def point(self, x, y, z=None):
+    def point(self, x, y, z=None, check=True):
         r"""
         Return the point in the Euclidean plane with coordinates ``x`` and
         ``y``.
@@ -781,6 +783,11 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
     geodesic = line
 
+    def half_space(self, a, b, c, check=True):
+        line = self.line(a, b, c, check=check)
+
+        return self.__make_element_class__(EuclideanHalfSpace)(self, line)
+
     def ray(self, base, direction, check=True):
         r"""
         Return a ray from ``base`` in ``direction``.
@@ -834,6 +841,8 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         angles=None,
         lengths=None,
         check=True,
+        assume_sorted=False,
+        assume_minimal=False,
         category=None,
     ):
         r"""
@@ -868,6 +877,8 @@ class EuclideanPlane(Parent, UniqueRepresentation):
           polygons.
 
         # TODO: Document category.
+
+        # TODO: Document half_spaces
 
         EXAMPLES:
 
@@ -1554,8 +1565,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         return EuclideanDistances(self)
 
     def empty_set(self):
-        # TODO
-        raise NotImplementedError
+        return self.__make_element_class__(EuclideanEmptySet)(self)
 
     def _repr_(self):
         r"""
@@ -1569,6 +1579,733 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         """
         return f"Euclidean Plane over {repr(self.base_ring())}"
+
+    def intersection(self, *subsets):
+        subsets = [self(subset) for subset in subsets]
+
+        if len(subsets) == 0:
+            return self
+
+        if len(subsets) == 1:
+            return subsets[0].unoriented()
+
+        if not all(subset.is_convex() for subset in subsets):
+            raise NotImplementedError("can only intersect convex sets currently")
+
+        half_spaces = sum(
+            [subset.half_spaces() for subset in subsets], EuclideanHalfSpaces([])
+        )
+
+        half_spaces = self._intersection_drop_trivially_redundant(half_spaces)
+
+        if not half_spaces:
+            raise NotImplementedError("cannot model intersection of no half spaces yet")
+
+        # Find a segment on the boundary of the intersection.
+        boundary = self._intersection_euclidean_boundary(half_spaces)
+
+        if not isinstance(boundary, EuclideanHalfSpace):
+            # When there was no such segment, i.e., the intersection is empty
+            # or just a point, we are done.
+            return boundary
+
+        # Compute a minimal subset of the half spaces that defines the intersection in the Euclidean plane.
+        half_spaces = self._intersection_drop_redundant(half_spaces, boundary)
+
+        assert half_spaces
+
+        if len(half_spaces) == 1:
+            return half_spaces[0]
+
+        return self._intersection_from_minimal_half_spaces(half_spaces)
+
+    def _intersection_drop_trivially_redundant(self, half_spaces):
+        r"""
+        TODO: Make this description match the Euclidean case.
+
+        Return a sublist of the ``half_spaces`` defining this polygon without
+        changing their intersection by removing some trivially redundant half
+        spaces.
+
+        The ``half_spaces`` are assumed to be sorted consistent with
+        :meth:`HyperbolicHalfSpaces._lt_`.
+
+        This is a helper method for :meth:`_normalize`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        Repeated half spaces are removed::
+
+            sage: polygon(H.vertical(0).left_half_space(), H.vertical(0).left_half_space())._normalize_drop_trivially_redundant()
+            {x ≤ 0}
+
+        Inclusions of half spaces are simplified::
+
+            sage: polygon(H.vertical(0).left_half_space(), H.geodesic(1/2, 2).left_half_space())._normalize_drop_trivially_redundant()
+            {x ≤ 0}
+
+        But only if the inclusion is already present when extending the half
+        space from the Klein model to the entire Euclidean plane::
+
+            sage: polygon(H.vertical(0).left_half_space(), H.vertical(1).left_half_space())._normalize_drop_trivially_redundant()
+            {x ≤ 0} ∩ {x - 1 ≤ 0}
+
+        TESTS:
+
+        The intersection of two half circles centered at 0::
+
+            sage: polygon(*(H.half_circle(0, 1).half_spaces() + H.half_circle(0, 2).half_spaces()))._normalize_drop_trivially_redundant()
+            {(x^2 + y^2) - 1 ≤ 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+
+        """
+        reduced = []
+
+        for half_space in half_spaces:
+            if reduced:
+                a, b, c = half_space.equation()
+                A, B, C = reduced[-1].equation()
+
+                equal = self.geometry._equal
+                sgn = self.geometry._sgn
+                if equal(c * B, C * b) and sgn(b) == sgn(B) and sgn(c) == sgn(C):
+                    # The half spaces are parallel in the Euclidean plane. Since we
+                    # assume spaces to be sorted by inclusion, we can drop this
+                    # space.
+                    continue
+
+            reduced.append(half_space)
+
+        return reduced
+
+    def _intersection_euclidean_boundary(self, half_spaces):
+        r"""
+        TODO: Make the description match the Euclidean case.
+
+        Return a half space whose (Euclidean) boundary intersects the boundary
+        of the intersection of the ``half_spaces`` defining this polygon in
+        more than a point.
+
+        Consider the half spaces in the Klein model. Ignoring the unit disk,
+        they also describe half spaces in the Euclidean plane.
+
+        If their intersection contains a segment it must be on the boundary of
+        one of the ``half_spaces`` which is returned by this method.
+
+        If this is not the case, and the intersection is empty in the
+        hyperbolic plane, return the :meth:`HyperbolicPlane.empty_set`.
+        Otherwise, if the intersection is a point in the hyperbolic plane,
+        return that point.
+
+        The ``half_spaces`` must already be sorted with respect to
+        :meth:`HyperbolicHalfSpaces._lt_`.
+
+        This is a helper method for :meth:`_normalize`.
+
+        ALGORITHM:
+
+        We initially ignore the hyperbolic structure and just consider the half
+        spaces of the Klein model as Euclidean half spaces.
+
+        We use a relatively standard randomized optimization approach to find a
+        point in the intersection: we randomly shuffle the half spaces and then
+        optimize a segment on some boundary of the half spaces. The
+        randomization makes this a linear time algorithm, see e.g.,
+        https://www2.cs.arizona.edu/classes/cs437/spring21/Lecture4.pdf.
+
+        If the only segment we can construct is a point, then the intersection
+        is a single point in the Euclidean plane. The intersection in the
+        hyperbolic plane might be a single point or empty.
+
+        If not even a point exists, the intersection is empty in the Euclidean
+        plane and therefore empty in the hyperbolic plane.
+
+        Note that the segment returned might not be within the unit disk.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        Make the following randomized tests reproducible::
+
+            sage: set_random_seed(0)
+
+        An intersection that is already empty in the Euclidean plane::
+
+            sage: polygon(
+            ....:     H.geodesic(2, 1/2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).left_half_space()
+            ....: )._normalize_euclidean_boundary()
+            {}
+
+        An intersection which in the Euclidean plane is a single point but
+        outside the unit disk::
+
+            sage: polygon(
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(0, -1, 0, model="klein"),
+            ....:     H.half_space(2, 2, -1, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....: )._normalize_euclidean_boundary()
+            {}
+
+        An intersection which is a single point inside the unit disk::
+
+            sage: polygon(*H(I).half_spaces())._normalize_euclidean_boundary()
+            I
+
+        An intersection which is a single point on the boundary of the unit
+        disk::
+
+            sage: polygon(*H.infinity().half_spaces())._normalize_euclidean_boundary()
+            {x - 1 ≥ 0}
+
+        An intersection which is a segment outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_euclidean_boundary()
+            {x ≤ 0}
+
+        An intersection which is a polygon outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(1, -2, 0, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_euclidean_boundary()
+            {9*(x^2 + y^2) + 32*x + 25 ≥ 0}
+
+        An intersection which is an (unbounded) polygon touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.vertical(1).right_half_space(),
+            ....: )._normalize_euclidean_boundary()
+            {x - 1 ≥ 0}
+
+        An intersection which is a segment touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.geodesic(-1, -2).right_half_space(),
+            ....: )._normalize_euclidean_boundary()
+            {x ≥ 0}
+
+        An intersection which is a polygon inside the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....: )._normalize_euclidean_boundary()
+            {(x^2 + y^2) - x ≥ 0}
+
+        A polygon which has no vertices inside the unit disk but intersects the unit disk::
+
+            sage: polygon(
+            ....:     H.geodesic(2, 3).left_half_space(),
+            ....:     H.geodesic(-3, -2).left_half_space(),
+            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
+            ....:     H.geodesic(1/3, 1/2).left_half_space(),
+            ....: )._normalize_euclidean_boundary()
+            {6*(x^2 + y^2) - 5*x + 1 ≥ 0}
+
+        A single half plane::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space()
+            ....: )._normalize_euclidean_boundary()
+            {x ≤ 0}
+
+        A pair of anti-parallel half planes::
+
+            sage: polygon(
+            ....:     H.geodesic(1/2, 2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).right_half_space(),
+            ....: )._normalize_euclidean_boundary()
+            {2*(x^2 + y^2) - 5*x + 2 ≥ 0}
+
+        TESTS:
+
+        A case that caused problems at some point::
+
+            sage: set_random_seed(1)
+
+            sage: polygon(
+            ....:    H.geodesic(300, 3389, -1166, model="half_plane").right_half_space(),
+            ....:    H.geodesic(5, -24, -5, model="half_plane").left_half_space(),
+            ....:    H.geodesic(182, -1135, 522, model="half_plane").left_half_space(),
+            ....: )._normalize_euclidean_boundary()
+            {5*(x^2 + y^2) - 24*x - 5 ≥ 0}
+
+        """
+        if len(half_spaces) == 0:
+            raise ValueError("list of half spaces must not be empty")
+
+        if len(half_spaces) == 1:
+            return next(iter(half_spaces))
+
+        # Randomly shuffle the half spaces so the loop below runs in expected linear time.
+        from sage.all import shuffle
+
+        random_half_spaces = list(half_spaces)
+        shuffle(random_half_spaces)
+
+        # Move from the random starting point to a point that is contained in all half spaces.
+        point = random_half_spaces[0].boundary().an_element()
+
+        for half_space in random_half_spaces:
+            if point in half_space:
+                continue
+            else:
+                # The point is not in this half space. Find a point on the
+                # boundary of half_space that is contained in all the half
+                # spaces we have seen so far.
+                boundary = half_space.boundary()
+
+                # We parametrize the boundary points of half space, i.e., the
+                # points that satisfy a + bx + cy = 0 by picking a base point B
+                # and then writing points as (x, y) = B + λ(c, -b).
+
+                # Each half space constrains the possible values of λ, starting
+                # from (-∞,∞) to a smaller closed interval.
+                from sage.all import RealSet, oo
+
+                # Note that RealSet.real_line() would require SageMath 9.4
+                interval = RealSet(-oo, oo)
+
+                for constraining in random_half_spaces:
+                    if constraining is half_space:
+                        break
+
+                    intersection = boundary.intersection(constraining.boundary())
+
+                    if intersection.is_empty():
+                        # constraining is anti-parallel to half_space
+                        if (
+                            boundary.unparametrize(0, check=False)
+                            not in constraining
+                        ):
+                            return self.empty_set()
+
+                        # The intersection is non-empty, so this adds no further constraints.
+                        continue
+
+                    λ = boundary.parametrize(
+                        intersection, check=False
+                    )
+
+                    # RealSet in SageMath does not like number fields. We move
+                    # everything through AA (which might not always work) to
+                    # work around this problem.
+                    if λ.parent().is_exact():
+                        from sage.all import AA
+
+                        rλ = AA(λ)
+                    else:
+                        rλ = λ
+
+                    # Determine whether this half space constrains to (-∞, λ] or [λ, ∞).
+                    if (
+                        boundary.unparametrize(λ + 1, check=False)
+                        in constraining
+                    ):
+                        constraint = RealSet.unbounded_above_closed(rλ)
+                    else:
+                        constraint = RealSet.unbounded_below_closed(rλ)
+
+                    interval = interval.intersection(constraint)
+
+                    if interval.is_empty():
+                        # The constraints leave no possibility for λ.
+                        return self.empty_set()
+
+                # Construct a point from any of the λ in interval.
+                λ = interval.an_element()
+
+                point = boundary.unparametrize(λ, check=False)
+
+        return self._intersection_extend_to_euclidean_boundary(point, half_spaces)
+
+    def _intersection_extend_to_euclidean_boundary(self, point, half_spaces):
+        r"""
+        TODO: Change documentation for the Euclidean case.
+
+        Extend ``point`` to a (Euclidean) half space which intersects the
+        intersection of the ``half_spaces`` defining this polygon in more than
+        one point.
+
+        This is a helper method for :meth:`_normalize_euclidean_boundary`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        We extend from a single point to half space::
+
+            sage: P = polygon(*H.infinity().half_spaces())
+
+            sage: P._normalize_extend_to_euclidean_boundary(H.infinity())
+            {x ≤ 0}
+
+        """
+        half_spaces = [
+            half_space
+            for half_space in half_spaces
+            if point in half_space.boundary()
+        ]
+
+        if len(half_spaces) == 0:
+            raise ValueError("point must be on the boundary of a defining half space")
+
+        if len(half_spaces) < 3:
+            return half_spaces[0]
+
+        for i, half_space in enumerate(half_spaces):
+            following = half_spaces[(i + 1) % len(half_spaces)]
+            configuration = half_space.boundary()._configuration(following.boundary())
+
+            if configuration == "convex":
+                continue
+            if configuration == "negative":
+                return half_space
+
+            if configuration == "concave":
+                return half_space
+
+            raise NotImplementedError(
+                f"cannot extend point to segment when half spaces are in configuration {configuration}"
+            )
+
+        # TODO: Make sure that calling code handles this in the hyperbolic case.
+        # if point.is_ultra_ideal():
+        #     # There is no actual intersection in the hyperbolic plane.
+        #     return self.parent().empty_set()
+
+        return point
+
+    def _intersection_drop_redundant(self, half_spaces, boundary):
+        r"""
+        Return a minimal sublist of the ``half_spaces`` defining this polygon
+        that describe their intersection as half spaces of the Euclidean plane.
+
+        Consider the half spaces in the Klein model. Ignoring the unit disk,
+        they also describe half spaces in the Euclidean plane.
+
+        The half space ``boundary`` must be one of the ``half_spaces`` that
+        defines a boundary edge of the intersection polygon in the Euclidean
+        plane.
+
+        This is a helper method for :meth:`_normalize`.
+
+        ALGORITHM:
+
+        We use an approach similar to gift-wrapping (but from the inside) to remove
+        redundant half spaces from the input list. We start from the
+        ``boundary`` which is one of the minimal half spaces and extend to the
+        full intersection by walking the sorted half spaces.
+
+        Since we visit each half space once, this reduction runs in linear time
+        in the number of half spaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        A helper to create non-normalized polygons for testing::
+
+            sage: polygon = lambda *half_spaces: H.polygon(half_spaces, check=False, assume_sorted=False, assume_minimal=True)
+
+        An intersection which is a single point on the boundary of the unit
+        disk::
+
+            sage: polygon(*H.infinity().half_spaces())._normalize_drop_euclidean_redundant(
+            ....:     boundary=H.vertical(1).right_half_space())
+            {x ≤ 0} ∩ {x - 1 ≥ 0}
+
+        An intersection which is a segment outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {(x^2 + y^2) + 4*x + 3 ≤ 0} ∩ {x ≤ 0} ∩ {9*(x^2 + y^2) + 32*x + 25 ≥ 0} ∩ {x ≥ 0}
+
+        An intersection which is a polygon outside of the unit disk::
+
+            sage: polygon(
+            ....:     H.half_space(0, 1, 0, model="klein"),
+            ....:     H.half_space(1, -2, 0, model="klein"),
+            ....:     H.half_space(-2, -2, 1, model="klein"),
+            ....:     H.half_space(17/8, 2, -1, model="klein"),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.half_space(17/8, 2, -1, model="klein"))
+            {(x^2 + y^2) + 4*x + 3 ≤ 0} ∩ {(x^2 + y^2) - 4*x + 1 ≥ 0} ∩ {9*(x^2 + y^2) + 32*x + 25 ≥ 0} ∩ {x ≥ 0}
+
+        An intersection which is an (unbounded) polygon touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.vertical(1).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(1).right_half_space())
+            {x + 1 ≤ 0} ∩ {x - 1 ≥ 0}
+
+        An intersection which is a segment touching the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(-1).left_half_space(),
+            ....:     H.geodesic(-1, -2).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {x + 1 ≤ 0} ∩  {x ≤ 0} ∩ {(x^2 + y^2) + 3*x + 2 ≥ 0} ∩ {x ≥ 0}
+
+        An intersection which is a polygon inside the unit disk::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.geodesic(0, 1).left_half_space())
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        A polygon which has no vertices inside the unit disk but intersects the unit disk::
+
+            sage: polygon(
+            ....:     H.geodesic(2, 3).left_half_space(),
+            ....:     H.geodesic(-3, -2).left_half_space(),
+            ....:     H.geodesic(-1/2, -1/3).left_half_space(),
+            ....:     H.geodesic(1/3, 1/2).left_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.geodesic(1/3, 1/2).left_half_space())
+            {6*(x^2 + y^2) - 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 5*x + 6 ≥ 0} ∩ {(x^2 + y^2) + 5*x + 6 ≥ 0} ∩ {6*(x^2 + y^2) + 5*x + 1 ≥ 0}
+
+        A single half plane::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space()
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {x ≤ 0}
+
+        A pair of anti-parallel half planes::
+
+            sage: polygon(
+            ....:     H.geodesic(1/2, 2).left_half_space(),
+            ....:     H.geodesic(-1/2, -2).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.geodesic(-1/2, -2).right_half_space())
+            {2*(x^2 + y^2) - 5*x + 2 ≥ 0} ∩ {2*(x^2 + y^2) + 5*x + 2 ≥ 0}
+
+        A pair of anti-parallel half planes in the upper half plane::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(1).left_half_space())
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0}
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(-1).right_half_space())
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0}
+
+        A segment in the unit disk with several superfluous half planes at infinity::
+
+            sage: polygon(
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(1/2).left_half_space(),
+            ....:     H.vertical(1/3).left_half_space(),
+            ....:     H.vertical(1/4).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.vertical(-1/2).right_half_space(),
+            ....:     H.vertical(-1/3).right_half_space(),
+            ....:     H.vertical(-1/4).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(0).left_half_space())
+            {x ≤ 0} ∩ {4*x + 1 ≥ 0} ∩ {x ≥ 0}
+
+        A polygon in the unit disk with several superfluous half planes::
+
+            sage: polygon(
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.geodesic(0, 1).left_half_space(),
+            ....:     H.geodesic(0, -1).right_half_space(),
+            ....:     H.vertical(2).left_half_space(),
+            ....:     H.vertical(-2).right_half_space(),
+            ....:     H.geodesic(0, 1/2).left_half_space(),
+            ....:     H.geodesic(0, -1/2).right_half_space(),
+            ....:     H.vertical(3).left_half_space(),
+            ....:     H.vertical(-3).right_half_space(),
+            ....:     H.geodesic(0, 1/3).left_half_space(),
+            ....:     H.geodesic(0, -1/3).right_half_space(),
+            ....: )._normalize_drop_euclidean_redundant(boundary=H.vertical(1).left_half_space())
+            {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) + x ≥ 0}
+
+        TESTS:
+
+        An example that caused trouble at some point::
+
+            sage: P = polygon(
+            ....:   H.geodesic(7, -4, -3, model="half_plane").left_half_space(),
+            ....:   H.geodesic(1, -1, 0, model="half_plane").left_half_space(),
+            ....:   H.vertical(1/2).right_half_space(),
+            ....:   H.vertical(1).right_half_space(),
+            ....:   H.geodesic(1, 4, -5, model="half_plane").left_half_space(),
+            ....:   H.geodesic(50, 57, -43, model="half_plane").left_half_space(),
+            ....:   H.geodesic(3, 2, -3, model="half_plane").left_half_space()
+            ....: )
+            sage: P._normalize_drop_euclidean_redundant(boundary=P._normalize_euclidean_boundary())
+            {(x^2 + y^2) - x ≥ 0} ∩ {2*x - 1 ≥ 0} ∩ {x - 1 ≥ 0}
+
+        .. NOTE::
+
+            There are some additional assumptions on the input than what is
+            stated here. Please refer to the implementation.
+
+        """
+        half_spaces = list(half_spaces)
+
+        half_spaces = (
+            half_spaces[half_spaces.index(boundary) :]
+            + half_spaces[: half_spaces.index(boundary)]
+        )
+        half_spaces.reverse()
+
+        required_half_spaces = [half_spaces.pop()]
+
+        while half_spaces:
+            A = required_half_spaces[-1]
+            B = half_spaces.pop()
+            C = half_spaces[-1] if half_spaces else required_half_spaces[0]
+
+            # Determine whether B is redundant, i.e., whether the intersection
+            # A, B, C and A, C are the same.
+            # Since we know that A is required and the space non-empty, the
+            # question here is whether C blocks the line of sight from A to B.
+
+            # We distinguish cases, depending of the nature of the intersection of A and B.
+            AB = A.boundary()._configuration(B.boundary())
+            BC = B.boundary()._configuration(C.boundary())
+            AC = A.boundary()._configuration(C.boundary())
+
+            required = False
+
+            if AB == "convex":
+                if BC == "concave":
+                    assert AC in ["equal", "concave"]
+                    required = True
+
+                elif BC == "convex":
+                    BC = B.boundary().intersection(C.boundary())
+                    required = AC == "negative" or (BC in A and BC not in A.boundary())
+
+                elif BC == "negative":
+                    required = True
+
+                elif BC == "anti-parallel":
+                    required = True
+
+                else:
+                    raise NotImplementedError(
+                        f"B and C are in unsupported configuration: {BC}"
+                    )
+
+            elif AB == "negative":
+                required = True
+
+            elif AB == "anti-parallel":
+                required = True
+
+            elif AB == "concave":
+                required = True
+
+            else:
+                raise NotImplementedError(
+                    f"A and B are in unsupported configuration: {AB}"
+                )
+
+            if required:
+                required_half_spaces.append(B)
+            elif len(required_half_spaces) > 1:
+                half_spaces.append(required_half_spaces.pop())
+
+        return EuclideanHalfSpaces(
+            required_half_spaces, assume_sorted="rotated"
+        )
+
+    def _intersection_from_minimal_half_spaces(self, half_spaces):
+        maybe_segment = True
+
+        sides = []
+
+        for A, B, C in half_spaces.triples(repeat=True):
+            if A.boundary()._configuration(B.boundary()) == "concave":
+                AB = None
+            else:
+                AB = A.boundary().intersection(B.boundary()) or None
+
+
+            if B.boundary()._configuration(C.boundary()) == "concave":
+                BC = None
+            else:
+                BC = B.boundary().intersection(C.boundary())
+
+            # If the intersection "points" are empty sets, we replace them with
+            # None which is what segment() expects when there is no finite end
+            # point on an end of the segment.
+            segment = self.segment(B.boundary(), AB or None, BC or None, check=False)
+
+            if segment.is_empty():
+                assert False # can this happen in the Euclidean plane?
+            elif segment.dimension() == 0:
+                # Three half spaces meet in a point. This space is redundant.
+                pass
+            else:
+                if maybe_segment is True:
+                    maybe_segment = segment
+                elif maybe_segment == -segment:
+                    # For the intersection to be only segment, we must see the
+                    # segment twice, once from both sides.
+                    return segment.unoriented()
+                else:
+                    maybe_segment = False
+
+                sides.append(segment)
+
+        assert sides
+
+        if len(sides) == 1:
+            return sides[0].left_half_space()
+
+        return self.polygon(edges=sides, check=False, assume_minimal=True)
 
 
 class EuclideanGeometry(Geometry):
@@ -1803,6 +2540,50 @@ class EuclideanEpsilonGeometry(
             raise ValueError("cannot change_ring() to an exact ring")
 
         return EuclideanEpsilonGeometry(ring, self._epsilon)
+
+
+class EuclideanHalfSpaces(OrderedSet):
+    @classmethod
+    def _lt_(cls, lhs, rhs):
+        a, b, c = lhs.equation()
+        aa, bb, cc = rhs.equation()
+
+        # TODO: Make the comments here not Klein specific.
+        def normal_points_left(b, c):
+            return b < 0 or (b == 0 and c < 0)
+
+        if normal_points_left(b, c) != normal_points_left(bb, cc):
+            # The normal vectors of the half spaces in the Klein model are in
+            # different half planes, one is pointing left, one is pointing
+            # right.
+            return normal_points_left(b, c)
+
+        # The normal vectors of the half spaces in the Klein model are in the
+        # same half plane, so we order them by slope.
+        if b * bb == 0:
+            if b == bb:
+                # The normals are vertical and in the same half plane, so
+                # they must be equal. We will order the half spaces by
+                # inclusion later.
+                cmp = 0
+            else:
+                # Exactly one of the normals is vertical; we order half spaces
+                # such that that one is bigger.
+                return bb == 0
+        else:
+            # Order by the slope of the normal.
+            cmp = (b * bb).sign() * (c * bb - cc * b).sign()
+
+        if cmp == 0:
+            # The half spaces are parallel in the Klein model. We order them by
+            # inclusion, i.e., by the offset in direction of the normal.
+            if c * cc:
+                cmp = c.sign() * (a * cc - aa * c).sign()
+            else:
+                assert b * bb
+                cmp = b.sign() * (a * bb - aa * b).sign()
+
+        return cmp < 0
 
 
 class EuclideanSet(SageObject):
@@ -2459,7 +3240,14 @@ class EuclideanSet(SageObject):
 
     # TODO: Add _an_element_ and some_elements()
 
-    # TODO: Add is_empty() and __bool__
+    def __bool__(self):
+        return not self.is_empty()
+
+    def is_empty(self):
+        return self.dimension() < 0
+
+    def dimension(self):
+        raise NotImplementedError(f"{type(self).__name__} does not implement dimension() yet")
 
     # TODO: Add is_point()
 
@@ -2499,9 +3287,30 @@ class EuclideanSet(SageObject):
         """
         return isinstance(self, EuclideanOrientedSet)
 
+    def intersection(self, other):
+        return self.parent().intersection(self, other)
+
+    def _test_is_convex(self, **options):
+        r"""
+        Verify that this set implements ``is_convex`` in a consistent way.
+        """
+        tester = self._tester(**options)
+
+        is_convex = self.is_convex()
+        if is_convex:
+            reconstruction = self.parent().intersection(*self.half_spaces())
+            tester.assertEqual(reconstruction, self.unoriented().unpointed())
+
     # TODO: Add __hash__ and test method
 
     # TODO: Add random_set for testing.
+
+    def unoriented(self):
+        return self.change(oriented=False)
+
+    def unpointed(self):
+        # TODO: Implement this through change() instead. So nobody should override this one.
+        return self
 
 
 class EuclideanOrientedSet(EuclideanSet):
@@ -2515,9 +3324,6 @@ class EuclideanOrientedSet(EuclideanSet):
     """
     def __contains__(self, point):
         return point in self.unoriented()
-
-    def unoriented(self):
-        return self.change(oriented=False)
 
 
 class EuclideanFacade(EuclideanSet, Parent):
@@ -2767,6 +3573,9 @@ class EuclideanCircle(EuclideanFacade):
 
         return self
 
+    def is_convex(self):
+        return False
+
     def center(self):
         r"""
         Return the point at the center of the circle.
@@ -2987,8 +3796,14 @@ class EuclideanPoint(EuclideanSet, Element):
         # TODO: handle non-normalized coordinates
         assert self._z.is_one() or (self._z.is_zero() and self._y.is_one() or (self._y.is_zero() and self._x.is_one()))
 
+    def is_convex(self):
+        return True
+
     def is_ideal(self):
         return not self._z
+
+    def is_finite(self):
+        return not self.is_ideal()
 
     def __iter__(self):
         r"""
@@ -3009,7 +3824,14 @@ class EuclideanPoint(EuclideanSet, Element):
         yield self._x
         yield self._y
 
+    def coordinates(self):
+        # TODO: Add an interface for infinite points
+        if not self._z:
+            raise ValueError("ideal point")
+        return self._x, self._y
+
     def vector(self):
+        # TODO: Add an interface for infinite points
         if not self._z:
             raise ValueError("ideal point")
         v = self.parent().vector_space()((self._x, self._y))
@@ -3209,6 +4031,23 @@ class EuclideanPoint(EuclideanSet, Element):
         """
         return hash((self._x, self._y, self._z))
 
+    def dimension(self):
+        from sage.all import ZZ
+
+        return ZZ(0)
+
+    def half_spaces(self):
+        x,y = self.coordinates()
+        return EuclideanHalfSpaces([
+            self.parent().line(-x, 1, 0).left_half_space(),
+            self.parent().line(-y, 0, 1).left_half_space(),
+            self.parent().line(x + y, -1, -1).left_half_space(),
+        ])
+
+    def unpointed(self):
+        # TODO: unpointed() should also use the change machinery instead.
+        return self
+
 
 class EuclideanLine(EuclideanFacade):
     r"""
@@ -3256,6 +4095,9 @@ class EuclideanLine(EuclideanFacade):
         self._a = a
         self._b = b
         self._c = c
+
+    def is_convex(self):
+        return True
 
     def is_compact(self):
         return False
@@ -3495,7 +4337,7 @@ class EuclideanLine(EuclideanFacade):
             return self.parent().point(-self._a / self._b, 0)
 
         assert self._c
-        return self.parent().point(-self._a / self._c, 0)
+        return self.parent().point(0, -self._a / self._c)
 
     def _apply_scalar(self, r):
         r"""
@@ -3599,11 +4441,113 @@ class EuclideanLine(EuclideanFacade):
             raise TypeError("cannot hash geodesic defined over inexact base ring")
 
         return hash(
-            (type(self), self.equation(normalization=["one", "gcd"]))
+            self.equation(normalization=["one", "gcd"])
         )
         
     def translate(self, v):
         return self.parent().line(self._a - self._b * v[0] - self._c * v[1], self._b, self._c, oriented=self.is_oriented(), check=False)
+
+    def half_spaces(self):
+        r"""
+        Return the half spaces to the left and right of this line.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: line = E.line((0, 0), (1, 1))
+
+            sage: line.half_spaces()
+            {{x - y ≤ 0}, {x - y ≥ 0}}
+
+        """
+        self = self.change(oriented=True)
+        return EuclideanHalfSpaces([self.left_half_space(), self.right_half_space()])
+
+    def intersection(self, other):
+        r"""
+        TODO: Rewrite documentation for the Euclidean case.
+
+        Return the intersection of this geodesic and ``other``.
+
+        Return ``None`` if they do not intersect in a point.
+
+        INPUT:
+
+        - ``other`` -- another :class:`HyperbolicGeodesic`
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(AA)
+
+        Geodesics can intersect in a finite point::
+
+            sage: H.vertical(0)._intersection(H.half_circle(0, 1))
+            I
+
+        Geodesics can intersect in an ideal point::
+
+            sage: H.vertical(1)._intersection(H.half_circle(0, 1))
+            1
+
+        Geodesics might intersect in an ultra ideal point::
+
+            sage: H.half_circle(0, 1)._intersection(H.half_circle(1, 8))
+            (-3, 0)
+
+        Or they are parallel in the Klein model::
+
+            sage: H.half_circle(0, 1)._intersection(H.half_circle(0, 4))
+
+        Note that geodesics that overlap do not intersect in a point::
+
+            sage: H.vertical(0)._intersection(H.vertical(0))
+
+            sage: H.vertical(0)._intersection(-H.vertical(0))
+
+        TESTS::
+
+            sage: A = -H.vertical(0)
+            sage: B = H.vertical(-1)
+            sage: C = H.vertical(0)
+
+            sage: A._intersection(B)
+            ∞
+
+            sage: A._intersection(C)
+
+            sage: B._intersection(A)
+            ∞
+
+            sage: B._intersection(C)
+            ∞
+
+            sage: C._intersection(A)
+
+            sage: C._intersection(B)
+            ∞
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicConvexSet.intersection` for intersection with more
+            general sets.
+
+            :meth:`HyperbolicPlane.intersection` for the generic
+            intersection of convex sets.
+
+        """
+        if not isinstance(other, EuclideanLine):
+            raise TypeError("other must also be an Euclidean line")
+
+        xy = self.parent().geometry.intersection(
+            (self._a, self._b, self._c), (other._a, other._b, other._c)
+        )
+
+        if xy is None:
+            return self.parent().empty_set()
+
+        return self.parent().point(*xy, check=False)
 
 
 class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
@@ -3688,6 +4632,141 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
     def end(self):
         # TODO: Return an ideal point.
         return None
+
+    def left_half_space(self):
+        return self.parent().half_space(self._a, self._b, self._c)
+
+    def right_half_space(self):
+        return (-self).left_half_space()
+
+    def _configuration(self, other):
+        r"""
+        TODO: Moved here from hyperbolic.
+
+        Return a classification of the (Euclidean) angle between this geodesic
+        and ``other`` in the Klein model.
+
+        This is a helper method for :meth:`HyperbolicConvexPolygon._normalize`.
+
+        INPUT:
+
+        - ``other`` -- another :class:`HyperbolicOrientedGeodesic`
+
+        OUTPUT:
+
+        A string explaining how the two geodesics are oriented.
+
+        .. NOTE::
+
+            This check is not robust over inexact rings and should be improved
+            for that use case.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Two geodesics can be equal::
+
+            sage: H.vertical(0)._configuration(H.vertical(0))
+            'equal'
+
+        They can be equal with reversed orientation::
+
+            sage: H.vertical(0)._configuration(-H.vertical(0))
+            'negative'
+
+        They can be parallel in the Klein model::
+
+            sage: H.vertical(0)._configuration(H.geodesic(1/2, 2))
+            'parallel'
+
+        They can be parallel but with reversed orientation::
+
+            sage: H.vertical(0)._configuration(H.geodesic(2, 1/2))
+            'anti-parallel'
+
+        Or they can intersect. We can distinguish the case that ``other``
+        crosses over from left-to-right or from right-to-left::
+
+            sage: H.vertical(0)._configuration(H.geodesic(1/3, 2))
+            'concave'
+
+            sage: H.vertical(0)._configuration(H.geodesic(1/2, 3))
+            'convex'
+
+        .. SEEALSO::
+
+            :meth:`~HyperbolicGeodesic._intersection` to compute the (ultra-ideal) intersection of geodesics
+
+        """
+        if not isinstance(other, EuclideanOrientedLine):
+            raise TypeError("other must be an oriented line")
+
+        intersection = self.intersection(other)
+
+        if intersection.is_empty():
+            # We should use a specialized method of geometry here to make this
+            # more robust over inexact rings.
+            orientation = self.parent().geometry._sgn(
+                self._b * other._b + self._c * other._c
+            )
+
+            assert orientation != 0
+
+            if self == other:
+                assert orientation > 0
+                return "equal"
+
+            if self == -other:
+                assert orientation < 0
+                return "negative"
+
+            if orientation > 0:
+                return "parallel"
+
+            return "anti-parallel"
+
+        tangent = (self._c, -self._b)
+        orientation = (-tangent[0] * other._b - tangent[1] * other._c).sign()
+
+        assert orientation != 0
+
+        # Probably convex and concave are not the best terms here.
+        if orientation > 0:
+            return "convex"
+
+        # We probably would not need to consider the concave case if we always
+        # packed all geodesics into a bounding box that contains the unit disk.
+        return "concave"
+
+    def parametrize(self, point, check=True):
+        if check:
+            point = self.parent()(point)
+            if point not in self:
+                raise ValueError("point must be on line to be parametrized")
+
+        base = self.an_element().coordinates()
+        tangent = (self._c, -self._b)
+
+        # We should use a specialized predicate here to make this work
+        # better over inexact rings.
+        coordinate = 0 if not self.parent().geometry._zero(tangent[0]) else 1
+        return (
+            point.coordinates()[coordinate] - base[coordinate]
+        ) / tangent[coordinate]
+
+    def unparametrize(self, λ, check=True):
+        base = self.an_element().coordinates()
+        tangent = (self._c, -self._b)
+
+        λ = self.parent().base_ring()(λ)
+
+        return self.parent().point(
+            x=base[0] + λ * tangent[0],
+            y=base[1] + λ * tangent[1],
+            check=check,
+        )
 
 
 class EuclideanUnorientedLine(EuclideanLine):
@@ -3781,6 +4860,9 @@ class EuclideanSegment(EuclideanFacade):
 
         return self
 
+    def is_convex(self):
+        return True
+
     def _apply_scalar(self, r):
         if not r:
             return self.parent().point(0, 0)
@@ -3861,6 +4943,52 @@ class EuclideanSegment(EuclideanFacade):
     def __neg__(self):
         return self.parent().segment(-self._line, self._end, self._start, oriented=self.is_oriented(), check=False)
 
+    def half_spaces(self):
+        r"""
+        Return half spaces whose intersection is this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: start = E((0, 0))
+            sage: end = E((1, 0))
+            sage: segment = start.segment(end)
+            sage: segment.half_spaces()  # TODO: Can we improve plotting (here and hyperbolic) so that negative signs are avoided?
+            {{1 + -x ≥ 0}, {y ≤ 0}, {x ≥ 0}, {y ≥ 0}}
+
+        """
+        half_spaces = list(self._line.half_spaces())
+
+        if self._start is not None:
+            a, b, c = self._line.equation()
+            x, y = self._start.vector()
+            # Rotate the segment around the start point by -π/2.
+            half_spaces.append(self.parent().half_space(b * y - c * x, c, -b))
+
+        if self._end is not None:
+            a, b, c = (-self._line).equation()
+            x, y = self._end.vector()
+            # Rotate the segment around the end point by -π/2.
+            half_spaces.append(self.parent().half_space(b * y - c * x, c, -b))
+
+        return EuclideanHalfSpaces(half_spaces)
+
+    def line(self):
+        line = self._line
+        if not self.is_oriented():
+            line = line.unoriented()
+        return line
+
+    geodesic = line
+
+    def __eq__(self, other):
+        if type(self) is not type(other):
+            return False
+        return (
+            self.line() == other.line() and self.vertices() == other.vertices()
+        )
+
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
     r"""
@@ -3916,7 +5044,7 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
         )
 
     def __hash__(self):
-        return hash((self._line, self._start, self._end))
+        return hash((self._start, self._end, self.geodesic()))
 
     def start(self):
         # TODO: The EuclideanPlane should Model RP², so this should not be None but an ideal point.
@@ -4010,7 +5138,67 @@ class EuclideanUnorientedSegment(EuclideanSegment):
         )
 
     def __hash__(self):
-        return hash((self._line.unoriented(), {self._start, self._end}))
+        return hash((frozenset([self._start, self._end]), self.geodesic()))
+
+
+class EuclideanHalfSpace(EuclideanFacade):
+    def __init__(self, parent, line):
+        super().__init__(parent)
+
+        if not isinstance(line, EuclideanOrientedLine):
+            raise TypeError("line must be an oriented line")
+
+        if not line.parent() is parent:
+            raise ValueError("line must be in parent")
+
+        self._line = line
+
+    def equation(self, normalization=None):
+        return self._line.equation(normalization=normalization)
+
+    def boundary(self):
+        return self._line
+
+    def __contains__(self, point):
+        point = self.parent()(point)
+
+        if not isinstance(point, EuclideanPoint):
+            raise TypeError("point must be a point in the Euclidean plane")
+
+        a, b, c = self._line.equation()
+        x, y = point.coordinates()
+
+        return self.parent().geometry._sgn(a + b * x + c * y) >= 0
+
+    def _repr_(self):
+        # TODO: This code is duplicate with the hyperbolic case. That's probably alright.
+        geodesic = repr(self.boundary())
+
+        cmp = "≥"
+
+        if geodesic.startswith("{-"):
+            cmp = "≤"
+            geodesic = repr(-self.boundary())
+
+        return geodesic.replace("=", cmp)
+
+    def change(self, *, ring=None, geometry=None, oriented=None):
+        if ring is not None or geometry is not None:
+            self = self._line.change(ring=ring, geometry=geometry).left_half_space()
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("half spaces cannot have an explicit orientation")
+
+        return self
+
+    def is_convex(self):
+        return True
+
+    def half_spaces(self):
+        return EuclideanHalfSpaces([self])
 
 
 # TODO: should we allow the "complement" of a polygon to be a proper polygon?
@@ -4085,8 +5273,8 @@ class EuclideanPolygon(EuclideanFacade):
             sage: from flatsurf import polygons, Polygon
             sage: p1 = polygons.square()
             sage: p2 = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)], base_ring=AA)
-            sage: p1 == p2
-            True
+            sage: p1 == p2  # TODO: This used to be True. This is a breaking change? Is this the same in the hyperbolic case?
+            False
 
             sage: p3 = Polygon(edges=[(2, 0), (-1, 1), (-1, -1)])
             sage: p1 == p3
@@ -4098,7 +5286,7 @@ class EuclideanPolygon(EuclideanFacade):
             sage: p1 = polygons.square()
             sage: p2 = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)], base_ring=AA)
             sage: p1 != p2
-            False
+            True
 
             sage: p3 = Polygon(edges=[(2, 0), (-1, 1), (-1, -1)])
             sage: p1 != p3
@@ -4108,7 +5296,7 @@ class EuclideanPolygon(EuclideanFacade):
         if not isinstance(other, EuclideanPolygon):
             return False
 
-        return self._edges == other._edges
+        return set(self._edges) == set(other._edges)
 
     # TODO: Do we need this?
     def cmp(self, other):
@@ -4372,6 +5560,41 @@ class EuclideanPolygon(EuclideanFacade):
             return False
         return self.get_point_position(point).is_inside()
 
+    def dimension(self):
+        from sage.all import ZZ
+        return ZZ(2)
+
+    def half_spaces(self):
+        return [side.line().left_half_space() for side in self.sides()]
+
+    def unpointed(self):
+        # TODO: Add a pointed polygon and maybe use this as a base class?
+        return self
+
+
+class EuclideanEmptySet(EuclideanFacade):
+    def dimension(self):
+        from sage.all import ZZ
+        return ZZ(-1)
+
+    def change(self, *, ring=None, geometry=None, oriented=None):
+        if ring is not None or geometry is not None:
+            P = self.parent()
+            Q = P.change_ring(ring, geometry=geometry)
+            if P is not Q:
+                self = Q.empty_set()
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("empty sets cannot have an explicit orientation")
+
+        return self
+
+    def _repr_(self):
+        return "{}"
+
 
 class EuclideanDistance_base(Element):
     def _acted_upon_(self, other, self_on_left):
@@ -4426,6 +5649,7 @@ class EuclideanDistance_base(Element):
 
         f = float(self.norm_squared())
         if f < 0:
+            # TODO
             print("Bug https://github.com/sagemath/sage/issues/37983.")
             return float(0)
         return sqrt(f)

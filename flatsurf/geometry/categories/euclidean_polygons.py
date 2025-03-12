@@ -209,23 +209,34 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
+            sides = self.sides()
+            for i, e in enumerate(sides):
+                for j, f in enumerate(sides):
+                    if j <= i + 1:
+                        continue
+
+                    if (j + 1) % len(sides) == 0:
+                        continue
+
+                    if e.intersection(f):
+                        return False
+
             return True
-            # TODO: Implement this
-            # n = len(self.vertices())
-            # for i in range(n):
-            #     ei = (self.vertex(i), self.vertex(i + 1))
-            #     for j in range(i + 2, n + 1):
-            #         if (i - j) % n in [-1, 0, 1]:
-            #             continue
 
-            #         ej = (self.vertex(j), self.vertex(j + 1))
+        def _test_is_simple(self, **options):
+            r"""
+            Verify that :meth:`is_simple` is implemented correctly.
 
-            #         from flatsurf.geometry.euclidean import is_segment_intersecting
+            EXAMPLES::
 
-            #         if is_segment_intersecting(ei, ej):
-            #             return False
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s._test_is_simple()
 
-            # return True
+            """
+            tester = self._tester(**options)
+
+            tester.assertEqual(EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple())
 
         @abstract_method
         def vertices(self, marked_vertices=True, finite=None):

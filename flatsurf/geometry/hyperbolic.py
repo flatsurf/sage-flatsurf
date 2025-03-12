@@ -216,15 +216,13 @@ We can also intersect objects that are not half spaces::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-import collections.abc
-
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry
+from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry, OrderedSet
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
@@ -521,6 +519,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 return True
 
         return super().__contains__(x)
+
+    def euclidean(self):
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        return EuclideanPlane(self.base_ring(), self.geometry.euclidean());
 
     def change_ring(self, ring, geometry=None):
         r"""
@@ -3660,6 +3662,9 @@ class HyperbolicExactGeometry(UniqueRepresentation, ExactGeometry, HyperbolicGeo
         :class:`HyperbolicEpsilonGeometry` for an implementation over inexact rings
 
     """
+    def euclidean(self):
+        from flatsurf.geometry.euclidean import EuclideanExactGeometry
+        return EuclideanExactGeometry(self.base_ring())
 
     def change_ring(self, ring):
         r"""
@@ -3751,6 +3756,9 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, EpsilonGeometry, Hyperboli
         :class:`HyperbolicExactGeometry`
 
     """
+    def euclidean(self):
+        from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+        return EuclideanEpsilonGeometry(self.base_ring(), self._epsilon)
 
     def projective(self, p, q, point):
         r"""
@@ -6246,6 +6254,9 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         """
         return HyperbolicOrientedGeodesic.random_set(parent).left_half_space()
 
+    def euclidean(self):
+        return self.boundary().euclidean().left_half_space()
+
 
 class HyperbolicGeodesic(HyperbolicConvexFacade):
     r"""
@@ -7353,6 +7364,8 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
     def _intersection(self, other):
         r"""
+        TODO: Do we need this or can we just use the Euclidean version?
+
         Return the intersection of this geodesic and ``other``.
 
         Return ``None`` if they do not intersect in a point.
@@ -7423,7 +7436,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         """
         if not isinstance(other, HyperbolicGeodesic):
-            return super().intersection(other)
+            raise TypeError("other must also be a hyperbolic geodesic")
 
         xy = self.parent().geometry.intersection(
             (self._a, self._b, self._c), (other._a, other._b, other._c)
@@ -7986,9 +7999,11 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             :meth:`~HyperbolicGeodesic._intersection` to compute the (ultra-ideal) intersection of geodesics
 
         """
+        # TODO: Do we really need this or can we completely rely on the Euclidean implementation?
         if not isinstance(other, HyperbolicOrientedGeodesic):
             raise TypeError("other must be an oriented geodesic")
 
+        # TODO: Rewrite to Euclidean so we allow ultraideal points.
         intersection = self._intersection(other)
 
         if intersection is None:
@@ -8078,6 +8093,9 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
                 raise ValueError("point must be on geodesic to be parametrized")
 
         if model == "euclidean":
+            # TODO: Call the Euclidean function instead. Maybe we shouldn't
+            # even have this function and tell people to call
+            # euclidean().(un)parametrize instead.
             base = self.an_element().coordinates(model="klein")
             tangent = (self._c, -self._b)
 
@@ -8126,6 +8144,9 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         """
         if model == "euclidean":
+            # TODO: Call the Euclidean function instead. Maybe we shouldn't
+            # even have this function and tell people to call
+            # euclidean().(un)parametrize instead.
             base = self.an_element().coordinates(model="klein")
             tangent = (self._c, -self._b)
 
@@ -8447,6 +8468,10 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
             tester.assertAlmostEqual(self.angle(other), (1 - other.angle(self)) % 1)
             tester.assertAlmostEqual(self.angle(-other), (0.5 - other.angle(self)) % 1)
+
+    # TODO: This should probably get an optional "model" parameter.
+    def euclidean(self):
+        return self.parent().euclidean().line(*self.equation(model="klein"), check=False)
 
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
@@ -10143,6 +10168,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
     def _normalize_drop_trivially_redundant(self):
         r"""
+        TODO: Use Euclidean implementation instead.
+
         Return a sublist of the ``half_spaces`` defining this polygon without
         changing their intersection by removing some trivially redundant half
         spaces.
@@ -10487,6 +10514,11 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         ALGORITHM:
 
+        TODO: What this method does has almost nothing to do with what is
+        written here. We never get rid of half spaces that do not even touch
+        the unit disk. They are not assumed to be there from the very beginning
+        of the process.
+
         When passing to the Klein model, i.e., intersecting the polygon with the
         unit disk, some of the edges of the (possibly unbounded) polygon
         described by the ``half_spaces`` are unnecessary because they are not
@@ -10632,6 +10664,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
             stated here. Please refer to the implementation.
 
         """
+        # TODO: Which of this code can be taken from the Euclidean case.
         required_half_spaces = []
 
         maybe_empty = True
@@ -10712,6 +10745,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
     def _normalize_euclidean_boundary(self):
         r"""
+        TODO: Use the Euclidean implementation instead.
+
         Return a half space whose (Euclidean) boundary intersects the boundary
         of the intersection of the ``half_spaces`` defining this polygon in
         more than a point.
@@ -10972,6 +11007,8 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
     def _normalize_extend_to_euclidean_boundary(self, point):
         r"""
+        TODO: Use Euclidean implementation instead.
+
         Extend ``point`` to a (Euclidean) half space which intersects the
         intersection of the ``half_spaces`` defining this polygon in more than
         one point.
@@ -13311,407 +13348,6 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
         return parent.empty_set()
 
 
-class OrderedSet(collections.abc.Set):
-    r"""
-    A set of objects sorted by :meth:`OrderedSet._lt_`.
-
-    This is used to efficiently represent
-    :meth:`HyperbolicConvexSet.half_spaces`,
-    :meth:`HyperbolicConvexSet.vertices`, and
-    :meth:`HyperbolicConvexSet.edges`. In particular, it allows us to create
-    and merge such sets in linear time.
-
-    This is an abstract base class for specialized sets such as
-    :class:`HyperbolicHalfSpaces`, :class:`HyperbolicVertices`, and
-    :class:`HyperbolicEdges`.
-
-    INPUT:
-
-    - ``entries`` -- an iterable, the elements of this set
-
-    - ``assume_sorted`` -- a boolean or ``"rotated"`` (default: ``True``); whether to assume
-      that the ``entries`` are already sorted with respect to :meth:`_lt_`. If
-      ``"rotated"``, we assume that the entries are sorted modulo a cyclic permutation.
-
-    EXAMPLES::
-
-        sage: from flatsurf import HyperbolicPlane
-        sage: H = HyperbolicPlane()
-
-        sage: segment = H(I).segment(2*I)
-        sage: segment.vertices()
-        {I, 2*I}
-
-    """
-
-    def __init__(self, entries, assume_sorted=None):
-        r"""
-        TESTS::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: from flatsurf.geometry.hyperbolic import OrderedSet
-            sage: H = HyperbolicPlane()
-
-            sage: vertices = H(I).segment(2*I).vertices()
-
-            sage: isinstance(vertices, OrderedSet)
-            True
-
-        """
-        if assume_sorted is None:
-            assume_sorted = isinstance(entries, OrderedSet)
-
-        if assume_sorted == "rotated":
-            min = 0
-            for i, entry in enumerate(entries):
-                if self._lt_(entry, entries[min]):
-                    min = i
-
-            entries = entries[min:] + entries[:min]
-            assume_sorted = True
-
-        if not assume_sorted:
-            entries = self._merge(*[[entry] for entry in entries])
-
-        self._entries = tuple(entries)
-
-    def _lt_(self, lhs, rhs):
-        r"""
-        Return whether ``lhs`` should come before ``rhs`` in this set.
-
-        Subclasses must implement this method.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: from flatsurf.geometry.hyperbolic import OrderedSet
-            sage: H = HyperbolicPlane()
-
-            sage: vertices = H(I).segment(2*I).vertices()
-
-            sage: vertices._lt_(vertices[0], vertices[1])
-            True
-
-        """
-        raise NotImplementedError
-
-    def _merge(self, *sets):
-        r"""
-        Return the merge of sorted lists of ``sets`` using merge sort.
-
-        Note that this set itself is not part of the merge.
-
-        Naturally, when there are a lot of small sets, such a merge sort takes
-        quasi-linear time. However, when there are only a few sets, this runs
-        in linear time.
-
-        INPUT:
-
-        - ``sets`` -- iterables that are sorted with respect to :meth:`_lt_`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicHalfSpaces
-            sage: H = HyperbolicPlane()
-
-            sage: HyperbolicHalfSpaces([])._merge()
-            []
-
-            sage: HyperbolicHalfSpaces([])._merge([H.vertical(0).left_half_space()], [H.vertical(0).left_half_space()])
-            [{x ≤ 0}]
-
-            sage: HyperbolicHalfSpaces([])._merge(*[[half_space] for half_space in H.real(0).half_spaces()])
-            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
-
-            sage: HyperbolicHalfSpaces([])._merge(list(H.real(0).half_spaces()), list(H.real(0).half_spaces()))
-            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
-
-            sage: HyperbolicHalfSpaces([])._merge(*[[half_space] for half_space in list(H.real(0).half_spaces()) * 2])
-            [{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}]
-
-        """
-        # A standard merge-sort implementation.
-        count = len(sets)
-
-        if count == 0:
-            return []
-
-        if count == 1:
-            return sets[0]
-
-        # The non-trivial base case.
-        if count == 2:
-            A = sets[0]
-            B = sets[1]
-            merged = []
-
-            while A and B:
-                if self._lt_(A[-1], B[-1]):
-                    merged.append(B.pop())
-                elif self._lt_(B[-1], A[-1]):
-                    merged.append(A.pop())
-                else:
-                    # Drop duplicate from set
-                    A.pop()
-
-            merged.reverse()
-
-            return A + B + merged
-
-        # Divide & Conquer recursively.
-        return self._merge(
-            *(self._merge(*sets[: count // 2]), self._merge(*sets[count // 2 :]))
-        )
-
-    def __eq__(self, other):
-        r"""
-        Return whether this set is equal to ``other``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: H.vertical(0).vertices() == (-H.vertical(0)).vertices()
-            True
-
-        """
-        if type(other) is not type(self):
-            other = type(self)(other)
-
-        return self._entries == other._entries
-
-    def __ne__(self, other):
-        r"""
-        Return whether this set is not equal to ``other``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: H.vertical(0).vertices() != H.vertical(1).vertices()
-            True
-
-        """
-        return not (self == other)
-
-    def __hash__(self):
-        r"""
-        Return a hash value for this set that is consistent with :meth:`__eq__`
-        and :meth:`__ne__`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: hash(H.vertical(0).vertices()) != hash(H.vertical(1).vertices())
-            True
-
-        """
-        return hash(tuple(self._entries))
-
-    def __add__(self, other):
-        r"""
-        Return the :meth:`_merge` of this set and ``other``.
-
-        INPUT:
-
-        - ``other`` -- another set of the same kind
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: H.vertical(0).half_spaces() + H.vertical(1).half_spaces()
-            {{x ≤ 0}, {x - 1 ≤ 0}, {x ≥ 0}, {x - 1 ≥ 0}}
-
-        """
-        if type(self) is not type(other):
-            raise TypeError("both sets must be of the same type")
-        entries = self._merge(list(self._entries), list(other._entries))
-        return type(self)(entries, assume_sorted=True)
-
-    def __repr__(self):
-        r"""
-        Return a printable representation of this set.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: H.half_circle(0, 1).vertices()
-            {-1, 1}
-
-        """
-        return "{" + repr(self._entries)[1:-1] + "}"
-
-    def __iter__(self):
-        r"""
-        Return an iterator of this set.
-
-        Iteration happens in sorted order, consistent with :meth:`_lt_`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: vertices = H.half_circle(0, 1).vertices()
-            sage: list(vertices)
-            [-1, 1]
-
-        """
-        return iter(self._entries)
-
-    def __len__(self):
-        r"""
-        Return the cardinality of this set.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: vertices = H.half_circle(0, 1).vertices()
-            sage: len(vertices)
-            2
-
-        """
-        return len(self._entries)
-
-    def pairs(self, repeat=False):
-        r"""
-        Return an iterable that iterates over all consecutive pairs of elements
-        in this set; including the pair formed by the last element and the
-        first element.
-
-        INPUT:
-
-        - ``repeat`` -- a boolean (default: ``False``); whether to produce pair
-          consisting of the first element twice if there is only one element
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: vertices = H.half_circle(0, 1).vertices()
-            sage: list(vertices.pairs())
-            [(1, -1), (-1, 1)]
-
-        .. SEEALSO::
-
-            :meth:`triples`
-
-        """
-        if len(self._entries) <= 1 and not repeat:
-            return
-
-        for i in range(len(self._entries)):
-            yield self._entries[i - 1], self._entries[i]
-
-    def triples(self, repeat=False):
-        r"""
-        Return an iterable that iterates over all consecutive triples of
-        elements in this set; including the triples formed by wrapping around
-        the end of the set.
-
-        INPUT:
-
-        - ``repeat`` -- a boolean (default: ``False``); whether to produce
-          triples by wrapping around even if there are fewer than three
-          elements
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-        There must be at least three elements to form any triples::
-
-            sage: vertices = H.half_circle(0, 1).vertices()
-            sage: list(vertices.triples())
-            []
-
-            sage: half_spaces = H(I).segment(2*I).half_spaces()
-            sage: list(half_spaces.triples())
-            [({(x^2 + y^2) - 1 ≥ 0}, {x ≤ 0}, {(x^2 + y^2) - 4 ≤ 0}),
-             ({x ≤ 0}, {(x^2 + y^2) - 4 ≤ 0}, {x ≥ 0}),
-             ({(x^2 + y^2) - 4 ≤ 0}, {x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}),
-             ({x ≥ 0}, {(x^2 + y^2) - 1 ≥ 0}, {x ≤ 0})]
-
-        However, we can force triples to be produced by wrapping around with
-        ``repeat``::
-
-            sage: vertices = H.half_circle(0, 1).vertices()
-            sage: list(vertices.triples(repeat=True))
-            [(1, -1, 1), (-1, 1, -1)]
-
-        .. SEEALSO::
-
-            :meth:`pairs`
-
-        """
-        if len(self._entries) <= 2 and not repeat:
-            return
-
-        for i in range(len(self._entries)):
-            yield self._entries[i - 1], self._entries[i], self._entries[
-                (i + 1) % len(self._entries)
-            ]
-
-    def __getitem__(self, *args, **kwargs):
-        r"""
-        Return items from this set by index.
-
-        INPUT:
-
-        Any arguments that can be used to access a tuple are accepted.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: vertices = H.half_circle(0, 1).vertices()
-            sage: vertices[0]
-            -1
-
-        """
-        return self._entries.__getitem__(*args, **kwargs)
-
-    def __contains__(self, x):
-        r"""
-        Return whether this set contains ``x``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: vertices = H.half_circle(0, 1).vertices()
-
-            sage: H(0) in vertices
-            False
-
-            sage: H(1) in vertices
-            True
-
-        .. NOTE::
-
-            Presently, this method is not used. It only exists to satisfy the
-            conditions of the Python abc for sets. It could be implemented more
-            efficiently.
-
-        """
-        return x in self._entries
-
-
 class HyperbolicVertices(OrderedSet):
     r"""
     A set of vertices on the boundary of a convex set in the hyperbolic plane,
@@ -14042,44 +13678,8 @@ class HyperbolicHalfSpaces(OrderedSet):
             False
 
         """
-        a, b, c = lhs.equation(model="klein")
-        aa, bb, cc = rhs.equation(model="klein")
-
-        def normal_points_left(b, c):
-            return b < 0 or (b == 0 and c < 0)
-
-        if normal_points_left(b, c) != normal_points_left(bb, cc):
-            # The normal vectors of the half spaces in the Klein model are in
-            # different half planes, one is pointing left, one is pointing
-            # right.
-            return normal_points_left(b, c)
-
-        # The normal vectors of the half spaces in the Klein model are in the
-        # same half plane, so we order them by slope.
-        if b * bb == 0:
-            if b == bb:
-                # The normals are vertical and in the same half plane, so
-                # they must be equal. We will order the half spaces by
-                # inclusion later.
-                cmp = 0
-            else:
-                # Exactly one of the normals is vertical; we order half spaces
-                # such that that one is bigger.
-                return bb == 0
-        else:
-            # Order by the slope of the normal.
-            cmp = (b * bb).sign() * (c * bb - cc * b).sign()
-
-        if cmp == 0:
-            # The half spaces are parallel in the Klein model. We order them by
-            # inclusion, i.e., by the offset in direction of the normal.
-            if c * cc:
-                cmp = c.sign() * (a * cc - aa * c).sign()
-            else:
-                assert b * bb
-                cmp = b.sign() * (a * bb - aa * b).sign()
-
-        return cmp < 0
+        from flatsurf.geometry.euclidean import EuclideanHalfSpaces
+        return EuclideanHalfSpaces._lt_(lhs.euclidean(), rhs.euclidean())
 
     @staticmethod
     def convex_hull(vertices):
