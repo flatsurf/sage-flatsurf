@@ -679,6 +679,17 @@ class SurfacePoint(Element):
 class SaddleConnection(SageObject):
     r"""
     Represents a saddle connection on a SimilaritySurface.
+
+    TESTS:
+
+    Verify that #259 has been resolved::
+
+        sage: from flatsurf.geometry.surface_objects import SaddleConnection
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.cathedral(1, 2)
+        sage: SaddleConnection(S, (1, 8), (0, -1))
+        Saddle connection in direction (0, -1) with start data (1, 8) and end data (1, 5)
+
     """
 
     def __init__(
