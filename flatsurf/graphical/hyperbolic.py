@@ -1,3 +1,4 @@
+# TODO: Generalize this for the Euclidean case.
 r"""
 Plotting primitives for subsets of the hyperbolic plane
 
@@ -382,10 +383,10 @@ class CartesianPathPlot(GraphicPrimitive):
             direction = None
             vertices = [pos]
         elif command.code == "MOVETOINFINITY":
-            # We cannot draw lines yet. We don't seem to need them for hyperbolic plots at the moment.
-            raise NotImplementedError(
-                "cannot draw a path that starts at an infinite point yet"
-            )
+            assert self._commands[1].code == "LINETO"
+            pos = None
+            direction = command.args
+            vertices = [CartesianPathPlot._infinity(self._commands[1].args, direction, xlim, ylim)]
         else:
             raise RuntimeError(f"path must not start with a {command.code} command")
 
@@ -437,6 +438,9 @@ class CartesianPathPlot(GraphicPrimitive):
         from sage.all import vector
 
         direction = vector(direction)
+        if not direction:
+            raise ValueError("direction must be non-zero")
+
         pos = vector(pos)
 
         from sage.all import infinity
@@ -620,7 +624,9 @@ class CartesianPathPlot(GraphicPrimitive):
 
             bbox = Bbox.null()
 
-            for command in self._commands:
+            pos = None
+
+            for c, command in enumerate(self._commands):
                 if command.code in ["MOVETO", "LINETO"]:
                     pos = command.args
                     bbox.update_from_data_xy([pos], ignore=False)
@@ -674,10 +680,18 @@ class CartesianPathPlot(GraphicPrimitive):
                     from sage.all import vector
 
                     direction = vector(command.args)
+                    if pos is None:
+                        # TODO: This is an evil hack.
+                        assert self._commands[c + 1].code == "LINETO"
+                        pos = self._commands[c + 1].args
                     moved = vector(pos) + direction
-                    bbox = bbox.union(
-                        [bbox, Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])]
-                    )
+                    # TODO: Hack!
+                    if bbox.bounds == Bbox.null().bounds:
+                        bbox = Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])
+                    else:
+                        bbox = bbox.union(
+                            [bbox, Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])]
+                        )
                 else:
                     raise NotImplementedError(
                         f"cannot determine bounding box for {command.code} command"

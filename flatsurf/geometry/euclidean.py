@@ -2417,7 +2417,7 @@ class EuclideanGeometry(Geometry):
             False
 
         """
-        return self._equal_vector((p._x, p._y, p._z), (q._x, q._y, q._z))
+        return self._equal_vector((p._x * q._y, p._x * q._z, p._y * q._z), (q._x * p._y, q._x * p._z, q._y * p._z))
 
 
 class EuclideanExactGeometry(UniqueRepresentation, EuclideanGeometry, ExactGeometry):
@@ -3830,11 +3830,24 @@ class EuclideanPoint(EuclideanSet, Element):
             raise ValueError("ideal point")
         return self._x, self._y
 
-    def vector(self):
-        # TODO: Add an interface for infinite points
+    def vector(self, model=None):
+        if model == "projective":
+           V = self.parent().base_ring()**3 
+           v = V((self._x, self._y, self._z))
+           v.set_immutable()
+           return v
+
+        # TODO: Give a name to R2 model.
+
+        if model is not None:
+           raise NotImplementedError
+
+        # TODO: Use a predicate
         if not self._z:
-            raise ValueError("ideal point")
-        v = self.parent().vector_space()((self._x, self._y))
+            raise ValueError(f"{self} has no coordinates in this model")
+
+        V = self.parent().base_ring()**2
+        v = V((self._x, self._y))
         v.set_immutable()
         return v
 
@@ -4626,12 +4639,10 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
         return self.parent().line(-self._a, -self._b, -self._c, check=False)
 
     def start(self):
-        # TODO: Return an ideal point.
-        return None
+        return self.parent().point(self._c, -self._b, 0)
 
     def end(self):
-        # TODO: Return an ideal point.
-        return None
+        return self.start()
 
     def left_half_space(self):
         return self.parent().half_space(self._a, self._b, self._c)
@@ -4989,6 +5000,53 @@ class EuclideanSegment(EuclideanFacade):
             self.line() == other.line() and self.vertices() == other.vertices()
         )
 
+    def plot(self, **options):
+        from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+
+        if self.start().is_finite() and self.end().is_finite():
+            from sage.all import line2d
+            return line2d((self._start, self._end), **options)
+
+        # TODO: This code is duplicate with polygon plotting.
+        from sage.misc.decorators import options as o, rename_keyword
+        @rename_keyword(color="rgbcolor")
+        @o(
+            alpha=1,
+            rgbcolor=(0, 0, 1),
+            edgecolor=None,
+            thickness=1,
+            legend_label=None,
+            legend_color=None,
+            aspect_ratio=1.0,
+            fill=True,
+        )
+        def normalize_edge_options(**op):
+            return op
+
+        from sage.all import Graphics
+        g = Graphics()
+
+        options = normalize_edge_options(**options)
+        g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
+
+        if self.start().is_finite():
+            g.add_primitive(CartesianPathPlot(
+                [
+                    CartesianPathPlotCommand("MOVETO", self.start().vector()),
+                    CartesianPathPlotCommand("RAYTO", self.end().vector(model="projective")[:2])
+                ],
+                options))
+            return g
+
+        if self.end().is_finite():
+            g.add_primitive(CartesianPathPlot(
+                [
+                    CartesianPathPlotCommand("MOVETOINFINITY", self.start().vector(model="projective")[:2]),
+                    CartesianPathPlotCommand("LINETO", self.end().vector()),
+                ],
+                options))
+            return g
+
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
     r"""
@@ -5047,11 +5105,13 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
         return hash((self._start, self._end, self.geodesic()))
 
     def start(self):
-        # TODO: The EuclideanPlane should Model RP², so this should not be None but an ideal point.
+        if self._start is None:
+            return self._line.start()
         return self._start
 
     def end(self):
-        # TODO: The EuclideanPlane should Model RP², so this should not be None but an ideal point.
+        if self._end is None:
+            return self._line.end()
         return self._end
 
     def vector(self):
@@ -5435,6 +5495,7 @@ class EuclideanPolygon(EuclideanFacade):
 
     def vertices(self, marked_vertices=True):
         # TODO: Expose as points as well.
+        # TODO: This does not implement the method from the category.
         r"""
         Return the vertices of this polygon in counterclockwise order as
         vectors in the real plane.
@@ -5532,8 +5593,16 @@ class EuclideanPolygon(EuclideanFacade):
 
         sides = self.sides()
         for i in range(len(sides)):
-            if sides[i - 1].end() != sides[i].start():
+            end = sides[i - 1] .end()
+            start = sides[i].start()
+
+            if end == start:
+                continue
+
+            if end.is_finite() or start.is_finite():
                 raise ValueError("polygon is not closed")
+
+            # TODO: Check that the polygon is connected.
 
         from flatsurf.geometry.categories import EuclideanPolygons
 

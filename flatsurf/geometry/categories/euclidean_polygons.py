@@ -592,21 +592,89 @@ class EuclideanPolygons(Category_over_base_ring):
                 ...Graphics object consisting of 3 graphics primitives
 
             """
-            from sage.plot.point import point2d
-            from sage.plot.line import line2d
-            from sage.plot.polygon import polygon2d
+            # TODO: Unify the interface with what hyperbolic does. Do we really
+            # need the "options" split here? Or can we just use an interface
+            # that is more like the one in hyperbolic_path()?
+            # TODO: Use defaults as in hyperbolic_path()
+            # TODO: Show coordinate system but hide it in surface plots.
 
-            P = self.vertices(translation)
+            if translation:
+                # TODO: Deprecate translation.
+                self = self.translate(translation)
 
-            polygon_options = {"alpha": 0.3, "zorder": 1, **polygon_options}
-            edge_options = {"color": "orange", "zorder": 2, **edge_options}
-            vertex_options = {"color": "red", "zorder": 2, **vertex_options}
+            from sage.all import Graphics
+            g = Graphics()
 
-            return (
-                polygon2d(P, **polygon_options)
-                + line2d(P + (P[0],), **edge_options)
-                + point2d(P, **vertex_options)
-            )
+            from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+
+            if polygon_options is not None:
+                from sage.misc.decorators import options, rename_keyword
+                @rename_keyword(color="rgbcolor")
+                @options(
+                    alpha=1,
+                    rgbcolor=(0, 0, 1),
+                    edgecolor=None,
+                    thickness=1,
+                    legend_label=None,
+                    legend_color=None,
+                    aspect_ratio=1.0,
+                    fill=True,
+                )
+                def normalize_polygon_options(**options):
+                    return options
+
+                polygon_options = normalize_polygon_options(**polygon_options)
+
+                g._set_extra_kwds(Graphics._extract_kwds_for_show(polygon_options))
+
+                commands = []
+
+                cursor = self.sides()[0].start()
+                if cursor.is_finite():
+                    commands.append(CartesianPathPlotCommand("MOVETO", cursor.vector()))
+                else:
+                    raise NotImplementedError
+
+                for side in self.sides():
+                    if side.start() != cursor:
+                        assert side.start().is_ideal() and cursor.is_ideal(), "in a closed polygons, there can only be jumps between vertices at infinite points"
+                        cursor = side.start()
+                        commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
+                    if side.end().is_finite():
+                        cursor = side.end()
+                        commands.append(CartesianPathPlotCommand("LINETO", cursor.vector()))
+                    else:
+                        if cursor.is_finite():
+                            cursor = side.end()
+                            commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
+                        else:
+                            raise NotImplementedError()
+
+                g.add_primitive(CartesianPathPlot(commands, {**polygon_options, "thickness": 0}))
+                # TODO
+                # from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand
+                # # TODO: Implement this using MOVETO, MOVETOINFINITY, and so on.
+                # from sage.plot.polygon import polygon2d
+                # polygon_options = {"alpha": 0.3, "zorder": 1, **polygon_options}
+                # plots.append(polygon2d(P, **polygon_options))
+
+            if edge_options is not None:
+                pass
+                # TODO
+                # from sage.plot.line import line2d
+                # edge_options = {"color": "orange", "zorder": 2, **edge_options}
+                # P = self.vertices()
+                # plots.append(line2d(P + (P[0],), **edge_options))
+
+            if vertex_options is not None:
+                pass
+                # TODO
+                # from sage.plot.point import point2d
+                # vertex_options = {"color": "red", "zorder": 2, **vertex_options}
+                # P = self.vertices()
+                # plots.append(point2d(P, **vertex_options))
+
+            return g
 
         def angles(self, numerical=None, assume_rational=None):
             r"""

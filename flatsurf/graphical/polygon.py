@@ -25,6 +25,8 @@ from sage.plot.text import text
 from sage.plot.line import line2d
 from sage.plot.point import point2d
 
+from sage.misc.cachefunc import cached_method
+
 from flatsurf.geometry.similarity import SimilarityGroup
 
 V = VectorSpace(RDF, 2)
@@ -45,25 +47,18 @@ class GraphicalPolygon:
         - ``polygon`` -- the actual polygon
 
         - ``transformation`` -- a transformation to be applied to the polygon
-
-        - ``outline_color`` -- a color
-
-        - ``fill_color`` -- another color
-
-        - ``label`` -- an optional label for the polygon
-
-        - ``edge_labels`` -- one of ``False``, ``True`` or a list of labels
         """
-        self._p = polygon
-
-        # the following stores _transformation and _v
-        self.set_transformation(transformation)
+        self._polygon = polygon
+        self._transformation = transformation or SimilarityGroup(self._polygon.base_ring()).one()
 
     def copy(self):
         r"""
         Return a copy of this GraphicalPolygon.
         """
-        return GraphicalPolygon(self._p, self.transformation())
+        import warnings
+        warnings.warn("copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead")
+
+        return GraphicalPolygon(self._polygon, self.transformation())
 
     def __repr__(self):
         r"""
@@ -77,59 +72,50 @@ class GraphicalPolygon:
             sage: gs.graphical_polygon(0)
             GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
         """
-        return "GraphicalPolygon with vertices {}".format(self._v)
+        return repr(self.polygon())
+
+    @cached_method
+    def polygon(self):
+        return self._transformation * self._polygon
 
     def base_polygon(self):
         r"""
         Return the polygon of the surface in geometric coordinates.
         """
-        return self._p
+        return self._polygon
 
-    def transformed_vertex(self, e):
+    def transformed_vertex(self, v):
         r"""
         Return the graphical coordinates of the vertex in double precision.
         """
-        return self._transformation(self._p.vertex(e))
+        return self._transformation(self._polygon.vertex(v))
+
+    def transformed_side(self, e):
+        return self._transformation * self._polygon.side(e)
 
     def xmin(self):
         r"""
         Return the minimal x-coordinate of a vertex.
-
-        .. TODO::
-
-            to fit with Sage conventions this should be xmin
         """
-        return min([v[0] for v in self._v])
+        return min(v[0] for v in self.polygon().vertices())
 
     def ymin(self):
         r"""
         Return the minimal y-coordinate of a vertex.
-
-        .. TODO::
-
-            to fit with Sage conventions this should be ymin
         """
-        return min([v[1] for v in self._v])
+        return min(v[1] for v in self.polygon().vertices())
 
     def xmax(self):
         r"""
         Return the maximal x-coordinate of a vertex.
-
-        .. TODO::
-
-            to fit with Sage conventions this should be xmax
         """
-        return max([v[0] for v in self._v])
+        return max(v[0] for v in self.polygon().vertices())
 
     def ymax(self):
         r"""
         Return the minimal y-coordinate of a vertex
-
-        .. TODO::
-
-            To fit with Sage conventions this should be ymax
         """
-        return max([v[1] for v in self._v])
+        return max(v[1] for v in self.polygon().vertices())
 
     def bounding_box(self):
         r"""
@@ -171,7 +157,7 @@ class GraphicalPolygon:
         Return the transformation of point from graphical coordinates to the geometric coordinates
         of the underlying SimilaritySurface.
         """
-        return self._p.contains_point(self.transform_back(point))
+        return self._polygon.contains_point(self.transform_back(point))
 
     def transformation(self):
         r"""
@@ -182,12 +168,13 @@ class GraphicalPolygon:
 
     def set_transformation(self, transformation=None):
         r"""Set the transformation to be applied to the polygon."""
+        import warnings
+        warnings.warn("set_transformation() has been deprecated and will be removed in a future version of sage-flatsurf; set the transformation when creating the graphical polygon instead")
+
         if transformation is None:
-            self._transformation = SimilarityGroup(self._p.base_ring()).one()
-        else:
-            self._transformation = transformation
-        # recompute the location of vertices:
-        self._v = [V(self._transformation(v)) for v in self._p.vertices()]
+            transformation = SimilarityGroup(self._polygon.base_ring()).one()
+
+        self._transformation = transformation
 
     def plot_polygon(self, **options):
         r"""
@@ -198,7 +185,7 @@ class GraphicalPolygon:
         """
         if "axes" not in options:
             options["axes"] = False
-        return polygon2d(self._v, **options)
+        return self.polygon().plot(polygon_options=options, edge_options=None, vertex_options=None)
 
     def plot_label(self, label, **options):
         r"""
@@ -211,10 +198,11 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        if "position" in options:
-            return text(str(label), options.pop("position"), **options)
-        else:
-            return text(str(label), sum(self._v) / len(self._v), **options)
+        # TODO: plot labels of infinite polygons
+        from sage.all import Graphics
+        return Graphics()
+        position = options.pop("position", self.polygon().centroid())
+        return text(str(label), position, **options)
 
     def plot_edge(self, e, **options):
         r"""
@@ -223,10 +211,7 @@ class GraphicalPolygon:
 
         Options are processed as in sage.plot.line.line2d.
         """
-        return line2d(
-            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]],
-            **options,
-        )
+        return self.polygon().side(e).plot(**options)
 
     def plot_edge_label(self, i, label, **options):
         r"""
@@ -245,7 +230,8 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        e = self._v[(i + 1) % len(self.base_polygon().vertices())] - self._v[i]
+        side = self.polygon().side(i)
+        e = side.vector()
 
         if "position" in options:
             if options["position"] not in ["inside", "outside", "edge"]:
@@ -321,7 +307,7 @@ class GraphicalPolygon:
         # Now push_off stores the amount it should be pushed into the polygon
 
         no = V((-e[1], e[0]))
-        return text(label, self._v[i] + t * e + push_off * no, **options)
+        return text(label, self.polygon().vertex(i) + t * e + push_off * no, **options)
 
     def plot_zero_flag(self, **options):
         r"""
@@ -333,6 +319,7 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.line.line2d.
         """
+        raise NotImplementedError
         if "t" in options:
             t = RDF(options.pop("t"))
         else:
@@ -354,6 +341,7 @@ class GraphicalPolygon:
         By default coordinates are taken in the underlying surface. Call with coordinates="graphical"
         to use graphical coordinates instead.
         """
+        raise NotImplementedError
         if "zorder" not in options:
             options["zorder"] = 50
         if "coordinates" not in options:

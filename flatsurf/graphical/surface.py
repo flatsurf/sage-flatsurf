@@ -458,7 +458,7 @@ class GraphicalSurface:
                 raise NotImplementedError
             if adjacent:
                 for label, poly in zip(self._ss.labels(), self._ss.polygons()):
-                    for e in range(len(poly.vertices())):
+                    for e in range(len(poly.sides())):
                         opposite_edge = self._ss.opposite_edge(label, e)
                         if opposite_edge is None:
                             continue
@@ -680,9 +680,7 @@ class GraphicalSurface:
             return False
         g = self.graphical_polygon(p)
         gg = self.graphical_polygon(pp)
-        return g.transformed_vertex(e) == gg.transformed_vertex(
-            ee + 1
-        ) and g.transformed_vertex(e + 1) == gg.transformed_vertex(ee)
+        return g.transformed_side(e) == gg.transformed_side(ee)
 
     def to_surface(
         self,
@@ -1191,7 +1189,7 @@ class GraphicalSurface:
 
             # Plot the edges
             if self.will_plot_edges:
-                for i in range(len(self._ss.polygon(label).vertices())):
+                for i in range(len(self._ss.polygon(label).sides())):
                     if self.is_adjacent(label, i):
                         if (
                             self.will_plot_adjacent_edges
@@ -1207,12 +1205,12 @@ class GraphicalSurface:
                         if self.will_plot_non_adjacent_edges:
                             p += self.plot_edge(label, i, polygon, False, False)
 
-            # Plot the edge labels.
-            if self.will_plot_edge_labels:
-                # get the edge labels
-                edge_labels = self.edge_labels(label)
-                if edge_labels is not None:
-                    for i in range(len(self._ss.polygon(label).vertices())):
-                        if edge_labels[i] is not None:
-                            p += self.plot_edge_label(label, i, edge_labels[i], polygon)
+            # # Plot the edge labels.
+            # if self.will_plot_edge_labels:
+            #     # get the edge labels
+            #     edge_labels = self.edge_labels(label)
+            #     if edge_labels is not None:
+            #         for i in range(len(self._ss.polygon(label).vertices())):
+            #             if edge_labels[i] is not None:
+            #                 p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p
