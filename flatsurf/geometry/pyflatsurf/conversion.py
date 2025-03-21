@@ -17,13 +17,155 @@ EXAMPLES::
     sage: conversion  # optional: pyflatsurf
     Conversion from Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons to FlatTriangulationCombinatorial(...) with vectors ...
 
+TESTS:
+
+Test that this works for all rings supported by libflatsurf.
+
+We create the conversion for a square torus with long long coordinates::
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['long long']
+    sage: vectors = [V(1R, 0R), V(0R, 1R), V(1R, 1R)]
+    sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+    sage: S = Surface(vertices, vectors)
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)
+    sage: conversion.ring_conversion()
+    Conversion from Integer Ring to __gmp_expr<__mpz_struct[1],__mpz_struct[1]>
+
+We create the conversion for a square torus with mpz coordinates::
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['mpz_class']
+    sage: vectors = [V(1R, 0R), V(0R, 1R), V(1R, 1R)]
+    sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+    sage: S = Surface(vertices, vectors)
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)
+    sage: conversion.ring_conversion()
+    Conversion from Integer Ring to __gmp_expr<__mpz_struct[1],__mpz_struct[1]>
+
+We create the conversion for a square torus with mpq coordinates::
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['mpq_class']
+    sage: vectors = [V(1R, 0R), V(0R, 1R), V(1R, 1R)]
+    sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+    sage: S = Surface(vertices, vectors)
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)
+    sage: conversion.ring_conversion()
+    Conversion from Rational Field to __gmp_expr<__mpq_struct[1],__mpq_struct[1]>
+
+We create the conversion for a square torus with e-antic coordinates::
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['eantic::renf_elem_class']
+    sage: vectors = [V(1R, 0R), V(0R, 1R), V(1R, 1R)]
+    sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+    sage: S = Surface(vertices, vectors)
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)
+    sage: conversion.ring_conversion()
+    Conversion from Number Field in a with defining polynomial x - 1 with a = 1 to NumberField(a-1, 1.000000000000000000000000000000000000000000000000000000000000000)
+
+We create the conversion for a hexagon with e-antic coordinates::
+
+    sage: from pyeantic import RealEmbeddedNumberField  # optional: pyeantic
+    sage: K.<a> = NumberField(x^2 - 3, embedding=sqrt(AA(2)))  # optional: pyeantic
+    sage: K = RealEmbeddedNumberField(K)  # optional: pyeantic
+    sage: a = K.renf.gen()  # optional: pyeantic
+    sage: R = lambda x: K(x).renf_elem  # optional: pyeantic
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['eantic::renf_elem_class']  # optional: pyeantic
+    sage: vectors = [V(R(2), R(0)), V(R(1), a), V(R(3), a), V(R(1), -a), V(R(4), R(0)), V(R(3), a)]  # optional: pyeantic
+    sage: vertices = [[1R, 3R, -4R, -5R, -3R, -2R], [2R, -1R, -6R, 4R, 5R, 6R]]
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyeantic
+    sage: conversion.ring_conversion()  # optional: pyeantic
+    Conversion from Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878? to NumberField(a^2 - 3, [1.732050807568877293527446341505872367 +/- 2.90e-37])
+
+We create the conversion for a rectangle with exact-real coordinates with integer coefficients::
+
+    sage: from pyexactreal import ZZModule, RealNumber  # optional: pyeaxctreal
+    sage: M = ZZModule(RealNumber.rational(1), RealNumber.random())  # optional: pyeaxctreal
+    sage: one = M.gen(0R)  # optional: pyeaxctreal
+    sage: μ = M.gen(1R)  # optional: pyeaxctreal
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['exactreal::Element<exactreal::IntegerRing>']  # optional: pyeaxctreal
+    sage: u = V(one, 0R*one)  # optional: pyeaxctreal
+    sage: v = V(0R*one, μ)  # optional: pyeaxctreal
+
+    sage: vectors = [u, v, u+v]  # optional: pyeaxctreal
+    sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+    sage: S = Surface(vertices, vectors)  # optional: pyeaxctreal
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal
+    sage: conversion.ring_conversion()  # optional: pyexactreal
+
+We create the conversion for a rectangle with exact-real coordinates with rational coefficients::
+
+    sage: from pyexactreal import QQModule, RealNumber  # optional: pyeaxctreal
+    sage: M = QQModule(RealNumber.rational(1), RealNumber.random())  # optional: pyeaxctreal
+    sage: one = M.gen(0R)  # optional: pyeaxctreal
+    sage: μ = M.gen(1R)  # optional: pyeaxctreal
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['exactreal::Element<exactreal::RationalField>']  # optional: pyeaxctreal
+    sage: u = V(one, 0R*one)  # optional: pyeaxctreal
+    sage: v = V(0R*one, μ)  # optional: pyeaxctreal
+
+    sage: vectors = [u, v, u+v]  # optional: pyeaxctreal
+    sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+    sage: S = Surface(vertices, vectors)  # optional: pyeaxctreal
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal
+    sage: conversion.ring_conversion()  # optional: pyexactreal
+
+We create the conversion for a hexagon with exact-real coordinates::
+
+    sage: from pyeantic import RealEmbeddedNumberField  # optional: pyexactreal
+    sage: K.<a> = NumberField(x^2 - 3, embedding=sqrt(AA(2)))  # optional: pyexactreal
+    sage: K = RealEmbeddedNumberField(K)  # optional: pyexactreal
+    sage: a = K.renf.gen()  # optional: pyexactreal
+
+    sage: from pyexactreal import NumberFieldModule, RealNumber  # optional: pyeaxctreal
+    sage: M = NumberFieldModule(K.renf, RealNumber.rational(1), RealNumber.random(), RealNumber.random())  # optional: pyeaxctreal
+    sage: one = M.gen(0R)  # optional: pyeaxctreal
+    sage: μ = M.gen(1R)  # optional: pyeaxctreal
+    sage: ν = M.gen(2R)  # optional: pyeaxctreal
+
+    sage: from pyflatsurf import Surface, flatsurf
+    sage: V = flatsurf.Vector['exactreal::Element<exactreal::NumberField>']  # optional: pyeaxctreal
+    sage: u = V(2R*one, 0R*one)  # optional: pyeaxctreal
+    sage: v = V(μ, a*μ)  # optional: pyeaxctreal
+    sage: w = V(-ν, a*ν)  # optional: pyeaxctreal
+
+    sage: vectors = [u, v, u + v, -w, u + v - w, u+v]  # optional: pyeaxctreal
+    sage: vertices = [[1R, 3R, -4R, -5R, -3R, -2R], [2R, -1R, -6R, 4R, 5R, 6R]]
+    sage: S = Surface(vertices, vectors)  # optional: pyeaxctreal
+
+    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal
+    sage: conversion.ring_conversion()  # optional: pyexactreal
+    Conversion from Real Numbers as (Real Embedded Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878?)-Module to exactreal::Module<exactreal::NumberField>
+
 """
 
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C)      2019 Vincent Delecroix
-#                      2019-2024 Julian Rüth
+#                      2019-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -1204,7 +1346,8 @@ class RingConversion_int(RingConversion):
         longlong = getattr(cppyy.gbl, "long long")
 
         if domain in [None, int] and codomain in [None, longlong]:
-            return RingConversion_int(int, longlong)
+            from sage.all import ZZ
+            return RingConversion_int(ZZ, longlong)
 
         return None
 
@@ -1236,7 +1379,9 @@ class RingConversion_int(RingConversion):
         longlong = getattr(cppyy.gbl, "long long")
 
         for element in elements:
-            if not isinstance(element, longlong):
+            # cppyy silently casts a long long return value to a Python int, so
+            # we need to check for this type as well.
+            if not isinstance(element, (int, longlong)):
                 return None
 
         return longlong
@@ -1875,7 +2020,7 @@ class FlatTriangulationConversion(Conversion):
             from sage.all import VectorSpace
 
             vector_conversion = VectorSpaceConversion.to_pyflatsurf(
-                VectorSpace(ring_conversion.domain(), 2)
+                ring_conversion.domain()**2
             )
 
             for a, b, c in codomain.faces():
