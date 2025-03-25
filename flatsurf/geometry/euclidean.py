@@ -3312,6 +3312,9 @@ class EuclideanSet(SageObject):
         # TODO: Implement this through change() instead. So nobody should override this one.
         return self
 
+    def is_finite(self):
+        raise NotImplementedError(f"{type(self).__name__} does not implement is_finite() yet")
+
 
 class EuclideanOrientedSet(EuclideanSet):
     r"""
@@ -5047,6 +5050,9 @@ class EuclideanSegment(EuclideanFacade):
                 options))
             return g
 
+    def is_finite(self):
+        return self._start is not None and self._end is not None
+
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
     r"""
@@ -5467,10 +5473,10 @@ class EuclideanPolygon(EuclideanFacade):
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
-        try:
-            return f"Polygon(vertices={repr(list(self.vertices()))})"
-        except (AttributeError, NotImplementedError):
+        if not self.is_finite():
             return f"Polygon(edges={repr(list(self.sides()))})"
+
+        return f"Polygon(vertices={repr(list(self.vertices()))})"
 
     def marked_vertices(self):
         r"""
@@ -5639,6 +5645,9 @@ class EuclideanPolygon(EuclideanFacade):
     def unpointed(self):
         # TODO: Add a pointed polygon and maybe use this as a base class?
         return self
+
+    def is_finite(self):
+        return all(e.is_finite() for e in self.sides())
 
 
 class EuclideanEmptySet(EuclideanFacade):
