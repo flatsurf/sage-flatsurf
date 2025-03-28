@@ -103,6 +103,8 @@ class Polygons(Category_over_base_ring):
             ('a', 'rhombus', 'rhombi')
             sage: Polygons._describe_polygon(64, equiangular=False, equilateral=False)
             ('a', '64-gon', '64-gons')
+            sage: Polygons._describe_polygon(88, equiangular=False, equilateral=False)
+            ('an', '88-gon', '88-gons')
 
         """
         from sage.all import infinity
@@ -138,7 +140,7 @@ class Polygons(Category_over_base_ring):
             infinity: ("an", "apeirogon"),
         }
 
-        description = ngon_names.get(num_edges, ("a", f"{num_edges}-gon"))
+        description = ngon_names.get(num_edges, ("an" if str(num_edges)[0] == '8' else "a", f"{num_edges}-gon"))
         description = description + (description[1] + "s",)
 
         def augment(article, *attributes):
