@@ -185,6 +185,7 @@ class GraphicalPolygon:
         """
         if "axes" not in options:
             options["axes"] = False
+
         return self.polygon().plot(polygon_options=options, edge_options=None, vertex_options=None)
 
     def plot_label(self, label, **options):
@@ -198,11 +199,60 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        # TODO: plot labels of infinite polygons
         from sage.all import Graphics
-        return Graphics()
-        position = options.pop("position", self.polygon().centroid())
-        return text(str(label), position, **options)
+
+        g = Graphics()
+
+        def position(xlim, ylim):
+            from flatsurf.graphical.hyperbolic import CartesianPathPlot
+            path = CartesianPathPlot(self.polygon()._plot_commands())._create_path(xlim, ylim, fill=True)
+
+            print(xlim, ylim, path)
+
+            from matplotlib.transforms import Bbox
+            path = path.clip_to_bbox(Bbox(((xlim[0], ylim[0]), (xlim[1], ylim[1]))))
+
+            print("clips to", path)
+
+            from sage.all import vector
+
+            vertices = []
+            for j, (vertex, code) in enumerate(zip(path.vertices, path.codes)):
+                if code == 2:
+                    if j > 0 and path.codes[j - 1] == 1:
+                        vertices.append(path.vertices[j - 1])
+                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                            vertices.pop()
+                    vertices.append(vertex)
+                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                        vertices.pop()
+
+            vertices = list(map(vector, vertices))
+            if vertices[0] == vertices[-1]:
+                vertices.pop()
+
+            print(vertices)
+
+            from flatsurf import Polygon, EuclideanPlane
+            from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+            from sage.all import RR
+            # TODO: The check here is pretty evil. There is one vertex too many in closed polygons.
+            centroid = EuclideanPlane(RR, geometry=EuclideanEpsilonGeometry(RR, 1e-3)).polygon(vertices=vertices, check=False).centroid()
+            print(centroid)
+            return (float(centroid[0]), float(centroid[1]))
+
+        position = options.pop("position", position)
+
+        if "horizontal_alignment" not in options:
+            options["horizontal_alignment"] = "center"
+        if "vertical_alignment" not in options:
+            options["vertical_alignment"] = "center"
+
+        options = text(label, (0, 0), **options)[0].options()
+
+        from flatsurf.graphical.hyperbolic import DynamicLabel
+        g.add_primitive(DynamicLabel(str(label), position, options))
+        return g
 
     def plot_edge(self, e, **options):
         r"""
@@ -231,7 +281,10 @@ class GraphicalPolygon:
         Other options are processed as in sage.plot.text.text.
         """
         side = self.polygon().side(i)
-        e = side.vector()
+        direction = side.direction()
+
+        from sage.all import sgn
+        direction_sgn = (sgn(direction[0]), sgn(direction[1]))
 
         if "position" in options:
             if options["position"] not in ["inside", "outside", "edge"]:
@@ -264,23 +317,30 @@ class GraphicalPolygon:
 
         elif pos == "inside":
             # position inside polygon.
-            if "horizontal_alignment" in options:
-                pass
-            elif e[1] < 0:
-                options["horizontal_alignment"] = "left"
-            elif e[1] > 0:
-                options["horizontal_alignment"] = "right"
-            else:
-                options["horizontal_alignment"] = "center"
 
-            if "vertical_alignment" in options:
-                pass
-            elif e[0] < 0:
-                options["vertical_alignment"] = "top"
-            elif e[0] > 0:
-                options["vertical_alignment"] = "bottom"
-            else:
-                options["vertical_alignment"] = "center"
+            if "horizontal_alignment" not in options:
+                options["horizontal_alignment"] = {
+                    (-1, -1): "left",
+                    (-1, 0): "right",
+                    (-1, 1): "right",
+                    (0, -1): "left",
+                    (0, 1): "right",
+                    (1, -1): "left",
+                    (1, 0): "left",
+                    (1, 1): "right",
+                }[direction_sgn]
+
+            if "vertical_alignment" not in options:
+                options["vertical_alignment"] = {
+                    (-1, -1): "top",
+                    (-1, 0): "top",
+                    (-1, 1): "top",
+                    (0, -1): "top",
+                    (0, 1): "bottom",
+                    (1, -1): "bottom",
+                    (1, 0): "bottom",
+                    (1, 1): "bottom",
+                }[direction_sgn]
 
         else:
             # centered on edge.
@@ -306,8 +366,51 @@ class GraphicalPolygon:
             push_off = -push_off
         # Now push_off stores the amount it should be pushed into the polygon
 
-        no = V((-e[1], e[0]))
-        return text(label, self.polygon().vertex(i) + t * e + push_off * no, **options)
+        normal = V((-direction[1], direction[0]))
+        normal /= normal.norm()
+
+        from sage.all import Graphics
+
+        g = Graphics()
+
+        def position(xlim, ylim):
+            from flatsurf.graphical.hyperbolic import CartesianPathPlot
+            path = CartesianPathPlot(self.polygon().side(i)._plot_commands())._create_path(xlim, ylim, fill=False)
+
+            from sage.all import vector
+
+            vertices = []
+            for j, (vertex, code) in enumerate(zip(path.vertices, path.codes)):
+                if code == 2:
+                    if j > 0 and path.codes[j - 1] == 1:
+                        vertices.append(path.vertices[j - 1])
+                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                            vertices.pop()
+                    vertices.append(vertex)
+                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                        vertices.pop()
+
+            vertices = list(map(vector, vertices))
+            if vertices[0] == vertices[-1]:
+                vertices.pop()
+
+            if len(vertices) < 2:
+                raise NotImplementedError("edge is not visible")
+
+            assert len(vertices) == 2, "path should render as exactly two points if it is visible"
+
+
+            vertex = vertices[0]
+            vector = vertices[1] - vertices[0]
+            return vertex + t * vector + push_off * normal
+
+        position = options.pop("position", position)
+
+        options = text(label, (0, 0), **options)[0].options()
+
+        from flatsurf.graphical.hyperbolic import DynamicLabel
+        g.add_primitive(DynamicLabel(label, position, options))
+        return g
 
     def plot_zero_flag(self, **options):
         r"""

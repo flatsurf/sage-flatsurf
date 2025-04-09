@@ -4426,7 +4426,8 @@ class EuclideanLine(EuclideanFacade):
         return self.parent().point(*p).translate(shift.vector())
 
     def __contains__(self, point):
-        return (self._a * point._z + self._b * point._x + self._c * point._y).is_zero()
+        # TODO: Use a better predicate
+        return self.parent().geometry._zero(self._a * point._z + self._b * point._x + self._c * point._y)
 
     def __eq__(self, other):
         # TODO: This is literally identical to __eq__ of hyperbolic geodesics. One should call the other instead.
@@ -5032,23 +5033,31 @@ class EuclideanSegment(EuclideanFacade):
         options = normalize_edge_options(**options)
         g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
 
+        g.add_primitive(CartesianPathPlot(self._plot_commands(), options))
+        return g
+
+    def _plot_commands(self):
+        from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+
         if self.start().is_finite():
-            g.add_primitive(CartesianPathPlot(
-                [
-                    CartesianPathPlotCommand("MOVETO", self.start().vector()),
-                    CartesianPathPlotCommand("RAYTO", self.end().vector(model="projective")[:2])
-                ],
-                options))
-            return g
+            if self.end().is_finite():
+                return [
+                        CartesianPathPlotCommand("MOVETO", self.start().vector()),
+                        CartesianPathPlotCommand("LINETO", self.end().vector())
+                    ]
+            else:
+                return [
+                        CartesianPathPlotCommand("MOVETO", self.start().vector()),
+                        CartesianPathPlotCommand("RAYTO", self.end().vector(model="projective")[:2])
+                    ]
 
         if self.end().is_finite():
-            g.add_primitive(CartesianPathPlot(
-                [
+            return        [
                     CartesianPathPlotCommand("MOVETOINFINITY", self.start().vector(model="projective")[:2]),
                     CartesianPathPlotCommand("LINETO", self.end().vector()),
-                ],
-                options))
-            return g
+                ]
+
+        assert False
 
     def is_finite(self):
         return self._start is not None and self._end is not None

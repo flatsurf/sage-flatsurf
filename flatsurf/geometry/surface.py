@@ -1392,6 +1392,7 @@ class MutableOrientedSimilaritySurface(
         requires to specify the gluing map as there is no unique similarity
         mapping a ray to another::
 
+            sage: E = EuclideanPlane(QQ)
             sage: S = MutableOrientedSimilaritySurface(QQ)
             sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
             sage: S.add_polygon(p)

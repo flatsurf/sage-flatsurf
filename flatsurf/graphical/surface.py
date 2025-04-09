@@ -931,7 +931,7 @@ class GraphicalSurface:
 
         if self._edge_labels == "gluings":
             labels = []
-            for e in range(len(p.vertices())):
+            for e in range(len(p.sides())):
                 if self.is_adjacent(lab, e):
                     labels.append(None)
                 elif s.opposite_edge(lab, e) is None:
@@ -940,17 +940,17 @@ class GraphicalSurface:
                     llab, _ = s.opposite_edge(lab, e)
                     labels.append(str(llab))
         elif self._edge_labels == "number":
-            labels = list(map(str, range(len(p.vertices()))))
+            labels = list(map(str, range(len(p.sides()))))
         elif self._edge_labels == "gluings and number":
             labels = []
-            for e in range(len(p.vertices())):
+            for e in range(len(p.sides())):
                 if self.is_adjacent(lab, e):
                     labels.append(str(e))
                 else:
                     labels.append("{} -> {}".format(e, s.opposite_edge(lab, e)))
         elif self._edge_labels == "letter":
             labels = []
-            for e in range(len(p.vertices())):
+            for e in range(len(p.sides())):
                 llab, ee = s.opposite_edge(lab, e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
                     labels.append(None)
@@ -979,10 +979,12 @@ class GraphicalSurface:
 
         - ``upside_down`` -- True if and only if the polygon will be rendered upside down.
         """
+        options = self.polygon_options
         if upside_down:
-            return graphical_polygon.plot_polygon(**self.upside_down_polygon_options)
-        else:
-            return graphical_polygon.plot_polygon(**self.polygon_options)
+            options = self.upside_down_polygon_options
+
+
+        return graphical_polygon.plot_polygon(**options)
 
     def plot_polygon_label(self, label, graphical_polygon, upside_down):
         r"""
@@ -1205,12 +1207,12 @@ class GraphicalSurface:
                         if self.will_plot_non_adjacent_edges:
                             p += self.plot_edge(label, i, polygon, False, False)
 
-            # # Plot the edge labels.
-            # if self.will_plot_edge_labels:
-            #     # get the edge labels
-            #     edge_labels = self.edge_labels(label)
-            #     if edge_labels is not None:
-            #         for i in range(len(self._ss.polygon(label).vertices())):
-            #             if edge_labels[i] is not None:
-            #                 p += self.plot_edge_label(label, i, edge_labels[i], polygon)
+            # Plot the edge labels.
+            if self.will_plot_edge_labels:
+                # get the edge labels
+                edge_labels = self.edge_labels(label)
+                if edge_labels is not None:
+                    for i in range(len(self._ss.polygon(label).sides())):
+                        if edge_labels[i] is not None:
+                            p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p

@@ -386,7 +386,7 @@ class CartesianPathPlot(GraphicPrimitive):
             assert self._commands[1].code == "LINETO"
             pos = None
             direction = command.args
-            vertices = [CartesianPathPlot._infinity(self._commands[1].args, direction, xlim, ylim)]
+            vertices = [CartesianPathPlot._infinity(self._commands[1].args, direction, xlim, ylim, fill=fill)]
         else:
             raise RuntimeError(f"path must not start with a {command.code} command")
 
@@ -402,7 +402,7 @@ class CartesianPathPlot(GraphicPrimitive):
         return Path(vertices, codes)
 
     @staticmethod
-    def _infinity(pos, direction, xlim, ylim):
+    def _infinity(pos, direction, xlim, ylim, fill):
         r"""
         Return the finite coordinates of a point that ressembles infinity
         starting from ``pos`` and going in ``direction``.
@@ -420,6 +420,8 @@ class CartesianPathPlot(GraphicPrimitive):
 
         - ``ylim`` -- a pair of floats, the lower and upper vertical bound of
           the view box
+
+        TODO: clip
 
         EXAMPLES::
 
@@ -461,11 +463,13 @@ class CartesianPathPlot(GraphicPrimitive):
 
         λ = min(λx, λy)
 
-        # Additionally, we now move out a full plot size so we are sure
-        # that no artifacts coming from any sweeps (see below) show up in
-        # the final plot.
-        plot_size = (xlim[1] - xlim[0]) + (ylim[1] - ylim[0])
-        λ += plot_size / direction.norm()
+        if fill:
+            # Additionally, we now move out a full plot size so we are sure
+            # that no artifacts coming from any sweeps (see below) show up in
+            # the final plot.
+            plot_size = (xlim[1] - xlim[0]) + (ylim[1] - ylim[0])
+
+            λ += plot_size / direction.norm()
 
         return pos + λ * direction
 
@@ -532,7 +536,7 @@ class CartesianPathPlot(GraphicPrimitive):
 
             if direction is not None:
                 vertices.append(
-                    CartesianPathPlot._infinity(target, direction, xlim, ylim)
+                    CartesianPathPlot._infinity(target, direction, xlim, ylim, fill=fill)
                 )
                 codes.append(Path.LINETO)
                 direction = None
@@ -545,13 +549,13 @@ class CartesianPathPlot(GraphicPrimitive):
             if direction is None:
                 direction = command.args
 
-                vertices.append(CartesianPathPlot._infinity(pos, direction, xlim, ylim))
+                vertices.append(CartesianPathPlot._infinity(pos, direction, xlim, ylim, fill=fill))
                 codes.append(Path.LINETO)
             else:
-                start = CartesianPathPlot._infinity(pos, direction, xlim, ylim)
+                start = CartesianPathPlot._infinity(pos, direction, xlim, ylim, fill=fill)
 
                 direction = command.args
-                end = CartesianPathPlot._infinity(pos, direction, xlim, ylim)
+                end = CartesianPathPlot._infinity(pos, direction, xlim, ylim, fill=fill)
 
                 # Sweep the bounding box counterclockwise from start to end
                 from sage.all import vector
@@ -619,8 +623,20 @@ class CartesianPathPlot(GraphicPrimitive):
             1.0
 
         """
+        from matplotlib.transforms import Bbox
+        def union(*boxes):
+            from functools import reduce
+
+            def union2(a, b):
+                if a.bounds == Bbox.null().bounds:
+                    return b
+                if b.bounds == Bbox.null().bounds:
+                    return a
+                return Bbox.union([a, b])
+
+            return reduce(union2, boxes, Bbox.null())
+
         try:
-            from matplotlib.transforms import Bbox
 
             bbox = Bbox.null()
 
@@ -629,7 +645,10 @@ class CartesianPathPlot(GraphicPrimitive):
             for c, command in enumerate(self._commands):
                 if command.code in ["MOVETO", "LINETO"]:
                     pos = command.args
-                    bbox.update_from_data_xy([pos], ignore=False)
+                    bbox =union(
+                        bbox,
+                        Bbox.from_bounds(*pos, 0, 0)
+                    )
                 elif command.code in ["ARCTO", "RARCTO"]:
                     target, center = command.args
                     # We simplify the computation of the bounding box here to
@@ -645,12 +664,10 @@ class CartesianPathPlot(GraphicPrimitive):
                     #         ).get_extents(),
                     #     ]
                     # )
-                    bbox = bbox.union(
-                        [
+                    bbox = union(
                             bbox,
                             Bbox.from_bounds(*pos, 0, 0),
                             Bbox.from_bounds(*target, 0, 0),
-                        ]
                     )
                     from sage.all import sgn
 
@@ -659,8 +676,7 @@ class CartesianPathPlot(GraphicPrimitive):
                         # than the endpoints of the arc.
                         from math import sqrt
 
-                        bbox = bbox.union(
-                            [
+                        bbox = union(
                                 bbox,
                                 Bbox.from_bounds(
                                     center[0],
@@ -668,7 +684,6 @@ class CartesianPathPlot(GraphicPrimitive):
                                     0,
                                     0,
                                 ),
-                            ]
                         )
 
                     pos = target
@@ -684,14 +699,9 @@ class CartesianPathPlot(GraphicPrimitive):
                         # TODO: This is an evil hack.
                         assert self._commands[c + 1].code == "LINETO"
                         pos = self._commands[c + 1].args
-                    moved = vector(pos) + direction
-                    # TODO: Hack!
-                    if bbox.bounds == Bbox.null().bounds:
-                        bbox = Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])
-                    else:
-                        bbox = bbox.union(
-                            [bbox, Bbox.from_bounds(pos[0], moved[0], pos[1], moved[1])]
-                        )
+                    bbox = union(
+                        bbox, Bbox.from_bounds(*pos, *direction)
+                    )
                 else:
                     raise NotImplementedError(
                         f"cannot determine bounding box for {command.code} command"
@@ -758,6 +768,49 @@ class CartesianPathPlot(GraphicPrimitive):
 
         return Path(arc_vertices, unit_arc.codes)
 
+
+class DynamicLabel(GraphicPrimitive):
+    def __init__(self, text, position, options):
+        self._text = text
+        self._position = position
+
+        super().__init__(options)
+
+    def _allowed_options(self):
+        from sage.plot.text import Text
+
+        return Text("", (0, 0), {})._allowed_options()
+
+    def _render_on_subplot(self, subplot):
+        if self.options().get("clip", None):
+            raise NotImplementedError
+
+        try:
+
+            from sage.plot.text import Text
+            text = Text(self._text, self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim()), self.options())
+            text._render_on_subplot(subplot)
+            label = text._bbox_extra_artists[0]
+
+            def redraw(_=None):
+                r"""
+                Redraw after the viewport has been rescaled to make sure that
+                infinite rays reach the end of the viewport.
+                """
+                position = self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim())
+                label.set_position(position)
+
+            subplot.axes.callbacks.connect("ylim_changed", redraw)
+            subplot.axes.callbacks.connect("xlim_changed", redraw)
+            redraw()
+        except:
+            # TODO: Remove this (added to see stack traces.)
+            raise KeyboardInterrupt("render on subplot failed")
+
+        pass
+
+    def get_minmax_data(self):
+        return {'xmin': float('inf'), "xmax": float('-inf'), "ymin": float('inf'), "ymax": float('-inf')}
 
 @dataclass
 class HyperbolicPathPlotCommand:

@@ -627,28 +627,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 g._set_extra_kwds(Graphics._extract_kwds_for_show(polygon_options))
 
-                commands = []
-
-                cursor = self.sides()[0].start()
-                if cursor.is_finite():
-                    commands.append(CartesianPathPlotCommand("MOVETO", cursor.vector()))
-                else:
-                    raise NotImplementedError
-
-                for side in self.sides():
-                    if side.start() != cursor:
-                        assert side.start().is_ideal() and cursor.is_ideal(), "in a closed polygons, there can only be jumps between vertices at infinite points"
-                        cursor = side.start()
-                        commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
-                    if side.end().is_finite():
-                        cursor = side.end()
-                        commands.append(CartesianPathPlotCommand("LINETO", cursor.vector()))
-                    else:
-                        if cursor.is_finite():
-                            cursor = side.end()
-                            commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
-                        else:
-                            raise NotImplementedError()
+                commands = self._plot_commands()
 
                 g.add_primitive(CartesianPathPlot(commands, {**polygon_options, "thickness": 0}))
                 # TODO
@@ -675,6 +654,34 @@ class EuclideanPolygons(Category_over_base_ring):
                 # plots.append(point2d(P, **vertex_options))
 
             return g
+
+        def _plot_commands(self):
+            from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+
+            commands = []
+
+            cursor = self.sides()[0].start()
+            if cursor.is_finite():
+                commands.append(CartesianPathPlotCommand("MOVETO", cursor.vector()))
+            else:
+                raise NotImplementedError
+
+            for side in self.sides():
+                if side.start() != cursor:
+                    assert side.start().is_ideal() and cursor.is_ideal(), "in a closed polygons, there can only be jumps between vertices at infinite points"
+                    cursor = side.start()
+                    commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
+                if side.end().is_finite():
+                    cursor = side.end()
+                    commands.append(CartesianPathPlotCommand("LINETO", cursor.vector()))
+                else:
+                    if cursor.is_finite():
+                        cursor = side.end()
+                        commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
+                    else:
+                        raise NotImplementedError()
+
+            return commands
 
         def angles(self, numerical=None, assume_rational=None):
             r"""
