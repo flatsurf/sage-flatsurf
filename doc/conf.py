@@ -73,6 +73,8 @@ linkcheck_ignore = [
     r'https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/hyperbolic.20geometry/near/284722650',
     # PyPI seems to have temporarily vanished from repology
     'https://repology.org/project/python:sage-flatsurf/packages',
+    # ACM blocks GitHub runners
+    'http://dx.doi.org/10.1145/2755996.2756664',
 ]
 
 def setup(app):
