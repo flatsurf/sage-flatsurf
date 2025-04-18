@@ -590,12 +590,21 @@ class SimilaritySurfaceTangentVector:
             graphical_surface = self.surface().graphical_surface()
 
         if graphical_surface.get_surface() is not self.surface():
-            raise ValueError("graphical_surface must be a rendering of the surface this tangent vector is defined on")
+            raise ValueError(
+                "graphical_surface must be a rendering of the surface this tangent vector is defined on"
+            )
 
-        transformation = graphical_surface.graphical_polygon(self.polygon_label()).transformation()
+        transformation = graphical_surface.graphical_polygon(
+            self.polygon_label()
+        ).transformation()
 
         return (transformation.derivative() * self.vector()).plot(
-            **{"start": transformation(self.point()), "width": 1, "arrowsize": 2, **kwargs}
+            **{
+                "start": transformation(self.point()),
+                "width": 1,
+                "arrowsize": 2,
+                **kwargs,
+            }
         )
 
 
