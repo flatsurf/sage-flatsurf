@@ -939,7 +939,7 @@
 
 <div class="viewcode-block" id="SimilaritySurfaceTangentVector.plot">
 <a class="viewcode-back" href="../../../geometry/tangent_bundle.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector.plot">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a plot of this tangent vector.</span>
 
@@ -953,16 +953,59 @@
 <span class="sd">            sage: S.plot() + v.plot()</span>
 <span class="sd">            Graphics object consisting of 22 graphics primitives</span>
 
-<span class="sd">        Any keyword arguments are passed on to the underlying plot method from SageMath:</span>
+<span class="sd">        Keyword arguments are passed on to the underlying plot method from SageMath:</span>
 
 <span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: S.plot() + v.plot(color=&quot;red&quot;)</span>
 <span class="sd">            Graphics object consisting of 22 graphics primitives</span>
 
+<span class="sd">        Tangent vectors on polygons that are not glued by translations:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
+
+<span class="sd">            sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon</span>
+<span class="sd">            sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">            sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 1)])</span>
+<span class="sd">            sage: S.add_polygon(P)</span>
+<span class="sd">            0</span>
+<span class="sd">            sage: S.add_polygon(P)</span>
+<span class="sd">            1</span>
+<span class="sd">            sage: S.add_polygon(P)</span>
+<span class="sd">            2</span>
+<span class="sd">            sage: S.add_polygon(P)</span>
+<span class="sd">            3</span>
+<span class="sd">            sage: S.glue((0, 1), (1, 2))</span>
+<span class="sd">            sage: S.glue((1, 1), (2, 2))</span>
+<span class="sd">            sage: S.glue((2, 1), (3, 2))</span>
+<span class="sd">            sage: S.glue((3, 1), (0, 2))</span>
+<span class="sd">            sage: S.set_immutable()</span>
+
+<span class="sd">            sage: T = [S.tangent_vector(label, (1, 1/2), (0, -1)) for label in S.labels()]</span>
+
+<span class="sd">            sage: S.plot() + sum(t.plot(color=&quot;red&quot;) for t in T)</span>
+<span class="sd">            Graphics object consisting of 20 graphics primitives</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-            <span class="o">**</span><span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;arrowsize&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">graphical_surface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">graphical_surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">graphical_surface</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;graphical_surface must be a rendering of the surface this tangent vector is defined on&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">transformation</span> <span class="o">=</span> <span class="n">graphical_surface</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">transformation</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">transformation</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">transformation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">()),</span>
+                <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;arrowsize&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="p">)</span></div>
 </div>
 
