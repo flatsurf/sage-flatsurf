@@ -611,13 +611,14 @@ class EuclideanPolygons(Category_over_base_ring):
                 from sage.misc.decorators import options, rename_keyword
                 @rename_keyword(color="rgbcolor")
                 @options(
-                    alpha=1,
+                    alpha=.3,
                     rgbcolor=(0, 0, 1),
                     edgecolor=None,
-                    thickness=1,
+                    thickness=0,
                     legend_label=None,
                     legend_color=None,
                     aspect_ratio=1.0,
+                    zorder=1,
                     fill=True,
                 )
                 def normalize_polygon_options(**options):
@@ -629,7 +630,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 commands = self._plot_commands()
 
-                g.add_primitive(CartesianPathPlot(commands, {**polygon_options, "thickness": 0}))
+                g.add_primitive(CartesianPathPlot(commands, polygon_options))
                 # TODO
                 # from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand
                 # # TODO: Implement this using MOVETO, MOVETOINFINITY, and so on.
@@ -638,7 +639,30 @@ class EuclideanPolygons(Category_over_base_ring):
                 # plots.append(polygon2d(P, **polygon_options))
 
             if edge_options is not None:
-                pass
+                from sage.misc.decorators import options, rename_keyword
+                @rename_keyword(color="rgbcolor")
+                @options(
+                    alpha=1,
+                    rgbcolor=(1, 165/256, 0),
+                    edgecolor=(1, 165/256, 0),
+                    thickness=1,
+                    legend_label=None,
+                    legend_color=None,
+                    aspect_ratio=1.0,
+                    zorder=2,
+                    fill=False,
+                )
+                def normalize_edge_options(**options):
+                    return options
+
+                edge_options = normalize_edge_options(**edge_options)
+
+                g._set_extra_kwds(Graphics._extract_kwds_for_show(edge_options))
+
+                commands = self._plot_commands()
+
+                g.add_primitive(CartesianPathPlot(commands, edge_options))
+
                 # TODO
                 # from sage.plot.line import line2d
                 # edge_options = {"color": "orange", "zorder": 2, **edge_options}
@@ -646,7 +670,26 @@ class EuclideanPolygons(Category_over_base_ring):
                 # plots.append(line2d(P + (P[0],), **edge_options))
 
             if vertex_options is not None:
-                pass
+                from sage.misc.decorators import options, rename_keyword
+                @rename_keyword(color="rgbcolor")
+                @options(
+                    alpha=1,
+                    rgbcolor=(1, 0, 0),
+                    legend_label=None,
+                    legend_color=None,
+                    aspect_ratio=1.0,
+                    zorder=2,
+                )
+                def normalize_vertex_options(**options):
+                    return options
+
+                vertex_options = normalize_vertex_options(**vertex_options)
+
+                g._set_extra_kwds(Graphics._extract_kwds_for_show(vertex_options))
+
+                from sage.plot.point import point2d
+                g += point2d(self.vertices(finite=True), **vertex_options)
+
                 # TODO
                 # from sage.plot.point import point2d
                 # vertex_options = {"color": "red", "zorder": 2, **vertex_options}

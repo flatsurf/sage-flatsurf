@@ -5508,7 +5508,7 @@ class EuclideanPolygon(EuclideanFacade):
                 ans.append(s0.end())
         return tuple(ans)
 
-    def vertices(self, marked_vertices=True):
+    def vertices(self, marked_vertices=True, finite=None):
         # TODO: Expose as points as well.
         # TODO: This does not implement the method from the category.
         r"""
@@ -5532,13 +5532,17 @@ class EuclideanPolygon(EuclideanFacade):
             return tuple(
                 vertex
                 # TODO: Test this code path.
+                # TODO: Do something about finite.
                 for (vertex, slope) in zip(self.vertices(), self.slopes(relative=True))
                 if slope[1] != 0
             )
 
         vertices = [e.start() for e in self.sides()]
-        if any(v is None for v in vertices):
-            raise NotImplementedError("some sides of the polygon do not end in a finite point")
+        if finite:
+            vertices = [v for v in vertices if v is not None]
+        else:
+            if any(v is None for v in vertices):
+                raise NotImplementedError("some sides of the polygon do not end in a finite point")
 
         return tuple(v.vector() for v in vertices)
 
