@@ -109,9 +109,9 @@ We create the conversion for a rectangle with exact-real coordinates with intege
     sage: S = Surface(vertices, vectors)  # optional: pyeaxctreal  # optional: pyflatsurf
 
     sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
-    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal  # optional: pyflatsurf  # not tested: this requires pyexactreal >=4.0.1 which is currently blocked on conda-forge due to https://github.com/conda-forge/intervalxt-feedstock/pull/23
-    sage: conversion.ring_conversion()  # optional: pyexactreal  # optional: pyflatsurf  # not tested
-    Conversion from Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878? to NumberField(a^2 - 3, [1.732050807568877293527446341505872367 +/- 2.90e-37])
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal  # optional: pyflatsurf
+    sage: conversion.ring_conversion()  # optional: pyexactreal  # optional: pyflatsurf
+    Conversion from Real Numbers as (Integer Ring)-Module to ℤ-Module(1, ℝ(0.303644…))
 
 We create the conversion for a rectangle with exact-real coordinates with rational coefficients::
 
@@ -1116,7 +1116,8 @@ class RingConversion_exactreal(RingConversion):
 
             sage: from pyexactreal import ZZModule # optional: pyexactreal
             sage: M = ZZModule(RealNumber.rational(1))  # optional: pyexactreal
-            sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal  # not tested: this requires pyeaxctreal >=4.0.1 which cannot be tested with conda-forge due to https://github.com/conda-forge/intervalxt-feedstock/pull/23
+            sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal
+            Conversion from Real Numbers as (Integer Ring)-Module to ℤ-Module(1)
 
         ::
 
@@ -2027,7 +2028,7 @@ class FlatTriangulationConversion(Conversion):
                     codomain.fromHalfEdge(c),
                 ]
                 vectors = [vector_conversion.section(vector) for vector in vectors]
-                triangle = Polygon(edges=vectors)
+                triangle = Polygon(edges=vectors, base_ring=domain.base_ring(), check=False)
 
                 label = (a.id(), b.id(), c.id())
 

@@ -44,9 +44,10 @@ sagemath-101 = ["sagemath-101", "flipper", "gmpxxyy", "pyeantic", "pyexactreal",
 sagemath-102 = ["sagemath-102", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 sagemath-103 = ["sagemath-103", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 sagemath-104 = ["sagemath-104", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
+sagemath-105 = ["sagemath-105", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 asv = ["asv"]
 doc = ["doc", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf"]
-dev = ["dev", "sagemath-105", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf", "ipyvue-flatsurf", "test", "lint"]
+dev = ["dev", "sagemath-106", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf", "ipyvue-flatsurf", "test", "lint"]
 
 # Shared dependencies for all features below.
 [tool.pixi.dependencies]
@@ -103,6 +104,8 @@ activation.env.SAGE_OPTIONALS_PYFLATSURF = ",pyflatsurf"
 
 [tool.pixi.feature.pyflatsurf.dependencies]
 pyflatsurf = ">=3.15.2,<4"
+# our pyflatsurf tests in conversion.py rely on some more recent fixes of pyexactreal
+pyexactreal = ">=4.0.1,<5"
 
 [tool.pixi.feature.ipyvue-flatsurf.dependencies]
 # ipyvue-flatsurf pins to an old version of ruamel-yaml for no good reason so we have to force that.
@@ -214,6 +217,10 @@ python = "~=3.12.0"
 
 [tool.pixi.feature.sagemath-105.dependencies]
 sagelib = "10.5.*"
+python = "~=3.12.0"
+
+[tool.pixi.feature.sagemath-106.dependencies]
+sagelib = "10.6.*"
 python = "~=3.12.0"
 
 [tool.pixi.feature.asv.dependencies]
