@@ -88,8 +88,8 @@ We create the conversion for a hexagon with e-antic coordinates::
     sage: S = Surface(vertices, vectors)  # optional: pyeantic  # optional: pyflatsurf
 
     sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
-    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyeantic
-    sage: conversion.ring_conversion()  # optional: pyeantic
+    sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyeantic  # optional: pyflatsurf
+    sage: conversion.ring_conversion()  # optional: pyeantic  # optional: pyflatsurf
     Conversion from Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878? to NumberField(a^2 - 3, [1.732050807568877293527446341505872367 +/- 2.90e-37])
 
 We create the conversion for a rectangle with exact-real coordinates with integer coefficients::
