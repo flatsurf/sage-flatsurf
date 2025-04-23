@@ -21053,7 +21053,7 @@ packages:
 - pypi: .
   name: sage-flatsurf
   version: 0.7.4
-  sha256: 40f1bb58a72d5b995adb51f0a3fefd1811a4e97ed3814cb584b14d38b3c658b7
+  sha256: c64e15d728e742183443adea2832814742d4d5be9183adbd89f4d0bdd2ff5ac0
   requires_dist:
   - bidict
   - more-itertools
