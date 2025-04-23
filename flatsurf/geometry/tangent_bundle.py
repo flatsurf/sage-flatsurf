@@ -538,7 +538,7 @@ class SimilaritySurfaceTangentVector:
                 "Rotating tangent vectors is only implemented when at a singularity"
             )
 
-    def plot(self, **kwargs):
+    def plot(self, graphical_surface=None, **kwargs):
         r"""
         Return a plot of this tangent vector.
 
@@ -552,16 +552,59 @@ class SimilaritySurfaceTangentVector:
             sage: S.plot() + v.plot()
             Graphics object consisting of 22 graphics primitives
 
-        Any keyword arguments are passed on to the underlying plot method from SageMath:
+        Keyword arguments are passed on to the underlying plot method from SageMath:
 
         .. jupyter-execute::
 
             sage: S.plot() + v.plot(color="red")
             Graphics object consisting of 22 graphics primitives
 
+        Tangent vectors on polygons that are not glued by translations:
+
+        .. jupyter-execute::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 1)])
+            sage: S.add_polygon(P)
+            0
+            sage: S.add_polygon(P)
+            1
+            sage: S.add_polygon(P)
+            2
+            sage: S.add_polygon(P)
+            3
+            sage: S.glue((0, 1), (1, 2))
+            sage: S.glue((1, 1), (2, 2))
+            sage: S.glue((2, 1), (3, 2))
+            sage: S.glue((3, 1), (0, 2))
+            sage: S.set_immutable()
+
+            sage: T = [S.tangent_vector(label, (1, 1/2), (0, -1)) for label in S.labels()]
+
+            sage: S.plot() + sum(t.plot(color="red") for t in T)
+            Graphics object consisting of 20 graphics primitives
+
         """
-        return self.vector().plot(
-            **{"start": self.point(), "width": 1, "arrowsize": 2, **kwargs}
+        if graphical_surface is None:
+            graphical_surface = self.surface().graphical_surface()
+
+        if graphical_surface.get_surface() is not self.surface():
+            raise ValueError(
+                "graphical_surface must be a rendering of the surface this tangent vector is defined on"
+            )
+
+        transformation = graphical_surface.graphical_polygon(
+            self.polygon_label()
+        ).transformation()
+
+        return (transformation.derivative() * self.vector()).plot(
+            **{
+                "start": transformation(self.point()),
+                "width": 1,
+                "arrowsize": 2,
+                **kwargs,
+            }
         )
 
 

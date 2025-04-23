@@ -1,7 +1,7 @@
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2021-2024 Julian Rüth
+#        Copyright (C) 2021-2025 Julian Rüth
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -62,6 +62,7 @@ $VERSION_BUMP_PATTERNS = [
     ('doc/install.rst', r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/", r"  curl -fsSL https://github.com/flatsurf/sage-flatsurf/releases/download/$VERSION/sage-flatsurf-$VERSION.unix.tar.gz | tar zxf -"),
     ('doc/install.rst', r"  ./sage-flatsurf-.*/sage", r"  ./sage-flatsurf-$VERSION/sage"),
     ('doc/install.rst', r"  ./sage-flatsurf-.*/jupyterlab", r"  ./sage-flatsurf-$VERSION/jupyterlab"),
+    ('doc/conf.py', r'release =', "release = '$VERSION'"),
     ('installer/win/installer.iss', r"AppCopyright=", "AppCopyright=Copyright (C) 2016-$RELEASE_YEAR the sage-flatsurf authors"),
 ]
 

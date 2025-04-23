@@ -151,6 +151,7 @@ sphinx = ">=7,<8"
 tachyon = "*"
 veerer = "*"
 linkchecker = "*"
+sphinx-book-theme = "*"
 
 [tool.pixi.feature.doc.pypi-dependencies]
 sage-docbuild = "==10.3"
