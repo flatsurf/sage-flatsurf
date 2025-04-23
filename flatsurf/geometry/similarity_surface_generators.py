@@ -84,7 +84,7 @@ def flipper_nf_element_to_sage(x, K=None):
         sage: flipper_nf_element_to_sage(h.dilatation())   # optional - flipper
         a
         sage: AA(_)                                        # optional - flipper
-        6.450525137485110?
+        6.450525137485...?
     """
     if K is None:
         K = flipper_nf_to_sage(x.field)
