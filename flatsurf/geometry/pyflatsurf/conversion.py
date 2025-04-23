@@ -1245,18 +1245,11 @@ class RingConversion_exactreal(RingConversion):
         """
         pyflatsurf_feature.require()
 
-        from pyflatsurf.vector import Vectors
-
         from pyexactreal.exact_reals import ExactReals
-        from pyeantic.real_embedded_number_field import RealEmbeddedNumberField
+        assert isinstance(self.domain(), ExactReals)
 
-        if isinstance(self.domain(), ExactReals):
-            return Vectors(self.domain())
-        # TODO: Add the other base rings.
-        if isinstance(self.domain().base_ring(), RealEmbeddedNumberField):
-            return Vectors(ExactReals(self.domain().base_ring().number_field))
-
-        raise NotImplementedError
+        from pyflatsurf.vector import Vectors
+        return Vectors(self.domain())
 
     @classmethod
     def _deduce_codomain_from_codomain_elements(cls, elements):
