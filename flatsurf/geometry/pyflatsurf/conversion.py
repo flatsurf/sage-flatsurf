@@ -1188,9 +1188,14 @@ class RingConversion_exactreal(RingConversion):
                 f"argument must be in the domain of this conversion but {x} is in {parent} and not in {self.domain()}"
             )
 
-        # TODO: Check that we land in the codomain!
+        y = x._backend
 
-        return x._backend
+        if y.module() != self.codomain():
+            y = self.codomain().zero() + y
+            if y.module() != self.codomain():
+                raise NotImplementedError(f"cannot lift an element from {y.module()} to {self.codomain()} yet")
+
+        return y
 
     @classmethod
     def _deduce_codomain_from_domain_elements(cls, elements):
