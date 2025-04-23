@@ -1149,7 +1149,9 @@ class RingConversion_exactreal(RingConversion):
                     domain=QQ, codomain=None
                 )
             else:
-                raise NotImplementedError(f"cannot determine domain for unknown kind of ring from exact-real {codomain}")
+                raise NotImplementedError(
+                    f"cannot determine domain for unknown kind of ring from exact-real {codomain}"
+                )
 
             from pyexactreal import ExactReals
 
@@ -1158,7 +1160,9 @@ class RingConversion_exactreal(RingConversion):
         if codomain is None:
             # Since the domain does not have specific generators, we cannot
             # deduce the generators in the codomain.
-            raise NotImplementedError(f"cannot determine the codomain in exact-real corresponding to the SageMath ring {domain} since rings in exact-real must have a finite number of generators")
+            raise NotImplementedError(
+                f"cannot determine the codomain in exact-real corresponding to the SageMath ring {domain} since rings in exact-real must have a finite number of generators"
+            )
 
         return RingConversion_exactreal(domain, codomain)
 
@@ -1193,7 +1197,9 @@ class RingConversion_exactreal(RingConversion):
         if y.module() != self.codomain():
             y = self.codomain().zero() + y
             if y.module() != self.codomain():
-                raise NotImplementedError(f"cannot lift an element from {y.module()} to {self.codomain()} yet")
+                raise NotImplementedError(
+                    f"cannot lift an element from {y.module()} to {self.codomain()} yet"
+                )
 
         return y
 
@@ -1246,9 +1252,11 @@ class RingConversion_exactreal(RingConversion):
         pyflatsurf_feature.require()
 
         from pyexactreal.exact_reals import ExactReals
+
         assert isinstance(self.domain(), ExactReals)
 
         from pyflatsurf.vector import Vectors
+
         return Vectors(self.domain())
 
     @classmethod
@@ -1341,6 +1349,7 @@ class RingConversion_int(RingConversion):
 
         if domain in [None, int] and codomain in [None, longlong]:
             from sage.all import ZZ
+
             return RingConversion_int(ZZ, longlong)
 
         return None
@@ -1806,8 +1815,12 @@ class FlatTriangulationConversion(Conversion):
             codomain = make_surface(vertex_permutation, vectors)
 
         return FlatTriangulationConversion(
-            domain, codomain, cls._pyflatsurf_labels(domain),
-            ring_conversion=RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation=codomain, domain=domain.base_ring())
+            domain,
+            codomain,
+            cls._pyflatsurf_labels(domain),
+            ring_conversion=RingConversion.from_pyflatsurf_from_flat_triangulation(
+                flat_triangulation=codomain, domain=domain.base_ring()
+            ),
         )
 
     @classmethod
@@ -2015,7 +2028,7 @@ class FlatTriangulationConversion(Conversion):
             domain = MutableOrientedSimilaritySurface(ring_conversion.domain())
 
             vector_conversion = VectorSpaceConversion.to_pyflatsurf(
-                ring_conversion.domain()**2,
+                ring_conversion.domain() ** 2,
                 ring_conversion=ring_conversion,
             )
 
@@ -2026,7 +2039,9 @@ class FlatTriangulationConversion(Conversion):
                     codomain.fromHalfEdge(c),
                 ]
                 vectors = [vector_conversion.section(vector) for vector in vectors]
-                triangle = Polygon(edges=vectors, base_ring=domain.base_ring(), check=False)
+                triangle = Polygon(
+                    edges=vectors, base_ring=domain.base_ring(), check=False
+                )
 
                 label = (a.id(), b.id(), c.id())
 
@@ -2087,7 +2102,7 @@ class FlatTriangulationConversion(Conversion):
 
         """
         return VectorSpaceConversion.to_pyflatsurf(
-            self.ring_conversion().domain()**2,
+            self.ring_conversion().domain() ** 2,
         )
 
     def __call__(self, x):
