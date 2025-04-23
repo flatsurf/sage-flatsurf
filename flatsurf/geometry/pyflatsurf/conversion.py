@@ -94,19 +94,19 @@ We create the conversion for a hexagon with e-antic coordinates::
 
 We create the conversion for a rectangle with exact-real coordinates with integer coefficients::
 
-    sage: from pyexactreal import ZZModule, RealNumber  # optional: pyeaxctreal
-    sage: M = ZZModule(RealNumber.rational(1), RealNumber.random())  # optional: pyeaxctreal
-    sage: one = M.gen(0R)  # optional: pyeaxctreal
-    sage: μ = M.gen(1R)  # optional: pyeaxctreal
+    sage: from pyexactreal import ZZModule, RealNumber  # optional: pyexactreal
+    sage: M = ZZModule(RealNumber.rational(1), RealNumber.random())  # optional: pyexactreal
+    sage: one = M.gen(0R)  # optional: pyexactreal
+    sage: μ = M.gen(1R)  # optional: pyexactreal
 
     sage: from pyflatsurf import Surface, flatsurf  # optional: pyflatsurf
-    sage: V = flatsurf.Vector['exactreal::Element<exactreal::IntegerRing>']  # optional: pyeaxctreal  # optional: pyflatsurf
-    sage: u = V(one, 0R*one)  # optional: pyeaxctreal  # optional: pyflatsurf
-    sage: v = V(0R*one, μ)  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: V = flatsurf.Vector['exactreal::Element<exactreal::IntegerRing>']  # optional: pyexactreal  # optional: pyflatsurf
+    sage: u = V(one, 0R*one)  # optional: pyexactreal  # optional: pyflatsurf
+    sage: v = V(0R*one, μ)  # optional: pyexactreal  # optional: pyflatsurf
 
-    sage: vectors = [u, v, u+v]  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: vectors = [u, v, u+v]  # optional: pyexactreal  # optional: pyflatsurf
     sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
-    sage: S = Surface(vertices, vectors)  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: S = Surface(vertices, vectors)  # optional: pyexactreal  # optional: pyflatsurf
 
     sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
     sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal  # optional: pyflatsurf
@@ -115,19 +115,19 @@ We create the conversion for a rectangle with exact-real coordinates with intege
 
 We create the conversion for a rectangle with exact-real coordinates with rational coefficients::
 
-    sage: from pyexactreal import QQModule, RealNumber  # optional: pyeaxctreal
-    sage: M = QQModule(RealNumber.rational(1), RealNumber.random())  # optional: pyeaxctreal
-    sage: one = M.gen(0R)  # optional: pyeaxctreal
-    sage: μ = M.gen(1R)  # optional: pyeaxctreal
+    sage: from pyexactreal import QQModule, RealNumber  # optional: pyexactreal
+    sage: M = QQModule(RealNumber.rational(1), RealNumber.random())  # optional: pyexactreal
+    sage: one = M.gen(0R)  # optional: pyexactreal
+    sage: μ = M.gen(1R)  # optional: pyexactreal
 
     sage: from pyflatsurf import Surface, flatsurf  # optional: pyflatsurf
-    sage: V = flatsurf.Vector['exactreal::Element<exactreal::RationalField>']  # optional: pyeaxctreal  # optional: pyflatsurf
-    sage: u = V(one, 0R*one)  # optional: pyeaxctreal  # optional: pyflatsurf
-    sage: v = V(0R*one, μ)  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: V = flatsurf.Vector['exactreal::Element<exactreal::RationalField>']  # optional: pyexactreal  # optional: pyflatsurf
+    sage: u = V(one, 0R*one)  # optional: pyexactreal  # optional: pyflatsurf
+    sage: v = V(0R*one, μ)  # optional: pyexactreal  # optional: pyflatsurf
 
-    sage: vectors = [u, v, u+v]  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: vectors = [u, v, u+v]  # optional: pyexactreal  # optional: pyflatsurf
     sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
-    sage: S = Surface(vertices, vectors)  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: S = Surface(vertices, vectors)  # optional: pyexactreal  # optional: pyflatsurf
 
     sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
     sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal  # optional: pyflatsurf
@@ -141,21 +141,21 @@ We create the conversion for a hexagon with exact-real coordinates::
     sage: K = RealEmbeddedNumberField(K)  # optional: pyexactreal
     sage: a = K.renf.gen()  # optional: pyexactreal
 
-    sage: from pyexactreal import NumberFieldModule, RealNumber  # optional: pyeaxctreal
-    sage: M = NumberFieldModule(K.renf, RealNumber.rational(1), RealNumber.random(), RealNumber.random())  # optional: pyeaxctreal
-    sage: one = M.gen(0R)  # optional: pyeaxctreal
-    sage: μ = M.gen(1R)  # optional: pyeaxctreal
-    sage: ν = M.gen(2R)  # optional: pyeaxctreal
+    sage: from pyexactreal import NumberFieldModule, RealNumber  # optional: pyexactreal
+    sage: M = NumberFieldModule(K.renf, RealNumber.rational(1), RealNumber.random(), RealNumber.random())  # optional: pyexactreal
+    sage: one = M.gen(0R)  # optional: pyexactreal
+    sage: μ = M.gen(1R)  # optional: pyexactreal
+    sage: ν = M.gen(2R)  # optional: pyexactreal
 
     sage: from pyflatsurf import Surface, flatsurf  # optional: pyflatsurf
-    sage: V = flatsurf.Vector['exactreal::Element<exactreal::NumberField>']  # optional: pyeaxctreal  # optional: pyflatsurf
-    sage: u = V(2R*one, 0R*one)  # optional: pyeaxctreal  # optional: pyflatsurf
-    sage: v = V(μ, a*μ)  # optional: pyeaxctreal  # optional: pyflatsurf
-    sage: w = V(-ν, a*ν)  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: V = flatsurf.Vector['exactreal::Element<exactreal::NumberField>']  # optional: pyexactreal  # optional: pyflatsurf
+    sage: u = V(2R*one, 0R*one)  # optional: pyexactreal  # optional: pyflatsurf
+    sage: v = V(μ, a*μ)  # optional: pyexactreal  # optional: pyflatsurf
+    sage: w = V(-ν, a*ν)  # optional: pyexactreal  # optional: pyflatsurf
 
-    sage: vectors = [u, v, u + v, -w, u + v - w, u+v]  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: vectors = [u, v, u + v, -w, u + v - w, u+v]  # optional: pyexactreal  # optional: pyflatsurf
     sage: vertices = [[1R, 3R, -4R, -5R, -3R, -2R], [2R, -1R, -6R, 4R, 5R, 6R]]
-    sage: S = Surface(vertices, vectors)  # optional: pyeaxctreal  # optional: pyflatsurf
+    sage: S = Surface(vertices, vectors)  # optional: pyexactreal  # optional: pyflatsurf
 
     sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
     sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal  # optional: pyflatsurf
