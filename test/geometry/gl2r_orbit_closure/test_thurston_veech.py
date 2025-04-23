@@ -42,9 +42,9 @@ def test_H2():
         S = TV(hm, vm)
         orbit_closure = GL2ROrbitClosure(S)
         dh = orbit_closure.decomposition((1, 0))
-        assert dh.parabolic() == True  # noqa; cannot be "is True" ?
+        assert dh.parabolic() == True  # cannot be "is True"  # noqa
         dv = orbit_closure.decomposition((0, 1))
-        assert dv.parabolic() == True  # noqa; cannot be "is True" ?
+        assert dv.parabolic() == True  # cannot be "is True"  # noqa
         if discriminant == 1:
             assert orbit_closure.field_of_definition() is QQ
         else:
@@ -70,9 +70,9 @@ def test_H11():
         S = TV(hm, vm)
         orbit_closure = GL2ROrbitClosure(S)
         dh = orbit_closure.decomposition((1, 0))
-        assert dh.parabolic() == True  # noqa; cannot be "is True" ?
+        assert dh.parabolic() == True  # cannot be "is True"  # noqa
         dv = orbit_closure.decomposition((0, 1))
-        assert dv.parabolic() == True  # noqa; cannot be "is True" ?
+        assert dv.parabolic() == True  # cannot be "is True"  # noqa
 
         if discriminant == 1:
             assert orbit_closure.field_of_definition() is QQ

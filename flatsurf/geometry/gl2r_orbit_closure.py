@@ -798,7 +798,7 @@ class GL2ROrbitClosure:
         for decomposition in self.decompositions_depth_first(bound, limit):
             if (
                 decomposition.parabolic() == False
-            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
+            ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
                 return False
 
         return Unknown
@@ -834,7 +834,7 @@ class GL2ROrbitClosure:
         """
         if (
             component.cylinder() != True
-        ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is not True"
+        ):  # we are comparing to a boost tribool so this cannot be replaced by "is not True"  # noqa
             raise ValueError
 
         perimeters = list(component.perimeter())
@@ -889,11 +889,11 @@ class GL2ROrbitClosure:
         for component in decomposition.components():
             if (
                 component.cylinder() == False
-            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
+            ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
                 continue
             elif (
                 component.cylinder() == True
-            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced with "is True"
+            ):  # we are comparing to a boost tribool so this cannot be replaced with "is True"  # noqa
                 vcyls.append(self.cylinder_circumference(component, *kz))
 
                 width = self.V2._isomorphic_vector_space.base_ring()(
