@@ -4114,6 +4114,9 @@ class EuclideanLine(EuclideanFacade):
         self._b = b
         self._c = c
 
+    def is_finite(self):
+        return False
+
     def is_convex(self):
         return True
 
