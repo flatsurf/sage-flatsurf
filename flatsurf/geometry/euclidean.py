@@ -2558,6 +2558,8 @@ class EuclideanHalfSpaces(OrderedSet):
             # right.
             return normal_points_left(b, c)
 
+        sgn = lhs.parent().geometry._sgn
+
         # The normal vectors of the half spaces in the Klein model are in the
         # same half plane, so we order them by slope.
         if b * bb == 0:
@@ -2572,16 +2574,16 @@ class EuclideanHalfSpaces(OrderedSet):
                 return bb == 0
         else:
             # Order by the slope of the normal.
-            cmp = (b * bb).sign() * (c * bb - cc * b).sign()
+            cmp = sgn(b * bb) * sgn(c * bb - cc * b)
 
         if cmp == 0:
             # The half spaces are parallel in the Klein model. We order them by
             # inclusion, i.e., by the offset in direction of the normal.
             if c * cc:
-                cmp = c.sign() * (a * cc - aa * c).sign()
+                cmp = sgn(c) * sgn(a * cc - aa * c)
             else:
                 assert b * bb
-                cmp = b.sign() * (a * bb - aa * b).sign()
+                cmp = sgn(b) * sgn(a * bb - aa * b)
 
         return cmp < 0
 
@@ -4720,10 +4722,12 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
 
         intersection = self.intersection(other)
 
+        sgn = self.parent().geometry._sgn
+
         if intersection.is_empty():
             # We should use a specialized method of geometry here to make this
             # more robust over inexact rings.
-            orientation = self.parent().geometry._sgn(
+            orientation = sgn(
                 self._b * other._b + self._c * other._c
             )
 
@@ -4743,7 +4747,7 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
             return "anti-parallel"
 
         tangent = (self._c, -self._b)
-        orientation = (-tangent[0] * other._b - tangent[1] * other._c).sign()
+        orientation = sgn(-tangent[0] * other._b - tangent[1] * other._c)
 
         assert orientation != 0
 
