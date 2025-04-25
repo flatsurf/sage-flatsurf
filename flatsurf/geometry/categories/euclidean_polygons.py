@@ -236,7 +236,9 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             tester = self._tester(**options)
 
-            tester.assertEqual(EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple())
+            tester.assertEqual(
+                EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple()
+            )
 
         @abstract_method
         def vertices(self, marked_vertices=True, finite=None):
@@ -603,15 +605,20 @@ class EuclideanPolygons(Category_over_base_ring):
                 self = self.translate(translation)
 
             from sage.all import Graphics
+
             g = Graphics()
 
-            from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+            from flatsurf.graphical.hyperbolic import (
+                CartesianPathPlotCommand,
+                CartesianPathPlot,
+            )
 
             if polygon_options is not None:
                 from sage.misc.decorators import options, rename_keyword
+
                 @rename_keyword(color="rgbcolor")
                 @options(
-                    alpha=.3,
+                    alpha=0.3,
                     rgbcolor=(0, 0, 1),
                     edgecolor=None,
                     thickness=0,
@@ -640,11 +647,12 @@ class EuclideanPolygons(Category_over_base_ring):
 
             if edge_options is not None:
                 from sage.misc.decorators import options, rename_keyword
+
                 @rename_keyword(color="rgbcolor")
                 @options(
                     alpha=1,
-                    rgbcolor=(1, 165/256, 0),
-                    edgecolor=(1, 165/256, 0),
+                    rgbcolor=(1, 165 / 256, 0),
+                    edgecolor=(1, 165 / 256, 0),
                     thickness=1,
                     legend_label=None,
                     legend_color=None,
@@ -671,6 +679,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
             if vertex_options is not None:
                 from sage.misc.decorators import options, rename_keyword
+
                 @rename_keyword(color="rgbcolor")
                 @options(
                     alpha=1,
@@ -688,6 +697,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 g._set_extra_kwds(Graphics._extract_kwds_for_show(vertex_options))
 
                 from sage.plot.point import point2d
+
                 g += point2d(self.vertices(finite=True), **vertex_options)
 
                 # TODO
@@ -699,7 +709,10 @@ class EuclideanPolygons(Category_over_base_ring):
             return g
 
         def _plot_commands(self):
-            from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+            from flatsurf.graphical.hyperbolic import (
+                CartesianPathPlotCommand,
+                CartesianPathPlot,
+            )
 
             commands = []
 
@@ -711,16 +724,26 @@ class EuclideanPolygons(Category_over_base_ring):
 
             for side in self.sides():
                 if side.start() != cursor:
-                    assert side.start().is_ideal() and cursor.is_ideal(), "in a closed polygons, there can only be jumps between vertices at infinite points"
+                    assert (
+                        side.start().is_ideal() and cursor.is_ideal()
+                    ), "in a closed polygons, there can only be jumps between vertices at infinite points"
                     cursor = side.start()
-                    commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
+                    commands.append(
+                        CartesianPathPlotCommand(
+                            "RAYTO", cursor.vector(model="projective")[:2]
+                        )
+                    )
                 if side.end().is_finite():
                     cursor = side.end()
                     commands.append(CartesianPathPlotCommand("LINETO", cursor.vector()))
                 else:
                     if cursor.is_finite():
                         cursor = side.end()
-                        commands.append(CartesianPathPlotCommand("RAYTO", cursor.vector(model="projective")[:2]))
+                        commands.append(
+                            CartesianPathPlotCommand(
+                                "RAYTO", cursor.vector(model="projective")[:2]
+                            )
+                        )
                     else:
                         raise NotImplementedError()
 
@@ -824,6 +847,7 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             if not self.is_compact():
                 from sage.all import oo
+
                 return oo
 
             # Will use an area formula obtainable from Green's theorem. See for instance:

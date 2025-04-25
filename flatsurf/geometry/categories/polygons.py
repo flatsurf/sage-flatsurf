@@ -140,7 +140,9 @@ class Polygons(Category_over_base_ring):
             infinity: ("an", "apeirogon"),
         }
 
-        description = ngon_names.get(num_edges, ("an" if str(num_edges)[0] == '8' else "a", f"{num_edges}-gon"))
+        description = ngon_names.get(
+            num_edges, ("an" if str(num_edges)[0] == "8" else "a", f"{num_edges}-gon")
+        )
         description = description + (description[1] + "s",)
 
         def augment(article, *attributes):
@@ -593,7 +595,14 @@ class Polygons(Category_over_base_ring):
                 from sage.categories.category import Category
 
                 return Category.join(
-                    [S.change_ring(ring) if isinstance(S, Category_over_base_ring) else S for S in self.super_categories()]
+                    [
+                        (
+                            S.change_ring(ring)
+                            if isinstance(S, Category_over_base_ring)
+                            else S
+                        )
+                        for S in self.super_categories()
+                    ]
                 )
 
             # This is a hack to make the change ring of EuclideanPolygonsWithAngles subcategories work

@@ -364,10 +364,7 @@ class TFractalSurface(OrientedSimilaritySurface):
 
         super().__init__(
             field,
-            category=TranslationSurfaces()
-            .InfiniteType()
-            .WithoutBoundary()
-            .Connected(),
+            category=TranslationSurfaces().InfiniteType().WithoutBoundary().Connected(),
         )
 
         self._w = field(w)
@@ -1038,6 +1035,7 @@ class DilationSurfaceGenerators:
             sage: TestSuite(ds).run()
         """
         from flatsurf import EuclideanPlane
+
         E = EuclideanPlane(QQ)
 
         field = Sequence([a, b, c, d]).universe().fraction_field()
@@ -1236,6 +1234,7 @@ class TranslationSurfaceGenerators:
         s = MutableOrientedSimilaritySurface(field)
 
         from flatsurf.geometry.euclidean import EuclideanPlane
+
         p = Polygon(vertices=[(0, 0), u, u + v, v], parent=EuclideanPlane(field))
         s.add_polygon(p)
         s.glue((0, 0), (0, 2))
@@ -1421,11 +1420,13 @@ class TranslationSurfaceGenerators:
             rel = K(rel)
         except TypeError:
             from sage.all import parent
+
             K = get_coercion_model().common_parent(K, parent(rel))
             λ = K(λ)
             rel = K(rel)
 
         from flatsurf.geometry.euclidean import EuclideanPlane
+
         parent = EuclideanPlane(K)
 
         # (lambda,lambda) square on top
@@ -1435,7 +1436,9 @@ class TranslationSurfaceGenerators:
             if rel < 0 or rel > w - λ:
                 raise ValueError("invalid rel argument")
             s.add_polygon(
-                Polygon(vertices=[(0, 0), (λ, 0), (λ + rel, λ), (rel, λ)], parent=parent)
+                Polygon(
+                    vertices=[(0, 0), (λ, 0), (λ + rel, λ), (rel, λ)], parent=parent
+                )
             )
             s.add_polygon(
                 Polygon(
@@ -1749,6 +1752,7 @@ class TranslationSurfaceGenerators:
             field = field.fraction_field()
 
         from flatsurf.geometry.euclidean import EuclideanPlane
+
         parent = EuclideanPlane(field)
 
         s = MutableOrientedSimilaritySurface(field)
@@ -1876,6 +1880,7 @@ class TranslationSurfaceGenerators:
             ring = ring.fraction_field()
 
         from flatsurf.geometry.euclidean import EuclideanPlane
+
         parent = EuclideanPlane(ring)
 
         a = ring(a)

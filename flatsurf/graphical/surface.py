@@ -364,7 +364,10 @@ class GraphicalSurface:
             {'color': 'yellow'}
         """
         import warnings
-        warnings.warn("copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead")
+
+        warnings.warn(
+            "copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead"
+        )
 
         gs = GraphicalSurface(
             self.get_surface(),
@@ -480,6 +483,7 @@ class GraphicalSurface:
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
                             from flatsurf.graphical.polygon import GraphicalPolygon
+
                             poly = self._ss.polygon(label)
                             g = GraphicalPolygon(poly)
                             self._polygons[label] = GraphicalPolygon(
@@ -489,7 +493,8 @@ class GraphicalSurface:
                                         QQ(self.xmax() - g.xmin() + 1),
                                         QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
                                     )
-                                ))
+                                ),
+                            )
                         self.make_visible(label)
         else:
             if limit <= 0:
@@ -514,6 +519,7 @@ class GraphicalSurface:
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
                             from flatsurf.graphical.polygon import GraphicalPolygon
+
                             poly = self._ss.polygon(label)
                             g = GraphicalPolygon(poly)
                             self._polygons[label] = GraphicalPolygon(
@@ -523,7 +529,8 @@ class GraphicalSurface:
                                         QQ(self.xmax() - g.xmin() + 1),
                                         QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
                                     )
-                                ))
+                                ),
+                            )
                         self.make_visible(label)
                         i = i + 1
                         if i >= limit:
@@ -647,6 +654,7 @@ class GraphicalSurface:
         h = self.graphical_polygon(p).transformation()
 
         from flatsurf.graphical.polygon import GraphicalPolygon
+
         self._polygons[pp] = GraphicalPolygon(self._ss.polygon(pp), h * g)
 
         if visible:
@@ -693,7 +701,9 @@ class GraphicalSurface:
             return False
         g = self.graphical_polygon(p)
         gg = self.graphical_polygon(pp)
-        return g.transformed_side(e).unoriented() == gg.transformed_side(ee).unoriented()
+        return (
+            g.transformed_side(e).unoriented() == gg.transformed_side(ee).unoriented()
+        )
 
     def to_surface(
         self,
@@ -995,7 +1005,6 @@ class GraphicalSurface:
         options = self.polygon_options
         if upside_down:
             options = self.upside_down_polygon_options
-
 
         return graphical_polygon.plot_polygon(**options)
 

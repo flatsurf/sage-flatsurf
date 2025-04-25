@@ -199,7 +199,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     ## have overridden this (just returning the identity matrix e.g.)
                     ## and we want to deduce the matrix from the attached polygon
                     ## edges instead.
-                    #from flatsurf.geometry.categories import SimilaritySurfaces
+                    # from flatsurf.geometry.categories import SimilaritySurfaces
                     #
                     # matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
                     #     surface, label, edge, projective=False

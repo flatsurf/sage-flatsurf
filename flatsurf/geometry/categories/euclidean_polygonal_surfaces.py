@@ -281,7 +281,9 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
             polygons = self.polygons()
 
             if not polygons:
-                raise NotImplementedError("this empty surface does not know how to determine its ambient Euclidean plane yet")
+                raise NotImplementedError(
+                    "this empty surface does not know how to determine its ambient Euclidean plane yet"
+                )
 
             return next(iter(polygons)).parent()
             return EuclideanPlane(self.base_ring())
@@ -299,6 +301,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all surfaces built from finitely many

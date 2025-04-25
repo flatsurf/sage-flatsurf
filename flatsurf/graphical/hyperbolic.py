@@ -386,7 +386,11 @@ class CartesianPathPlot(GraphicPrimitive):
             assert self._commands[1].code == "LINETO"
             pos = None
             direction = command.args
-            vertices = [CartesianPathPlot._infinity(self._commands[1].args, direction, xlim, ylim, fill=fill)]
+            vertices = [
+                CartesianPathPlot._infinity(
+                    self._commands[1].args, direction, xlim, ylim, fill=fill
+                )
+            ]
         else:
             raise RuntimeError(f"path must not start with a {command.code} command")
 
@@ -536,7 +540,9 @@ class CartesianPathPlot(GraphicPrimitive):
 
             if direction is not None:
                 vertices.append(
-                    CartesianPathPlot._infinity(target, direction, xlim, ylim, fill=fill)
+                    CartesianPathPlot._infinity(
+                        target, direction, xlim, ylim, fill=fill
+                    )
                 )
                 codes.append(Path.LINETO)
                 direction = None
@@ -549,10 +555,14 @@ class CartesianPathPlot(GraphicPrimitive):
             if direction is None:
                 direction = command.args
 
-                vertices.append(CartesianPathPlot._infinity(pos, direction, xlim, ylim, fill=fill))
+                vertices.append(
+                    CartesianPathPlot._infinity(pos, direction, xlim, ylim, fill=fill)
+                )
                 codes.append(Path.LINETO)
             else:
-                start = CartesianPathPlot._infinity(pos, direction, xlim, ylim, fill=fill)
+                start = CartesianPathPlot._infinity(
+                    pos, direction, xlim, ylim, fill=fill
+                )
 
                 direction = command.args
                 end = CartesianPathPlot._infinity(pos, direction, xlim, ylim, fill=fill)
@@ -624,6 +634,7 @@ class CartesianPathPlot(GraphicPrimitive):
 
         """
         from matplotlib.transforms import Bbox
+
         def union(*boxes):
             from functools import reduce
 
@@ -645,10 +656,7 @@ class CartesianPathPlot(GraphicPrimitive):
             for c, command in enumerate(self._commands):
                 if command.code in ["MOVETO", "LINETO"]:
                     pos = command.args
-                    bbox =union(
-                        bbox,
-                        Bbox.from_bounds(*pos, 0, 0)
-                    )
+                    bbox = union(bbox, Bbox.from_bounds(*pos, 0, 0))
                 elif command.code in ["ARCTO", "RARCTO"]:
                     target, center = command.args
                     # We simplify the computation of the bounding box here to
@@ -665,9 +673,9 @@ class CartesianPathPlot(GraphicPrimitive):
                     #     ]
                     # )
                     bbox = union(
-                            bbox,
-                            Bbox.from_bounds(*pos, 0, 0),
-                            Bbox.from_bounds(*target, 0, 0),
+                        bbox,
+                        Bbox.from_bounds(*pos, 0, 0),
+                        Bbox.from_bounds(*target, 0, 0),
                     )
                     from sage.all import sgn
 
@@ -677,13 +685,13 @@ class CartesianPathPlot(GraphicPrimitive):
                         from math import sqrt
 
                         bbox = union(
-                                bbox,
-                                Bbox.from_bounds(
-                                    center[0],
-                                    sqrt((pos[0] - center[0]) ** 2 + pos[1] ** 2),
-                                    0,
-                                    0,
-                                ),
+                            bbox,
+                            Bbox.from_bounds(
+                                center[0],
+                                sqrt((pos[0] - center[0]) ** 2 + pos[1] ** 2),
+                                0,
+                                0,
+                            ),
                         )
 
                     pos = target
@@ -699,9 +707,7 @@ class CartesianPathPlot(GraphicPrimitive):
                         # TODO: This is an evil hack.
                         assert self._commands[c + 1].code == "LINETO"
                         pos = self._commands[c + 1].args
-                    bbox = union(
-                        bbox, Bbox.from_bounds(*pos, *direction)
-                    )
+                    bbox = union(bbox, Bbox.from_bounds(*pos, *direction))
                 else:
                     raise NotImplementedError(
                         f"cannot determine bounding box for {command.code} command"
@@ -788,7 +794,13 @@ class DynamicLabel(GraphicPrimitive):
         try:
 
             from sage.plot.text import Text
-            text = Text(self._text, self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim()) or (0, 0), self.options())
+
+            text = Text(
+                self._text,
+                self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim())
+                or (0, 0),
+                self.options(),
+            )
             text._render_on_subplot(subplot)
             label = text._bbox_extra_artists[0]
 
@@ -797,7 +809,9 @@ class DynamicLabel(GraphicPrimitive):
                 Redraw after the viewport has been rescaled to make sure that
                 infinite rays reach the end of the viewport.
                 """
-                position = self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim())
+                position = self._position(
+                    subplot.axes.get_xlim(), subplot.axes.get_ylim()
+                )
                 if position is not None:
                     label.set_position(position)
 
@@ -811,7 +825,13 @@ class DynamicLabel(GraphicPrimitive):
         pass
 
     def get_minmax_data(self):
-        return {'xmin': float('inf'), "xmax": float('-inf'), "ymin": float('inf'), "ymax": float('-inf')}
+        return {
+            "xmin": float("inf"),
+            "xmax": float("-inf"),
+            "ymin": float("inf"),
+            "ymax": float("-inf"),
+        }
+
 
 @dataclass
 class HyperbolicPathPlotCommand:

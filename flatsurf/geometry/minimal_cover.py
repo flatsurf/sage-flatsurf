@@ -79,6 +79,7 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
     r"""
     A cover of surface.
     """
+
     def __init__(self, base_surface, base_ring=None, category=None):
         if base_ring is None:
             base_ring = base_surface.base_ring()
@@ -102,9 +103,7 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
 
         self._base_surface = base_surface
 
-        OrientedSimilaritySurface.__init__(
-            self, base=base_ring, category=category
-        )
+        OrientedSimilaritySurface.__init__(self, base=base_ring, category=category)
 
     def is_mutable(self):
         r"""
@@ -192,7 +191,8 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
 
         """
         return tuple(
-            (base_label, self.fiber_root(base_label)) for base_label in self.base_surface().roots()
+            (base_label, self.fiber_root(base_label))
+            for base_label in self.base_surface().roots()
         )
 
     @cached_method
@@ -233,7 +233,10 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
             raise NotImplementedError
         V3 = FreeModule(self.base_ring(), 3)
         V2 = FreeModule(self.base_ring(), 2)
-        vertices_proj = [m * V3((x, y, 1)) for x, y in self.base_surface().polygon(base_label).vertices()]
+        vertices_proj = [
+            m * V3((x, y, 1))
+            for x, y in self.base_surface().polygon(base_label).vertices()
+        ]
         vertices_aff = [V2((x / z, y / z)) for x, y, z in vertices_proj]
         return Polygon(vertices=vertices_aff)
 
@@ -356,7 +359,6 @@ class MinimalTranslationCover(OrientedSimilaritySurfaceCover):
         OrientedSimilaritySurfaceCover.__init__(
             self, similarity_surface, category=category
         )
-
 
     def fiber_matrix(self, base_label, fiber, projective=True):
         r"""
@@ -727,7 +729,9 @@ class MinimalPlanarCover(OrientedSimilaritySurfaceCover):
         elif not similarity_surface.is_finite_type():
             category = category.NotCompact()
         else:
-            raise NotImplementedError("cannot determine category of planar cover of non-compact surface yet")
+            raise NotImplementedError(
+                "cannot determine category of planar cover of non-compact surface yet"
+            )
 
         OrientedSimilaritySurfaceCover.__init__(
             self, similarity_surface, category=category
@@ -752,6 +756,7 @@ class MinimalPlanarCover(OrientedSimilaritySurfaceCover):
 
     def fiber_root(self, base_label):
         from flatsurf.geometry.similarity import SimilarityGroup
+
         return SimilarityGroup(self.base_ring()).one()
 
     def opposite_edge(self, label, edge):
@@ -812,4 +817,7 @@ class MinimalPlanarCover(OrientedSimilaritySurfaceCover):
         if not isinstance(other, MinimalPlanarCover):
             return False
 
-        return self.base_surface() == other.base_surface() and self.roots() == other.roots()
+        return (
+            self.base_surface() == other.base_surface()
+            and self.roots() == other.roots()
+        )

@@ -1412,7 +1412,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.similarity import similarity_from_vectors
                 from sage.matrix.matrix_space import MatrixSpace
 
-                m2 = similarity_from_vectors(u.vector(), (-v).vector(), MatrixSpace(self.base_ring(), 2))
+                m2 = similarity_from_vectors(
+                    u.vector(), (-v).vector(), MatrixSpace(self.base_ring(), 2)
+                )
                 if not projective:
                     m2.set_immutable()
                     return m2
@@ -1420,7 +1422,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     m3 = MatrixSpace(self.base_ring(), 3)()
                     m3[:2, :2] = m2
                     m3[2, 2] = 1
-                    m3[:2, 2] = self.polygon(pp).vertex(ee + 1) - m2 * self.polygon(p).vertex(e)
+                    m3[:2, 2] = self.polygon(pp).vertex(ee + 1) - m2 * self.polygon(
+                        p
+                    ).vertex(e)
                     m3.set_immutable()
                     return m3
 
@@ -1872,10 +1876,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 sim = self.edge_transformation(opposite_label, opposite_edge)
                 p2 = self.polygon(opposite_label)
 
-
                 from flatsurf.geometry.euclidean import EuclideanPlane
+
                 p2 = Polygon(
-                    vertices=[sim(v) for v in p2.vertices()], parent=EuclideanPlane(p1.base_ring())
+                    vertices=[sim(v) for v in p2.vertices()],
+                    parent=EuclideanPlane(p1.base_ring()),
                 )
 
                 p = p1.join(p2, edge, opposite_edge)
@@ -3448,7 +3453,11 @@ class SimilaritySurfaces(SurfaceCategory):
                         # )
                         matrix = surface.edge_matrix(label, edge, projective=False)
 
-                        if matrix[0, 0] == matrix[1, 1] and not matrix[1, 0] and not matrix[0, 1]:
+                        if (
+                            matrix[0, 0] == matrix[1, 1]
+                            and not matrix[1, 0]
+                            and not matrix[0, 1]
+                        ):
                             continue
 
                         a = AA(matrix[0, 0])

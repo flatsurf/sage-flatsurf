@@ -63,7 +63,12 @@ from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry, OrderedSet
+from flatsurf.geometry.geometry import (
+    Geometry,
+    ExactGeometry,
+    EpsilonGeometry,
+    OrderedSet,
+)
 
 
 class EuclideanPlane(Parent, UniqueRepresentation):
@@ -199,6 +204,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
     def similarity_group(self):
         from flatsurf.geometry.similarity import SimilarityGroup
+
         return SimilarityGroup(self.base_ring())
 
     def change_ring(self, ring, geometry=None):
@@ -500,7 +506,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                     try:
                         yi = y.inverse_of_unit()
                     except Exception:
-                        raise NotImplementedError("no available coordinate normalization")
+                        raise NotImplementedError(
+                            "no available coordinate normalization"
+                        )
                     x *= yi
                     y = self._base_ring.one()
 
@@ -512,7 +520,6 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                 x *= zi
                 y *= zi
                 z = self._base_ring.one()
-
 
         if not x and not y and not z:
             raise ValueError("invalid coordinates to create a point")
@@ -1061,9 +1068,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         choice = False
 
         # Determine the category of the polygon
-        choice, category = self._polygon_category(
-            n=n, angles=angles, choice=choice
-        )
+        choice, category = self._polygon_category(n=n, angles=angles, choice=choice)
 
         # Write the vertices as points in the Euclidean plane
         choice, vertices = self._polygon_normalize_vertices(
@@ -1090,13 +1095,16 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         # Deduce edges from angles (and possibly lengths)
         choice, edges, vertices, angles, lengths = self._polygon_edges_from_angles(
-            n=n, edges=edges, vertices=vertices, angles=angles, lengths=lengths, choice=choice
+            n=n,
+            edges=edges,
+            vertices=vertices,
+            angles=angles,
+            lengths=lengths,
+            choice=choice,
         )
 
         # Add an edge if the polygon is not closed.
-        choice, edges = self._polygon_edges_close(
-            n=n, edges=edges, choice=choice
-        )
+        choice, edges = self._polygon_edges_close(n=n, edges=edges, choice=choice)
 
         polygon = EuclideanPolygon(self, edges=tuple(edges), category=category)
 
@@ -1113,10 +1121,12 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
     def rectangle(self, width, height, **kwargs):
         from flatsurf.geometry.polygon import polygons
+
         return polygons.rectangle(width, height, parent=self, **kwargs)
 
     def square(self, side=1, **kwargs):
         from flatsurf.geometry.polygon import polygons
+
         return polygons.square(side, parent=self, **kwargs)
 
     # TODO: Add triangle
@@ -1128,9 +1138,12 @@ class EuclideanPlane(Parent, UniqueRepresentation):
     def _polygon_check_n(self, polygon, n):
         if len(polygon.sides()) != n:
             from flatsurf.geometry.categories.polygons import Polygons
+
             ngon = Polygons._describe_polygon(n)
             mgon = Polygons._describe_polygon(len(polygon.sides()))
-            raise NotImplementedError(f"could only construct {mgon[0]} {mgon[1]} from this data but not {ngon[0]} {ngon[1]}")
+            raise NotImplementedError(
+                f"could only construct {mgon[0]} {mgon[1]} from this data but not {ngon[0]} {ngon[1]}"
+            )
 
     def _polygon_check_vertices(self, polygon, vertices):
         if not vertices:
@@ -1159,7 +1172,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         )
 
         # Use EuclideanPolygon's angle() so we do not use the precomputed angles set by the category.
-        from flatsurf.geometry.categories.euclidean_polygons_with_angles import EuclideanPolygonsWithAngles
+        from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
+            EuclideanPolygonsWithAngles,
+        )
+
         if EuclideanPolygonsWithAngles._normalize_angles(angles) != tuple(
             EuclideanPolygons.ParentMethods.angle(polygon, i)
             for i in range(len(polygon.vertices()))
@@ -1181,7 +1197,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         vertices = [self(v) for v in vertices]
         return choice, vertices
 
-    def _polygon_normalize_edges(self, n: int, vertices: List["EuclideanPoint"], edges, choice):
+    def _polygon_normalize_edges(
+        self, n: int, vertices: List["EuclideanPoint"], edges, choice
+    ):
         if edges is None:
             return choice, edges
 
@@ -1198,7 +1216,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                     pos = self.point(0, 0)
 
                 if pos is None:
-                    raise ValueError("cannot use edge vector when there is no base point for an edge")
+                    raise ValueError(
+                        "cannot use edge vector when there is no base point for an edge"
+                    )
 
                 edges[e] = pos.segment(pos.translate(edges[e]))
 
@@ -1243,13 +1263,18 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             if not angles:
                 return choice, edges, vertices, angles, lengths
 
-            from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
+            from flatsurf.geometry.categories.euclidean_polygons import (
+                EuclideanPolygons,
+            )
+
             category = EuclideanPolygons(self.base_ring()).Simple().WithAngles(angles)
 
             if lengths:
                 edges = []
                 for slope, length in zip(category.slopes(), lengths):
-                    scale = self.base_ring()((length**2 / (slope[0] ** 2 + slope[1] ** 2)).sqrt())
+                    scale = self.base_ring()(
+                        (length**2 / (slope[0] ** 2 + slope[1] ** 2)).sqrt()
+                    )
                     edges.append(scale * slope)
 
                 if len(edges) == n:
@@ -1273,29 +1298,36 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                 angles = None
 
             choice, edges = self._polygon_normalize_edges(n, vertices, edges, choice)
-        
+
         if angles and len(angles) == n and len(edges) == n - 2:
             # We do not use category.slopes() since the matrix formed by such
             # slopes might not be invertible (because exact-reals do not have a
             # fraction field implemented).
             from flatsurf.geometry.polygon import EuclideanPolygonsWithAngles
+
             slopes = EuclideanPolygonsWithAngles(angles).slopes()
 
             # We do not use solve_left() because the vertices might not live in
             # a ring that has a fraction field implemented (such as an
             # exact-real ring).
             from sage.all import matrix
+
             s, t = (edges[0].start().vector() - edges[-1].end().vector()) * matrix(
                 [slopes[-1], slopes[n - 2]]
             ).inverse()
-            assert edges[0].start().vector() - s * slopes[-1] == edges[-1].end().vector() + t * slopes[n - 2]
+            assert (
+                edges[0].start().vector() - s * slopes[-1]
+                == edges[-1].end().vector() + t * slopes[n - 2]
+            )
 
             if s <= 0 or t <= 0:
                 raise (NotImplementedError if choice else ValueError)(
                     "cannot determine polygon with these angles from the given data"
                 )
 
-            edges.append(edges[-1].end().segment(edges[0].start().vector() - s * slopes[-1]))
+            edges.append(
+                edges[-1].end().segment(edges[0].start().vector() - s * slopes[-1])
+            )
 
         return choice, edges, vertices, angles, lengths
 
@@ -1312,6 +1344,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         # Currently, all polygons are assumed to be without self-intersection, i.e., simple.
         from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
+
         category = EuclideanPolygons(self.base_ring()).Simple()
         if angles:
             category = category.WithAngles(angles)
@@ -1321,7 +1354,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         return choice, category
 
-    def _polygon_normalize_arguments(self, category, n, vertices, edges, angles, lengths):
+    def _polygon_normalize_arguments(
+        self, category, n, vertices, edges, angles, lengths
+    ):
         r"""
         Return the normalized arguments defining a polygon. Additionally, a flag is
         returned that indicates whether we made a choice in normalizing these
@@ -1409,7 +1444,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                 if pos is None:
                     choice = True
                     pos = self.point(0, 0)
-                
+
                 edges[e] = pos.segment(pos.translate(edges[e]))
 
             if not edges[e].is_oriented():
@@ -1478,7 +1513,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             )
 
             # Use EuclideanPolygon's angle() so we do not use the precomputed angles set by the category.
-            from flatsurf.geometry.categories.euclidean_polygons_with_angles import EuclideanPolygonsWithAngles
+            from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
+                EuclideanPolygonsWithAngles,
+            )
+
             if EuclideanPolygonsWithAngles._normalize_angles(angles) != tuple(
                 EuclideanPolygons.ParentMethods.angle(polygon, i)
                 for i in range(len(polygon.vertices()))
@@ -1509,28 +1547,35 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         """
         if angles:
-            if len(angles) == n and  len(edges) == n - 2:
+            if len(angles) == n and len(edges) == n - 2:
                 # We do not use category.slopes() since the matrix formed by such
                 # slopes might not be invertible (because exact-reals do not have a
                 # fraction field implemented).
                 from flatsurf.geometry.polygon import EuclideanPolygonsWithAngles
+
                 slopes = EuclideanPolygonsWithAngles(angles).slopes()
 
                 # We do not use solve_left() because the vertices might not live in
                 # a ring that has a fraction field implemented (such as an
                 # exact-real ring).
                 from sage.all import matrix
+
                 s, t = (edges[0].start().vector() - edges[-1].end().vector()) * matrix(
                     [slopes[-1], slopes[n - 2]]
                 ).inverse()
-                assert edges[0].start().vector() - s * slopes[-1] == edges[-1].end().vector() + t * slopes[n - 2]
+                assert (
+                    edges[0].start().vector() - s * slopes[-1]
+                    == edges[-1].end().vector() + t * slopes[n - 2]
+                )
 
                 if s <= 0 or t <= 0:
                     raise (NotImplementedError if choice else ValueError)(
                         "cannot determine polygon with these angles from the given data"
                     )
 
-                edges.append(edges[-1].end().segment(edges[0].start().vector() - s * slopes[-1]))
+                edges.append(
+                    edges[-1].end().segment(edges[0].start().vector() - s * slopes[-1])
+                )
             if len(edges) < n - 1:
                 from flatsurf.geometry.categories import Polygons
 
@@ -1904,15 +1949,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                         # The intersection adds no further constraints.
                         continue
 
-                    λ = boundary.parametrize(
-                        intersection, check=False
-                    )
+                    λ = boundary.parametrize(intersection, check=False)
 
                     # Determine whether this half space constrains to (-∞, λ] or [λ, ∞).
-                    if (
-                        boundary.unparametrize(λ + 1, check=False)
-                        in constraining
-                    ):
+                    if boundary.unparametrize(λ + 1, check=False) in constraining:
                         constraint = [λ, None]
                     else:
                         constraint = [None, λ]
@@ -1958,9 +1998,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         """
         half_spaces = [
-            half_space
-            for half_space in half_spaces
-            if point in half_space.boundary()
+            half_space for half_space in half_spaces if point in half_space.boundary()
         ]
 
         if len(half_spaces) == 0:
@@ -2241,9 +2279,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             elif len(required_half_spaces) > 1:
                 half_spaces.append(required_half_spaces.pop())
 
-        return EuclideanHalfSpaces(
-            required_half_spaces, assume_sorted="rotated"
-        )
+        return EuclideanHalfSpaces(required_half_spaces, assume_sorted="rotated")
 
     def _intersection_from_minimal_half_spaces(self, half_spaces):
         maybe_segment = True
@@ -2258,7 +2294,6 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                 if AB.dimension() != 0:
                     AB = None
 
-
             if B.boundary()._configuration(C.boundary()) == "concave":
                 BC = None
             else:
@@ -2272,7 +2307,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             segment = self.segment(B.boundary(), AB or None, BC or None, check=False)
 
             if segment.is_empty():
-                assert False # can this happen in the Euclidean plane?
+                assert False  # can this happen in the Euclidean plane?
             elif segment.dimension() == 0:
                 # Three half spaces meet in a point. This space is redundant.
                 pass
@@ -2405,7 +2440,10 @@ class EuclideanGeometry(Geometry):
             False
 
         """
-        return self._equal_vector((p._x * q._y, p._x * q._z, p._y * q._z), (q._x * p._y, q._x * p._z, q._y * p._z))
+        return self._equal_vector(
+            (p._x * q._y, p._x * q._z, p._y * q._z),
+            (q._x * p._y, q._x * p._z, q._y * p._z),
+        )
 
 
 class EuclideanExactGeometry(UniqueRepresentation, EuclideanGeometry, ExactGeometry):
@@ -2781,6 +2819,7 @@ class EuclideanSet(SageObject):
         # not work in our context since subsets are (facade) parents.
         from sage.structure.element import parent
         from sage.matrix.matrix_space import MatrixSpace
+
         E = self.parent()
         R = E.base_ring()
         P = parent(g)
@@ -3220,7 +3259,9 @@ class EuclideanSet(SageObject):
         """
         if self.is_oriented():
             if m[2, 0] or m[2, 1] or m[2, 2] < 0:
-                raise ValueError("ambiguous action of 3x3 matrix on oriented Euclidean set")
+                raise ValueError(
+                    "ambiguous action of 3x3 matrix on oriented Euclidean set"
+                )
         return self._apply_3x3_matrix(m)
 
     def _apply_3x3_matrix(self, m):
@@ -3237,7 +3278,9 @@ class EuclideanSet(SageObject):
         return self.dimension() < 0
 
     def dimension(self):
-        raise NotImplementedError(f"{type(self).__name__} does not implement dimension() yet")
+        raise NotImplementedError(
+            f"{type(self).__name__} does not implement dimension() yet"
+        )
 
     # TODO: Add is_point()
 
@@ -3308,7 +3351,9 @@ class EuclideanSet(SageObject):
         return self
 
     def is_finite(self):
-        raise NotImplementedError(f"{type(self).__name__} does not implement is_finite() yet")
+        raise NotImplementedError(
+            f"{type(self).__name__} does not implement is_finite() yet"
+        )
 
 
 class EuclideanOrientedSet(EuclideanSet):
@@ -3320,6 +3365,7 @@ class EuclideanOrientedSet(EuclideanSet):
         :meth:`EuclideanSet.is_oriented`
 
     """
+
     def __contains__(self, point):
         return point in self.unoriented()
 
@@ -3466,14 +3512,20 @@ class EuclideanCircle(EuclideanFacade):
         if self.parent() is not other.parent():
             return False
 
-        return self._center == other._center and self._radius_squared == other._radius_squared
+        return (
+            self._center == other._center
+            and self._radius_squared == other._radius_squared
+        )
 
     def __hash__(self):
         return hash((self._center, self._radius_squared))
 
     def _an_element_(self):
         # TODO: Maybe try to be smarter to construct an element without taking a field extension here.
-        return self.parent()(self._center.vector() + self.parent().vector_space()((self._radius_squared.sqrt(), 0)))
+        return self.parent()(
+            self._center.vector()
+            + self.parent().vector_space()((self._radius_squared.sqrt(), 0))
+        )
 
     def _repr_(self):
         r"""
@@ -3539,7 +3591,9 @@ class EuclideanCircle(EuclideanFacade):
             P = self.parent()
             Q = P.change_ring(ring, geometry=geometry)
             if P is not Q:
-                self = Q.circle(self._center, radius_squared=self._radius_squared, check=False)
+                self = Q.circle(
+                    self._center, radius_squared=self._radius_squared, check=False
+                )
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -3792,7 +3846,11 @@ class EuclideanPoint(EuclideanSet, Element):
         self._z = z
 
         # TODO: handle non-normalized coordinates
-        assert self._z.is_one() or (self._z.is_zero() and self._y.is_one() or (self._y.is_zero() and self._x.is_one()))
+        assert self._z.is_one() or (
+            self._z.is_zero()
+            and self._y.is_one()
+            or (self._y.is_zero() and self._x.is_one())
+        )
 
     def is_convex(self):
         return True
@@ -3830,21 +3888,21 @@ class EuclideanPoint(EuclideanSet, Element):
 
     def vector(self, model=None):
         if model == "projective":
-           V = self.parent().base_ring()**3 
-           v = V((self._x, self._y, self._z))
-           v.set_immutable()
-           return v
+            V = self.parent().base_ring() ** 3
+            v = V((self._x, self._y, self._z))
+            v.set_immutable()
+            return v
 
         # TODO: Give a name to R2 model.
 
         if model is not None:
-           raise NotImplementedError
+            raise NotImplementedError
 
         # TODO: Use a predicate
         if not self._z:
             raise ValueError(f"{self} has no coordinates in this model")
 
-        V = self.parent().base_ring()**2
+        V = self.parent().base_ring() ** 2
         v = V((self._x, self._y))
         v.set_immutable()
         return v
@@ -4048,12 +4106,14 @@ class EuclideanPoint(EuclideanSet, Element):
         return ZZ(0)
 
     def half_spaces(self):
-        x,y = self.coordinates()
-        return EuclideanHalfSpaces([
-            self.parent().line(-x, 1, 0).left_half_space(),
-            self.parent().line(-y, 0, 1).left_half_space(),
-            self.parent().line(x + y, -1, -1).left_half_space(),
-        ])
+        x, y = self.coordinates()
+        return EuclideanHalfSpaces(
+            [
+                self.parent().line(-x, 1, 0).left_half_space(),
+                self.parent().line(-y, 0, 1).left_half_space(),
+                self.parent().line(x + y, -1, -1).left_half_space(),
+            ]
+        )
 
     def unpointed(self):
         # TODO: unpointed() should also use the change machinery instead.
@@ -4366,7 +4426,9 @@ class EuclideanLine(EuclideanFacade):
         """
         if not r:
             return self.parent().point(0, 0)
-        return self.parent().line(self._a, self._b / r, self._c / r, oriented=self.is_oriented(), check=False)
+        return self.parent().line(
+            self._a, self._b / r, self._c / r, oriented=self.is_oriented(), check=False
+        )
 
     def _apply_similarity(self, g):
         A = self._a
@@ -4379,9 +4441,9 @@ class EuclideanLine(EuclideanFacade):
         t = g._t
         sign = g._sign
         if sign.is_one():
-            AA = A + B*s + C*t
-            BB = B*a + C*b
-            CC = -B*b + C*a
+            AA = A + B * s + C * t
+            BB = B * a + C * b
+            CC = -B * b + C * a
         else:
             raise NotImplementedError
         return self.parent().line(AA, BB, CC, oriented=self.is_oriented(), check=False)
@@ -4425,7 +4487,9 @@ class EuclideanLine(EuclideanFacade):
 
     def __contains__(self, point):
         # TODO: Use a better predicate
-        return self.parent().geometry._zero(self._a * point._z + self._b * point._x + self._c * point._y)
+        return self.parent().geometry._zero(
+            self._a * point._z + self._b * point._x + self._c * point._y
+        )
 
     def __eq__(self, other):
         # TODO: This is literally identical to __eq__ of hyperbolic geodesics. One should call the other instead.
@@ -4456,12 +4520,16 @@ class EuclideanLine(EuclideanFacade):
             # TODO: forbid hashing of all inexact parents?
             raise TypeError("cannot hash geodesic defined over inexact base ring")
 
-        return hash(
-            self.equation(normalization=["one", "gcd"])
-        )
+        return hash(self.equation(normalization=["one", "gcd"]))
 
     def translate(self, v):
-        return self.parent().line(self._a - self._b * v[0] - self._c * v[1], self._b, self._c, oriented=self.is_oriented(), check=False)
+        return self.parent().line(
+            self._a - self._b * v[0] - self._c * v[1],
+            self._b,
+            self._c,
+            oriented=self.is_oriented(),
+            check=False,
+        )
 
     def half_spaces(self):
         r"""
@@ -4484,9 +4552,11 @@ class EuclideanLine(EuclideanFacade):
         if not isinstance(other, EuclideanLine):
             return super().intersects(other)
 
-        return bool(self.parent().geometry._line_intersection(
-            (self._a, self._b, self._c), (other._a, other._b, other._c)
-        ))
+        return bool(
+            self.parent().geometry._line_intersection(
+                (self._a, self._b, self._c), (other._a, other._b, other._c)
+            )
+        )
 
     def intersection(self, other):
         r"""
@@ -4738,9 +4808,7 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
         if intersection.dimension() != 0:
             # We should use a specialized method of geometry here to make this
             # more robust over inexact rings.
-            orientation = sgn(
-                self._b * other._b + self._c * other._c
-            )
+            orientation = sgn(self._b * other._b + self._c * other._c)
 
             assert orientation != 0
 
@@ -4782,9 +4850,9 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
         # We should use a specialized predicate here to make this work
         # better over inexact rings.
         coordinate = 0 if not self.parent().geometry._zero(tangent[0]) else 1
-        return (
-            point.coordinates()[coordinate] - base[coordinate]
-        ) / tangent[coordinate]
+        return (point.coordinates()[coordinate] - base[coordinate]) / tangent[
+            coordinate
+        ]
 
     def unparametrize(self, λ, check=True):
         base = self.an_element().coordinates()
@@ -4837,7 +4905,9 @@ class EuclideanSegment(EuclideanFacade):
 
         if not isinstance(line, EuclideanLine):
             raise TypeError("line must be a Euclidean line")
-        if start is not None and not (isinstance(start, EuclideanPoint) and start in line):
+        if start is not None and not (
+            isinstance(start, EuclideanPoint) and start in line
+        ):
             raise TypeError("start must be a Euclidean point on line")
         if end is not None and not (isinstance(end, EuclideanPoint) and end in line):
             raise TypeError("end must be a Euclidean point on line")
@@ -4901,7 +4971,9 @@ class EuclideanSegment(EuclideanFacade):
         end = None if self._end is None else self._end._apply_scalar(r)
         if r < 0:
             start, end = end, start
-        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
+        return self.parent().segment(
+            line, start, end, oriented=self.is_oriented(), check=False
+        )
 
     def _apply_similarity(self, g):
         line = self._line._apply_similarity(g)
@@ -4909,7 +4981,9 @@ class EuclideanSegment(EuclideanFacade):
         end = None if self._end is None else self._end._apply_similarity(g)
         if not g.sign().is_one():
             start, end = end, start
-        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
+        return self.parent().segment(
+            line, start, end, oriented=self.is_oriented(), check=False
+        )
 
     def _apply_2x2_matrix(self, m):
         line = self._line._apply_2x2_matrix(m)
@@ -4917,7 +4991,9 @@ class EuclideanSegment(EuclideanFacade):
         end = None if self._end is None else self._end._apply_2x2_matrix(m)
         if m.det() < 0:
             start, end = end, start
-        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
+        return self.parent().segment(
+            line, start, end, oriented=self.is_oriented(), check=False
+        )
 
     def _apply_3x3_matrix(self, m):
         line = self._line._apply_3x3_matrix(m)
@@ -4925,7 +5001,9 @@ class EuclideanSegment(EuclideanFacade):
         end = None if self._end is None else self._end._apply_3x3_matrix(m)
         if m.det() < 0:
             start, end = end, start
-        return self.parent().segment(line, start, end, oriented=self.is_oriented(), check=False)
+        return self.parent().segment(
+            line, start, end, oriented=self.is_oriented(), check=False
+        )
 
     def distance(self, point):
         point = self.parent()(point)
@@ -4950,12 +5028,12 @@ class EuclideanSegment(EuclideanFacade):
             Q = P.change_ring(ring, geometry=geometry)
             if P is not Q:
                 self = Q.segment(
-                        self._line,
-                        self._start,
-                        self._end,
-                        check=False,
-                        oriented=self.is_oriented(),
-                    )
+                    self._line,
+                    self._start,
+                    self._end,
+                    check=False,
+                    oriented=self.is_oriented(),
+                )
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -4968,10 +5046,22 @@ class EuclideanSegment(EuclideanFacade):
         return self
 
     def translate(self, v):
-        return self.parent().segment(self._line.translate(v), None if self._start is None else self._start.translate(v), None if self._end is None else self._end.translate(v), oriented=self.is_oriented(), check=False)
+        return self.parent().segment(
+            self._line.translate(v),
+            None if self._start is None else self._start.translate(v),
+            None if self._end is None else self._end.translate(v),
+            oriented=self.is_oriented(),
+            check=False,
+        )
 
     def __neg__(self):
-        return self.parent().segment(-self._line, self._end, self._start, oriented=self.is_oriented(), check=False)
+        return self.parent().segment(
+            -self._line,
+            self._end,
+            self._start,
+            oriented=self.is_oriented(),
+            check=False,
+        )
 
     def half_spaces(self):
         r"""
@@ -5015,19 +5105,22 @@ class EuclideanSegment(EuclideanFacade):
     def __eq__(self, other):
         if type(self) is not type(other):
             return False
-        return (
-            self.line() == other.line() and self.vertices() == other.vertices()
-        )
+        return self.line() == other.line() and self.vertices() == other.vertices()
 
     def plot(self, **options):
-        from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+        from flatsurf.graphical.hyperbolic import (
+            CartesianPathPlotCommand,
+            CartesianPathPlot,
+        )
 
         if self.start().is_finite() and self.end().is_finite():
             from sage.all import line2d
+
             return line2d((self._start, self._end), **options)
 
         # TODO: This code is duplicate with polygon plotting.
         from sage.misc.decorators import options as o, rename_keyword
+
         @rename_keyword(color="rgbcolor")
         @o(
             alpha=1,
@@ -5043,6 +5136,7 @@ class EuclideanSegment(EuclideanFacade):
             return op
 
         from sage.all import Graphics
+
         g = Graphics()
 
         options = normalize_edge_options(**options)
@@ -5052,25 +5146,32 @@ class EuclideanSegment(EuclideanFacade):
         return g
 
     def _plot_commands(self):
-        from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand, CartesianPathPlot
+        from flatsurf.graphical.hyperbolic import (
+            CartesianPathPlotCommand,
+            CartesianPathPlot,
+        )
 
         if self.start().is_finite():
             if self.end().is_finite():
                 return [
-                        CartesianPathPlotCommand("MOVETO", self.start().vector()),
-                        CartesianPathPlotCommand("LINETO", self.end().vector())
-                    ]
-            else:
-                return [
-                        CartesianPathPlotCommand("MOVETO", self.start().vector()),
-                        CartesianPathPlotCommand("RAYTO", self.end().vector(model="projective")[:2])
-                    ]
-
-        if self.end().is_finite():
-            return        [
-                    CartesianPathPlotCommand("MOVETOINFINITY", self.start().vector(model="projective")[:2]),
+                    CartesianPathPlotCommand("MOVETO", self.start().vector()),
                     CartesianPathPlotCommand("LINETO", self.end().vector()),
                 ]
+            else:
+                return [
+                    CartesianPathPlotCommand("MOVETO", self.start().vector()),
+                    CartesianPathPlotCommand(
+                        "RAYTO", self.end().vector(model="projective")[:2]
+                    ),
+                ]
+
+        if self.end().is_finite():
+            return [
+                CartesianPathPlotCommand(
+                    "MOVETOINFINITY", self.start().vector(model="projective")[:2]
+                ),
+                CartesianPathPlotCommand("LINETO", self.end().vector()),
+            ]
 
         assert False
 
@@ -5081,23 +5182,39 @@ class EuclideanSegment(EuclideanFacade):
         if not isinstance(other, EuclideanSegment):
             return super().intersects(other)
 
-        if self._start is None or self._end is None or other._start is None or other._end is None:
+        if (
+            self._start is None
+            or self._end is None
+            or other._start is None
+            or other._end is None
+        ):
             return super().intersects(other)
 
-        return bool(self.parent().geometry._segment_intersection(
-            (self._start.vector(), self._end.vector()),
-            (other._start.vector(), other._end.vector())))
+        return bool(
+            self.parent().geometry._segment_intersection(
+                (self._start.vector(), self._end.vector()),
+                (other._start.vector(), other._end.vector()),
+            )
+        )
 
     def intersection(self, other):
         if not isinstance(other, EuclideanSegment):
             return super().intersection(other)
 
-        if self._start is None or self._end is None or other._start is None or other._end is None:
+        if (
+            self._start is None
+            or self._end is None
+            or other._start is None
+            or other._end is None
+        ):
             return super().intersection(other)
 
         intersection = self.parent().geometry.segment_intersection(
-            self._start.vector(), self._end.vector(),
-            other._start.vector(), other._end.vector())
+            self._start.vector(),
+            self._end.vector(),
+            other._start.vector(),
+            other._end.vector(),
+        )
 
         if intersection is None:
             return self.parent().empty_set()
@@ -5106,7 +5223,12 @@ class EuclideanSegment(EuclideanFacade):
             return self.parent().point(*intersection, check=False)
 
         if len(intersection) == 4:
-            return self.parent().point(*intersection[:2], check=False).segment(self.parent().point(*intersection[2:], check=False)).unoriented()
+            return (
+                self.parent()
+                .point(*intersection[:2], check=False)
+                .segment(self.parent().point(*intersection[2:], check=False))
+                .unoriented()
+            )
 
         assert False, "segment_intersection() returned output in unexpected format"
 
@@ -5161,7 +5283,9 @@ class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
         if type(self) is not type(other):
             return False
         return (
-            self._line == other._line and self._start == other._start and self._end == other._end
+            self._line == other._line
+            and self._start == other._start
+            and self._end == other._end
         )
 
     def __hash__(self):
@@ -5256,9 +5380,10 @@ class EuclideanUnorientedSegment(EuclideanSegment):
     def __eq__(self, other):
         if type(self) is not type(other):
             return False
-        return (
-            self._line.unoriented() == other._line.unoriented() and {self._start, self._end} == {other._start, other._end}
-        )
+        return self._line.unoriented() == other._line.unoriented() and {
+            self._start,
+            self._end,
+        } == {other._start, other._end}
 
     def __hash__(self):
         return hash((frozenset([self._start, self._end]), self.geodesic()))
@@ -5354,12 +5479,15 @@ class EuclideanPolygon(EuclideanFacade):
         self._edges = edges
 
         from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
+
         if category is None:
             category = EuclideanPolygons(parent.base_ring())
 
         category &= EuclideanPolygons(parent.base_ring())
 
-        if "Convex" not in category.axioms() and EuclideanPolygons(parent.base_ring()).ParentMethods.is_convex(self):
+        if "Convex" not in category.axioms() and EuclideanPolygons(
+            parent.base_ring()
+        ).ParentMethods.is_convex(self):
             category &= category.Convex()
 
         super().__init__(parent, category=category)
@@ -5470,8 +5598,7 @@ class EuclideanPolygon(EuclideanFacade):
         """
         # TODO: Require in base class. Implement partially in base class. Probably more generally as apply_matrix or something like that.
         return self.parent().polygon(
-            edges=[e.translate(u) for e in self._edges],
-            check=False
+            edges=[e.translate(u) for e in self._edges], check=False
         )
 
     def _apply_scalar(self, r):
@@ -5479,44 +5606,47 @@ class EuclideanPolygon(EuclideanFacade):
             return self.parent().point()(0, 0)
         elif r > 0:
             return self.parent().polygon(
-                edges=[e._apply_scalar(r) for e in self._edges],
-                check=False)
+                edges=[e._apply_scalar(r) for e in self._edges], check=False
+            )
         else:
             return self.parent().polygon(
-                edges=[e._apply_scalar(r) for e in reversed(self._edges)],
-                check=False)
+                edges=[e._apply_scalar(r) for e in reversed(self._edges)], check=False
+            )
 
     def _apply_similarity(self, g):
         if g.sign().is_one():
             return self.parent().polygon(
-                edges=[e._apply_similarity(g) for e in self._edges],
-                check=False)
+                edges=[e._apply_similarity(g) for e in self._edges], check=False
+            )
         else:
             return self.parent().polygon(
                 edges=[e._apply_similarity(g) for e in reversed(self._edges)],
-                check=False)
+                check=False,
+            )
 
     def _apply_2x2_matrix(self, m):
         if m.det() > 0:
             return self.parent().polygon(
-                edges=[e._apply_2x2_matrix(m) for e in self._edges],
-                check=False)
+                edges=[e._apply_2x2_matrix(m) for e in self._edges], check=False
+            )
         else:
             # TODO: set check=False below
             return self.parent().polygon(
                 edges=[e._apply_2x2_matrix(m) for e in reversed(self._edges)],
-                check=True)
+                check=True,
+            )
 
     def _apply_3x3_matrix(self, m):
         if m.det() > 0:
             return self.parent().polygon(
-                edges=[e._apply_3x3_matrix(m) for e in self._edges],
-                check=False)
+                edges=[e._apply_3x3_matrix(m) for e in self._edges], check=False
+            )
         else:
             # TODO: set check=False below
             return self.parent().polygon(
                 edges=[e._apply_3x3_matrix(m) for e in reversed(self._edges)],
-                check=True)
+                check=True,
+            )
 
     def _repr_(self):
         r"""
@@ -5590,7 +5720,9 @@ class EuclideanPolygon(EuclideanFacade):
             vertices = [v for v in vertices if v is not None]
         else:
             if any(v is None for v in vertices):
-                raise NotImplementedError("some sides of the polygon do not end in a finite point")
+                raise NotImplementedError(
+                    "some sides of the polygon do not end in a finite point"
+                )
 
         return tuple(v.vector() for v in vertices)
 
@@ -5619,7 +5751,9 @@ class EuclideanPolygon(EuclideanFacade):
             if isinstance(self._edges[i], EuclideanSegment):
                 # TODO: There must be a public way to implement this without reaching into the implementation details.
                 vertex = self._edges[i]._start
-            corners.append((-self._edges[i - 1].direction(), vertex, self._edges[i].direction()))
+            corners.append(
+                (-self._edges[i - 1].direction(), vertex, self._edges[i].direction())
+            )
 
         return corners
 
@@ -5660,7 +5794,7 @@ class EuclideanPolygon(EuclideanFacade):
 
         sides = self.sides()
         for i in range(len(sides)):
-            end = sides[i - 1] .end()
+            end = sides[i - 1].end()
             start = sides[i].start()
 
             if end == start:
@@ -5698,6 +5832,7 @@ class EuclideanPolygon(EuclideanFacade):
 
     def dimension(self):
         from sage.all import ZZ
+
         return ZZ(2)
 
     def half_spaces(self):
@@ -5714,6 +5849,7 @@ class EuclideanPolygon(EuclideanFacade):
 class EuclideanEmptySet(EuclideanFacade):
     def dimension(self):
         from sage.all import ZZ
+
         return ZZ(-1)
 
     def change(self, *, ring=None, geometry=None, oriented=None):
@@ -6480,6 +6616,7 @@ def is_segment_intersecting(s, t):
 
     """
     from sage.all import vector
+
     s = (vector(s[0]), vector(s[1]))
     t = (vector(t[0]), vector(t[1]))
 
@@ -6732,13 +6869,20 @@ def to_3x3_matrix(g):
     from sage.matrix.constructor import matrix
     from sage.structure.element import Matrix
     from flatsurf.geometry.similarity import Similarity
+
     if isinstance(g, Similarity):
         return g.matrix()
     elif isinstance(g, Matrix):
         if g.nrows() == g.ncols() == 2:
-            return matrix(g.base_ring(), 3, [g[0, 0], g[0, 1], 0, g[1, 0], g[1, 1], 0, 0, 0, 1])
+            return matrix(
+                g.base_ring(), 3, [g[0, 0], g[0, 1], 0, g[1, 0], g[1, 1], 0, 0, 0, 1]
+            )
         elif g.nrows() == 2 and g.ncols() == 3:
-            return matrix(g.base_ring(), 3, [g[0, 0], g[0, 1], g[0, 2], g[1, 0], g[1, 1], g[1, 2], 0, 0, 1])
+            return matrix(
+                g.base_ring(),
+                3,
+                [g[0, 0], g[0, 1], g[0, 2], g[1, 0], g[1, 1], g[1, 2], 0, 0, 1],
+            )
         elif g.nrows() != 3 or g.ncols() != 3:
             raise ValueError(f"invalid element g={g}")
     elif isinstance(g, (tuple, list)):
@@ -6801,6 +6945,7 @@ def find_similarity(s, t, unique=True):
 
     """
     from sage.matrix.matrix_space import MatrixSpace
+
     E = s.parent()
     R = E.base_ring()
     M = MatrixSpace(R, 3)
@@ -6836,7 +6981,9 @@ def find_similarity(s, t, unique=True):
             transformation[0, 1] = -sin_uv
             transformation[1, 1] = cos_uv
             transformation[2, 2] = 1
-            transformation[:2, 2] = t.start().vector() - (transformation * s.start()).vector()
+            transformation[:2, 2] = (
+                t.start().vector() - (transformation * s.start()).vector()
+            )
             return transformation
 
         elif not s.is_compact():
@@ -6859,7 +7006,9 @@ def find_similarity(s, t, unique=True):
             transformation[0, 1] = -sin_uv
             transformation[1, 1] = cos_uv
             transformation[2, 2] = 1
-            transformation[:2, 2] = t.start().vector() - (transformation * s.start()).vector()
+            transformation[:2, 2] = (
+                t.start().vector() - (transformation * s.start()).vector()
+            )
             return transformation
 
     else:

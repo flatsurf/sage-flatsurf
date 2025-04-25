@@ -88,8 +88,10 @@ class Surface_base(Parent):
         True
 
     """
+
     def __init__(self, base, category=None):
         from sage.categories.all import Rings
+
         if base not in Rings():
             raise TypeError("base ring must be a ring")
 
@@ -165,8 +167,10 @@ class PolygonalSurface(Surface_base):
         True
 
     """
+
     def __init__(self, base, category=None):
         from flatsurf.geometry.euclidean import EuclideanPlane
+
         if isinstance(base, EuclideanPlane):
             self._euclidean_plane = base
             base = self._euclidean_plane.base_ring()
@@ -1412,10 +1416,14 @@ class MutableOrientedSimilaritySurface(
                 "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
             )
 
-        if x[0] not in self._polygons or not (0 <= x[1] < len(self.polygon(x[0]).sides())):
+        if x[0] not in self._polygons or not (
+            0 <= x[1] < len(self.polygon(x[0]).sides())
+        ):
             raise ValueError("invalid input edge")
 
-        if y[0] not in self._polygons or not (0 <= y[1] < len(self.polygon(y[0]).sides())):
+        if y[0] not in self._polygons or not (
+            0 <= y[1] < len(self.polygon(y[0]).sides())
+        ):
             raise ValueError("invalid input edge")
 
         self.unglue(*x)
@@ -1435,10 +1443,16 @@ class MutableOrientedSimilaritySurface(
 
         if transformation is None:
             from flatsurf.geometry.euclidean import find_similarity
-            transformation = find_similarity(self.polygon(x[0]).side(x[1]), -self.polygon(y[0]).side(y[1]), unique=True)
+
+            transformation = find_similarity(
+                self.polygon(x[0]).side(x[1]),
+                -self.polygon(y[0]).side(y[1]),
+                unique=True,
+            )
             transformation.set_immutable()
         else:
             from flatsurf.geometry.euclidean import to_3x3_matrix
+
             transformation = to_3x3_matrix(transformation)
             transformation.set_immutable()
 
@@ -1447,7 +1461,9 @@ class MutableOrientedSimilaritySurface(
             AB1 = self.polygon(y[0]).side(y[1])
 
             if transformation * AB0 != -AB1:
-                raise ValueError(f"invalid transformation AB0={AB0} AB1={AB1} transformation * AB0 = {transformation * AB0}")
+                raise ValueError(
+                    f"invalid transformation AB0={AB0} AB1={AB1} transformation * AB0 = {transformation * AB0}"
+                )
 
         inverse_transformation = transformation.inverse_of_unit()
         inverse_transformation.set_immutable()
@@ -1717,6 +1733,7 @@ class MutableOrientedSimilaritySurface(
         old = self.polygon(label)
 
         from flatsurf.geometry.euclidean import to_3x3_matrix
+
         transformation = to_3x3_matrix(transformation)
 
         self._polygons[label] = old._apply_3x3_matrix(transformation)
@@ -1725,9 +1742,13 @@ class MutableOrientedSimilaritySurface(
         for edge, opposite_edge in enumerate(self._gluings[label]):
             if opposite_edge is None:
                 continue
-            self._transformations[label][edge] = self._transformations[label][edge] * inverse_transformation
+            self._transformations[label][edge] = (
+                self._transformations[label][edge] * inverse_transformation
+            )
             label2, edge2 = opposite_edge
-            self._transformations[label2][edge2] = transformation * self._transformations[label2][edge2]
+            self._transformations[label2][edge2] = (
+                transformation * self._transformations[label2][edge2]
+            )
             self._transformations[label][edge].set_immutable()
             self._transformations[label2][edge2].set_immutable()
 
@@ -2140,6 +2161,7 @@ class MutableOrientedSimilaritySurface(
                 )
 
         from flatsurf.geometry.similarity import SimilarityGroup
+
         S = SimilarityGroup(self.base_ring())
         for label, parent_label, parent_edge in self.labels().traversal_bfs():
             if parent_label is None:
@@ -2401,7 +2423,10 @@ class MutableOrientedSimilaritySurface(
 
         # TODO: one should not compare 3x3 matrices using equality since these are considered
         # as projective transformations
-        if self._gluings != other._gluings or self._transformations != other._transformations:
+        if (
+            self._gluings != other._gluings
+            or self._transformations != other._transformations
+        ):
             return False
 
         return True
@@ -3127,6 +3152,7 @@ class Labels(LabeledCollection, collections.abc.Sequence):
         True
 
     """
+
     def traversal_bfs(self):
         for component in self._surface.components():
             yield from component.traversal_bfs()

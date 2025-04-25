@@ -31,6 +31,7 @@ these generic geometries::
     True
 
 """
+
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -541,7 +542,10 @@ class Geometry:
         det = self._determinant(fb, fc, gb, gc)
 
         if det is None:
-            if self._determinant(fa, fb, ga, gb) is None and self._determinant(fa, fc, ga, gc) is None:
+            if (
+                self._determinant(fa, fb, ga, gb) is None
+                and self._determinant(fa, fc, ga, gc) is None
+            ):
                 # The (unoriented) lines are identical
                 return f
 
@@ -1180,5 +1184,3 @@ class OrderedSet(collections.abc.Set):
 
         """
         return x in self._entries
-
-

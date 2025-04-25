@@ -589,7 +589,7 @@ class TopologicalSurfaces(SurfaceCategory):
                     "surface cannot be compact and not compact at the same time"
                 )
 
-        class  ParentMethods:
+        class ParentMethods:
             def is_compact(self):
                 r"""
                 EXAMPLES::

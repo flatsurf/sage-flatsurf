@@ -257,6 +257,7 @@ class PolygonsConstructor:
 
         if parent is None:
             from flatsurf.geometry.euclidean import EuclideanPlane
+
             parent = EuclideanPlane(field)
 
         ngon = Polygon(edges=edges, parent=parent)
@@ -313,7 +314,9 @@ class PolygonsConstructor:
         field, (c, s) = number_field_elements_from_algebraics((c, s))
 
         return Polygon(
-            base_ring=field, edges=[(c, field.zero()), (field.zero(), s), (-c, -s)], parent=parent
+            base_ring=field,
+            edges=[(c, field.zero()), (field.zero(), s), (-c, -s)],
+            parent=parent,
         )
 
     def __call__(self, *args, **kwargs):
@@ -671,10 +674,12 @@ def Polygon(
 
     if base_ring is not None:
         import warnings
+
         # TODO: Enable this warning
         # warnings.warn("base_ring is deprecated as a keyword argument of Polygon() and will be removed in a future version of sage-flatsurf; use parent=EuclideanPlane(base_ring) instead")
 
         from flatsurf.geometry.euclidean import EuclideanPlane
+
         parent = EuclideanPlane(base_ring)
 
     # Determine the base ring of the polygon
@@ -691,11 +696,19 @@ def Polygon(
             geometry = geometry.change_ring(base_ring)
 
         from flatsurf.geometry.euclidean import EuclideanPlane
+
         parent = EuclideanPlane(base_ring, geometry)
 
         parent = parent.change_ring(base_ring)
 
-    return parent.polygon(vertices=vertices, edges=edges, angles=angles, lengths=lengths, category=category, check=check)
+    return parent.polygon(
+        vertices=vertices,
+        edges=edges,
+        angles=angles,
+        lengths=lengths,
+        category=category,
+        check=check,
+    )
 
 
 def _Polygon_geometry(vertices, edges):
@@ -703,6 +716,7 @@ def _Polygon_geometry(vertices, edges):
 
     def geometry(x):
         from flatsurf.geometry.euclidean import EuclideanSet
+
         if isinstance(x, EuclideanSet):
             return x.parent().geometry
 
@@ -723,6 +737,7 @@ def _Polygon_geometry(vertices, edges):
 
     from sage.categories.pushout import pushout
     from functools import reduce
+
     base_ring = reduce(pushout, [geometry.base_ring() for geometry in geometries])
 
     geometries = {geometry.change_ring(base_ring) for geometry in geometries}
@@ -731,8 +746,9 @@ def _Polygon_geometry(vertices, edges):
         return None
 
     if len(geometries) > 1:
-        raise ValueError("vertices and edges come from Euclidean spaces with incompatible geometries")
-
+        raise ValueError(
+            "vertices and edges come from Euclidean spaces with incompatible geometries"
+        )
 
     return next(iter(geometries))
 
@@ -767,15 +783,19 @@ def _Polygon_base_ring(base_ring, vertices, edges, angles, lengths):
 
     if vertices:
         from flatsurf.geometry.euclidean import EuclideanSet
+
         vertices = [v for v in vertices if not isinstance(v, EuclideanSet)]
         if vertices:
             base_ring = pushout(
                 base_ring,
-                Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe(),
+                Sequence(
+                    [v[0] for v in vertices] + [v[1] for v in vertices]
+                ).universe(),
             )
 
     if edges:
         from flatsurf.geometry.euclidean import EuclideanSet
+
         edges = [e for e in edges if not isinstance(e, EuclideanSet)]
         if edges:
             base_ring = pushout(

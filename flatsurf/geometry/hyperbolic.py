@@ -222,7 +222,12 @@ from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry, OrderedSet
+from flatsurf.geometry.geometry import (
+    Geometry,
+    ExactGeometry,
+    EpsilonGeometry,
+    OrderedSet,
+)
 
 
 class HyperbolicPlane(Parent, UniqueRepresentation):
@@ -522,7 +527,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def euclidean(self):
         from flatsurf.geometry.euclidean import EuclideanPlane
-        return EuclideanPlane(self.base_ring(), self.geometry.euclidean());
+
+        return EuclideanPlane(self.base_ring(), self.geometry.euclidean())
 
     def change_ring(self, ring, geometry=None):
         r"""
@@ -3662,8 +3668,10 @@ class HyperbolicExactGeometry(UniqueRepresentation, ExactGeometry, HyperbolicGeo
         :class:`HyperbolicEpsilonGeometry` for an implementation over inexact rings
 
     """
+
     def euclidean(self):
         from flatsurf.geometry.euclidean import EuclideanExactGeometry
+
         return EuclideanExactGeometry(self.base_ring())
 
     def change_ring(self, ring):
@@ -3714,7 +3722,9 @@ class HyperbolicExactGeometry(UniqueRepresentation, ExactGeometry, HyperbolicGeo
         return f"Exact geometry over {self._ring}"
 
 
-class HyperbolicEpsilonGeometry(UniqueRepresentation, EpsilonGeometry, HyperbolicGeometry):
+class HyperbolicEpsilonGeometry(
+    UniqueRepresentation, EpsilonGeometry, HyperbolicGeometry
+):
     r"""
     Predicates and primitive geometric constructions over a base ``ring`` with
     "precision" ``epsilon``.
@@ -3756,8 +3766,10 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, EpsilonGeometry, Hyperboli
         :class:`HyperbolicExactGeometry`
 
     """
+
     def euclidean(self):
         from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+
         return EuclideanEpsilonGeometry(self.base_ring(), self._epsilon)
 
     def projective(self, p, q, point):
@@ -8474,7 +8486,9 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
     # TODO: This should probably get an optional "model" parameter.
     def euclidean(self):
-        return self.parent().euclidean().line(*self.equation(model="klein"), check=False)
+        return (
+            self.parent().euclidean().line(*self.equation(model="klein"), check=False)
+        )
 
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
@@ -13682,6 +13696,7 @@ class HyperbolicHalfSpaces(OrderedSet):
 
         """
         from flatsurf.geometry.euclidean import EuclideanHalfSpaces
+
         return EuclideanHalfSpaces._lt_(lhs.euclidean(), rhs.euclidean())
 
     @staticmethod

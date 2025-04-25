@@ -49,14 +49,19 @@ class GraphicalPolygon:
         - ``transformation`` -- a transformation to be applied to the polygon
         """
         self._polygon = polygon
-        self._transformation = transformation or SimilarityGroup(self._polygon.base_ring()).one()
+        self._transformation = (
+            transformation or SimilarityGroup(self._polygon.base_ring()).one()
+        )
 
     def copy(self):
         r"""
         Return a copy of this GraphicalPolygon.
         """
         import warnings
-        warnings.warn("copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead")
+
+        warnings.warn(
+            "copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead"
+        )
 
         return GraphicalPolygon(self._polygon, self.transformation())
 
@@ -170,7 +175,10 @@ class GraphicalPolygon:
     def set_transformation(self, transformation=None):
         r"""Set the transformation to be applied to the polygon."""
         import warnings
-        warnings.warn("set_transformation() has been deprecated and will be removed in a future version of sage-flatsurf; set the transformation when creating the graphical polygon instead")
+
+        warnings.warn(
+            "set_transformation() has been deprecated and will be removed in a future version of sage-flatsurf; set the transformation when creating the graphical polygon instead"
+        )
 
         if transformation is None:
             transformation = SimilarityGroup(self._polygon.base_ring()).one()
@@ -187,7 +195,9 @@ class GraphicalPolygon:
         if "axes" not in options:
             options["axes"] = False
 
-        return self.polygon().plot(polygon_options=options, edge_options=None, vertex_options=None)
+        return self.polygon().plot(
+            polygon_options=options, edge_options=None, vertex_options=None
+        )
 
     def plot_label(self, label, **options):
         r"""
@@ -206,9 +216,13 @@ class GraphicalPolygon:
 
         def position(xlim, ylim):
             from flatsurf.graphical.hyperbolic import CartesianPathPlot
-            path = CartesianPathPlot(self.polygon()._plot_commands())._create_path(xlim, ylim, fill=True)
+
+            path = CartesianPathPlot(self.polygon()._plot_commands())._create_path(
+                xlim, ylim, fill=True
+            )
 
             from matplotlib.transforms import Bbox
+
             path = path.clip_to_bbox(Bbox(((xlim[0], ylim[0]), (xlim[1], ylim[1]))))
             if path.codes is None:
                 return None
@@ -220,10 +234,14 @@ class GraphicalPolygon:
                 if code == 2:
                     if j > 0 and path.codes[j - 1] == 1:
                         vertices.append(path.vertices[j - 1])
-                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                            vertices[-2]
+                        ):
                             vertices.pop()
                     vertices.append(vertex)
-                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                        vertices[-2]
+                    ):
                         vertices.pop()
 
             vertices = list(map(vector, vertices))
@@ -233,12 +251,16 @@ class GraphicalPolygon:
             if len(vertices) <= 1:
                 return None
 
-
             from flatsurf import Polygon, EuclideanPlane
             from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
             from sage.all import RR
+
             # TODO: The check here is pretty evil. There is one vertex too many in closed polygons.
-            centroid = EuclideanPlane(RR, geometry=EuclideanEpsilonGeometry(RR, 1e-3)).polygon(vertices=vertices, check=False).centroid()
+            centroid = (
+                EuclideanPlane(RR, geometry=EuclideanEpsilonGeometry(RR, 1e-3))
+                .polygon(vertices=vertices, check=False)
+                .centroid()
+            )
             return (float(centroid[0]), float(centroid[1]))
 
         position = options.pop("position", position)
@@ -251,6 +273,7 @@ class GraphicalPolygon:
         options = text(label, (0, 0), **options)[0].options()
 
         from flatsurf.graphical.hyperbolic import DynamicLabel
+
         g.add_primitive(DynamicLabel(str(label), position, options))
         return g
 
@@ -284,6 +307,7 @@ class GraphicalPolygon:
         direction = side.direction()
 
         from sage.all import sgn
+
         direction_sgn = (sgn(direction[0]), sgn(direction[1]))
 
         if "position" in options:
@@ -375,7 +399,10 @@ class GraphicalPolygon:
 
         def position(xlim, ylim):
             from flatsurf.graphical.hyperbolic import CartesianPathPlot
-            path = CartesianPathPlot(self.polygon().side(i)._plot_commands())._create_path(xlim, ylim, fill=False)
+
+            path = CartesianPathPlot(
+                self.polygon().side(i)._plot_commands()
+            )._create_path(xlim, ylim, fill=False)
 
             from sage.all import vector
 
@@ -384,10 +411,14 @@ class GraphicalPolygon:
                 if code == 2:
                     if j > 0 and path.codes[j - 1] == 1:
                         vertices.append(path.vertices[j - 1])
-                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                            vertices[-2]
+                        ):
                             vertices.pop()
                     vertices.append(vertex)
-                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(vertices[-2]):
+                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                        vertices[-2]
+                    ):
                         vertices.pop()
 
             vertices = list(map(vector, vertices))
@@ -397,8 +428,9 @@ class GraphicalPolygon:
             if len(vertices) < 2:
                 raise NotImplementedError("edge is not visible")
 
-            assert len(vertices) == 2, "path should render as exactly two points if it is visible"
-
+            assert (
+                len(vertices) == 2
+            ), "path should render as exactly two points if it is visible"
 
             vertex = vertices[0]
             vector = vertices[1] - vertices[0]
@@ -409,6 +441,7 @@ class GraphicalPolygon:
         options = text(label, (0, 0), **options)[0].options()
 
         from flatsurf.graphical.hyperbolic import DynamicLabel
+
         g.add_primitive(DynamicLabel(label, position, options))
         return g
 
