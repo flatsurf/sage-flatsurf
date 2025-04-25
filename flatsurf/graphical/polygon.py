@@ -207,12 +207,10 @@ class GraphicalPolygon:
             from flatsurf.graphical.hyperbolic import CartesianPathPlot
             path = CartesianPathPlot(self.polygon()._plot_commands())._create_path(xlim, ylim, fill=True)
 
-            print(xlim, ylim, path)
-
             from matplotlib.transforms import Bbox
             path = path.clip_to_bbox(Bbox(((xlim[0], ylim[0]), (xlim[1], ylim[1]))))
-
-            print("clips to", path)
+            if path.codes is None:
+                return None
 
             from sage.all import vector
 
@@ -231,14 +229,15 @@ class GraphicalPolygon:
             if vertices[0] == vertices[-1]:
                 vertices.pop()
 
-            print(vertices)
+            if len(vertices) <= 1:
+                return None
+
 
             from flatsurf import Polygon, EuclideanPlane
             from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
             from sage.all import RR
             # TODO: The check here is pretty evil. There is one vertex too many in closed polygons.
             centroid = EuclideanPlane(RR, geometry=EuclideanEpsilonGeometry(RR, 1e-3)).polygon(vertices=vertices, check=False).centroid()
-            print(centroid)
             return (float(centroid[0]), float(centroid[1]))
 
         position = options.pop("position", position)

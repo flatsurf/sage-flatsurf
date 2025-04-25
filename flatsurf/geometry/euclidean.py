@@ -4456,12 +4456,13 @@ class EuclideanLine(EuclideanFacade):
 
     def __hash__(self):
         if not self.parent().base_ring().is_exact():
+            # TODO: forbid hashing of all inexact parents?
             raise TypeError("cannot hash geodesic defined over inexact base ring")
 
         return hash(
             self.equation(normalization=["one", "gcd"])
         )
-        
+
     def translate(self, v):
         return self.parent().line(self._a - self._b * v[0] - self._c * v[1], self._b, self._c, oriented=self.is_oriented(), check=False)
 
@@ -5353,18 +5354,18 @@ class EuclideanPolygon(EuclideanFacade):
     """
 
     def __init__(self, parent, edges, category=None):
+        self._edges = edges
+
         from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
         if category is None:
             category = EuclideanPolygons(parent.base_ring())
 
         category &= EuclideanPolygons(parent.base_ring())
 
+        if "Convex" not in category.axioms() and EuclideanPolygons(parent.base_ring()).ParentMethods.is_convex(self):
+            category &= category.Convex()
+
         super().__init__(parent, category=category)
-
-        self._edges = edges
-
-        if "Convex" not in category.axioms() and self.is_convex():
-            self._refine_category_(category.Convex())
 
         # The category is not refined automatically to the WithAngles()
         # subcategory since computation of angles can be very costly.

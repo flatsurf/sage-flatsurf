@@ -788,7 +788,7 @@ class DynamicLabel(GraphicPrimitive):
         try:
 
             from sage.plot.text import Text
-            text = Text(self._text, self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim()), self.options())
+            text = Text(self._text, self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim()) or (0, 0), self.options())
             text._render_on_subplot(subplot)
             label = text._bbox_extra_artists[0]
 
@@ -798,7 +798,8 @@ class DynamicLabel(GraphicPrimitive):
                 infinite rays reach the end of the viewport.
                 """
                 position = self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim())
-                label.set_position(position)
+                if position is not None:
+                    label.set_position(position)
 
             subplot.axes.callbacks.connect("ylim_changed", redraw)
             subplot.axes.callbacks.connect("xlim_changed", redraw)
