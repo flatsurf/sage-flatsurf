@@ -7438,7 +7438,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         if not isinstance(other, HyperbolicGeodesic):
             raise TypeError("other must also be a hyperbolic geodesic")
 
-        xy = self.parent().geometry.intersection(
+        xy = self.parent().geometry.line_intersection(
             (self._a, self._b, self._c), (other._a, other._b, other._c)
         )
 

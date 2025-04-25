@@ -390,7 +390,20 @@ class Geometry:
         """
         raise NotImplementedError("this geometry does not implement change_ring()")
 
-    def intersection(self, f, g):
+    def line_intersects(self, f, g):
+        (fa, fb, fc) = f
+        (ga, gb, gc) = g
+        det = self._determinant(fb, fc, gb, gc)
+
+        if det is None:
+            return None
+
+        x = (-gc * fa + fc * ga), det
+        y = (gb * fa - fb * ga), det
+
+        return (x, y)
+
+    def line_intersection(self, f, g):
         r"""
         Return the point of intersection between the Euclidean lines ``f`` and ``g``.
 
@@ -410,21 +423,17 @@ class Geometry:
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
-            sage: H.geometry.intersection((0, 1, 0), (0, 0, 1))
+            sage: H.geometry.line_intersection((0, 1, 0), (0, 0, 1))
             (0, 0)
 
         """
-        (fa, fb, fc) = f
-        (ga, gb, gc) = g
-        det = self._determinant(fb, fc, gb, gc)
-
-        if det is None:
+        xy = self.line_intersects(f, g)
+        if xy is None:
             return None
 
-        x = (-gc * fa + fc * ga) / det
-        y = (gb * fa - fb * ga) / det
+        x, y = xy
 
-        return (x, y)
+        return x[0] / x[1], y[0] / y[1]
 
 
 class ExactGeometry(Geometry):

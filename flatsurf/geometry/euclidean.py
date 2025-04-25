@@ -3276,7 +3276,12 @@ class EuclideanSet(SageObject):
         """
         return isinstance(self, EuclideanOrientedSet)
 
+    def intersects(self, other):
+        # TODO: Override this in the segment/line case.
+        return bool(self.intersection(other))
+
     def intersection(self, other):
+        # TODO: Override this in the segment/line case.
         return self.parent().intersection(self, other)
 
     def _test_is_convex(self, **options):
@@ -4547,9 +4552,9 @@ class EuclideanLine(EuclideanFacade):
 
         """
         if not isinstance(other, EuclideanLine):
-            raise TypeError("other must also be an Euclidean line")
+            return super().intersection(other)
 
-        xy = self.parent().geometry.intersection(
+        xy = self.parent().geometry.line_intersection(
             (self._a, self._b, self._c), (other._a, other._b, other._c)
         )
 

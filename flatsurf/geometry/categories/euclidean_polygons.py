@@ -218,7 +218,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     if (j + 1) % len(sides) == 0:
                         continue
 
-                    if e.intersection(f):
+                    if e.intersects(f):
                         return False
 
             return True
