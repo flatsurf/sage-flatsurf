@@ -555,7 +555,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: E.circle((0, 0), radius=0)
             (0, 0)
 
-        We can explicity create a circle with radius zero by setting ``check``
+        We can explicitly create a circle with radius zero by setting ``check``
         to ``False``::
 
             sage: E.circle((0, 0), radius=0, check=False)
@@ -1133,7 +1133,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
     # TODO: Add regular_ngon
     # TODO: Add right_triangle
 
-    # TODO: All these helpers shoud probably go into the EuclideanPolygon class.
+    # TODO: All these helpers should probably go into the EuclideanPolygon class.
 
     def _polygon_check_n(self, polygon, n):
         if len(polygon.sides()) != n:
@@ -2986,7 +2986,7 @@ class EuclideanSet(SageObject):
     def _apply_similarity(self, g):
         r"""
         Concrete implementation of :meth:`apply_similarity` that must be
-        overriden in subclasses.
+        overridden in subclasses.
         """
         raise NotImplementedError
 
@@ -5677,14 +5677,14 @@ class EuclideanPolygon(EuclideanFacade):
             ()
 
         """
-        ans = []
+        marked = []
         n = len(self._edges)
         for i in range(n):
             s0 = self._edges[i]
             s1 = self._edges[(i + 1) % n]
             if s0.end() is not None and ccw(s0.direction(), s1.direction()) == 0:
-                ans.append(s0.end())
-        return tuple(ans)
+                marked.append(s0.end())
+        return tuple(marked)
 
     def vertices(self, marked_vertices=True, finite=None):
         # TODO: Expose as points as well.
