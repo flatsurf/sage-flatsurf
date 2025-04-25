@@ -127,6 +127,72 @@ class Geometry:
         """
         raise NotImplementedError("this geometry does not implement change_ring()")
 
+    def interval_intersection(self, i, j):
+        r"""
+        Return the intersection of the two intervals of the real line ``i`` and
+        ``j``.
+
+        INPUT:
+
+        - ``i`` -- a closed interval of the real line encoded as ``None`` for
+          the empty interval, or a pair ``(left, right)`` where an entry
+          ``None`` encodes that the interval is unbounded.
+
+        - ``j`` -- a closed interval encoded like ``i``
+
+        EXAMPLES::
+
+            sage: TODO
+
+        """
+        if i is None or j is None:
+            return None
+
+        if i[0] is None:
+            left = j[0]
+        elif j[0] is None:
+            left = i[0]
+        else:
+            left = max(i[0], j[0])
+
+        if i[1] is None:
+            right = j[1]
+        elif j[1] is None:
+            right = i[1]
+        else:
+            right = min(i[1], j[1])
+
+        if left is not None and right is not None:
+            if left > right:
+                return None
+
+        return (left, right)
+
+    def interval_element(self, i):
+        r"""
+        Return an element in the interval ``i``.
+
+        INPUT:
+
+        - ``i`` -- a closed interval of the real line, see
+          :meth:`interval_intersection` for details.
+
+        EXAMPLES::
+
+            sage: TODO
+
+        """
+        if i is None:
+            raise ValueError("empty interval has no elements")
+
+        if i[0] is None:
+            return i[1]
+
+        if i[1] is None:
+            return i[0]
+
+        return (i[0] + i[1]) / 2
+
     def _zero(self, x):
         r"""
         Return whether ``x`` should be considered zero in the

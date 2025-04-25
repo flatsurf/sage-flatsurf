@@ -1888,10 +1888,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
                 # Each half space constrains the possible values of λ, starting
                 # from (-∞,∞) to a smaller closed interval.
-                from sage.all import RealSet, oo
-
-                # Note that RealSet.real_line() would require SageMath 9.4
-                interval = RealSet(-oo, oo)
+                interval = (None, None)
 
                 for constraining in random_half_spaces:
                     if constraining is half_space:
@@ -1914,33 +1911,23 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                         intersection, check=False
                     )
 
-                    # RealSet in SageMath does not like number fields. We move
-                    # everything through AA (which might not always work) to
-                    # work around this problem.
-                    if λ.parent().is_exact():
-                        from sage.all import AA
-
-                        rλ = AA(λ)
-                    else:
-                        rλ = λ
-
                     # Determine whether this half space constrains to (-∞, λ] or [λ, ∞).
                     if (
                         boundary.unparametrize(λ + 1, check=False)
                         in constraining
                     ):
-                        constraint = RealSet.unbounded_above_closed(rλ)
+                        constraint = [λ, None]
                     else:
-                        constraint = RealSet.unbounded_below_closed(rλ)
+                        constraint = [None, λ]
 
-                    interval = interval.intersection(constraint)
+                    interval = self.geometry.interval_intersection(interval, constraint)
 
-                    if interval.is_empty():
+                    if not interval:
                         # The constraints leave no possibility for λ.
                         return self.empty_set()
 
                 # Construct a point from any of the λ in interval.
-                λ = interval.an_element()
+                λ = self.geometry.interval_element(interval)
 
                 point = boundary.unparametrize(λ, check=False)
 
