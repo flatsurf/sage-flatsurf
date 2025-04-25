@@ -687,7 +687,7 @@ class GraphicalSurface:
             return False
         g = self.graphical_polygon(p)
         gg = self.graphical_polygon(pp)
-        return g.transformed_side(e) == gg.transformed_side(ee)
+        return g.transformed_side(e).unoriented() == gg.transformed_side(ee).unoriented()
 
     def to_surface(
         self,
