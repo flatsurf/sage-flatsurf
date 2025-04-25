@@ -473,15 +473,17 @@ class GraphicalSurface:
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(label)
+                            from flatsurf.graphical.polygon import GraphicalPolygon
                             poly = self._ss.polygon(label)
-                            t = T(
-                                (
-                                    QQ(self.xmax() - g.xmin() + 1),
-                                    QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
-                                )
-                            )
-                            g.set_transformation(t)
+                            g = GraphicalPolygon(poly)
+                            self._polygons[label] = GraphicalPolygon(
+                                poly,
+                                T(
+                                    (
+                                        QQ(self.xmax() - g.xmin() + 1),
+                                        QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
+                                    )
+                                ))
                         self.make_visible(label)
         else:
             if limit <= 0:
@@ -505,15 +507,17 @@ class GraphicalSurface:
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(label)
+                            from flatsurf.graphical.polygon import GraphicalPolygon
                             poly = self._ss.polygon(label)
-                            t = T(
-                                (
-                                    QQ(self.xmax() - g.xmin() + 1),
-                                    QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
-                                )
-                            )
-                            g.set_transformation(t)
+                            g = GraphicalPolygon(poly)
+                            self._polygons[label] = GraphicalPolygon(
+                                poly,
+                                T(
+                                    (
+                                        QQ(self.xmax() - g.xmin() + 1),
+                                        QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
+                                    )
+                                ))
                         self.make_visible(label)
                         i = i + 1
                         if i >= limit:
@@ -635,7 +639,10 @@ class GraphicalSurface:
         else:
             g = self._ss.edge_transformation(pp, ee)
         h = self.graphical_polygon(p).transformation()
-        self.graphical_polygon(pp).set_transformation(h * g)
+
+        from flatsurf.graphical.polygon import GraphicalPolygon
+        self._polygons[pp] = GraphicalPolygon(self._ss.polygon(pp), h * g)
+
         if visible:
             self.make_visible(pp)
 
