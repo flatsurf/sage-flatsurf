@@ -70,9 +70,10 @@ class GraphicalPolygon:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
+
         """
-        return repr(self.polygon())
+        return "Graphical" + repr(self.polygon())
 
     @cached_method
     def polygon(self):

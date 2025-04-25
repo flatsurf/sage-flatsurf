@@ -427,13 +427,13 @@ class CartesianPathPlot(GraphicPrimitive):
 
             sage: from flatsurf.graphical.hyperbolic import CartesianPathPlot
 
-            sage: CartesianPathPlot._infinity((0., 0.), (0., 1.), (-1024., 1024.), (-1024., 1024.))
+            sage: CartesianPathPlot._infinity((0., 0.), (0., 1.), (-1024., 1024.), (-1024., 1024.), True)
             (0.000000000000000, 5120.00000000000)
 
-            sage: CartesianPathPlot._infinity((0., 0.), (1., 1.), (-1024., 1024.), (-1024., 1024.))
+            sage: CartesianPathPlot._infinity((0., 0.), (1., 1.), (-1024., 1024.), (-1024., 1024.), True)
             (3920.30937574010, 3920.30937574010)
 
-            sage: CartesianPathPlot._infinity((1., 0.), (1., 1.), (-1024., 1024.), (-1024., 1024.))
+            sage: CartesianPathPlot._infinity((1., 0.), (1., 1.), (-1024., 1024.), (-1024., 1024.), True)
             (3920.30937574010, 3919.30937574010)
 
         """

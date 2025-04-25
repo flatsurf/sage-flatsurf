@@ -1898,13 +1898,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
                     if intersection.is_empty():
                         # constraining is anti-parallel to half_space
-                        if (
-                            boundary.unparametrize(0, check=False)
-                            not in constraining
-                        ):
-                            return self.empty_set()
+                        return self.empty_set()
 
-                        # The intersection is non-empty, so this adds no further constraints.
+                    if intersection.dimension():
+                        # The intersection adds no further constraints.
                         continue
 
                     λ = boundary.parametrize(
@@ -6482,6 +6479,10 @@ def is_segment_intersecting(s, t):
         1
 
     """
+    from sage.all import vector
+    s = (vector(s[0]), vector(s[1]))
+    t = (vector(t[0]), vector(t[1]))
+
     if not is_box_intersecting(s, t):
         return 0
 

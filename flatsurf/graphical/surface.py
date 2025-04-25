@@ -351,6 +351,9 @@ class GraphicalSurface:
             (x, y) |-> (x + (a + 4), y + (a + 2))
             sage: gs.polygon_options["color"]="yellow"
             sage: gs2 = gs.copy()
+            doctest:warning
+            ...
+            UserWarning: copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead
             sage: gs2 == gs
             False
             sage: gs2.will_plot_zero_flags
@@ -360,6 +363,9 @@ class GraphicalSurface:
             sage: gs2.polygon_options
             {'color': 'yellow'}
         """
+        import warnings
+        warnings.warn("copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead")
+
         gs = GraphicalSurface(
             self.get_surface(),
             default_position_function=self._default_position_function,
@@ -597,16 +603,16 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface(adjacencies=[])
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: gs.graphical_polygon(1)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, 0.0), (1.0, 3.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: print("Polygon 0, edge 0 is opposite "+str(gs.opposite_edge(0,0)))
             Polygon 0, edge 0 is opposite (1, 1)
             sage: gs.make_adjacent(0,0)
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: gs.graphical_polygon(1)
-            GraphicalPolygon with vertices [(0.4, -2.8), (2.0, -2.0), (0.0, 0.0)]
+            GraphicalPolygon(vertices=[(2/5, -14/5), (2, -2), (0, 0)])
         """
         pp, ee = self._ss.opposite_edge(p, e)
         if reverse:
