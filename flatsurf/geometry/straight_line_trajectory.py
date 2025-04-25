@@ -862,8 +862,8 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
-            sage: s = translation_surfaces.square_torus()
-            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()), ring=AA)
+            sage: s = translation_surfaces.square_torus().change_ring(AA)
+            sage: v = s.tangent_vector(0, (0,0), (1,1+AA(5).sqrt()))
             sage: L = StraightLineTrajectoryTranslation(v)
             sage: L.flow(2)
             sage: L.segments()

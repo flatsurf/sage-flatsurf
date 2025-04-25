@@ -1,6 +1,6 @@
 [project]
 name = "sage-flatsurf"
-version = "0.7.3"
+version = "0.7.4"
 authors = [
   {name = "Vincent Delecroix"},
   {name = "W. Patrick Hooper"},
@@ -151,6 +151,7 @@ sphinx = ">=7,<8"
 tachyon = "*"
 veerer = "*"
 linkchecker = "*"
+sphinx-book-theme = "*"
 
 [tool.pixi.feature.doc.pypi-dependencies]
 sage-docbuild = "==10.3"
