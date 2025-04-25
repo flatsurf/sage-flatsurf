@@ -592,7 +592,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurfaceCover):
         """
 
         if not isinstance(fiber, tuple) or len(fiber) != 2:
-            raise ValueError("invalid label {!r}".format(label))
+            raise ValueError("invalid label {!r}".format(base_label))
         a, b = fiber
         if projective:
             return matrix(self.base_ring(), 3, [a, -b, 0, b, a, 0, 0, 0, 1])

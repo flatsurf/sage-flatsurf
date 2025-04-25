@@ -367,22 +367,6 @@ class Geometry:
             return None
         return det
 
-    def change_ring(self, ring):
-        r"""
-        Return this geometry with the :meth:`base_ring` changed to ``ring``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: H.geometry
-            Exact geometry over Rational Field
-            sage: H.geometry.change_ring(AA)
-            Exact geometry over Algebraic Real Field
-
-        """
-        raise NotImplementedError("this geometry does not implement change_ring()")
-
     def _segment_intersection(self, f, g):
         Δf = (f[1][0] - f[0][0], f[1][1] - f[0][1])
         # TODO: Bring the speedups from is_segment_intersecting here.
@@ -534,7 +518,7 @@ class Geometry:
         if len(xy) == 4:
             return xy
 
-        assert "unexpected output from _segment_intersection"
+        assert False, "unexpected output from _segment_intersection"
 
     def _line_intersection(self, f, g):
         (fa, fb, fc) = f

@@ -639,9 +639,16 @@ class CartesianPathPlot(GraphicPrimitive):
             from functools import reduce
 
             def union2(a, b):
-                if a.bounds == Bbox.null().bounds:
+                # TODO: Why does pylint get the callable wrong here?
+                if (
+                    a.bounds  # pylint: disable=comparison-with-callable
+                    == Bbox.null().bounds
+                ):
                     return b
-                if b.bounds == Bbox.null().bounds:
+                if (
+                    b.bounds  # pylint: disable=comparison-with-callable
+                    == Bbox.null().bounds
+                ):
                     return a
                 return Bbox.union([a, b])
 
@@ -650,8 +657,6 @@ class CartesianPathPlot(GraphicPrimitive):
         try:
 
             bbox = Bbox.null()
-
-            pos = None
 
             for c, command in enumerate(self._commands):
                 if command.code in ["MOVETO", "LINETO"]:
@@ -791,36 +796,28 @@ class DynamicLabel(GraphicPrimitive):
         if self.options().get("clip", None):
             raise NotImplementedError
 
-        try:
+        from sage.plot.text import Text
 
-            from sage.plot.text import Text
+        text = Text(
+            self._text,
+            self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim()) or (0, 0),
+            self.options(),
+        )
+        text._render_on_subplot(subplot)
+        label = text._bbox_extra_artists[0]
 
-            text = Text(
-                self._text,
-                self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim())
-                or (0, 0),
-                self.options(),
-            )
-            text._render_on_subplot(subplot)
-            label = text._bbox_extra_artists[0]
+        def redraw(_=None):
+            r"""
+            Redraw after the viewport has been rescaled to make sure that
+            infinite rays reach the end of the viewport.
+            """
+            position = self._position(subplot.axes.get_xlim(), subplot.axes.get_ylim())
+            if position is not None:
+                label.set_position(position)
 
-            def redraw(_=None):
-                r"""
-                Redraw after the viewport has been rescaled to make sure that
-                infinite rays reach the end of the viewport.
-                """
-                position = self._position(
-                    subplot.axes.get_xlim(), subplot.axes.get_ylim()
-                )
-                if position is not None:
-                    label.set_position(position)
-
-            subplot.axes.callbacks.connect("ylim_changed", redraw)
-            subplot.axes.callbacks.connect("xlim_changed", redraw)
-            redraw()
-        except:
-            # TODO: Remove this (added to see stack traces.)
-            raise KeyboardInterrupt("render on subplot failed")
+        subplot.axes.callbacks.connect("ylim_changed", redraw)
+        subplot.axes.callbacks.connect("xlim_changed", redraw)
+        redraw()
 
         pass
 

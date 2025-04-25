@@ -323,18 +323,18 @@ class GraphicalPolygon:
             # position outside polygon.
             if "horizontal_alignment" in options:
                 pass
-            elif e[1] > 0:
+            elif direction[1] > 0:
                 options["horizontal_alignment"] = "left"
-            elif e[1] < 0:
+            elif direction[1] < 0:
                 options["horizontal_alignment"] = "right"
             else:
                 options["horizontal_alignment"] = "center"
 
             if "vertical_alignment" in options:
                 pass
-            elif e[0] > 0:
+            elif direction[0] > 0:
                 options["vertical_alignment"] = "top"
-            elif e[0] < 0:
+            elif direction[0] < 0:
                 options["vertical_alignment"] = "bottom"
             else:
                 options["vertical_alignment"] = "center"
@@ -456,15 +456,15 @@ class GraphicalPolygon:
         Other options are processed as in sage.plot.line.line2d.
         """
         raise NotImplementedError
-        if "t" in options:
-            t = RDF(options.pop("t"))
-        else:
-            t = 0.5
+        # if "t" in options:
+        #     t = RDF(options.pop("t"))
+        # else:
+        #     t = 0.5
 
-        return line2d(
-            [self._v[0], self._v[0] + t * (sum(self._v) / len(self._v) - self._v[0])],
-            **options,
-        )
+        # return line2d(
+        #     [self._v[0], self._v[0] + t * (sum(self._v) / len(self._v) - self._v[0])],
+        #     **options,
+        # )
 
     def plot_points(self, points, **options):
         r"""

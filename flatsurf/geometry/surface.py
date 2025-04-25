@@ -3084,7 +3084,7 @@ class ComponentLabels(LabeledCollection):
         """
         from collections import deque
 
-        seen = set([self._root])
+        seen = {self._root}
         pending = deque([self._root])
         yield (self._root, None, None)
 
@@ -3143,7 +3143,7 @@ class Labels(LabeledCollection, collections.abc.Sequence):
 
         sage: labels = S.labels()
         sage: labels
-        ((0, (1, 0)), (1, (1, 0)), (1, (0, -1)), (1, (1/2*c0, 1/2*c0)), (0, (1/2*c0, -1/2*c0)), (0, (0, 1)), (0, (-1/2*c0, -1/2*c0)), (0, (0, -1)), (0, (-1/2*c0, 1/2*c0)), (0, (1/2*c0, 1/2*c0)), (1, (1/2*c0, -1/2*c0)), (1, (-1/2*c0, -1/2*c0)), (1, (0, 1)), (1, (-1/2*c0, 1/2*c0)), (1, (-1, 0)), (0, (-1, 0)))
+        ((0, (1, 0)), (1, (1, 0)), (1, (0, -1)), (1, (1/2*c0, 1/2*c0)), (0, (1/2*c0, -1/2*c0)), (0, (0, 1)), ..., (0, (-1, 0)))
 
     TESTS::
 

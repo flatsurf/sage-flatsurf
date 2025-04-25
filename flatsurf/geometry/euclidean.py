@@ -3692,15 +3692,6 @@ class EuclideanCircle(EuclideanFacade):
                 + str(self)
             )
 
-    # TODO: Not used anywhere.
-    ## def line_position(self, point, direction_vector):
-    ##     r"""
-    ##     Consider the line through the provided point in the given direction.
-    ##     We return 1 if the line passes through the circle, 0 if it is tangent
-    ##     to the circle and -1 if the line does not intersect the circle.
-    ##     """
-    ##     return self.point_position(self.closest_point_on_line(point, direction_vector))
-
     # TODO: Create Segment class.
     def line_segment_position(self, p, q):
         r"""
@@ -3726,53 +3717,6 @@ class EuclideanCircle(EuclideanFacade):
         # It does not lie in the interior.
         return -1
 
-    # TODO: Not used anywhere.
-    ## def tangent_vector(self, point):
-    ##     r"""
-    ##     Return a vector based at the provided point (which must lie on the circle)
-    ##     which is tangent to the circle and points in the counter-clockwise
-    ##     direction.
-
-    ##     EXAMPLES::
-
-    ##         sage: from flatsurf.geometry.circle import Circle
-    ##         sage: c=Circle(vector((0,0)), 2, base_ring=QQ)
-    ##         sage: c.tangent_vector(vector((1,1)))
-    ##         (-1, 1)
-    ##     """
-    ##     if not self.point_position(point) == 0:
-    ##         raise ValueError("point not on circle.")
-    ##     return vector((self._center[1] - point[1], point[0] - self._center[0]))
-
-    # TODO: Not used anywhere.
-    ## def other_intersection(self, p, v):
-    ##     r"""
-    ##     Consider a point p on the circle and a vector v. Let L be the line
-    ##     through p in direction v. Then L intersects the circle at another
-    ##     point q. This method returns q.
-
-    ##     Note that if p and v are both in the field of the circle,
-    ##     then so is q.
-
-    ##     EXAMPLES::
-
-    ##         sage: from flatsurf.geometry.circle import Circle
-    ##         sage: c=Circle(vector((0,0)), 25, base_ring=QQ)
-    ##         sage: c.other_intersection(vector((3,4)),vector((1,2)))
-    ##         (-7/5, -24/5)
-    ##     """
-    ##     pp = self._V3((p[0], p[1], self._base_ring.one()))
-    ##     vv = self._V3((v[0], v[1], self._base_ring.zero()))
-    ##     L = pp.cross_product(vv)
-    ##     cc = self._V3((self._center[0], self._center[1], self._base_ring.one()))
-    ##     vvperp = self._V3((-v[1], v[0], self._base_ring.zero()))
-    ##     # line perpendicular to L through center:
-    ##     Lperp = cc.cross_product(vvperp)
-    ##     # intersection of L and Lperp:
-    ##     rr = L.cross_product(Lperp)
-    ##     r = self._V2((rr[0] / rr[2], rr[1] / rr[2]))
-    ##     return self._V2((2 * r[0] - p[0], 2 * r[1] - p[1]))
-
     def __rmul__(self, similarity):
         r"""
         Apply a similarity to the circle.
@@ -3797,14 +3741,6 @@ class EuclideanCircle(EuclideanFacade):
         return self.parent().circle(
             s(self._center), radius_squared=s.det() * self._radius_squared
         )
-
-    ## def __str__(self):
-    ##     return (
-    ##         "circle with center "
-    ##         + str(self._center)
-    ##         + " and radius squared "
-    ##         + str(self._radius_squared)
-    ##     )
 
     def __contains__(self, point):
         if point.is_ideal():
@@ -6026,7 +5962,7 @@ class EuclideanDistances(Parent):
         return self.from_vector(x)
 
 
-### TODO: PRE-EUCLIDEAN-PLANE CODE HERE
+# TODO: PRE-EUCLIDEAN-PLANE CODE HERE
 
 
 def is_cosine_sine_of_rational(cos, sin, scaled=False):
@@ -6396,7 +6332,7 @@ def is_anti_parallel(v, w):
     return is_parallel(v, -w)
 
 
-def line_intersection(l, m):
+def line_intersection(f, g):
     r"""
     Return the point of intersection between the lines ``l`` and ``m``. If the
     lines do not have a single point of intersection, returns None.
@@ -6422,13 +6358,13 @@ def line_intersection(l, m):
         sage: line_intersection((vector((-1, 0)), vector((1, 0))), (vector((-2, 0)), vector((2, 0))))
 
     """
-    Δl = l[1] - l[0]
-    Δm = m[1] - m[0]
+    Δl = f[1] - f[0]
+    Δm = g[1] - g[0]
 
     # We solve the linear system determining the time when l[0] + t * Δl hits
     # m, i.e., l[0] + t Δl == m[0] + s Δm.
     a, b, c, d = Δl[0], -Δm[0], Δl[1], -Δm[1]
-    rhs = m[0] - l[0]
+    rhs = g[0] - f[0]
 
     det = a * d - b * c
     if det == 0:
@@ -6438,7 +6374,7 @@ def line_intersection(l, m):
     # Solve the linear system. We only need t (and not s.)
     t = (d * rhs[0] - b * rhs[1]) / det
 
-    return l[0] + t * Δl
+    return f[0] + t * Δl
 
 
 def time_on_ray(p, direction, q):
@@ -6988,7 +6924,7 @@ def find_similarity(s, t, unique=True):
 
         elif not s.is_compact():
             assert not t.is_compact()
-            if s._start is None != t._start is None:
+            if (s._start is None) != (t._start is None):
                 raise ValueError(f"no oriented similarity mapping {s} to {t}")
             if s._start is None:
                 s = -s

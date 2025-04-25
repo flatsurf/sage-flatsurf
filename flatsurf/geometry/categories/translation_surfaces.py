@@ -195,10 +195,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     checked.add((label, edge))
 
                     # TODO: double check that the it is ok to override the old implementation
-                    ## We do not call self.edge_matrix() since the surface might
-                    ## have overridden this (just returning the identity matrix e.g.)
-                    ## and we want to deduce the matrix from the attached polygon
-                    ## edges instead.
+                    # We do not call self.edge_matrix() since the surface might
+                    # have overridden this (just returning the identity matrix e.g.)
+                    # and we want to deduce the matrix from the attached polygon
+                    # edges instead.
                     # from flatsurf.geometry.categories import SimilaritySurfaces
                     #
                     # matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member

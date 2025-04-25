@@ -286,7 +286,6 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                 )
 
             return next(iter(polygons)).parent()
-            return EuclideanPlane(self.base_ring())
 
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
