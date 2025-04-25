@@ -7445,6 +7445,9 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         if xy is None:
             return None
 
+        if len(xy) == 3:
+            return None
+
         return self.parent().point(*xy, model="klein", check=False)
 
     def _apply_isometry_klein(self, isometry, on_right=False):

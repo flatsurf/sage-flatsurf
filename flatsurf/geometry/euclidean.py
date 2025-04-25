@@ -2257,13 +2257,17 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             if A.boundary()._configuration(B.boundary()) == "concave":
                 AB = None
             else:
-                AB = A.boundary().intersection(B.boundary()) or None
+                AB = A.boundary().intersection(B.boundary())
+                if AB.dimension() != 0:
+                    AB = None
 
 
             if B.boundary()._configuration(C.boundary()) == "concave":
                 BC = None
             else:
                 BC = B.boundary().intersection(C.boundary())
+                if BC.dimension() != 0:
+                    BC = None
 
             # If the intersection "points" are empty sets, we replace them with
             # None which is what segment() expects when there is no finite end
@@ -4478,6 +4482,14 @@ class EuclideanLine(EuclideanFacade):
         self = self.change(oriented=True)
         return EuclideanHalfSpaces([self.left_half_space(), self.right_half_space()])
 
+    def intersects(self, other):
+        if not isinstance(other, EuclideanLine):
+            return super().intersects(other)
+
+        return bool(self.parent().geometry._line_intersection(
+            (self._a, self._b, self._c), (other._a, other._b, other._c)
+        ))
+
     def intersection(self, other):
         r"""
         TODO: Rewrite documentation for the Euclidean case.
@@ -4561,7 +4573,13 @@ class EuclideanLine(EuclideanFacade):
         if xy is None:
             return self.parent().empty_set()
 
-        return self.parent().point(*xy, check=False)
+        if len(xy) == 2:
+            return self.parent().point(*xy, check=False)
+
+        if len(xy) == 3:
+            return self.parent().line(*xy, check=False).unoriented()
+
+        assert False, "line_intersection() returned output in unexpected format"
 
 
 class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
@@ -4719,7 +4737,7 @@ class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
 
         sgn = self.parent().geometry._sgn
 
-        if intersection.is_empty():
+        if intersection.dimension() != 0:
             # We should use a specialized method of geometry here to make this
             # more robust over inexact rings.
             orientation = sgn(
@@ -5060,6 +5078,39 @@ class EuclideanSegment(EuclideanFacade):
 
     def is_finite(self):
         return self._start is not None and self._end is not None
+
+    def intersects(self, other):
+        if not isinstance(other, EuclideanSegment):
+            return super().intersects(other)
+
+        if self._start is None or self._end is None or other._start is None or other._end is None:
+            return super().intersects(other)
+
+        return bool(self.parent().geometry._segment_intersection(
+            (self._start.vector(), self._end.vector()),
+            (other._start.vector(), other._end.vector())))
+
+    def intersection(self, other):
+        if not isinstance(other, EuclideanSegment):
+            return super().intersection(other)
+
+        if self._start is None or self._end is None or other._start is None or other._end is None:
+            return super().intersection(other)
+
+        intersection = self.parent().geometry.segment_intersection(
+            self._start.vector(), self._end.vector(),
+            other._start.vector(), other._end.vector())
+
+        if intersection is None:
+            return self.parent().empty_set()
+
+        if len(intersection) == 2:
+            return self.parent().point(*intersection, check=False)
+
+        if len(intersection) == 4:
+            return self.parent().point(*intersection[:2], check=False).segment(self.parent().point(*intersection[2:], check=False)).unoriented()
+
+        assert False, "segment_intersection() returned output in unexpected format"
 
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):

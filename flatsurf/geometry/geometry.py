@@ -140,10 +140,6 @@ class Geometry:
 
         - ``j`` -- a closed interval encoded like ``i``
 
-        EXAMPLES::
-
-            sage: TODO
-
         """
         if i is None or j is None:
             return None
@@ -176,10 +172,6 @@ class Geometry:
 
         - ``i`` -- a closed interval of the real line, see
           :meth:`interval_intersection` for details.
-
-        EXAMPLES::
-
-            sage: TODO
 
         """
         if i is None:
@@ -390,12 +382,169 @@ class Geometry:
         """
         raise NotImplementedError("this geometry does not implement change_ring()")
 
-    def line_intersects(self, f, g):
+    def _segment_intersection(self, f, g):
+        Δf = (f[1][0] - f[0][0], f[1][1] - f[0][1])
+        # TODO: Bring the speedups from is_segment_intersecting here.
+        ccwfg0 = self._ccw(Δf, (g[0][0] - f[0][0], g[0][1] - f[0][1]))
+        ccwfg1 = self._ccw(Δf, (g[1][0] - f[0][0], g[1][1] - f[0][1]))
+
+        if ccwfg0 * ccwfg1 > 0:
+            return None
+
+        Δg = (g[1][0] - g[0][0], g[1][1] - g[0][1])
+        ccwgf0 = self._ccw(Δg, (f[0][0] - g[0][0], f[0][1] - g[0][1]))
+        ccwgf1 = self._ccw(Δg, (f[1][0] - g[0][0], f[1][1] - g[0][1]))
+
+        if ccwgf0 * ccwgf1 > 0:
+            return None
+
+        if ccwfg0 == ccwfg1:
+            # The segments are parallel
+            assert ccwfg0 == ccwfg1 == ccwgf0 == ccwgf1 == 0
+
+            t0 = self._time_on_ray(f[0], Δf, g[0])
+            t1 = self._time_on_ray(f[0], Δf, g[1])
+
+            if t0[0] * t1[1] > t1[0] * t0[1]:
+                g = g[1], g[0]
+                Δg = -Δg[0], -Δg[1]
+                t0, t1 = t1, t0
+
+            if t0[0] <= 0:
+                if t1[0] < 0:
+                    return None
+
+                a = f[0]
+                if t1[0] <= t1[1]:
+                    b = g[1]
+                else:
+                    b = f[1]
+
+            else:
+                if t0[0] > t0[1]:
+                    return None
+
+                a = g[0]
+                if t1[0] < t1[1]:
+                    b = g[1]
+                else:
+                    b = f[1]
+
+            if a == b:
+                return ((a[0], 1), (a[1], 1))
+
+            return (a[0], a[1], b[0], b[1])
+
+        fb, fc = (-(f[1][1] - f[0][1]), f[1][0] - f[0][0])
+        gb, gc = (-(g[1][1] - g[0][1]), g[1][0] - g[0][0])
+
+        fa = -(fb * f[0][0] + fc * f[0][1])
+        ga = -(gb * g[0][0] + gc * g[0][1])
+
+        return self._line_intersection((fa, fb, fc), (ga, gb, gc))
+
+    def _time_on_ray(self, p, direction, q):
+        if direction[0]:
+            dim = 0
+        else:
+            dim = 1
+
+        delta = q[dim] - p[dim]
+        length = direction[dim]
+        if length < 0:
+            delta *= -1
+            length *= -1
+
+        return delta, length
+
+    def _ccw(self, v, w):
+        r"""
+        Return a positive number if the turn from ``v`` to ``w`` is
+        counterclockwise, a negative number if it is clockwise, and zero if the two
+        vectors are collinear.
+
+        .. NOTE::
+
+            This function is sometimes also referred to as the wedge product or
+            simply the determinant. We chose the more customary name ``ccw`` from
+            computational geometry here.
+
+        # TODO
+        # EXAMPLES::
+
+        #     sage: from flatsurf.geometry.euclidean import ccw
+        #     sage: ccw((1, 0), (0, 1))
+        #     1
+        #     sage: ccw((1, 0), (-1, 0))
+        #     0
+        #     sage: ccw((1, 0), (0, -1))
+        #     -1
+        #     sage: ccw((1, 0), (1, 0))
+        #     0
+
+        """
+        # TODO: Use sgn to figure out whether this is too close to zero.
+        return v[0] * w[1] - v[1] * w[0]
+
+    def segment_intersection(self, f, g):
+        r"""
+        Return the intersection between the Euclidean segments ``f`` and ``g``.
+
+        INPUT:
+
+        - ``f`` -- a pair of points ``((x0, y0), (x1, y1))``, the end points of
+          the segment.
+
+        - ``g`` -- a pair of points ``((x0, y0), (x1, y1))``, the end points of
+          the segment.
+
+        OUTPUT: ``None`` if the segments do not intersect, a pair of
+        coordinates if the segments intersect in a single point, or the end
+        points of a segment ``(x0, y0, x1, y1)`` if the segments intersect in a
+        segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.geometry.segment_intersection(((-1, 0), (1, 0)), ((0, -1), (0, 1)))
+            (0, 0)
+
+            sage: H.geometry.segment_intersection(((-1, 0), (1, 0)), ((1, -1), (1, 1)))
+            (1, 0)
+
+            sage: H.geometry.segment_intersection(((-1, 0), (1, 0)), ((2, -1), (2, 1))) is None
+            True
+
+            sage: H.geometry.segment_intersection(((-1, 0), (1, 0)), ((-2, 0), (0, 0)))
+            (-1, 0, 0, 0)
+
+        """
+        xy = self._segment_intersection(f, g)
+
+        if xy is None:
+            return None
+
+        if len(xy) == 2:
+            x, y = xy
+            return x[0] / x[1], y[0] / y[1]
+
+        if len(xy) == 4:
+            return xy
+
+        assert "unexpected output from _segment_intersection"
+
+    def _line_intersection(self, f, g):
         (fa, fb, fc) = f
         (ga, gb, gc) = g
         det = self._determinant(fb, fc, gb, gc)
 
         if det is None:
+            if self._determinant(fa, fb, ga, gb) is None and self._determinant(fa, fc, ga, gc) is None:
+                # The (unoriented) lines are identical
+                return f
+
             return None
 
         x = (-gc * fa + fc * ga), det
@@ -405,7 +554,7 @@ class Geometry:
 
     def line_intersection(self, f, g):
         r"""
-        Return the point of intersection between the Euclidean lines ``f`` and ``g``.
+        Return the intersection between the Euclidean lines ``f`` and ``g``.
 
         INPUT:
 
@@ -415,8 +564,9 @@ class Geometry:
         - ``g`` -- a triple of elements ``(a, b, c)`` of :meth:`base_ring`
           encoding the line `a + bx + cy = 0`
 
-        OUTPUT: A pair of elements of :meth:`base_ring`, the coordinates of the
-        point of intersection, or ``None`` if the lines do not intersect.
+        OUTPUT: ``None`` if they lines do not intersect, ``f`` if the lines
+        overlap, or a pair of elements of :meth:`base_ring`, the coordinates of
+        the point of intersection.
 
         EXAMPLES::
 
@@ -426,14 +576,22 @@ class Geometry:
             sage: H.geometry.line_intersection((0, 1, 0), (0, 0, 1))
             (0, 0)
 
+            sage: H.geometry.line_intersection((0, 0, 1), (0, 0, 1))
+            (0, 0, 1)
+
+            sage: H.geometry.line_intersection((0, 0, 1), (1, 0, 1)) is None
+            True
+
         """
-        xy = self.line_intersects(f, g)
+        xy = self._line_intersection(f, g)
         if xy is None:
             return None
 
-        x, y = xy
+        if len(xy) == 2:
+            x, y = xy
+            return x[0] / x[1], y[0] / y[1]
 
-        return x[0] / x[1], y[0] / y[1]
+        return xy
 
 
 class ExactGeometry(Geometry):
