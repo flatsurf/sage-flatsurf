@@ -2169,7 +2169,7 @@ class MutableOrientedSimilaritySurface(
                 continue
             # NOTE: the parent polygon is already in correct position
             transformation = self.edge_transformation(parent_label, parent_edge)
-            self.move_polygon(label, transformation.inverse())
+            self.move_polygon(label, ~transformation)
 
         return self
 

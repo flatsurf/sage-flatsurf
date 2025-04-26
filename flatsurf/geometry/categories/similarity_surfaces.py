@@ -2175,6 +2175,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     True
                     sage: TestSuite(ps).run()
 
+                ::
+
                     sage: from flatsurf import similarity_surfaces
                     sage: S = similarity_surfaces.example()
                     sage: T = S.minimal_cover(cover_type="translation")
