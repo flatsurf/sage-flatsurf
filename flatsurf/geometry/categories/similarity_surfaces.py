@@ -1876,11 +1876,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 sim = self.edge_transformation(opposite_label, opposite_edge)
                 p2 = self.polygon(opposite_label)
 
-                from flatsurf.geometry.euclidean import EuclideanPlane
-
                 p2 = Polygon(
                     vertices=[sim(v) for v in p2.vertices()],
-                    parent=EuclideanPlane(p1.base_ring()),
+                    parent=self.euclidean_plane(),
                 )
 
                 p = p1.join(p2, edge, opposite_edge)

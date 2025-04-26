@@ -251,7 +251,7 @@ class GraphicalPolygon:
             if len(vertices) <= 1:
                 return None
 
-            from flatsurf import Polygon, EuclideanPlane
+            from flatsurf import EuclideanPlane
             from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
             from sage.all import RR
 

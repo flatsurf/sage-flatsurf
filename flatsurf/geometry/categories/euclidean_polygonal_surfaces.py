@@ -277,7 +277,6 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                 Euclidean Plane over Rational Field
 
             """
-            # TODO: Check that we are using euclidean_plane() everywhere instead of constructing it from scratch.
             polygons = self.polygons()
 
             if not polygons:
