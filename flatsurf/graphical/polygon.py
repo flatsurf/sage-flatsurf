@@ -25,6 +25,8 @@ from sage.plot.text import text
 from sage.plot.line import line2d
 from sage.plot.point import point2d
 
+from sage.misc.cachefunc import cached_method
+
 from flatsurf.geometry.similarity import SimilarityGroup
 
 V = VectorSpace(RDF, 2)
@@ -45,25 +47,23 @@ class GraphicalPolygon:
         - ``polygon`` -- the actual polygon
 
         - ``transformation`` -- a transformation to be applied to the polygon
-
-        - ``outline_color`` -- a color
-
-        - ``fill_color`` -- another color
-
-        - ``label`` -- an optional label for the polygon
-
-        - ``edge_labels`` -- one of ``False``, ``True`` or a list of labels
         """
-        self._p = polygon
-
-        # the following stores _transformation and _v
-        self.set_transformation(transformation)
+        self._polygon = polygon
+        self._transformation = (
+            transformation or SimilarityGroup(self._polygon.base_ring()).one()
+        )
 
     def copy(self):
         r"""
         Return a copy of this GraphicalPolygon.
         """
-        return GraphicalPolygon(self._p, self.transformation())
+        import warnings
+
+        warnings.warn(
+            "copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead"
+        )
+
+        return GraphicalPolygon(self._polygon, self.transformation())
 
     def __repr__(self):
         r"""
@@ -75,61 +75,53 @@ class GraphicalPolygon:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
+
         """
-        return "GraphicalPolygon with vertices {}".format(self._v)
+        return "Graphical" + repr(self.polygon())
+
+    @cached_method
+    def polygon(self):
+        return self._transformation * self._polygon
 
     def base_polygon(self):
         r"""
         Return the polygon of the surface in geometric coordinates.
         """
-        return self._p
+        return self._polygon
 
-    def transformed_vertex(self, e):
+    def transformed_vertex(self, v):
         r"""
         Return the graphical coordinates of the vertex in double precision.
         """
-        return self._transformation(self._p.vertex(e))
+        return self._transformation(self._polygon.vertex(v))
+
+    def transformed_side(self, e):
+        return self._transformation * self._polygon.side(e)
 
     def xmin(self):
         r"""
         Return the minimal x-coordinate of a vertex.
-
-        .. TODO::
-
-            to fit with Sage conventions this should be xmin
         """
-        return min([v[0] for v in self._v])
+        return min(v[0] for v in self.polygon().vertices())
 
     def ymin(self):
         r"""
         Return the minimal y-coordinate of a vertex.
-
-        .. TODO::
-
-            to fit with Sage conventions this should be ymin
         """
-        return min([v[1] for v in self._v])
+        return min(v[1] for v in self.polygon().vertices())
 
     def xmax(self):
         r"""
         Return the maximal x-coordinate of a vertex.
-
-        .. TODO::
-
-            to fit with Sage conventions this should be xmax
         """
-        return max([v[0] for v in self._v])
+        return max(v[0] for v in self.polygon().vertices())
 
     def ymax(self):
         r"""
         Return the minimal y-coordinate of a vertex
-
-        .. TODO::
-
-            To fit with Sage conventions this should be ymax
         """
-        return max([v[1] for v in self._v])
+        return max(v[1] for v in self.polygon().vertices())
 
     def bounding_box(self):
         r"""
@@ -171,7 +163,7 @@ class GraphicalPolygon:
         Return the transformation of point from graphical coordinates to the geometric coordinates
         of the underlying SimilaritySurface.
         """
-        return self._p.contains_point(self.transform_back(point))
+        return self._polygon.contains_point(self.transform_back(point))
 
     def transformation(self):
         r"""
@@ -182,12 +174,16 @@ class GraphicalPolygon:
 
     def set_transformation(self, transformation=None):
         r"""Set the transformation to be applied to the polygon."""
+        import warnings
+
+        warnings.warn(
+            "set_transformation() has been deprecated and will be removed in a future version of sage-flatsurf; set the transformation when creating the graphical polygon instead"
+        )
+
         if transformation is None:
-            self._transformation = SimilarityGroup(self._p.base_ring()).one()
-        else:
-            self._transformation = transformation
-        # recompute the location of vertices:
-        self._v = [V(self._transformation(v)) for v in self._p.vertices()]
+            transformation = SimilarityGroup(self._polygon.base_ring()).one()
+
+        self._transformation = transformation
 
     def plot_polygon(self, **options):
         r"""
@@ -198,7 +194,10 @@ class GraphicalPolygon:
         """
         if "axes" not in options:
             options["axes"] = False
-        return polygon2d(self._v, **options)
+
+        return self.polygon().plot(
+            polygon_options=options, edge_options=None, vertex_options=None
+        )
 
     def plot_label(self, label, **options):
         r"""
@@ -211,10 +210,72 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        if "position" in options:
-            return text(str(label), options.pop("position"), **options)
-        else:
-            return text(str(label), sum(self._v) / len(self._v), **options)
+        from sage.all import Graphics
+
+        g = Graphics()
+
+        def position(xlim, ylim):
+            from flatsurf.graphical.hyperbolic import CartesianPathPlot
+
+            path = CartesianPathPlot(self.polygon()._plot_commands())._create_path(
+                xlim, ylim, fill=True
+            )
+
+            from matplotlib.transforms import Bbox
+
+            path = path.clip_to_bbox(Bbox(((xlim[0], ylim[0]), (xlim[1], ylim[1]))))
+            if path.codes is None:
+                return None
+
+            from sage.all import vector
+
+            vertices = []
+            for j, (vertex, code) in enumerate(zip(path.vertices, path.codes)):
+                if code == 2:
+                    if j > 0 and path.codes[j - 1] == 1:
+                        vertices.append(path.vertices[j - 1])
+                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                            vertices[-2]
+                        ):
+                            vertices.pop()
+                    vertices.append(vertex)
+                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                        vertices[-2]
+                    ):
+                        vertices.pop()
+
+            vertices = list(map(vector, vertices))
+            if vertices[0] == vertices[-1]:
+                vertices.pop()
+
+            if len(vertices) <= 1:
+                return None
+
+            from flatsurf import EuclideanPlane
+            from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+            from sage.all import RR
+
+            # TODO: The check here is pretty evil. There is one vertex too many in closed polygons.
+            centroid = (
+                EuclideanPlane(RR, geometry=EuclideanEpsilonGeometry(RR, 1e-3))
+                .polygon(vertices=vertices, check=False)
+                .centroid()
+            )
+            return (float(centroid[0]), float(centroid[1]))
+
+        position = options.pop("position", position)
+
+        if "horizontal_alignment" not in options:
+            options["horizontal_alignment"] = "center"
+        if "vertical_alignment" not in options:
+            options["vertical_alignment"] = "center"
+
+        options = text(label, (0, 0), **options)[0].options()
+
+        from flatsurf.graphical.hyperbolic import DynamicLabel
+
+        g.add_primitive(DynamicLabel(str(label), position, options))
+        return g
 
     def plot_edge(self, e, **options):
         r"""
@@ -223,10 +284,7 @@ class GraphicalPolygon:
 
         Options are processed as in sage.plot.line.line2d.
         """
-        return line2d(
-            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]],
-            **options,
-        )
+        return self.polygon().side(e).plot(**options)
 
     def plot_edge_label(self, i, label, **options):
         r"""
@@ -245,7 +303,12 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        e = self._v[(i + 1) % len(self.base_polygon().vertices())] - self._v[i]
+        side = self.polygon().side(i)
+        direction = side.direction()
+
+        from sage.all import sgn
+
+        direction_sgn = (sgn(direction[0]), sgn(direction[1]))
 
         if "position" in options:
             if options["position"] not in ["inside", "outside", "edge"]:
@@ -260,41 +323,48 @@ class GraphicalPolygon:
             # position outside polygon.
             if "horizontal_alignment" in options:
                 pass
-            elif e[1] > 0:
+            elif direction[1] > 0:
                 options["horizontal_alignment"] = "left"
-            elif e[1] < 0:
+            elif direction[1] < 0:
                 options["horizontal_alignment"] = "right"
             else:
                 options["horizontal_alignment"] = "center"
 
             if "vertical_alignment" in options:
                 pass
-            elif e[0] > 0:
+            elif direction[0] > 0:
                 options["vertical_alignment"] = "top"
-            elif e[0] < 0:
+            elif direction[0] < 0:
                 options["vertical_alignment"] = "bottom"
             else:
                 options["vertical_alignment"] = "center"
 
         elif pos == "inside":
             # position inside polygon.
-            if "horizontal_alignment" in options:
-                pass
-            elif e[1] < 0:
-                options["horizontal_alignment"] = "left"
-            elif e[1] > 0:
-                options["horizontal_alignment"] = "right"
-            else:
-                options["horizontal_alignment"] = "center"
 
-            if "vertical_alignment" in options:
-                pass
-            elif e[0] < 0:
-                options["vertical_alignment"] = "top"
-            elif e[0] > 0:
-                options["vertical_alignment"] = "bottom"
-            else:
-                options["vertical_alignment"] = "center"
+            if "horizontal_alignment" not in options:
+                options["horizontal_alignment"] = {
+                    (-1, -1): "left",
+                    (-1, 0): "right",
+                    (-1, 1): "right",
+                    (0, -1): "left",
+                    (0, 1): "right",
+                    (1, -1): "left",
+                    (1, 0): "left",
+                    (1, 1): "right",
+                }[direction_sgn]
+
+            if "vertical_alignment" not in options:
+                options["vertical_alignment"] = {
+                    (-1, -1): "top",
+                    (-1, 0): "top",
+                    (-1, 1): "top",
+                    (0, -1): "top",
+                    (0, 1): "bottom",
+                    (1, -1): "bottom",
+                    (1, 0): "bottom",
+                    (1, 1): "bottom",
+                }[direction_sgn]
 
         else:
             # centered on edge.
@@ -320,8 +390,60 @@ class GraphicalPolygon:
             push_off = -push_off
         # Now push_off stores the amount it should be pushed into the polygon
 
-        no = V((-e[1], e[0]))
-        return text(label, self._v[i] + t * e + push_off * no, **options)
+        normal = V((-direction[1], direction[0]))
+        normal /= normal.norm()
+
+        from sage.all import Graphics
+
+        g = Graphics()
+
+        def position(xlim, ylim):
+            from flatsurf.graphical.hyperbolic import CartesianPathPlot
+
+            path = CartesianPathPlot(
+                self.polygon().side(i)._plot_commands()
+            )._create_path(xlim, ylim, fill=False)
+
+            from sage.all import vector
+
+            vertices = []
+            for j, (vertex, code) in enumerate(zip(path.vertices, path.codes)):
+                if code == 2:
+                    if j > 0 and path.codes[j - 1] == 1:
+                        vertices.append(path.vertices[j - 1])
+                        if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                            vertices[-2]
+                        ):
+                            vertices.pop()
+                    vertices.append(vertex)
+                    if len(vertices) >= 2 and vector(vertices[-1]) == vector(
+                        vertices[-2]
+                    ):
+                        vertices.pop()
+
+            vertices = list(map(vector, vertices))
+            if vertices[0] == vertices[-1]:
+                vertices.pop()
+
+            if len(vertices) < 2:
+                raise NotImplementedError("edge is not visible")
+
+            assert (
+                len(vertices) == 2
+            ), "path should render as exactly two points if it is visible"
+
+            vertex = vertices[0]
+            vector = vertices[1] - vertices[0]
+            return vertex + t * vector + push_off * normal
+
+        position = options.pop("position", position)
+
+        options = text(label, (0, 0), **options)[0].options()
+
+        from flatsurf.graphical.hyperbolic import DynamicLabel
+
+        g.add_primitive(DynamicLabel(label, position, options))
+        return g
 
     def plot_zero_flag(self, **options):
         r"""
@@ -333,15 +455,16 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.line.line2d.
         """
-        if "t" in options:
-            t = RDF(options.pop("t"))
-        else:
-            t = 0.5
+        raise NotImplementedError
+        # if "t" in options:
+        #     t = RDF(options.pop("t"))
+        # else:
+        #     t = 0.5
 
-        return line2d(
-            [self._v[0], self._v[0] + t * (sum(self._v) / len(self._v) - self._v[0])],
-            **options,
-        )
+        # return line2d(
+        #     [self._v[0], self._v[0] + t * (sum(self._v) / len(self._v) - self._v[0])],
+        #     **options,
+        # )
 
     def plot_points(self, points, **options):
         r"""
@@ -354,6 +477,7 @@ class GraphicalPolygon:
         By default coordinates are taken in the underlying surface. Call with coordinates="graphical"
         to use graphical coordinates instead.
         """
+        raise NotImplementedError
         if "zorder" not in options:
             options["zorder"] = 50
         if "coordinates" not in options:

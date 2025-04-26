@@ -307,12 +307,6 @@ class ParabolaSurface(OrientedSimilaritySurface):
         """
         return False
 
-    def is_compact(self):
-        r"""
-        Return whether this surface is a compact space.
-        """
-        return False
-
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.

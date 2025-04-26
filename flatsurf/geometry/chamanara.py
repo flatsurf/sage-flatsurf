@@ -96,7 +96,6 @@ class ChamanaraSurface(OrientedSimilaritySurface):
             category=DilationSurfaces()
             .Oriented()
             .InfiniteType()
-            .Compact()
             .WithoutBoundary()
             .Connected()
             .Rational(),

@@ -31,7 +31,7 @@ def test_get_point_position(n):
 
     inner = polygons.regular_ngon(n)
     inner = inner.translate(-inner.centroid())
-    outer = inner * 2
+    outer = inner.base_ring()(2) * inner
 
     vertices = []
     for i in range(0, n, 2):

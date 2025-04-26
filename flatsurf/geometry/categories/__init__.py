@@ -79,7 +79,7 @@ category gets refined::
 
     sage: S.set_immutable()
     sage: S.category()
-    Category of connected without boundary finite type translation surfaces
+    Category of compact connected without boundary finite type translation surfaces
 
 Since this is now a translation surface, we can ask for its stratum again::
 

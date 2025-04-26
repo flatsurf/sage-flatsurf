@@ -46,7 +46,7 @@ The category of polygons is automatically determined when using
     sage: from flatsurf import Polygon
     sage: p = Polygon(angles=(1, 1, 1))
     sage: p.category()
-    Category of convex simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+    Category of facade convex simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
 However, it can be very costly to determine that a polygon is rational and what
 its actual angles are (the "equilateral" in the previous example). Therefore,
@@ -54,15 +54,15 @@ the category might get refined once these aspects have been determined::
 
     sage: p = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)])
     sage: p.category()
-    Category of convex simple euclidean polygons over Rational Field
+    Category of facade convex simple euclidean polygons over Rational Field
     sage: p.is_rational()
     True
     sage: p.category()
-    Category of rational convex simple euclidean polygons over Rational Field
+    Category of facade rational convex simple euclidean polygons over Rational Field
     sage: p.angles()
     (1/4, 1/4, 1/4, 1/4)
     sage: p.category()
-    Category of convex simple euclidean rectangles over Rational Field
+    Category of facade convex simple euclidean rectangles over Rational Field
 
 Note that SageMath applies the same strategy when determining whether the
 integers modulo N are a field::
@@ -989,7 +989,7 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
                 sage: Polygon(angles=[2, 2, 3, 13], lengths=r0 + r1)
                 Traceback (most recent call last):
                 ...
-                ValueError: polygon not closed
+                ValueError: polygon has negative area; probably the vertices are not in counter-clockwise order
                 sage: Polygon(angles=[2, 2, 3, 13], edges=[length * slope for (length, slope) in zip(r0 + r1, P.slopes())])
                 Polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
 

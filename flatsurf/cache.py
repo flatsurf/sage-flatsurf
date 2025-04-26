@@ -12,9 +12,11 @@ the surface is immutable.
 
 EXAMPLES::
 
+
     sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
-    sage: S = MutableOrientedSimilaritySurface.from_surface(translation_surfaces.square_torus())
-    sage: S.edge_matrix(0, 0) is S.edge_matrix(0, 0)
+    sage: S0 = translation_surfaces.square_torus()
+    sage: S = MutableOrientedSimilaritySurface.from_surface(S0, category=S0.category())
+    sage: S.pyflatsurf() is S.pyflatsurf()  # optional - pyflatsurf
     False
 
 When we call
@@ -22,7 +24,7 @@ When we call
 caching is enabled for this method::
 
     sage: S.set_immutable()
-    sage: S.edge_matrix(0, 0) is S.edge_matrix(0, 0)
+    sage: S.pyflatsurf() is S.pyflatsurf()  # optional - pyflatsurf
     True
 
 """

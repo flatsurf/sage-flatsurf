@@ -183,7 +183,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             checked = set()
 
             for label in labels:
-                for edge in range(len(surface.polygon(label).vertices())):
+                for edge in range(len(surface.polygon(label).sides())):
                     cross = surface.opposite_edge(label, edge)
 
                     if cross is None:
@@ -194,15 +194,17 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                     checked.add((label, edge))
 
+                    # TODO: double check that the it is ok to override the old implementation
                     # We do not call self.edge_matrix() since the surface might
                     # have overridden this (just returning the identity matrix e.g.)
                     # and we want to deduce the matrix from the attached polygon
                     # edges instead.
-                    from flatsurf.geometry.categories import SimilaritySurfaces
-
-                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                        surface, label, edge
-                    )
+                    # from flatsurf.geometry.categories import SimilaritySurfaces
+                    #
+                    # matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
+                    #     surface, label, edge, projective=False
+                    # )
+                    matrix = surface.edge_matrix(label, edge, projective=False)
 
                     if not matrix.is_diagonal():
                         return False
@@ -232,38 +234,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             """
             return self
-
-        def edge_matrix(self, p, e=None):
-            r"""
-            Returns the 2x2 matrix representing a similarity which when
-            applied to the polygon with label `p` makes it so the edge `e`
-            can be glued to its opposite edge by translation.
-
-            Since this is a translation surface, this is just the identity.
-
-            EXAMPLES::
-
-                sage: from flatsurf import translation_surfaces
-                sage: S = translation_surfaces.square_torus()
-                sage: S.edge_matrix(0, 0)
-                [1 0]
-                [0 1]
-
-            """
-            if e is None:
-                import warnings
-
-                warnings.warn(
-                    "passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead"
-                )
-                p, e = p
-
-            if e < 0 or e >= len(self.polygon(p).vertices()):
-                raise ValueError("invalid edge index for this polygon")
-
-            from sage.all import identity_matrix
-
-            return identity_matrix(self.base_ring(), 2)
 
         def canonicalize_mapping(self):
             r"""
@@ -312,7 +282,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.octagon_and_squares()
             sage: s.category()
-            Category of connected without boundary finite type translation surfaces
+            Category of compact connected without boundary finite type translation surfaces
 
         """
 
@@ -365,7 +335,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: from flatsurf import translation_surfaces
                 sage: s = translation_surfaces.octagon_and_squares()
                 sage: s.category()
-                Category of connected without boundary finite type translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
 

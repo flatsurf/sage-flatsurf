@@ -66,7 +66,7 @@ to its test suite::
     Category of finite type oriented similarity surfaces
     sage: S.set_immutable()
     sage: S.category()
-    Category of connected without boundary finite type oriented rational similarity surfaces
+    Category of compact connected without boundary finite type oriented rational similarity surfaces
 
     sage: TestSuite(S).run()
 
@@ -83,7 +83,7 @@ than two edges to each other; however, edges get unglued automatically::
 
     sage: S.set_immutable()
     sage: S.category()
-    Category of with boundary finite type oriented rational similarity surfaces
+    Category of compact with boundary finite type oriented rational similarity surfaces
     sage: TestSuite(S).run()
 
 If we don't glue all the edges, we get a surface with boundary::
@@ -194,12 +194,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of connected with boundary finite type translation surfaces
+                Category of compact connected with boundary finite type translation surfaces
 
                 sage: S.glue((0, 0), (0, 2))
                 sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
-                Category of connected without boundary finite type translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
             from flatsurf.geometry.categories.polygonal_surfaces import (
@@ -1216,12 +1216,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: H.angles()
                     [1/2, 1/2, 1/2, 5/2]
                     sage: S.angles()
-                    [1, 1, 5, 1]
+                    [5, 1, 1, 1]
 
                     sage: H.angles(return_adjacent_edges=True)
                     [(1/2, [...]), (1/2, [...]), (1/2, [...]), (5/2, [...])]
                     sage: S.angles(return_adjacent_edges=True)
-                    [(1, [...]), (1, [...]), (5, [...]), (1, [...])]
+                    [(5, [...]), (1, [...]), (1, [...]), (1, [...])]
 
                 For self-glued edges, no angle is reported for the
                 "vertex" at the midpoint of the edge::
@@ -1321,14 +1321,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 return turns + angle(start, end, numerical=numerical)
 
             @cached_surface_method
-            def edge_matrix(self, p, e=None):
+            def edge_matrix(self, p, e=None, projective=None):
                 r"""
-                Returns the 2x2 matrix representing a similarity which when
-                applied to the polygon with label `p` makes it so the edge `e`
-                can be glued to its opposite edge by translation.
-
-                If `e` is not provided, then `p` should be a pair consisting of
-                a polygon label and an edge.
+                Returns the 3x3 matrix representing the projective
+                transformation which when applied to the polygon with label `p`
+                makes it so the edge `e` can be glued to its opposite edge.
 
                 EXAMPLES::
 
@@ -1338,16 +1335,51 @@ class SimilaritySurfaces(SurfaceCategory):
                     Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
                     sage: s.polygon(1)
                     Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
-                    sage: s.opposite_edge(0,0)
+                    sage: s.opposite_edge(0, 0)
                     (1, 1)
-                    sage: m = s.edge_matrix(0, 0)
+                    sage: m = s.edge_matrix(0, 0, projective=True)
                     sage: m
-                    [   1  1/2]
-                    [-1/2    1]
-                    sage: m * vector((2,-2)) == -vector((-1, 3))
+                    [   1  1/2    1]
+                    [-1/2    1    3]
+                    [   0    0    1]
+                    sage: A0 = vector((0, 0, 1))
+                    sage: B0 = vector((2, -2, 1))
+                    sage: A1 = vector((2, 0, 1))
+                    sage: B1 = vector((1, 3, 1))
+                    sage: m * A0 == B1
+                    True
+                    sage: m * B0 == A1
                     True
 
+                For similarity surfaces, you can access the linear part of the similarity using
+                ``projective=False``::
+
+                    sage: s.edge_matrix(0, 0, projective=False)
+                    [   1  1/2]
+                    [-1/2    1]
+
+                At the moment, not specifying the ``projective`` keyword raises a warning::
+
+                    sage: s.edge_matrix(0, 0)
+                    doctest:warning
+                    ...
+                    UserWarning: the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior
+                    [   1  1/2]
+                    [-1/2    1]
+
+                A translation surface example::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: s = translation_surfaces.square_torus()
+                    sage: s.edge_matrix(0, 0, projective=True)
+                    [1 0 0]
+                    [0 1 1]
+                    [0 0 1]
+                    sage: s.edge_matrix(0, 0, projective=False)
+                    [1 0]
+                    [0 1]
                 """
+
                 if e is None:
                     import warnings
 
@@ -1356,15 +1388,45 @@ class SimilaritySurfaces(SurfaceCategory):
                     )
                     p, e = p
 
-                u = self.polygon(p).edge(e)
-                pp, ee = self.opposite_edge(p, e)
-                v = self.polygon(pp).edge(ee)
+                if projective is None:
+                    import warnings
+
+                    warnings.warn(
+                        "the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior"
+                    )
+
+                    projective = False
+
+                if e < 0 or e >= len(self.polygon(p).sides()):
+                    raise ValueError("invalid edge index for this polygon")
+
+                op_edge = self.opposite_edge(p, e)
+                if op_edge is None:
+                    return None
+                pp, ee = op_edge
+
+                u = self.polygon(p).side(e)
+                v = self.polygon(pp).side(ee)
 
                 # note the orientation, it is -v and not v
                 from flatsurf.geometry.similarity import similarity_from_vectors
                 from sage.matrix.matrix_space import MatrixSpace
 
-                return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
+                m2 = similarity_from_vectors(
+                    u.vector(), (-v).vector(), MatrixSpace(self.base_ring(), 2)
+                )
+                if not projective:
+                    m2.set_immutable()
+                    return m2
+                else:
+                    m3 = MatrixSpace(self.base_ring(), 3)()
+                    m3[:2, :2] = m2
+                    m3[2, 2] = 1
+                    m3[:2, 2] = self.polygon(pp).vertex(ee + 1) - m2 * self.polygon(
+                        p
+                    ).vertex(e)
+                    m3.set_immutable()
+                    return m3
 
             def underlying_surface(self):
                 r"""
@@ -1582,227 +1644,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 S.set_immutable()
 
                 return S
-
-            def copy(
-                self,
-                relabel=False,
-                mutable=False,
-                lazy=None,
-                new_field=None,
-                optimal_number_field=False,
-            ):
-                r"""
-                Returns a copy of this surface. The method takes several flags to modify how the copy is taken.
-
-                If relabel is True, then instead of returning an exact copy, it returns a copy indexed by the
-                non-negative integers. This uses the Surface_list implementation. If relabel is False (default),
-                then we return an exact copy. The returned surface uses the Surface_dict implementation.
-
-                The mutability flag returns if the resulting surface should be mutable or not. By default, the
-                resulting surface will not be mutable.
-
-                If lazy is True, then the surface is copied by reference. This is the only type of copy
-                possible for infinite surfaces. The parameter defaults to False for finite surfaces, and
-                defaults to True for infinite surfaces.
-
-                The new_field parameter can be used to place the vertices in a larger field than the basefield
-                for the original surface.
-
-                The optimal_number_field option can be used to find a best NumberField containing the
-                (necessarily finite) surface.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import translation_surfaces
-                    sage: ss=translation_surfaces.ward(3)
-                    sage: ss.is_mutable()
-                    False
-                    sage: s=ss.copy(mutable=True)
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    sage: s.is_mutable()
-                    True
-                    sage: TestSuite(s).run()
-                    sage: s == ss
-                    False
-
-                Changing the base field::
-
-                    sage: s=translation_surfaces.veech_double_n_gon(5)
-                    sage: ss=s.copy(mutable=False,new_field=AA)
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
-                    sage: TestSuite(ss).run()
-                    sage: ss.base_ring()
-                    Algebraic Real Field
-
-                Optimization of number field::
-
-                    sage: s = translation_surfaces.arnoux_yoccoz(3)
-                    sage: ss = s.copy(new_field=AA).copy(optimal_number_field=True)
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
-                    doctest:warning
-                    ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
-                    Use set_immutable() to make the resulting surface immutable. There is currently no replacement for optimal number field.
-                    If you are relying on this features, let the authors of sage-flatsurf know and we will try to make it available again.
-                    sage: TestSuite(ss).run()
-                    sage: ss.base_ring().discriminant()
-                    -44
-                """
-                message = "copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead."
-
-                if not mutable:
-                    message += (
-                        " Use set_immutable() to make the resulting surface immutable."
-                    )
-
-                if relabel:
-                    message += " Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels."
-
-                if not self.is_finite_type():
-                    message += " However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs."
-
-                if new_field is not None:
-                    message += " Use change_ring() to change the field over which the surface is defined."
-
-                if optimal_number_field:
-                    message += " There is currently no replacement for optimal number field. If you are relying on this features, let the authors of sage-flatsurf know and we will try to make it available again."
-
-                import warnings
-
-                warnings.warn(message)
-
-                category = self.category()
-                s = None  # This will be the surface we copy. (Likely we will set s=self below.)
-                if new_field is not None and optimal_number_field:
-                    raise ValueError(
-                        "You can not set a new_field and also set optimal_number_field=True."
-                    )
-                if optimal_number_field is True:
-                    if not self.is_finite_type():
-                        raise NotImplementedError(
-                            "can only optimize_number_field for a finite surface"
-                        )
-                    if lazy:
-                        raise NotImplementedError(
-                            "lazy copying is unavailable when optimize_number_field=True"
-                        )
-                    coordinates_AA = []
-                    for label, p in zip(self.labels(), self.polygons()):
-                        for e in p.edges():
-                            coordinates_AA.append(AA(e[0]))
-                            coordinates_AA.append(AA(e[1]))
-                    from sage.rings.qqbar import number_field_elements_from_algebraics
-
-                    field, coordinates_NF, hom = number_field_elements_from_algebraics(
-                        coordinates_AA, minimal=True
-                    )
-                    if field is QQ:
-                        new_field = QQ
-                        # We pretend new_field = QQ was passed as a parameter.
-                        # It will now get picked up by the "if new_field is not None:" line below.
-                    else:
-                        # Unfortunately field doesn't come with an real embedding (which is given by hom!)
-                        # So, we make a copy of the field, and add the embedding.
-                        from sage.all import NumberField
-
-                        field2 = NumberField(
-                            field.polynomial(), name="a", embedding=hom(field.gen())
-                        )
-                        # The following converts from field to field2:
-                        hom2 = field.hom(im_gens=[field2.gen()])
-
-                        from flatsurf.geometry.surface import (
-                            MutableOrientedSimilaritySurface,
-                        )
-
-                        ss = MutableOrientedSimilaritySurface(field2)
-                        index = 0
-
-                        from flatsurf import Polygon
-
-                        for label, p in zip(self.labels(), self.polygons()):
-                            new_edges = []
-                            for i in range(len(p.vertices())):
-                                new_edges.append(
-                                    (
-                                        hom2(coordinates_NF[index]),
-                                        hom2(coordinates_NF[index + 1]),
-                                    )
-                                )
-                                index += 2
-                            pp = Polygon(edges=new_edges, base_ring=field2)
-                            ss.add_polygon(pp, label=label)
-                        ss.set_roots(self.roots())
-                        for (l1, e1), (l2, e2) in self.gluings():
-                            ss.glue((l1, e1), (l2, e2))
-                        s = ss
-                        if not relabel:
-                            if not mutable:
-                                s.set_immutable()
-                            return s
-                        # Otherwise we are supposed to relabel. We will make a relabeled copy of s below.
-                if new_field is not None:
-                    s = self.change_ring(new_field)
-                if s is None:
-                    s = self
-                if s.is_finite_type():
-                    if relabel:
-                        from flatsurf.geometry.surface import Surface_list
-
-                        return Surface_list(
-                            surface=s,
-                            copy=not lazy,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
-                    else:
-                        from flatsurf.geometry.surface import Surface_dict
-
-                        return Surface_dict(
-                            surface=s,
-                            copy=not lazy,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
-                else:
-                    if lazy is False:
-                        raise ValueError(
-                            "Only lazy copying available for infinite surfaces."
-                        )
-                    if self.is_mutable():
-                        raise ValueError(
-                            "An infinite surface can only be copied if it is immutable."
-                        )
-                    if relabel:
-                        from flatsurf.geometry.surface import Surface_list
-
-                        return Surface_list(
-                            surface=s,
-                            copy=False,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
-                    else:
-                        from flatsurf.geometry.surface import Surface_dict
-
-                        return Surface_dict(
-                            surface=s,
-                            copy=False,
-                            mutable=mutable,
-                            category=category,
-                            deprecation_warning=False,
-                        )
 
             def change_ring(self, ring):
                 r"""
@@ -2034,8 +1875,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 sim = self.edge_transformation(opposite_label, opposite_edge)
                 p2 = self.polygon(opposite_label)
+
                 p2 = Polygon(
-                    vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring()
+                    vertices=[sim(v) for v in p2.vertices()],
+                    parent=self.euclidean_plane(),
                 )
 
                 p = p1.join(p2, edge, opposite_edge)
@@ -2304,7 +2147,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
                     sage: s = MutableOrientedSimilaritySurface(QQ)
-                    sage: square = polygons.square(base_ring=QQ)
+                    sage: square = polygons.square()
                     sage: s.add_polygon(square)
                     0
                     sage: s.glue((0,0), (0,1))
@@ -2312,7 +2155,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: cs = s
                     sage: ts = cs.minimal_cover(cover_type="translation")
                     sage: ts
-                    Minimal Translation Cover of Rational Cone Surface built from a square
+                    Minimal Translation Cover of Genus 0 Rational Cone Surface built from a square
                     sage: from flatsurf.geometry.categories import TranslationSurfaces
                     sage: ts in TranslationSurfaces()
                     True
@@ -2329,6 +2172,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ps in TranslationSurfaces()
                     True
                     sage: TestSuite(ps).run()
+
+                ::
 
                     sage: from flatsurf import similarity_surfaces
                     sage: S = similarity_surfaces.example()
@@ -3587,7 +3432,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 checked = set()
 
                 for label in labels:
-                    for edge in range(len(surface.polygon(label).vertices())):
+                    for edge in range(len(surface.polygon(label).sides())):
                         cross = surface.opposite_edge(label, edge)
 
                         if cross is None:
@@ -3598,15 +3443,21 @@ class SimilaritySurfaces(SurfaceCategory):
 
                         checked.add((label, edge))
 
+                        # TODO: double check that the it is ok to override the old implementation
                         # We do not call self.edge_matrix() since the surface might
                         # have overridden this (just returning the identity matrix e.g.)
                         # and we want to deduce the matrix from the attached polygon
                         # edges instead.
-                        matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                            surface, label, edge
-                        )
+                        # matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
+                        #     surface, label, edge, projective=True
+                        # )
+                        matrix = surface.edge_matrix(label, edge, projective=False)
 
-                        if matrix.is_diagonal():
+                        if (
+                            matrix[0, 0] == matrix[1, 1]
+                            and not matrix[1, 0]
+                            and not matrix[0, 1]
+                        ):
                             continue
 
                         a = AA(matrix[0, 0])

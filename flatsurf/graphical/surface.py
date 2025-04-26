@@ -351,6 +351,9 @@ class GraphicalSurface:
             (x, y) |-> (x + (a + 4), y + (a + 2))
             sage: gs.polygon_options["color"]="yellow"
             sage: gs2 = gs.copy()
+            doctest:warning
+            ...
+            UserWarning: copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead
             sage: gs2 == gs
             False
             sage: gs2.will_plot_zero_flags
@@ -360,6 +363,12 @@ class GraphicalSurface:
             sage: gs2.polygon_options
             {'color': 'yellow'}
         """
+        import warnings
+
+        warnings.warn(
+            "copy() has been deprecated as a method of GraphicalPolygon and will be removed in a future version of sage-flatsurf; create a copy manually instead"
+        )
+
         gs = GraphicalSurface(
             self.get_surface(),
             default_position_function=self._default_position_function,
@@ -458,7 +467,7 @@ class GraphicalSurface:
                 raise NotImplementedError
             if adjacent:
                 for label, poly in zip(self._ss.labels(), self._ss.polygons()):
-                    for e in range(len(poly.vertices())):
+                    for e in range(len(poly.sides())):
                         opposite_edge = self._ss.opposite_edge(label, e)
                         if opposite_edge is None:
                             continue
@@ -473,15 +482,19 @@ class GraphicalSurface:
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(label)
+                            from flatsurf.graphical.polygon import GraphicalPolygon
+
                             poly = self._ss.polygon(label)
-                            t = T(
-                                (
-                                    QQ(self.xmax() - g.xmin() + 1),
-                                    QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
-                                )
+                            g = GraphicalPolygon(poly)
+                            self._polygons[label] = GraphicalPolygon(
+                                poly,
+                                T(
+                                    (
+                                        QQ(self.xmax() - g.xmin() + 1),
+                                        QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
+                                    )
+                                ),
                             )
-                            g.set_transformation(t)
                         self.make_visible(label)
         else:
             if limit <= 0:
@@ -505,15 +518,19 @@ class GraphicalSurface:
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(label)
+                            from flatsurf.graphical.polygon import GraphicalPolygon
+
                             poly = self._ss.polygon(label)
-                            t = T(
-                                (
-                                    QQ(self.xmax() - g.xmin() + 1),
-                                    QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
-                                )
+                            g = GraphicalPolygon(poly)
+                            self._polygons[label] = GraphicalPolygon(
+                                poly,
+                                T(
+                                    (
+                                        QQ(self.xmax() - g.xmin() + 1),
+                                        QQ(-(g.ymin() + g.ymax()) / ZZ(2)),
+                                    )
+                                ),
                             )
-                            g.set_transformation(t)
                         self.make_visible(label)
                         i = i + 1
                         if i >= limit:
@@ -593,16 +610,16 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface(adjacencies=[])
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: gs.graphical_polygon(1)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, 0.0), (1.0, 3.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: print("Polygon 0, edge 0 is opposite "+str(gs.opposite_edge(0,0)))
             Polygon 0, edge 0 is opposite (1, 1)
             sage: gs.make_adjacent(0,0)
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
+            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: gs.graphical_polygon(1)
-            GraphicalPolygon with vertices [(0.4, -2.8), (2.0, -2.0), (0.0, 0.0)]
+            GraphicalPolygon(vertices=[(2/5, -14/5), (2, -2), (0, 0)])
         """
         pp, ee = self._ss.opposite_edge(p, e)
         if reverse:
@@ -635,7 +652,11 @@ class GraphicalSurface:
         else:
             g = self._ss.edge_transformation(pp, ee)
         h = self.graphical_polygon(p).transformation()
-        self.graphical_polygon(pp).set_transformation(h * g)
+
+        from flatsurf.graphical.polygon import GraphicalPolygon
+
+        self._polygons[pp] = GraphicalPolygon(self._ss.polygon(pp), h * g)
+
         if visible:
             self.make_visible(pp)
 
@@ -680,9 +701,9 @@ class GraphicalSurface:
             return False
         g = self.graphical_polygon(p)
         gg = self.graphical_polygon(pp)
-        return g.transformed_vertex(e) == gg.transformed_vertex(
-            ee + 1
-        ) and g.transformed_vertex(e + 1) == gg.transformed_vertex(ee)
+        return (
+            g.transformed_side(e).unoriented() == gg.transformed_side(ee).unoriented()
+        )
 
     def to_surface(
         self,
@@ -933,7 +954,7 @@ class GraphicalSurface:
 
         if self._edge_labels == "gluings":
             labels = []
-            for e in range(len(p.vertices())):
+            for e in range(len(p.sides())):
                 if self.is_adjacent(lab, e):
                     labels.append(None)
                 elif s.opposite_edge(lab, e) is None:
@@ -942,17 +963,17 @@ class GraphicalSurface:
                     llab, _ = s.opposite_edge(lab, e)
                     labels.append(str(llab))
         elif self._edge_labels == "number":
-            labels = list(map(str, range(len(p.vertices()))))
+            labels = list(map(str, range(len(p.sides()))))
         elif self._edge_labels == "gluings and number":
             labels = []
-            for e in range(len(p.vertices())):
+            for e in range(len(p.sides())):
                 if self.is_adjacent(lab, e):
                     labels.append(str(e))
                 else:
                     labels.append("{} -> {}".format(e, s.opposite_edge(lab, e)))
         elif self._edge_labels == "letter":
             labels = []
-            for e in range(len(p.vertices())):
+            for e in range(len(p.sides())):
                 llab, ee = s.opposite_edge(lab, e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
                     labels.append(None)
@@ -981,10 +1002,11 @@ class GraphicalSurface:
 
         - ``upside_down`` -- True if and only if the polygon will be rendered upside down.
         """
+        options = self.polygon_options
         if upside_down:
-            return graphical_polygon.plot_polygon(**self.upside_down_polygon_options)
-        else:
-            return graphical_polygon.plot_polygon(**self.polygon_options)
+            options = self.upside_down_polygon_options
+
+        return graphical_polygon.plot_polygon(**options)
 
     def plot_polygon_label(self, label, graphical_polygon, upside_down):
         r"""
@@ -1191,7 +1213,7 @@ class GraphicalSurface:
 
             # Plot the edges
             if self.will_plot_edges:
-                for i in range(len(self._ss.polygon(label).vertices())):
+                for i in range(len(self._ss.polygon(label).sides())):
                     if self.is_adjacent(label, i):
                         if (
                             self.will_plot_adjacent_edges
@@ -1212,7 +1234,7 @@ class GraphicalSurface:
                 # get the edge labels
                 edge_labels = self.edge_labels(label)
                 if edge_labels is not None:
-                    for i in range(len(self._ss.polygon(label).vertices())):
+                    for i in range(len(self._ss.polygon(label).sides())):
                         if edge_labels[i] is not None:
                             p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p

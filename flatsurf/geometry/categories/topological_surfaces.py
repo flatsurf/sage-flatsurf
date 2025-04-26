@@ -109,12 +109,12 @@ class TopologicalSurfaces(SurfaceCategory):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of connected with boundary finite type translation surfaces
+                Category of compact connected with boundary finite type translation surfaces
 
                 sage: S.glue((0, 0), (0, 2))
                 sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
-                Category of connected without boundary finite type translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
             category = self.category()
@@ -582,6 +582,33 @@ class TopologicalSurfaces(SurfaceCategory):
                 """
                 return True
 
+    class NotCompact(SurfaceCategoryWithAxiom):
+        class Compact(SurfaceCategoryWithAxiom):
+            def __init__(self, *args, **kwargs):
+                raise TypeError(
+                    "surface cannot be compact and not compact at the same time"
+                )
+
+        class ParentMethods:
+            def is_compact(self):
+                r"""
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.infinite_staircase().minimal_cover("translation")
+                    sage: S.is_compact()
+                    False
+
+                ::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus().minimal_cover("planar")
+                    sage: S.is_compact()
+                    False
+
+                """
+                return False
+
     class SubcategoryMethods:
         def Orientable(self):
             r"""
@@ -625,7 +652,10 @@ class TopologicalSurfaces(SurfaceCategory):
             """
             return self._with_axiom("WithoutBoundary")
 
+        def NotCompact(self):
+            return self._with_axiom("NotCompact")
 
-# Currently, there is no "Orientable", "WithBoundary", and "WithoutBoundary"
-# axiom in SageMath so we make it known to the category framework.
-all_axioms += ("Orientable", "WithBoundary", "WithoutBoundary")
+
+# Currently, there is no "Orientable", "WithBoundary", and "WithoutBoundary",
+# "NotCompact" axiom in SageMath so we make it known to the category framework.
+all_axioms += ("Orientable", "WithBoundary", "WithoutBoundary", "NotCompact")

@@ -73,7 +73,7 @@ A non-singular point::
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2023-2024 Julian Rüth
+#        Copyright (C) 2023-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -143,9 +143,14 @@ class UnknownRing(UniqueRepresentation, Ring):
     """
 
     def __init__(self):
-        from sage.all import ZZ
+        from sage.all import ZZ, RR
 
         super().__init__(ZZ)
+        # We register a coercion from the unknown ring to the reals. All our
+        # rings underlying surfaces are expected to have an embedding into the
+        # reals. (And we don't want generic checks to fail that expect this to
+        # be the case.)
+        RR.register_coercion(Morphism(self, RR))
 
     def _repr_(self):
         r"""
@@ -298,18 +303,26 @@ class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
         r"""
         Return whether this surface is compact as a topological space.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        For performance reasons, we do not determine whether a mutable surface
+        is compact at the time of morphism creation::
 
             sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
             sage: S = translation_surfaces.square_torus()
             sage: S = MutableOrientedSimilaritySurface.from_surface(S)
             sage: S = S.triangulate(in_place=False).domain()
             sage: S.is_compact()
-            True
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot determine whether an unknown surface is compact
 
         """
         if self in self.category().Compact():
             return True
+
+        if self in self.category().NotCompact():
+            return False
 
         raise NotImplementedError(
             "cannot determine whether an unknown surface is compact"
@@ -386,59 +399,67 @@ class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
         raise NotImplementedError("cannot determine polygons of the unknown surface")
 
     def _test_an_element(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_components(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_eq_reflexive(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_eq_symmetric(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_eq_transitive(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_elements_neq(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
+        pass
+
+    def _test_edge_matrix(self, **options):
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_gluings(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_labels_polygons(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_refined_category(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_some_elements(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_polygons(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_eq_surface(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _test_labels(self, **options):
-        # This generic tests does not make sense on the unknown surface and is herefore disabled.
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
+        pass
+
+    def _test_euclidean_plane(self, **options):
+        # This generic tests does not make sense on the unknown surface and is thereforee disabled.
         pass
 
     def _repr_(self):
@@ -935,6 +956,8 @@ class SurfaceMorphism(Morphism):
         if category is None:
             category = cls._category(domain, codomain)
 
+        # Note that we could call refined_category() here on the domain/codomain to get a better category.
+        # But that can be very expensive.
         if domain.is_mutable():
             domain = UnknownSurface(domain.base_ring(), category=domain.category())
         if codomain.is_mutable():
@@ -962,7 +985,7 @@ class SurfaceMorphism(Morphism):
 
             sage: from flatsurf.geometry.morphism import SurfaceMorphism
             sage: SurfaceMorphism._category(S, S)
-            Category of connected without boundary finite type translation surfaces
+            Category of compact connected without boundary finite type translation surfaces
 
         """
         return domain.category() & codomain.category()

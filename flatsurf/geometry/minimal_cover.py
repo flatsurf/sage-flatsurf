@@ -36,10 +36,14 @@ Usually, you do not interact with the types in this module directly but call
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from sage.matrix.constructor import matrix
+
 from sage.misc.cachefunc import cached_method
+from sage.structure.element import parent
+from sage.matrix.constructor import matrix
+from sage.modules.free_module import FreeModule
 
 from flatsurf.geometry.surface import OrientedSimilaritySurface
+from flatsurf.geometry.polygon import Polygon
 
 
 def _is_finite(surface):
@@ -60,7 +64,7 @@ def _is_finite(surface):
         polygon = surface.polygon(label)
 
         for e in range(len(polygon.vertices())):
-            m = surface.edge_matrix(label, e)
+            m = surface.edge_matrix(label, e, projective=False)
 
             from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
 
@@ -70,7 +74,228 @@ def _is_finite(surface):
     return True
 
 
-class MinimalTranslationCover(OrientedSimilaritySurface):
+# TODO: this would better be a morphism
+class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
+    r"""
+    A cover of surface.
+    """
+
+    def __init__(self, base_surface, base_ring=None, category=None):
+        if base_ring is None:
+            base_ring = base_surface.base_ring()
+
+        if base_surface.is_mutable():
+            if base_surface.is_finite_type():
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+                base_surface = MutableOrientedSimilaritySurface.from_surface(
+                    base_surface
+                )
+                base_surface.set_immutable()
+            else:
+                raise ValueError(
+                    "Can not construct MinimalPlanarCover of a surface that is mutable and infinite."
+                )
+
+        # TODO: we should drop this assumption and add tests
+        if base_surface.is_with_boundary():
+            raise TypeError("surface must be without boundary")
+
+        self._base_surface = base_surface
+
+        OrientedSimilaritySurface.__init__(self, base=base_ring, category=category)
+
+    def is_mutable(self):
+        r"""
+        Return whether this surface is mutable, i.e., return ``False``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces, translation_surfaces
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
+            sage: S.is_mutable()
+            False
+
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
+            sage: S.is_mutable()
+            False
+
+            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
+            sage: S.is_mutable()
+            False
+
+        """
+        return False
+
+    def base_surface(self):
+        r"""
+        Return the surface of which ``self`` is a covering of.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces, translation_surfaces
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
+            sage: S.base_surface()
+            Genus 0 Rational Cone Surface built from 2 right triangles
+
+        """
+        return self._base_surface
+
+    def fiber_root(self, base_label):
+        r"""
+        Return a root label above the polygon with ``base_label`` in the base surface.
+
+        Needs to be implemented in subclasses.
+        """
+        raise NotImplementedError
+
+    def fiber_matrix(self, base_label, fiber, projective=True):
+        r"""
+        Return the matrix transformation (the section from the base surface to the cover).
+
+        Needs to be implemented in subclasses.
+        """
+        raise NotImplementedError
+
+    def roots(self):
+        r"""
+        Return root labels for the polygons forming the connected
+        components of this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
+            sage: S.roots()
+            ((0, (1, 0)),)
+            sage: len(S.labels())
+            20
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
+            sage: S.roots()
+            ((0, (1, 0)),)
+            sage: len(S.labels())
+            10
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
+            sage: S.roots()
+            ((0, (x, y) |-> (x, y)),)
+
+        """
+        return tuple(
+            (base_label, self.fiber_root(base_label))
+            for base_label in self.base_surface().roots()
+        )
+
+    @cached_method
+    def polygon(self, label):
+        r"""
+        Return the polygon with ``label`` in the cover.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        Warning: this method does not check that the input defines a valid polygon label.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, translation_surfaces, similarity_surfaces
+
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
+            sage: S.polygon((0, (1, 0)))
+            Polygon(vertices=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
+
+            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
+            sage: root = S.root()
+            sage: S.polygon(root)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
+            sage: S.polygon((0, (1, 0)))
+            Polygon(vertices=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
+
+        """
+        if not isinstance(label, tuple) or len(label) != 2:
+            raise ValueError("invalid label")
+        base_label, fiber = label
+        m = self.fiber_matrix(base_label, fiber, projective=True)
+
+        # TODO: change this when we have proper projective action of 3x3 matrices on polygons
+        if m.det() < 0:
+            raise NotImplementedError
+        V3 = FreeModule(self.base_ring(), 3)
+        V2 = FreeModule(self.base_ring(), 2)
+        vertices_proj = [
+            m * V3((x, y, 1))
+            for x, y in self.base_surface().polygon(base_label).vertices()
+        ]
+        vertices_aff = [V2((x / z, y / z)) for x, y, z in vertices_proj]
+        return Polygon(vertices=vertices_aff)
+
+    @cached_method
+    def edge_matrix(self, p, e=None, projective=None):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
+            sage: S.edge_matrix((1, (1, 0)), 1, projective=True)
+            [           -1             0 1/2*c^2 - 1/2]
+            [            0            -1        -1/2*c]
+            [            0             0             1]
+            sage: S.edge_matrix((1, (1, 0)), 1, projective=False)
+            [-1  0]
+            [ 0 -1]
+            sage: S.edge_matrix((1, (1, 0)), 1)
+            doctest:warning
+            ...
+            UserWarning: the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior
+            [-1  0]
+            [ 0 -1]
+
+        """
+        if e is None:
+            import warnings
+
+            warnings.warn(
+                "passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead"
+            )
+            p, e = p
+
+        if projective is None:
+            import warnings
+
+            warnings.warn(
+                "the behavior of edge_matrix for similarity surfaces will change in a future version of sage-flatsurf; call with projective=False to keep the old behavior"
+            )
+
+            projective = False
+
+        if e < 0 or e >= len(self.polygon(p).vertices()):
+            raise ValueError("invalid edge index for this polygon")
+
+        base_label, fiber = p
+        p1 = self.opposite_edge(p, e)
+        if p1 is None:
+            return None
+        (base_label1, fiber1), _ = p1
+        m = self.base_surface().edge_matrix(base_label, e, projective=projective)
+        m0 = self.fiber_matrix(base_label, fiber, projective=projective)
+        m1 = self.fiber_matrix(base_label1, fiber1, projective=projective)
+        mm = m1 * m * m0.inverse()
+        mm.set_immutable()
+        return mm
+
+
+class MinimalTranslationCover(OrientedSimilaritySurfaceCover):
     r"""
     EXAMPLES::
 
@@ -112,23 +337,6 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
     """
 
     def __init__(self, similarity_surface, category=None):
-        if similarity_surface.is_mutable():
-            if similarity_surface.is_finite_type():
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-                similarity_surface = MutableOrientedSimilaritySurface.from_surface(
-                    similarity_surface
-                )
-            else:
-                raise NotImplementedError(
-                    "can not construct MinimalTranslationCover of a surface that is mutable and infinite"
-                )
-
-        if similarity_surface.is_with_boundary():
-            raise TypeError("surface must be without boundary")
-
-        self._ss = similarity_surface
-
         from flatsurf.geometry.categories import TranslationSurfaces
 
         if category is None:
@@ -138,111 +346,59 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
         category = category.WithoutBoundary()
 
-        if _is_finite(self._ss):
+        if _is_finite(similarity_surface):
             category = category.FiniteType()
+            if similarity_surface.is_compact():
+                category = category.Compact()
         else:
             category = category.InfiniteType()
 
         if similarity_surface.is_connected():
             category = category.Connected()
 
-        if self.is_compact():
-            category = category.Compact()
-
-        OrientedSimilaritySurface.__init__(
-            self, self._ss.base_ring(), category=category
+        OrientedSimilaritySurfaceCover.__init__(
+            self, similarity_surface, category=category
         )
 
-    def roots(self):
+    def fiber_matrix(self, base_label, fiber, projective=True):
         r"""
-        Return root labels for the polygons forming the connected
-        components of this surface.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
-            sage: S.roots()
-            ((0, 1, 0),)
-
-        """
-        self._F = self._ss.base_ring()
-        return tuple(
-            (label, self._F.one(), self._F.zero()) for label in self._ss.roots()
-        )
-
-    def is_mutable(self):
-        r"""
-        Return whether this surface is mutable, i.e., return ``False``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
-            sage: S.is_mutable()
-            False
-
-        """
-        return False
-
-    def is_compact(self):
-        r"""
-        Return whether this surface is compact as a topological space.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().minimal_cover("translation")
-            sage: S.is_compact()
-            False
-
-        ::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
-            sage: S.is_compact()
-            True
-
-        """
-        if not self._ss.is_compact():
-            return False
-
-        if not self._ss.is_rational_surface():
-            return False
-
-        return True
-
-    @cached_method
-    def polygon(self, label):
-        r"""
-        Return the polygon with ``label``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+        Return the matrix corresponding to the section of the covering from the
+        polygon in the base surface with ``base_label`` to the polygon in the
+        covering with ``fiber``.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf import polygons, similarity_surfaces
             sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
-            sage: S.polygon((0, 1, 0))
-            Polygon(vertices=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
+            sage: S.fiber_matrix(0, (1, 0))
+            [1 0 0]
+            [0 1 0]
+            [0 0 1]
+            sage: S.fiber_matrix(0, (1, -1))
+            [ 1  1  0]
+            [-1  1  0]
+            [ 0  0  1]
+            sage: S.fiber_matrix(0, (1, -1), projective=False)
+            [ 1  1]
+            [-1  1]
 
         """
-        if not isinstance(label, tuple) or len(label) != 3:
-            raise ValueError("invalid label {!r}".format(label))
-        return matrix([[label[1], -label[2]], [label[2], label[1]]]) * self._ss.polygon(
-            label[0]
-        )
+        if not isinstance(fiber, tuple) or len(fiber) != 2:
+            raise ValueError("invalid fiber {!r}".format(fiber))
+        a, b = fiber
+        a = self.base_ring().coerce(a)
+        b = self.base_ring().coerce(b)
+        if projective:
+            return matrix(self.base_ring(), 3, [a, -b, 0, b, a, 0, 0, 0, 1])
+        else:
+            return matrix(self.base_ring(), 2, [a, -b, b, a])
+
+    def fiber_root(self, base_label):
+        r"""
+        Return the root label of the fiber over ``base_label``.
+        """
+        return (self.base_ring().one(), self.base_ring().zero())
 
     @cached_method
     def opposite_edge(self, label, edge):
@@ -258,16 +414,18 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf import polygons, similarity_surfaces
             sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
-            sage: S.opposite_edge((0, 1, 0), 0)
-            ((1, 1, 0), 2)
+            sage: S.opposite_edge((0, (1, 0)), 0)
+            ((1, (1, 0)), 2)
 
         """
-        pp, a, b = label  # this is the polygon m * ss.polygon(p)
-        p2, e2 = self._ss.opposite_edge(pp, edge)
-        m = self._ss.edge_matrix(p2, e2)
+        if len(label) != 2:
+            raise ValueError("invalid label")
+        pp, (a, b) = label  # this is the polygon m * base_surface.polygon(p)
+        p2, e2 = self.base_surface().opposite_edge(pp, edge)
+        m = self.base_surface().edge_matrix(p2, e2, projective=False)
         aa = a * m[0][0] - b * m[1][0]
         bb = b * m[0][0] + a * m[1][0]
-        return ((p2, aa, bb), e2)
+        return ((p2, (aa, bb)), e2)
 
     def _repr_(self):
         r"""
@@ -282,7 +440,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
             Minimal Translation Cover of Genus 0 Rational Cone Surface built from 2 right triangles
 
         """
-        return f"Minimal Translation Cover of {repr(self._ss)}"
+        return f"Minimal Translation Cover of {repr(self.base_surface())}"
 
     def __hash__(self):
         r"""
@@ -297,7 +455,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
             True
 
         """
-        return hash(self._ss)
+        return hash(self.base_surface())
 
     def __eq__(self, other):
         r"""
@@ -327,10 +485,10 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         if not isinstance(other, MinimalTranslationCover):
             return False
 
-        return self._ss == other._ss
+        return self.base_surface() == other.base_surface()
 
 
-class MinimalHalfTranslationCover(OrientedSimilaritySurface):
+class MinimalHalfTranslationCover(OrientedSimilaritySurfaceCover):
     r"""
     EXAMPLES::
 
@@ -372,26 +530,6 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
     """
 
     def __init__(self, similarity_surface, category=None):
-        if similarity_surface.is_mutable():
-            if similarity_surface.is_finite_type():
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-                self._ss = MutableOrientedSimilaritySurface.from_surface(
-                    similarity_surface
-                )
-                self._ss.set_immutable()
-            else:
-                raise ValueError(
-                    "Can not construct MinimalTranslationCover of a surface that is mutable and infinite."
-                )
-        else:
-            self._ss = similarity_surface
-
-        if similarity_surface.is_with_boundary():
-            raise TypeError(
-                "can only build translation cover of surfaces without boundary"
-            )
-
         from flatsurf.geometry.categories import HalfTranslationSurfaces
 
         if category is None:
@@ -399,8 +537,13 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
         category &= HalfTranslationSurfaces()
 
-        if _is_finite(self._ss):
+        if not similarity_surface.is_compact():
+            category = category.NotCompact()
+
+        if _is_finite(similarity_surface):
             category = category.FiniteType()
+            if similarity_surface.is_compact():
+                category = category.Compact()
         else:
             category = category.InfiniteType()
 
@@ -409,47 +552,9 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         if similarity_surface.is_connected():
             category = category.Connected()
 
-        OrientedSimilaritySurface.__init__(
-            self, self._ss.base_ring(), category=category
+        OrientedSimilaritySurfaceCover.__init__(
+            self, similarity_surface, category=category
         )
-
-    def roots(self):
-        r"""
-        Return root labels for the polygons forming the connected
-        components of this surface.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
-            sage: S.roots()
-            ((0, 1, 0),)
-
-        """
-        self._F = self._ss.base_ring()
-        return tuple(
-            (label, self._F.one(), self._F.zero()) for label in self._ss.roots()
-        )
-
-    def is_mutable(self):
-        r"""
-        Return whether this surface is mutable, i.e., return ``False``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
-            sage: S.is_mutable()
-            False
-
-        """
-        return False
 
     def _repr_(self):
         r"""
@@ -464,29 +569,38 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
             Minimal Half-Translation Cover of Genus 0 Rational Cone Surface built from 2 right triangles
 
         """
-        return f"Minimal Half-Translation Cover of {repr(self._ss)}"
+        return f"Minimal Half-Translation Cover of {repr(self.base_surface())}"
 
-    def polygon(self, label):
+    def fiber_matrix(self, base_label, fiber, projective=True):
         r"""
-        Return the polygon with ``label``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+        Return the matrix corresponding to the section of the covering from the
+        polygon in the base surface with ``base_label`` to the polygon in the
+        covering with ``fiber``.
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
             sage: from flatsurf import polygons, similarity_surfaces
             sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
-            sage: S.polygon((0, 1, 0))
-            Polygon(vertices=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
+            sage: S.fiber_matrix(0, (1, 1), projective=True)
+            [ 1 -1  0]
+            [ 1  1  0]
+            [ 0  0  1]
+            sage: S.fiber_matrix(0, (1, 1), projective=False)
+            [ 1 -1]
+            [ 1  1]
 
         """
-        if not isinstance(label, tuple) or len(label) != 3:
-            raise ValueError("invalid label {!r}".format(label))
-        return matrix([[label[1], -label[2]], [label[2], label[1]]]) * self._ss.polygon(
-            label[0]
-        )
+
+        if not isinstance(fiber, tuple) or len(fiber) != 2:
+            raise ValueError("invalid label {!r}".format(base_label))
+        a, b = fiber
+        if projective:
+            return matrix(self.base_ring(), 3, [a, -b, 0, b, a, 0, 0, 0, 1])
+        else:
+            return matrix(self.base_ring(), 2, [a, -b, b, a])
+
+    def fiber_root(self, base_label):
+        return (self.base_ring().one(), self.base_ring().zero())
 
     def opposite_edge(self, label, edge):
         r"""
@@ -498,22 +612,23 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
             sage: from flatsurf import polygons, similarity_surfaces
             sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
-            sage: S.opposite_edge((0, 1, 0), 0)
-            ((1, 1, 0), 2)
+            sage: S.opposite_edge((0, (1, 0)), 0)
+            ((1, (1, 0)), 2)
 
         """
-        pp, a, b = label  # this is the polygon m * ss.polygon(p)
-        p2, e2 = self._ss.opposite_edge(pp, edge)
-        m = self._ss.edge_matrix(pp, edge)
+        if len(label) != 2:
+            raise ValueError("invalid label")
+        pp, (a, b) = label  # this is the polygon m * ss.polygon(p)
+        p2, e2 = self.base_surface().opposite_edge(pp, edge)
+        m = self.base_surface().edge_matrix(pp, edge, projective=False)
         aa = a * m[0][0] + b * m[1][0]
         bb = b * m[0][0] - a * m[1][0]
         if aa > 0 or (aa == 0 and bb > 0):
-            return ((p2, aa, bb), e2)
+            return ((p2, (aa, bb)), e2)
         else:
-            return ((p2, -aa, -bb), e2)
+            return ((p2, (-aa, -bb)), e2)
 
     def __hash__(self):
         r"""
@@ -528,7 +643,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
             True
 
         """
-        return hash(self._ss)
+        return hash(self.base_surface())
 
     def __eq__(self, other):
         r"""
@@ -558,10 +673,10 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         if not isinstance(other, MinimalHalfTranslationCover):
             return False
 
-        return self._ss == other._ss
+        return self.base_surface() == other.base_surface()
 
 
-class MinimalPlanarCover(OrientedSimilaritySurface):
+class MinimalPlanarCover(OrientedSimilaritySurfaceCover):
     r"""
     The minimal planar cover of a surface `S` is the smallest cover `C` so that
     the developing map from the universal cover `U` to the plane induces a well
@@ -594,40 +709,9 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
     """
 
     def __init__(self, similarity_surface, base_label=None, category=None):
-        if similarity_surface.is_mutable():
-            if similarity_surface.is_finite_type():
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-                self._ss = MutableOrientedSimilaritySurface.from_surface(
-                    similarity_surface
-                )
-                self._ss.set_immutable()
-            else:
-                raise ValueError(
-                    "Can not construct MinimalPlanarCover of a surface that is mutable and infinite."
-                )
-        else:
-            self._ss = similarity_surface
-
-        if base_label is not None:
-            import warnings
-
-            warnings.warn(
-                "the keyword argument base_label of a minimal planar cover is ignored and will be removed in a future version of sage-flatsurf; it had no effect in previous versions of sage-flatsurf"
-            )
-
-        if not self._ss.is_connected():
+        if not similarity_surface.is_connected():
             raise NotImplementedError(
                 "can only create a minimal planar cover of connected surfaces"
-            )
-
-        # The similarity group containing edge identifications.
-        self._sg = self._ss.edge_transformation(self._ss.root(), 0).parent()
-        self._root = (self._ss.root(), self._sg.one())
-
-        if similarity_surface.is_with_boundary():
-            raise TypeError(
-                "can only build translation cover of surfaces without boundary"
             )
 
         from flatsurf.geometry.categories import TranslationSurfaces
@@ -635,15 +719,22 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         if category is None:
             category = TranslationSurfaces()
 
-        category &= TranslationSurfaces().InfiniteType()
-
         category = category.WithoutBoundary()
 
         if similarity_surface.is_connected():
             category = category.Connected()
 
-        OrientedSimilaritySurface.__init__(
-            self, self._ss.base_ring(), category=category
+        if similarity_surface.is_compact():
+            category = category.InfiniteType()
+        elif not similarity_surface.is_finite_type():
+            category = category.NotCompact()
+        else:
+            raise NotImplementedError(
+                "cannot determine category of planar cover of non-compact surface yet"
+            )
+
+        OrientedSimilaritySurfaceCover.__init__(
+            self, similarity_surface, category=category
         )
 
     def _repr_(self):
@@ -658,80 +749,15 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
             Minimal Planar Cover of Translation Surface in H_1(0) built from a square
 
         """
-        return f"Minimal Planar Cover of {repr(self._ss)}"
+        return f"Minimal Planar Cover of {repr(self.base_surface())}"
 
-    def is_compact(self):
-        r"""
-        Return whether this surface is compact as a topological space, i.e.,
-        return ``False``.
+    def fiber_matrix(self, base_label, fiber, projective=True):
+        return fiber.matrix(projective)
 
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
+    def fiber_root(self, base_label):
+        from flatsurf.geometry.similarity import SimilarityGroup
 
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
-            sage: S.is_compact()
-            False
-
-        """
-        return False
-
-    def roots(self):
-        r"""
-        Return root labels for the polygons forming the connected
-        components of this surface.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
-            sage: S.roots()
-            ((0, (x, y) |-> (x, y)),)
-
-        """
-        return (self._root,)
-
-    def is_mutable(self):
-        r"""
-        Return whether this surface is mutable, i.e., return ``False``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
-            sage: S.is_mutable()
-            False
-
-        """
-        return False
-
-    def polygon(self, label):
-        r"""
-        Return the polygon with ``label``.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().minimal_cover("planar")
-            sage: root = S.root()
-            sage: S.polygon(root)
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
-
-        """
-        if not isinstance(label, tuple) or len(label) != 2:
-            raise ValueError("invalid label {!r}".format(label))
-        return label[1](self._ss.polygon(label[0]))
+        return SimilarityGroup(self.base_ring()).one()
 
     def opposite_edge(self, label, edge):
         r"""
@@ -751,9 +777,9 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
             ((1, (x, y) |-> (x, y)), 2)
 
         """
-        pp, m = label  # this is the polygon m * ss.polygon(p)
-        p2, e2 = self._ss.opposite_edge(pp, edge)
-        me = self._ss.edge_transformation(pp, edge)
+        pp, m = label  # this is the polygon m * base_surface.polygon(pp)
+        p2, e2 = self.base_surface().opposite_edge(pp, edge)
+        me = self.base_surface().edge_transformation(pp, edge)
         mm = m * ~me
         return ((p2, mm), e2)
 
@@ -770,7 +796,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
             True
 
         """
-        return hash((self._ss, self._root))
+        return hash((self.base_surface(), self.roots()))
 
     def __eq__(self, other):
         r"""
@@ -791,4 +817,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         if not isinstance(other, MinimalPlanarCover):
             return False
 
-        return self._ss == other._ss and self._root == other._root
+        return (
+            self.base_surface() == other.base_surface()
+            and self.roots() == other.roots()
+        )

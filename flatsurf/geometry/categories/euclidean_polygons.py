@@ -100,9 +100,6 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf import Polygons
                 sage: C = Polygons(QQ)
                 sage: C.vector_space()
-                doctest:warning
-                ...
-                UserWarning: vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead
                 Vector space of dimension 2 over Rational Field
 
             """
@@ -158,55 +155,6 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return self.base_ring().fraction_field()
 
-        def _mul_(self, g, switch_sides=None):
-            r"""
-            Apply the 2x2 matrix `g` to this polygon.
-
-            The matrix must have non-zero determinant. If the determinant is
-            negative, then the vertices and edges are relabeled according to the
-            involutions `v \mapsto (n-v)%n` and  `e \mapsto n-1-e` respectively.
-
-            EXAMPLES::
-
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices = [(1,0),(0,1),(-1,-1)])
-                sage: p
-                Polygon(vertices=[(1, 0), (0, 1), (-1, -1)])
-
-                sage: matrix(ZZ,[[0, 1], [1, 0]]) * p
-                Polygon(vertices=[(0, 1), (-1, -1), (1, 0)])
-
-                sage: matrix(ZZ,[[2, 0], [0, 1]]) * p
-                Polygon(vertices=[(2, 0), (0, 1), (-2, -1)])
-
-            """
-            from flatsurf import Polygon
-
-            if g in self.base_ring():
-                from sage.all import MatrixSpace
-
-                g = MatrixSpace(self.base_ring(), 2)(g)
-
-            det = g.det()
-            if det == 0:
-                raise ValueError(
-                    "Can not act on a polygon with matrix with zero determinant"
-                )
-
-            if det < 0:
-                # Note that in this case we reverse the order
-                vertices = [g * self.vertex(0)]
-                for i in range(len(self.vertices()) - 1, 0, -1):
-                    vertices.append(g * self.vertex(i))
-
-                return Polygon(vertices=vertices, check=False)
-
-            return Polygon(
-                vertices=[g * v for v in self.vertices()],
-                check=False,
-                category=self.category(),
-            )
-
         @cached_method
         def is_rational(self):
             r"""
@@ -225,11 +173,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 sage: p = Polygon(vertices = [(0, 0), (1, 0), (0, 1)])
                 sage: p.category()
-                Category of convex simple euclidean polygons over Rational Field
+                Category of facade convex simple euclidean polygons over Rational Field
                 sage: p.is_rational()
                 True
                 sage: p.category()
-                Category of rational convex simple euclidean polygons over Rational Field
+                Category of facade rational convex simple euclidean polygons over Rational Field
 
             """
             for e in range(len(self.vertices())):
@@ -261,24 +209,39 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            n = len(self.vertices())
-            for i in range(n):
-                ei = (self.vertex(i), self.vertex(i + 1))
-                for j in range(i + 2, n + 1):
-                    if (i - j) % n in [-1, 0, 1]:
+            sides = self.sides()
+            for i, e in enumerate(sides):
+                for j, f in enumerate(sides):
+                    if j <= i + 1:
                         continue
 
-                    ej = (self.vertex(j), self.vertex(j + 1))
+                    if (j + 1) % len(sides) == 0:
+                        continue
 
-                    from flatsurf.geometry.euclidean import is_segment_intersecting
-
-                    if is_segment_intersecting(ei, ej):
+                    if e.intersects(f):
                         return False
 
             return True
 
+        def _test_is_simple(self, **options):
+            r"""
+            Verify that :meth:`is_simple` is implemented correctly.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s._test_is_simple()
+
+            """
+            tester = self._tester(**options)
+
+            tester.assertEqual(
+                EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple()
+            )
+
         @abstract_method
-        def vertices(self, marked_vertices=True):
+        def vertices(self, marked_vertices=True, finite=None):
             r"""
             Return the vertices of this polygon in counterclockwise order as
             vectors in the real plane.
@@ -288,6 +251,11 @@ class EuclideanPolygons(Category_over_base_ring):
             - ``marked_vertices`` -- a boolean (default: ``True``); whether to
               include marked vertices that are not actually corners of the
               polygon.
+
+            - ``finite`` -- a boolean or ``None`` (default: ``None``); whether to
+              return both finite and infinite vertices (when ``finite=None``),
+              only finite ones (when ``finite=True``) or only infinite ones
+              (when ``finite=False``).
 
             EXAMPLES::
 
@@ -369,6 +337,9 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             return self.vertex(i + 1) - self.vertex(i)
 
+        def side(self, i):
+            return self.sides()[i % len(self.sides())]
+
         def is_convex(self, strict=False):
             r"""
             Return whether this is a convex polygon.
@@ -390,13 +361,13 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             from flatsurf.geometry.euclidean import ccw
 
-            for i in range(len(self.vertices())):
-                consecutive_ccw = ccw(self.edge(i), self.edge(i + 1))
+            for v, _, w in self.corners():
+                consecutive_ccw = ccw(v, w)
                 if strict:
-                    if consecutive_ccw <= 0:
+                    if consecutive_ccw >= 0:
                         return False
                 else:
-                    if consecutive_ccw < 0:
+                    if consecutive_ccw > 0:
                         return False
 
             return True
@@ -447,7 +418,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if self.area() == 0:
                 return True
 
-            if self.vertices() != self.vertices(marked_vertices=False):
+            if self.marked_vertices():
                 return True
 
             return False
@@ -465,8 +436,10 @@ class EuclideanPolygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons
-                sage: s = polygons.square()
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane()
+
+                sage: s = E.square()
                 sage: s.slopes()
                 [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
@@ -475,20 +448,25 @@ class EuclideanPolygons(Category_over_base_ring):
 
             A polygon with a marked point::
 
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2)])
+                sage: p = E.polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2)])
                 sage: p.slopes()
                 [(2, 0), (2, 0), (-2, 2), (-2, -2)]
                 sage: p.slopes(relative=True)
                 [(-4, 4), (4, 0), (-4, 4), (0, 8)]
 
+            An infinite polygon::
+
+                sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
+                sage: p.slopes(relative=True)
+                [(0, 1), (0, -1)]
+
             """
             if not relative:
-                return self.edges()
+                return [side.direction() for side in self.sides()]
 
             edges = [
-                (self.edge((e - 1) % len(self.vertices())), self.edge(e))
-                for e in range(len(self.vertices()))
+                (self.side(e - 1).direction(), self.side(e).direction())
+                for e in range(len(self.sides()))
             ]
 
             cos = [u.dot_product(v) for (u, v) in edges]
@@ -504,15 +482,25 @@ class EuclideanPolygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2)])
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane(QQ)
+                sage: p = E.polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2), (-2, 0)])
                 sage: p.erase_marked_vertices()
-                Polygon(vertices=[(0, 0), (4, 0), (2, 2)])
+                Polygon(vertices=[(4, 0), (2, 2), (-2, 0)])
+
+                sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
+                sage: p.erase_marked_vertices()
+                Polygon(edges=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
+
+                sage: p = E.polygon(edges=[(1, 0), E.ray((1,0), (1,0)), -E.ray((0, 1), (0, 1)), (0, -1)])
+                sage: p.erase_marked_vertices()  # not tested
 
             """
-            from flatsurf import Polygon
+            if not self.marked_vertices():
+                return self
 
-            return Polygon(vertices=self.vertices(marked_vertices=False))
+            # TODO: make a general implementation handling infinite sides
+            return self.parent().polygon(vertices=self.vertices(marked_vertices=False))
 
         def is_equilateral(self):
             r"""
@@ -526,18 +514,40 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
+            if all(not side.is_compact() for side in self.sides()):
+                # TODO: this case is ambiguous as there are half-infinite and bi-infinite sides
+                return True
+
+            if not all(side.is_compact() for side in self.sides()):
+                return False
+
             return len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edges()}) == 1
 
+        # TODO: fix me when for non-compact polygons
+        # - either all angles are finite and the code works
+        # - either all vertices are at infinity and the code should be adapted
+        # - or there is a mix of finite and infinite vertex and the function
+        #   should return False
         def is_equiangular(self):
             r"""
             Return whether all sides of this polygon meet at the same angle.
 
             EXAMPLES::
 
-                sage: from flatsurf import Polygon
-                sage: p = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane()
+
+                sage: p = E.polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
                 sage: p.is_equiangular()
                 True
+
+                sage: p = E.polygon(edges=[E.line((0, 0), (1,0))])
+                sage: p.is_equiangular()
+                True
+
+                sage: p = E.polygon(edges=[E.ray((0, 0), (1,0)), -E.ray((0, 0), (-1, 0))])
+                sage: p.is_equiangular()  # known bug
+                False
 
             """
             slopes = self.slopes(relative=True)
@@ -584,21 +594,160 @@ class EuclideanPolygons(Category_over_base_ring):
                 ...Graphics object consisting of 3 graphics primitives
 
             """
-            from sage.plot.point import point2d
-            from sage.plot.line import line2d
-            from sage.plot.polygon import polygon2d
+            # TODO: Unify the interface with what hyperbolic does. Do we really
+            # need the "options" split here? Or can we just use an interface
+            # that is more like the one in hyperbolic_path()?
+            # TODO: Use defaults as in hyperbolic_path()
+            # TODO: Show coordinate system but hide it in surface plots.
 
-            P = self.vertices(translation)
+            if translation:
+                # TODO: Deprecate translation.
+                self = self.translate(translation)
 
-            polygon_options = {"alpha": 0.3, "zorder": 1, **polygon_options}
-            edge_options = {"color": "orange", "zorder": 2, **edge_options}
-            vertex_options = {"color": "red", "zorder": 2, **vertex_options}
+            from sage.all import Graphics
 
-            return (
-                polygon2d(P, **polygon_options)
-                + line2d(P + (P[0],), **edge_options)
-                + point2d(P, **vertex_options)
+            g = Graphics()
+
+            from flatsurf.graphical.hyperbolic import (
+                CartesianPathPlotCommand,
+                CartesianPathPlot,
             )
+
+            if polygon_options is not None:
+                from sage.misc.decorators import options, rename_keyword
+
+                @rename_keyword(color="rgbcolor")
+                @options(
+                    alpha=0.3,
+                    rgbcolor=(0, 0, 1),
+                    edgecolor=None,
+                    thickness=0,
+                    legend_label=None,
+                    legend_color=None,
+                    aspect_ratio=1.0,
+                    zorder=1,
+                    fill=True,
+                )
+                def normalize_polygon_options(**options):
+                    return options
+
+                polygon_options = normalize_polygon_options(**polygon_options)
+
+                g._set_extra_kwds(Graphics._extract_kwds_for_show(polygon_options))
+
+                commands = self._plot_commands()
+
+                g.add_primitive(CartesianPathPlot(commands, polygon_options))
+                # TODO
+                # from flatsurf.graphical.hyperbolic import CartesianPathPlotCommand
+                # # TODO: Implement this using MOVETO, MOVETOINFINITY, and so on.
+                # from sage.plot.polygon import polygon2d
+                # polygon_options = {"alpha": 0.3, "zorder": 1, **polygon_options}
+                # plots.append(polygon2d(P, **polygon_options))
+
+            if edge_options is not None:
+                from sage.misc.decorators import options, rename_keyword
+
+                @rename_keyword(color="rgbcolor")
+                @options(
+                    alpha=1,
+                    rgbcolor=(1, 165 / 256, 0),
+                    edgecolor=(1, 165 / 256, 0),
+                    thickness=1,
+                    legend_label=None,
+                    legend_color=None,
+                    aspect_ratio=1.0,
+                    zorder=2,
+                    fill=False,
+                )
+                def normalize_edge_options(**options):
+                    return options
+
+                edge_options = normalize_edge_options(**edge_options)
+
+                g._set_extra_kwds(Graphics._extract_kwds_for_show(edge_options))
+
+                commands = self._plot_commands()
+
+                g.add_primitive(CartesianPathPlot(commands, edge_options))
+
+                # TODO
+                # from sage.plot.line import line2d
+                # edge_options = {"color": "orange", "zorder": 2, **edge_options}
+                # P = self.vertices()
+                # plots.append(line2d(P + (P[0],), **edge_options))
+
+            if vertex_options is not None:
+                from sage.misc.decorators import options, rename_keyword
+
+                @rename_keyword(color="rgbcolor")
+                @options(
+                    alpha=1,
+                    rgbcolor=(1, 0, 0),
+                    legend_label=None,
+                    legend_color=None,
+                    aspect_ratio=1.0,
+                    zorder=2,
+                )
+                def normalize_vertex_options(**options):
+                    return options
+
+                vertex_options = normalize_vertex_options(**vertex_options)
+
+                g._set_extra_kwds(Graphics._extract_kwds_for_show(vertex_options))
+
+                from sage.plot.point import point2d
+
+                g += point2d(self.vertices(finite=True), **vertex_options)
+
+                # TODO
+                # from sage.plot.point import point2d
+                # vertex_options = {"color": "red", "zorder": 2, **vertex_options}
+                # P = self.vertices()
+                # plots.append(point2d(P, **vertex_options))
+
+            return g
+
+        def _plot_commands(self):
+            from flatsurf.graphical.hyperbolic import (
+                CartesianPathPlotCommand,
+                CartesianPathPlot,
+            )
+
+            commands = []
+
+            cursor = self.sides()[0].start()
+            if cursor.is_finite():
+                commands.append(CartesianPathPlotCommand("MOVETO", cursor.vector()))
+            else:
+                raise NotImplementedError
+
+            for side in self.sides():
+                if side.start() != cursor:
+                    assert (
+                        side.start().is_ideal() and cursor.is_ideal()
+                    ), "in a closed polygons, there can only be jumps between vertices at infinite points"
+                    cursor = side.start()
+                    commands.append(
+                        CartesianPathPlotCommand(
+                            "RAYTO", cursor.vector(model="projective")[:2]
+                        )
+                    )
+                if side.end().is_finite():
+                    cursor = side.end()
+                    commands.append(CartesianPathPlotCommand("LINETO", cursor.vector()))
+                else:
+                    if cursor.is_finite():
+                        cursor = side.end()
+                        commands.append(
+                            CartesianPathPlotCommand(
+                                "RAYTO", cursor.vector(model="projective")[:2]
+                            )
+                        )
+                    else:
+                        raise NotImplementedError()
+
+            return commands
 
         def angles(self, numerical=None, assume_rational=None):
             r"""
@@ -696,10 +845,15 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: (2*polygons.square()).area()
                 4
             """
+            if not self.is_compact():
+                from sage.all import oo
+
+                return oo
+
             # Will use an area formula obtainable from Green's theorem. See for instance:
             # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
             total = self.base_ring().zero()
-            for i in range(len(self.vertices())):
+            for i in range(len(self.sides())):
                 total += (self.vertex(i)[0] + self.vertex(i + 1)[0]) * self.edge(i)[1]
 
             from sage.all import ZZ
@@ -760,6 +914,8 @@ class EuclideanPolygons(Category_over_base_ring):
                     ),
                 )
             )
+
+        # TODO: Rename to position? And introduce on the level of euclidean sets?
 
         def get_point_position(self, point, translation=None):
             r"""
@@ -898,7 +1054,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2), (1, 1)])
                 sage: Q = Polygon(vertices=[(0, 0), (1, 1), (2, 2), (0, 2)])
-                sage: P.join(Q, 4, 0)
+                sage: P.join(Q, 4, 0)  # not tested  # TODO: enable this test again
                 Traceback (most recent call last):
                 ...
                 NotImplementedError: polygon self-intersects
@@ -914,7 +1070,7 @@ class EuclideanPolygons(Category_over_base_ring):
             from flatsurf import Polygon
 
             return Polygon(
-                base_ring=self.base_ring(),
+                parent=self.parent(),
                 vertices=self.vertices()[:edge]
                 + other.vertices()[other_edge + 1 :]
                 + other.vertices()[:other_edge]
@@ -984,17 +1140,15 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf import EuclideanPolygonsWithAngles
                 sage: C = EuclideanPolygonsWithAngles(1, 2, 3)
                 sage: C.vector_space()
-                doctest:warning
-                ...
-                UserWarning: vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead
                 Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
             """
-            import warnings
+            # TODO: Restore this warning.
+            # import warnings
 
-            warnings.warn(
-                "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
-            )
+            # warnings.warn(
+            #     "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
+            # )
 
             from sage.all import VectorSpace
 
@@ -1024,120 +1178,18 @@ class EuclideanPolygons(Category_over_base_ring):
             angles = EuclideanPolygonsWithAngles._normalize_angles(angles)
             return EuclideanPolygonsWithAngles(self.base_ring(), angles) & self
 
-    def __call__(self, *args, **kwds):
-        r"""
-        TESTS::
-
-            sage: from flatsurf import Polygons, ConvexPolygons
-
-            sage: C = Polygons(QQ)
-            sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
-            doctest:warning
-            ...
-            UserWarning: Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
-            sage: p
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-            sage: C(p) is p
-            False
-            sage: C(p) == p
-            True
-            sage: C((1,0), (0,1), (-1, 1))
-            Traceback (most recent call last):
-            ...
-            ValueError: the polygon does not close up
-
-            sage: D = ConvexPolygons(QQbar)
-            doctest:warning
-            ...
-            UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons.
-            If you really need the category of convex polygons over a ring use EuclideanPolygons(ring).Simple().Convex() instead.
-            sage: D(p)
-            doctest:warning
-            ...
-            UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-            sage: D(vertices=p.vertices())
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-            sage: D(edges=p.edges())
-            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-        """
-        # We cannot have a __call__() in SubcategoryMethods so there is no good
-        # way to support this in the category framework. Also, this code is
-        # duplicated in several places and the Polygon() helper seems to be
-        # much more versatile.
-        import warnings
-
-        warnings.warn(
-            "Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead"
-        )
-
-        check = kwds.pop("check", True)
-
-        from flatsurf.geometry.polygon import EuclideanPolygon
-
-        if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
-            if args[0].category() is self:
-                return args[0]
-            vertices = [self.vector_space()(v) for v in args[0].vertices()]
-            args = ()
-
-        else:
-            vertices = kwds.pop("vertices", None)
-            edges = kwds.pop("edges", None)
-            base_point = kwds.pop("base_point", (0, 0))
-
-            if (vertices is None) and (edges is None):
-                if len(args) == 1:
-                    edges = args[0]
-                elif args:
-                    edges = args
-                else:
-                    raise ValueError(
-                        "exactly one of 'vertices' or 'edges' must be provided"
-                    )
-            if kwds:
-                raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
-
-            if edges is not None:
-                v = self.vector_space()(base_point)
-                vertices = []
-                for e in map(self.vector_space(), edges):
-                    vertices.append(v)
-                    v += e
-                if v != vertices[0]:
-                    raise ValueError("the polygon does not close up")
-
-        from flatsurf.geometry.polygon import Polygon
-
-        return Polygon(
-            base_ring=self.base(), vertices=vertices, category=self, check=check
-        )
-
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""
         The subcategory of convex Euclidean polygons in the real plane.
 
         EXAMPLES:
 
-        For historic reasons, there is the shortcut ``ConvexPolygons`` to get
-        the Euclidean convex polygons::
-
-            sage: from flatsurf import ConvexPolygons
-            sage: C = ConvexPolygons(QQ)
-
             sage: from flatsurf.geometry.categories import EuclideanPolygons
-            sage: C is EuclideanPolygons(QQ).Convex().Simple()
-            True
-
-            sage: C(vertices=[(0,0), (2,0), (1,1)])
-            Polygon(vertices=[(0, 0), (2, 0), (1, 1)])
-
-            sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: C = EuclideanPolygons(QQ).Convex().Simple()
 
         This axiom can also be created over non-fields::
 
-            sage: ConvexPolygons(ZZ)
+            sage: EuclideanPolygons(ZZ).Convex().Simple()
             Category of convex simple euclidean polygons over Integer Ring
 
         TESTS::
@@ -1736,90 +1788,6 @@ class EuclideanPolygons(Category_over_base_ring):
                 Category of convex simple euclidean polygons over Rational Field
 
             """
-
-            def __call__(self, *args, **kwds):
-                r"""
-                TESTS::
-
-                    sage: from flatsurf.geometry.categories import EuclideanPolygons
-
-                    sage: C = EuclideanPolygons(QQ).Convex().Simple()
-                    sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
-                    doctest:warning
-                    ...
-                    UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
-                    sage: p
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-                    sage: C(p) is p
-                    True
-                    sage: C((1,0), (0,1), (-1, 1))
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: the polygon does not close up
-
-                    sage: D = EuclideanPolygons(QQbar).Convex().Simple()
-                    sage: D(p)
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-                    sage: D(vertices=p.vertices())
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-                    sage: D(edges=p.edges())
-                    Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-
-                """
-                # We cannot have a __call__() in SubcategoryMethods so there is no good
-                # way to support this in the category framework. Also, this code is
-                # duplicated in several places and the Polygon() helper seems to be
-                # much more versatile.
-                import warnings
-
-                warnings.warn(
-                    "ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead"
-                )
-
-                check = kwds.pop("check", True)
-
-                from flatsurf.geometry.polygon import EuclideanPolygon
-
-                if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
-                    if args[0].category() is self:
-                        return args[0]
-
-                    vertices = [self.vector_space()(v) for v in args[0].vertices()]
-                    args = ()
-
-                else:
-                    vertices = kwds.pop("vertices", None)
-                    edges = kwds.pop("edges", None)
-                    base_point = kwds.pop("base_point", (0, 0))
-
-                    if (vertices is None) and (edges is None):
-                        if len(args) == 1:
-                            edges = args[0]
-                        elif args:
-                            edges = args
-                        else:
-                            raise ValueError(
-                                "exactly one of 'vertices' or 'edges' must be provided"
-                            )
-                    if kwds:
-                        raise ValueError(
-                            "invalid keyword {!r}".format(next(iter(kwds)))
-                        )
-
-                    if edges is not None:
-                        v = (self.base_ring() ** 2)(base_point)
-                        vertices = []
-                        for e in map(self.base_ring() ** 2, edges):
-                            vertices.append(v)
-                            v += e
-                        if v != vertices[0]:
-                            raise ValueError("the polygon does not close up")
-
-                from flatsurf.geometry.polygon import Polygon
-
-                return Polygon(
-                    base_ring=self.base(), vertices=vertices, category=self, check=check
-                )
 
             class ParentMethods:
                 r"""
@@ -2425,7 +2393,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: Polygon(edges=[rot * S.edge(k + shift) for k in range(4)]).translate(T.vertex(0)) == T
                         True
                     """
-                    from flatsurf.geometry.polygon import EuclideanPolygon
+                    from flatsurf.geometry.euclidean import EuclideanPolygon
 
                     if not isinstance(other, EuclideanPolygon):
                         raise TypeError("other must be a polygon")

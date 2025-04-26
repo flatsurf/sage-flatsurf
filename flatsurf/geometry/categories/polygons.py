@@ -103,6 +103,8 @@ class Polygons(Category_over_base_ring):
             ('a', 'rhombus', 'rhombi')
             sage: Polygons._describe_polygon(64, equiangular=False, equilateral=False)
             ('a', '64-gon', '64-gons')
+            sage: Polygons._describe_polygon(88, equiangular=False, equilateral=False)
+            ('an', '88-gon', '88-gons')
 
         """
         from sage.all import infinity
@@ -138,7 +140,9 @@ class Polygons(Category_over_base_ring):
             infinity: ("an", "apeirogon"),
         }
 
-        description = ngon_names.get(num_edges, ("a", f"{num_edges}-gon"))
+        description = ngon_names.get(
+            num_edges, ("an" if str(num_edges)[0] == "8" else "a", f"{num_edges}-gon")
+        )
         description = description + (description[1] + "s",)
 
         def augment(article, *attributes):
@@ -168,6 +172,8 @@ class Polygons(Category_over_base_ring):
 
         if augment_if("a", "degenerate"):
             return description
+
+        augment_if("an", "infinite")
 
         if num_edges == 3:
             if not augment_if("an", "equilateral", "equiangular"):
@@ -315,14 +321,13 @@ class Polygons(Category_over_base_ring):
                 ('a', 'square', 'squares')
 
             """
-            marked_vertices = set(self.vertices()).difference(
-                self.vertices(marked_vertices=False)
-            )
+            marked_vertices = self.marked_vertices()
 
             if marked_vertices and self.area() != 0:
                 self = self.erase_marked_vertices()
 
             properties = {
+                "infinite": not self.is_compact(),
                 "degenerate": self.is_degenerate(),
                 "equilateral": self.is_equilateral(),
                 "equiangular": self.is_equiangular(),
@@ -330,7 +335,7 @@ class Polygons(Category_over_base_ring):
                 "marked_vertices": len(marked_vertices),
             }
 
-            if len(self.vertices()) == 3:
+            if len(self.sides()) == 3:
                 slopes = self.slopes(relative=True)
                 properties["right"] = any(slope[0] == 0 for slope in slopes)
 
@@ -342,7 +347,7 @@ class Polygons(Category_over_base_ring):
                     or is_parallel(slopes[1], slopes[2])
                 )
 
-            return Polygons._describe_polygon(len(self.vertices()), **properties)
+            return Polygons._describe_polygon(len(self.sides()), **properties)
 
         def _test_refined_category(self, **options):
             r"""
@@ -579,9 +584,9 @@ class Polygons(Category_over_base_ring):
                 sage: s = polygons.square()
                 sage: C = s.category()
                 sage: C
-                Category of convex simple euclidean rectangles over Rational Field
+                Category of facade convex simple euclidean rectangles over Rational Field
                 sage: C.change_ring(AA)
-                Category of convex simple euclidean rectangles over Algebraic Real Field
+                Category of facade convex simple euclidean rectangles over Algebraic Real Field
 
             """
             from sage.categories.category import JoinCategory
@@ -590,7 +595,14 @@ class Polygons(Category_over_base_ring):
                 from sage.categories.category import Category
 
                 return Category.join(
-                    [S.change_ring(ring) for S in self.super_categories()]
+                    [
+                        (
+                            S.change_ring(ring)
+                            if isinstance(S, Category_over_base_ring)
+                            else S
+                        )
+                        for S in self.super_categories()
+                    ]
                 )
 
             # This is a hack to make the change ring of EuclideanPolygonsWithAngles subcategories work
