@@ -701,6 +701,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, k, coefficients, relative, implementation, category
             )
 
+
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
         The category of oriented surfaces built from Euclidean polygons that
@@ -901,8 +902,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 Each edge is reported together with its holonomy vector in the
                 coordinate system of the ``start_edge``.
 
-                Each edge is reported "twice", once when leaving a polygon, and
-                once when entering a polygon.
+                Each edge is reported "twice", once when entering a polygon,
+                and once when leaving a polygon.
 
                 INPUT:
 
@@ -1050,6 +1051,26 @@ class SimilaritySurfaces(SurfaceCategory):
                      ((0, 0), (-1, 0)),
                      ((0, 2), (-1, 0)),
                      ((0, 1), (0, -1))]
+
+                TESTS:
+
+                Verify that this also works in a non-translation surface::
+
+                    sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+                    sage: S = SimilaritySurfaceGenerators.example()
+                    sage: S(0, 0)._edges_ccw_vertex()
+                    [((1, 1), (-1, 3)),
+                     ((1, 0), (-2, 0)),
+                     ((0, 2), (-2, 0)),
+                     ((0, 1), (0, -2)),
+                     ((1, 2), (0, -2)),
+                     ((1, 1), (6/5, -8/5)),
+                     ((0, 0), (6/5, -8/5)),
+                     ((0, 2), (7/5, -1/5)),
+                     ((1, 0), (7/5, -1/5)),
+                     ((1, 2), (1, 2)),
+                     ((0, 1), (1, 2)),
+                     ((0, 0), (-1, 3))]
 
                 """
                 S = self.parent()
@@ -2275,6 +2296,59 @@ class SimilaritySurfaces(SurfaceCategory):
                 # pylint: disable-next=not-callable
                 return self(label, point, limit=limit, ring=ring)
 
+            def segment(self, start, holonomy, end=None, check=True):
+                r"""
+                Return the straight line segment that starts at ``start`` and
+                has the ``holonomy`` vector.
+
+                INPUT:
+
+                - ``start`` -- a tangent vector of this surface or a point of
+                  this surface
+
+                - ``holonomy`` -- a holonomy vector that describes this segment
+                  relative to ``start``
+
+                - ``end`` -- a tangent vector of this surface or a point of
+                  this surface or ``None`` (default: ``None``); if given, the
+                  end point of this sugment, i.e., the start point of the
+                  negative of this segment which has the negative of
+                  ``holonomy`` as its holonomy.
+
+                - ``check`` -- a boolean (default: ``True``)
+
+                EXAMPLES:
+
+                The parameter ``start`` can only be a point when this does not
+                lead to ambiguities::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.regular_octagon()
+
+                    sage: vertex = S(0, 0)
+                    sage: S.segment(vertex, (1, 1))
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: vector must not point out of the polygon at singularity
+
+                    sage: S.segment(S.tangent_vector(0, (0, 0), (1, 1)), (1, 1))
+                    Vertex 0 of polygon 0 to +(1, 1)
+
+                    sage: S.segment(S(0, (1, 1)), (1, 1))
+                    (1, 1) of polygon 0 to +(1, 1)
+
+                When ``holonomy`` is large, constructing the end point of a
+                segment can be quite costly. To avoid such expensive
+                computations, the endpoint can be passed explicitly as ``end``
+                and ``check`` can be set to ``False``::
+
+                    sage: S.segment(S.tangent_vector(0, (0, 0), (2**32, 1)), (2**32, 1), end=S.tangent_vector(0, (1, 1), (-2**32, -1)), check=False)
+                    Vertex 0 of polygon 0 to +(4294967296, 1)
+
+                """
+                from flatsurf.geometry.segment import Segment
+                return Segment(self, start, holonomy, end, check=check)
+
             def surface_point(self, *args, **kwargs):
                 r"""
                 Return a point in this surface.
@@ -2398,6 +2472,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 - ``ring`` -- an optional field (defaults to the coordinate field of the
                   surface)
                 """
+                if ring is not None:
+                    import warnings
+                    warnings.warn("the ring parameter has been deprecated in tangent_bundle() and will be removed in a future version of sage-flatsurf; call change_ring() on the underlying surface instead")
+
                 if ring is None:
                     ring = self.base_ring()
 
@@ -2429,21 +2507,15 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.chamanara import chamanara_surface
                     sage: S = chamanara_surface(1/2)
                     sage: S.tangent_vector(S.root(), (1/2,1/2), (1,1))
-                    SimilaritySurfaceTangentVector in polygon 1 based at (1/2, -3/2) with vector (1, 1)
+                    (1, 1) at (1/2, -3/2) of polygon 1
                     sage: K.<sqrt2> = QuadraticField(2)
                     sage: S.tangent_vector(S.root(), (1/2,1/2), (1,sqrt2), ring=K)
-                    SimilaritySurfaceTangentVector in polygon 1 based at (1/2, -3/2) with vector (1, sqrt2)
+                    doctest:warning
+                    ...
+                    UserWarning: the ring parameter has been deprecated in tangent_bundle() and will be removed in a future version of sage-flatsurf; call change_ring() on the underlying surface instead
+                    (1, sqrt2) at (1/2, -3/2) of polygon 1
+
                 """
-                from sage.all import vector
-
-                p = vector(p)
-                v = vector(v)
-
-                if p.parent().dimension() != 2 or v.parent().dimension() != 2:
-                    raise ValueError(
-                        "p (={!r}) and v (={!v}) should have two coordinates"
-                    )
-
                 return self.tangent_bundle(ring=ring)(lab, p, v)
 
             def triangulation_mapping(self):
@@ -3500,6 +3572,24 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.morphism import SubdivideEdgesMorphism
 
                 return SubdivideEdgesMorphism._create_morphism(self, surface, parts)
+
+        class TangentBundleMethods:
+            r"""
+            Provides methods available to all tangent bundles over oriented
+            similarity surfaces.
+
+            If you want to add general functionality for such tangent bundles
+            you most likely want to put it here.
+            """
+
+        class TangentVectorMethods:
+            r"""
+            Provides methods available to all tangent vectors over oriented
+            similarity surfaces.
+
+            If you want to add general functionality for such tangent bundles
+            you most likely want to put it here.
+            """
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""
