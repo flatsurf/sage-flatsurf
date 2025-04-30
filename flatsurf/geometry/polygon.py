@@ -591,7 +591,7 @@ def Polygon(
 
         sage: from flatsurf import EuclideanPlane
         sage: E = EuclideanPlane(QQ)
-        sage: Polygon(edges=[E.line((0,0), (1, 0)), E.line((0, 1), (-1, 1))])
+        sage: Polygon(edges=[E.line((0, 0), (1, 0)), E.line((0, 1), (-1, 1))])
         Polygon(edges=[{y = 0}, {1 + -y = 0}])
 
     A cone in the real plane::

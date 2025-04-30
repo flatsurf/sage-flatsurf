@@ -55,7 +55,7 @@ EXAMPLES::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
-from typing import List
+from typing import Iterable
 
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
@@ -1198,7 +1198,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         return choice, vertices
 
     def _polygon_normalize_edges(
-        self, n: int, vertices: List["EuclideanPoint"], edges, choice
+        self, n: int, vertices: tuple["EuclideanPoint", ...], edges, choice
     ):
         if edges is None:
             return choice, edges
@@ -4807,6 +4807,11 @@ class EuclideanUnorientedLine(EuclideanLine):
     pass
 
 
+class EuclideanRay(EuclideanFacade):
+    # TODO: Pull this special case out of the segment.
+    pass
+
+
 class EuclideanSegment(EuclideanFacade):
     r"""
     A line segment in the Euclidean plane.
@@ -5411,8 +5416,8 @@ class EuclideanPolygon(EuclideanFacade):
 
     """
 
-    def __init__(self, parent, edges, category=None):
-        self._edges = edges
+    def __init__(self, parent, edges: Iterable[EuclideanSegment | EuclideanLine], category=None):
+        self._edges = tuple(edges)
 
         from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
 
@@ -5613,6 +5618,7 @@ class EuclideanPolygon(EuclideanFacade):
             ()
 
         """
+        # TODO: Deprecate.
         marked = []
         n = len(self._edges)
         for i in range(n):
@@ -5622,9 +5628,8 @@ class EuclideanPolygon(EuclideanFacade):
                 marked.append(s0.end())
         return tuple(marked)
 
-    def vertices(self, marked_vertices=True, finite=None):
-        # TODO: Expose as points as well.
-        # TODO: This does not implement the method from the category.
+    def vertices(self, marked=None, finite=None):
+        # TODO: Implement in the category only.
         r"""
         Return the vertices of this polygon in counterclockwise order as
         vectors in the real plane.
@@ -5642,25 +5647,8 @@ class EuclideanPolygon(EuclideanFacade):
             ((0, 0), (1, 0), (1, 1), (0, 1))
 
         """
-        if not marked_vertices:
-            return tuple(
-                vertex
-                # TODO: Test this code path.
-                # TODO: Do something about finite.
-                for (vertex, slope) in zip(self.vertices(), self.slopes(relative=True))
-                if slope[1] != 0
-            )
-
-        vertices = [e.start() for e in self.sides()]
-        if finite:
-            vertices = [v for v in vertices if v is not None]
-        else:
-            if any(v is None for v in vertices):
-                raise NotImplementedError(
-                    "some sides of the polygon do not end in a finite point"
-                )
-
-        return tuple(v.vector() for v in vertices)
+        # TODO: Deprecate for corners.
+        return tuple(point.vector() for point in self.corners(marked=marked, finite=finite))
 
     def side(self, e):
         return self._edges[e % len(self._edges)]
@@ -5668,25 +5656,40 @@ class EuclideanPolygon(EuclideanFacade):
     def sides(self):
         return self._edges
 
-    def corners(self):
+    def corners(self, marked=None, finite=None) -> tuple[EuclideanPoint, ...]:
+        # TODO: Make this faster by caching?
+        if marked is not None:
+            # TODO: t, s should be rays and not vectors.
+            corners = tuple(point for (t, point, s) in self.tangents() if is_anti_parallel(t, s) == marked)
+        else:
+            corners = tuple(e.start() for e in self._edges)
+
+        if finite is not None:
+            corners = tuple(point for point in corners if point.is_finite() == finite)
+
+        return corners
+
+    def tangents(self) -> tuple[tuple[EuclideanRay, EuclideanPoint, EuclideanRay], ...]:
         r"""
         EXAMPLES::
 
             sage: from flatsurf import *
             sage: E = EuclideanPlane()
             sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
-            sage: p.corners()
-            [((0, 1), (0, 0), (1, 0)), ((-1, 0), None, (0, -1))]
+            sage: p.tangents()
+            [((0, 1), (0, 0), (1, 0)), ((-1, 0), [0:1:0], (0, -1))]
+
         """
         # TODO: Make this faster by caching?
+        # TODO: Implement in the category?
+        # TODO: Add the vertex as a point in the Euclidean plane instead of a vector.
+        # TODO: Add the tangent as a ray instead of a vector.
         corners = []
 
         n = len(self._edges)
         for i in range(n):
-            vertex = None
-            if isinstance(self._edges[i], EuclideanSegment):
-                # TODO: There must be a public way to implement this without reaching into the implementation details.
-                vertex = self._edges[i]._start
+            # TODO: There must be a public way to implement this without reaching into the implementation details.
+            vertex = self._edges[i].start()
             corners.append(
                 (-self._edges[i - 1].direction(), vertex, self._edges[i].direction())
             )
@@ -5719,10 +5722,10 @@ class EuclideanPolygon(EuclideanFacade):
             if any(edge.dimension() == 0 for edge in self.sides()):
                 raise ValueError("polygon has zero edge")
 
-            for v, corner, w in self.corners():
+            for v, corner, w in self.tangents():
                 from flatsurf.geometry.euclidean import is_parallel
 
-                if corner is None:
+                if not corner.is_finite():
                     continue
 
                 if is_parallel(v, w):

@@ -28,7 +28,7 @@ EXAMPLES::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2023 Julian Rüth
+#                      2020-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -43,15 +43,18 @@ EXAMPLES::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
+from typing import Tuple
+
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.misc.cachefunc import cached_method
 from sage.all import FreeModule
 from sage.misc.abstract_method import abstract_method
-from sage.structure.element import get_coercion_model
+from sage.structure.element import get_coercion_model, Vector
+from sage.structure.parent import Parent
 
 from flatsurf.geometry.categories.polygons import Polygons
-from flatsurf.geometry.euclidean import ccw
+from flatsurf.geometry.euclidean import ccw, EuclideanPoint, EuclideanSegment, EuclideanLine
 
 cm = get_coercion_model()
 
@@ -241,7 +244,39 @@ class EuclideanPolygons(Category_over_base_ring):
             )
 
         @abstract_method
-        def vertices(self, marked_vertices=True, finite=None):
+        def corners(self, marked=None, finite=None) -> Tuple[EuclideanPoint]:
+            raise NotImplementedError
+
+        def corner(self, i: int) -> EuclideanPoint:
+            raise NotImplementedError
+
+        def _test_corners(self, **options):
+            r"""
+            Verify that :meth:`corners` has been implemented correctly.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s._test_corners()
+
+            """
+            tester = self._tester(**options)
+
+            tester.assertEqual(
+                len(self.corners()), len(self.corners(finite=True)) + len(self.corners(finite=False))
+            )
+            tester.assertEqual(
+                len(self.corners()), len(self.corners(marked=True)) + len(self.corners(marked=False))
+            )
+            tester.assertEqual(
+                len(self.corners()), len(self.corners(marked=True, finite=True)) + len(self.corners(marked=False, finite=True)) + len(self.corners(marked=True, finite=False)) + len(self.corners(marked=False, finite=False))
+            )
+
+        @abstract_method
+        def vertices(self, marked=None, finite=None) -> Tuple[Vector]:
+            # TODO: Update documentation.
+            # TODO: Do we need to deprecate the change in arguments or was that only introduced in this release?
             r"""
             Return the vertices of this polygon in counterclockwise order as
             vectors in the real plane.
@@ -265,6 +300,8 @@ class EuclideanPolygons(Category_over_base_ring):
                 ((0, 0), (1, 0), (1, 1), (0, 1))
 
             """
+            # TODO: Implement from corners()
+            raise NotImplementedError
 
         def vertex(self, i):
             r"""
@@ -337,8 +374,16 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             return self.vertex(i + 1) - self.vertex(i)
 
-        def side(self, i):
+        @abstract_method
+        def sides(self) -> Tuple[EuclideanLine | EuclideanSegment]:
+            raise NotImplementedError
+
+        def side(self, i: int):
             return self.sides()[i % len(self.sides())]
+
+        @abstract_method
+        def tangents(self, marked_corners=True, finite=None):
+            raise NotImplementedError
 
         def is_convex(self, strict=False):
             r"""
@@ -361,7 +406,7 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             from flatsurf.geometry.euclidean import ccw
 
-            for v, _, w in self.corners():
+            for v, _, w in self.tangents():
                 consecutive_ccw = ccw(v, w)
                 if strict:
                     if consecutive_ccw >= 0:
@@ -388,7 +433,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if self.is_convex():
                 tester.assertEqual(
                     self.is_convex(strict=True),
-                    self.vertices() == self.vertices(marked_vertices=False),
+                    self.vertices() == self.vertices(marked=False),
                 )
 
         def is_degenerate(self):
@@ -477,6 +522,7 @@ class EuclideanPolygons(Category_over_base_ring):
             return [vector((c, s)) for (c, s) in zip(cos, sin)]
 
         def erase_marked_vertices(self):
+            # TODO: Move implementation to EuclideanPolygon
             r"""
             Return a copy of this polygon without marked vertices.
 
@@ -493,14 +539,26 @@ class EuclideanPolygons(Category_over_base_ring):
                 Polygon(edges=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
 
                 sage: p = E.polygon(edges=[(1, 0), E.ray((1,0), (1,0)), -E.ray((0, 1), (0, 1)), (0, -1)])
-                sage: p.erase_marked_vertices()  # not tested
+                sage: p.erase_marked_vertices()
+                Polygon(edges=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
 
             """
-            if not self.marked_vertices():
+            if not self.corners(marked=True):
                 return self
 
-            # TODO: make a general implementation handling infinite sides
-            return self.parent().polygon(vertices=self.vertices(marked_vertices=False))
+            sides = list(self.sides())
+
+            at = 0
+            while at < len(sides) and len(sides) > 1:
+                from flatsurf.geometry.euclidean import is_anti_parallel
+                if sides[at].start().is_finite() and is_anti_parallel(-sides[at - 1].direction(), sides[at].direction()):
+                    side = self.parent().segment(sides[at].line(), start=sides[at - 1]._start, end =sides[at]._end, oriented=True)
+                    sides.pop(at)
+                    sides[at - 1] = side
+                else:
+                    at += 1
+
+            return self.parent().polygon(edges=sides)
 
         def is_equilateral(self):
             r"""
