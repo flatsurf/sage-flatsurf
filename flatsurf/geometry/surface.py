@@ -3128,7 +3128,7 @@ class Gluings(LabeledSet):
 
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
-from flatsurf.geometry.surface_legacy import (  # noqa, we import at the bottom of the file to break a circular import  # pylint: disable=wrong-import-position
+from flatsurf.geometry.surface_legacy import (  # we import at the bottom of the file to break a circular import  # pylint: disable=wrong-import-position  # noqa
     Surface,
     Surface_list,
     Surface_dict,

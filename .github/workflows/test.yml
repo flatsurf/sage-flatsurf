@@ -12,7 +12,7 @@ jobs:
     runs-on: "${{ matrix.on }}"
     strategy:
       matrix:
-        environment: [ sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, sagemath-103, sagemath-104, dev]
+        environment: [ sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, sagemath-103, sagemath-104, sagemath-105, dev]
         on: [ ubuntu-24.04, macos-13 ] # we do not test macos-14 yet since we don't have osx-arm64 in our pyproject.toml
     steps:
     - uses: actions/checkout@v4
