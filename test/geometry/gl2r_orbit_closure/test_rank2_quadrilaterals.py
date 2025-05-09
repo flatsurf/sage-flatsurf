@@ -53,7 +53,7 @@ from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbit
 def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, discriminant):
     E = EuclideanPolygonsWithAngles(a, b, c, d)
     P = E([l1, l2], normalized=True)
-    B = similarity_surfaces.billiard(P, rational=True)
+    B = similarity_surfaces.billiard(P)
     S = B.minimal_cover(cover_type="translation")
     S = S.erase_marked_points()
     S, _ = S.normalized_coordinates()
