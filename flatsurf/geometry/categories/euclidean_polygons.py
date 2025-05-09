@@ -43,7 +43,7 @@ EXAMPLES::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
-from typing import Tuple
+from typing import Tuple, List
 
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
@@ -51,7 +51,6 @@ from sage.misc.cachefunc import cached_method
 from sage.all import FreeModule
 from sage.misc.abstract_method import abstract_method
 from sage.structure.element import get_coercion_model, Vector
-from sage.structure.parent import Parent
 
 from flatsurf.geometry.categories.polygons import Polygons
 from flatsurf.geometry.euclidean import ccw, EuclideanPoint, EuclideanSegment, EuclideanLine
@@ -72,7 +71,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
     """
 
-    def super_categories(self):
+    def super_categories(self):  # pyright: ignore[reportIncompatibleMethodOverride]
         r"""
         Return the categories Euclidean polygons are also contained in, namely
         the polygons.
@@ -112,7 +111,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
             )
 
-            return self.base_ring().fraction_field() ** 2
+            return self.base_ring().fraction_field() ** 2  # pyright: ignore
 
         def module(self):
             r"""
@@ -135,7 +134,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "module() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 instead"
             )
 
-            return self.base_ring() ** 2
+            return self.base_ring() ** 2  # pyright: ignore
 
         def field(self):
             r"""
@@ -156,7 +155,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead"
             )
 
-            return self.base_ring().fraction_field()
+            return self.base_ring().fraction_field()  # pyright: ignore
 
         @cached_method
         def is_rational(self):
@@ -183,9 +182,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 Category of facade rational convex simple euclidean polygons over Rational Field
 
             """
-            for e in range(len(self.vertices())):
-                u = self.edge(e)
-                v = -self.edge((e - 1) % len(self.vertices()))
+            for e in range(len(self.corners())):
+                u = self.side(e).vector()
+                v = -self.side((e - 1) % len(self.corners())).vector()
 
                 cos = u.dot_product(v)
                 sin = u[0] * v[1] - u[1] * v[0]
@@ -195,7 +194,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 if not is_cosine_sine_of_rational(cos, sin, scaled=True):
                     return False
 
-            self._refine_category_(self.category().Rational())
+            self._refine_category_(self.category().Rational())  # pyright: ignore
 
             return True
 
@@ -237,7 +236,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: s._test_is_simple()
 
             """
-            tester = self._tester(**options)
+            tester = self._tester(**options)  # pyright: ignore
 
             tester.assertEqual(
                 EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple()
@@ -245,10 +244,65 @@ class EuclideanPolygons(Category_over_base_ring):
 
         @abstract_method
         def corners(self, marked=None, finite=None) -> Tuple[EuclideanPoint]:
+            r"""
+            Return the vertices of this polygon as points of the :class:`EuclideanPlane`.
+
+            INPUT:
+
+            - ``marked`` -- a boolean or ``None`` (default: ``None``); if
+              ``True``, return only marked vertices, i.e., vertices whose
+              adjacent sides meet at an angle π, if ``False`` return all but
+              the marked vertices; if ``None``, return both types of vertices.
+
+            - ``finite`` -- a boolean or ``None`` (default: ``None``); if
+              ``True`` return only vertices which are actual points in the
+              Euclidean plane, i.e., with finite coordinates; if ``False``
+              return only vertices that are ideal, i.e., the end points of rays
+              and lines; if ``None``, return both types of vertices.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.corners()
+                ((0, 0), (1, 0), (1, 1), (0, 1))
+                sage: s.corners(marked=True)
+                ()
+                sage: s.corners(finite=False)
+                ()
+                sage: s.corners(marked=False, finite=True)
+                ((0, 0), (1, 0), (1, 1), (0, 1))
+
+            """
             raise NotImplementedError
 
         def corner(self, i: int) -> EuclideanPoint:
-            raise NotImplementedError
+            r"""
+            Return the ``i``-th vertex of this polygon as a point of the
+            Euclidean plane.
+
+            INPUT:
+
+            - ``i`` -- an integer; this is interpreted modulo the number of
+              vertices (including infinite and marked vertices) of this
+              polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.corners()
+                ((0, 0), (1, 0), (1, 1), (0, 1))
+                sage: s.corner(0)
+                (0, 0)
+                sage: s.corner(4)
+                (0, 0)
+                sage: s.corner(-4)
+                (0, 0)
+
+            """
+            corners = self.corners()
+            return corners[i % len(corners)]
 
         def _test_corners(self, **options):
             r"""
@@ -261,7 +315,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: s._test_corners()
 
             """
-            tester = self._tester(**options)
+            tester = self._tester(**options)  # pyright: ignore
 
             tester.assertEqual(
                 len(self.corners()), len(self.corners(finite=True)) + len(self.corners(finite=False))
@@ -273,10 +327,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 len(self.corners()), len(self.corners(marked=True, finite=True)) + len(self.corners(marked=False, finite=True)) + len(self.corners(marked=True, finite=False)) + len(self.corners(marked=False, finite=False))
             )
 
-        @abstract_method
-        def vertices(self, marked=None, finite=None) -> Tuple[Vector]:
-            # TODO: Update documentation.
-            # TODO: Do we need to deprecate the change in arguments or was that only introduced in this release?
+        def vertices(self, marked_vertices=True) -> Tuple[Vector]:
             r"""
             Return the vertices of this polygon in counterclockwise order as
             vectors in the real plane.
@@ -287,21 +338,21 @@ class EuclideanPolygons(Category_over_base_ring):
               include marked vertices that are not actually corners of the
               polygon.
 
-            - ``finite`` -- a boolean or ``None`` (default: ``None``); whether to
-              return both finite and infinite vertices (when ``finite=None``),
-              only finite ones (when ``finite=True``) or only infinite ones
-              (when ``finite=False``).
-
             EXAMPLES::
 
                 sage: from flatsurf import polygons
                 sage: s = polygons.square()
                 sage: s.vertices()
+                doctest:warning
+                ...
+                UserWarning: vertices() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use [c.vector() for c in corners()] instead
                 ((0, 0), (1, 0), (1, 1), (0, 1))
 
             """
-            # TODO: Implement from corners()
-            raise NotImplementedError
+            import warnings
+            warnings.warn("vertices() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use [c.vector() for c in corners()] instead")
+
+            return tuple(c.vector() for c in self.corners(marked=None if marked_vertices else False))
 
         def vertex(self, i):
             r"""
@@ -315,6 +366,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf import polygons
                 sage: s = polygons.square()
                 sage: s.vertex(-1)
+                doctest:warning
+                ...
+                UserWarning: vertex() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use corner().vector() instead
                 (0, 1)
                 sage: s.vertex(0)
                 (0, 0)
@@ -328,10 +382,12 @@ class EuclideanPolygons(Category_over_base_ring):
                 (0, 0)
 
             """
-            vertices = self.vertices()
-            return vertices[i % len(vertices)]
+            import warnings
+            warnings.warn("vertex() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use corner().vector() instead")
 
-        def edges(self):
+            return self.corner(i).vector()
+
+        def edges(self) -> List[Vector]:
             r"""
             Return the edges of this polygon as vectors in the plane going from
             one vertex to the next one.
@@ -341,10 +397,16 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf import polygons
                 sage: s = polygons.square()
                 sage: s.edges()
+                doctest:warning
+                ...
+                UserWarning: edges() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use [s.vector() for s in sides()] instead
                 [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
             """
-            return [self.edge(i) for i in range(len(self.vertices()))]
+            import warnings
+            warnings.warn("edges() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use [s.vector() for s in sides()] instead")
+
+            return [s.vector() for s in self.sides()]
 
         def edge(self, i):
             r"""
@@ -359,6 +421,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf import polygons
                 sage: s = polygons.square()
                 sage: s.edge(-1)
+                doctest:warning
+                ...
+                UserWarning: edge() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use side().vector() instead
                 (0, -1)
                 sage: s.edge(0)
                 (1, 0)
@@ -372,14 +437,18 @@ class EuclideanPolygons(Category_over_base_ring):
                 (1, 0)
 
             """
-            return self.vertex(i + 1) - self.vertex(i)
+            import warnings
+            warnings.warn("edge() has been deprecated and will be removed or repurposed in a future version of sage-flatsurf; use side().vector() instead")
+
+            return self.side(i).vector()
 
         @abstract_method
         def sides(self) -> Tuple[EuclideanLine | EuclideanSegment]:
             raise NotImplementedError
 
         def side(self, i: int):
-            return self.sides()[i % len(self.sides())]
+            sides = self.sides()
+            return sides[i % len(sides)]
 
         @abstract_method
         def tangents(self, marked_corners=True, finite=None):
@@ -433,7 +502,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if self.is_convex():
                 tester.assertEqual(
                     self.is_convex(strict=True),
-                    self.vertices() == self.vertices(marked=False),
+                    self.corners() == self.corners(marked=False),
                 )
 
         def is_degenerate(self):
@@ -532,15 +601,15 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: E = EuclideanPlane(QQ)
                 sage: p = E.polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2), (-2, 0)])
                 sage: p.erase_marked_vertices()
-                Polygon(vertices=[(4, 0), (2, 2), (-2, 0)])
+                Polygon(corners=[(4, 0), (2, 2), (-2, 0)])
 
                 sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
                 sage: p.erase_marked_vertices()
-                Polygon(edges=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
+                Polygon(sides=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
 
                 sage: p = E.polygon(edges=[(1, 0), E.ray((1,0), (1,0)), -E.ray((0, 1), (0, 1)), (0, -1)])
                 sage: p.erase_marked_vertices()
-                Polygon(edges=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
+                Polygon(sides=[Ray from (0, 0) in direction (1, 0), Ray to (0, 0) from direction (0, -1)])
 
             """
             if not self.corners(marked=True):
@@ -579,7 +648,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if not all(side.is_compact() for side in self.sides()):
                 return False
 
-            return len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edges()}) == 1
+            return len({side.vector()[0] ** 2 + side.vector()[1] ** 2 for side in self.sides()}) == 1
 
         # TODO: fix me when for non-compact polygons
         # - either all angles are finite and the code works
@@ -756,7 +825,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 from sage.plot.point import point2d
 
-                g += point2d(self.vertices(finite=True), **vertex_options)
+                g += point2d([c.vector() for c in self.corners(finite=True)], **vertex_options)
 
                 # TODO
                 # from sage.plot.point import point2d
@@ -831,7 +900,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 )
 
             angles = tuple(
-                self.angle(i, numerical=numerical) for i in range(len(self.vertices()))
+                self.angle(i, numerical=numerical) for i in range(len(self.corners()))
             )
 
             if not numerical:
@@ -878,8 +947,8 @@ class EuclideanPolygons(Category_over_base_ring):
             from flatsurf.geometry.euclidean import angle
 
             return angle(
-                self.edge(e),
-                -self.edge((e - 1) % len(self.vertices())),
+                self.side(e).vector(),
+                -self.side((e - 1) % len(self.corners())).vector(),
                 numerical=numerical,
             )
 
@@ -911,8 +980,9 @@ class EuclideanPolygons(Category_over_base_ring):
             # Will use an area formula obtainable from Green's theorem. See for instance:
             # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
             total = self.base_ring().zero()
+
             for i in range(len(self.sides())):
-                total += (self.vertex(i)[0] + self.vertex(i + 1)[0]) * self.edge(i)[1]
+                total += (self.corner(i).vector()[0] + self.corner(i + 1).vector()[0]) * self.side(i).vector()[1]
 
             from sage.all import ZZ
 
@@ -932,12 +1002,12 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: from flatsurf.geometry.polygon import polygons
                 sage: P = polygons.regular_ngon(4)
                 sage: P
-                Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
                 sage: P.centroid()
                 (1/2, 1/2)
 
                 sage: P = polygons.regular_ngon(8); P
-                Polygon(vertices=[(0, 0), (1, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)])
+                Polygon(corners=[(0, 0), (1, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)])
                 sage: P.centroid()
                 (1/2, 1/2*a + 1/2)
 
@@ -948,7 +1018,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 (0, 0)
 
             """
-            x, y = list(zip(*self.vertices()))
+            x, y = list(zip(*[corner.vector() for corner in self.corners()]))
             nvertices = len(x)
             A = self.area()
 
@@ -1041,12 +1111,15 @@ class EuclideanPolygons(Category_over_base_ring):
             from flatsurf.geometry.polygon import PolygonPosition
 
             # Determine whether the point is a vertex of the polygon.
-            for i, v in enumerate(self.vertices()):
+            for i, c in enumerate(self.corners()):
+                v = c.vector()
                 if point == v:
                     return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
 
             # Determine whether the point is on an edge of the polygon.
-            for i, (v, e) in enumerate(zip(self.vertices(), self.edges())):
+            for i, (corner, side) in enumerate(zip(self.corners(), self.sides())):
+                v = corner.vector()
+                e = side.vector()
                 if ccw(e, point - v) == 0:
                     # The point lies on the line through this edge.
                     if 0 < e.dot_product(point - v) < e.dot_product(e):
@@ -1056,7 +1129,9 @@ class EuclideanPolygons(Category_over_base_ring):
             # winding number of the polygon.
             winding_number = 0
 
-            for v, w in zip(self.vertices(), self.vertices()[1:] + self.vertices()[:1]):
+            for c, d in zip(self.corners(), self.corners()[1:] + self.corners()[:1]):
+                v = c.vector()
+                w = d.vector()
                 if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point - v) > 0:
                     winding_number += 1
                 if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point - v) < 0:
@@ -1091,7 +1166,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: P = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
                 sage: Q = Polygon(vertices=[(1, 0), (1, 1), (0, 1)])
                 sage: P.join(Q, 1, 2)
-                Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
                 sage: P.join(P, 1, 1)
                 Traceback (most recent call last):
@@ -1105,7 +1180,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 ValueError: glued edges must be identical with opposite orientation
 
                 sage: P.join(Q, 2, 0)
-                Polygon(vertices=[(0, 0), (1, 0), (0, 1), (-1, 1)])
+                Polygon(corners=[(0, 0), (1, 0), (0, 1), (-1, 1)])
 
             Polygons cannot be joined if that would lead to a self-intersecting
             polygon::
@@ -1118,9 +1193,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 NotImplementedError: polygon self-intersects
 
             """
-            if self.vertex(edge) != other.vertex(other_edge + 1) or self.vertex(
+            if self.corner(edge).vector() != other.corner(other_edge + 1).vector() or self.corner(
                 edge + 1
-            ) != other.vertex(other_edge):
+            ).vector() != other.corner(other_edge).vector():
                 raise ValueError(
                     "glued edges must be identical with opposite orientation"
                 )
@@ -1129,10 +1204,10 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return Polygon(
                 parent=self.parent(),
-                vertices=self.vertices()[:edge]
-                + other.vertices()[other_edge + 1 :]
-                + other.vertices()[:other_edge]
-                + self.vertices()[edge + 1 :],
+                vertices=self.corners()[:edge]
+                + other.corners()[other_edge + 1 :]
+                + other.corners()[:other_edge]
+                + self.corners()[edge + 1 :],
             )
 
     class Rational(CategoryWithAxiom_over_base_ring):
@@ -1420,7 +1495,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     [(0, 4), (1, 3), (4, 1)]
 
                 """
-                vertices = self.vertices()
+                vertices = [c.vector() for c in self.corners()]
 
                 n = len(vertices)
 
@@ -1584,7 +1659,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 triangulation = MutableOrientedSimilaritySurface(self.base_ring())
 
-                vertices = list(self.vertices())
+                vertices = [c.vector() for c in self.corners()]
                 nvertices = len(vertices)
 
                 # The vertices of the polygon that have not been ear-clipped.
@@ -1758,7 +1833,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 if not direction:
                     raise ValueError("direction must not be zero")
 
-                vertices = self.vertices()
+                vertices = [c.vector() for c in self.corners()]
 
                 # Intersect the ray from the point in direction with each
                 # side of the polygon.
@@ -1892,16 +1967,16 @@ class EuclideanPolygons(Category_over_base_ring):
                     else:
                         assert not direction.is_zero()
                     v = start_vertex
-                    n = len(self.vertices())
-                    for i in range(len(self.vertices())):
+                    n = len(self.corners())
+                    for i in range(len(self.corners())):
                         if (
-                            ccw(self.edge(v), direction) >= 0
-                            and ccw(self.edge(v + n - 1), direction) > 0
+                            ccw(self.side(v).vector(), direction) >= 0
+                            and ccw(self.side(v + n - 1).vector(), direction) > 0
                         ):
                             return v, True
                         if (
-                            ccw(self.edge(v), direction) <= 0
-                            and ccw(self.edge(v + n - 1), direction) < 0
+                            ccw(self.side(v).vector(), direction) <= 0
+                            and ccw(self.side(v + n - 1).vector(), direction) < 0
                         ):
                             return v, False
                         v = v + 1 % n
@@ -1970,7 +2045,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     # first compute the transversal length of each edge
                     t = P([direction[1], -direction[0]])
-                    lengths = [t.dot_product(e) for e in self.edges()]
+                    lengths = [t.dot_product(e.vector()) for e in self.sides()]
                     n = len(lengths)
                     for i in range(n):
                         j = (i + 1) % len(lengths)
@@ -2058,11 +2133,11 @@ class EuclideanPolygons(Category_over_base_ring):
                             self.get_point_position(point, translation=translation),
                         )
                     if translation is None:
-                        v0 = self.vertex(0)
+                        v0 = self.corner(0).vector()
                     else:
-                        v0 = self.vertex(0) + translation
-                    for i in range(len(self.vertices())):
-                        e = self.edge(i)
+                        v0 = self.corner(0).vector() + translation
+                    for i in range(len(self.corners())):
+                        e = self.side(i).vector()
                         from sage.all import matrix
 
                         m = matrix([[e[0], -holonomy[0]], [e[1], -holonomy[1]]])
@@ -2090,7 +2165,7 @@ class EuclideanPolygons(Category_over_base_ring):
                                         point + holonomy - v0,
                                         PolygonPosition(
                                             PolygonPosition.VERTEX,
-                                            vertex=(i + 1) % len(self.vertices()),
+                                            vertex=(i + 1) % len(self.corners()),
                                         ),
                                     )
                                 if s == 0:
@@ -2148,10 +2223,10 @@ class EuclideanPolygons(Category_over_base_ring):
                     from flatsurf.geometry.circle import circle_from_three_points
 
                     circle = circle_from_three_points(
-                        self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring()
+                        self.corner(0).vector(), self.corner(1).vector(), self.corner(2).vector(), self.base_ring()
                     )
-                    for i in range(3, len(self.vertices())):
-                        if not circle.point_position(self.vertex(i)) == 0:
+                    for i in range(3, len(self.corners())):
+                        if not circle.point_position(self.corner(i).vector()) == 0:
                             raise ValueError(
                                 "Vertex " + str(i) + " is not on the circle."
                             )
@@ -2170,37 +2245,37 @@ class EuclideanPolygons(Category_over_base_ring):
 
                         sage: from flatsurf import polygons
                         sage: P = polygons.regular_ngon(3); P
-                        Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
+                        Polygon(corners=[(0, 0), (1, 0), (1/2, 1/2*a)])
                         sage: print(P.subdivide())
-                        [Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/6*a)]),
-                         Polygon(vertices=[(1, 0), (1/2, 1/2*a), (1/2, 1/6*a)]),
-                         Polygon(vertices=[(1/2, 1/2*a), (0, 0), (1/2, 1/6*a)])]
+                        [Polygon(corners=[(0, 0), (1, 0), (1/2, 1/6*a)]),
+                         Polygon(corners=[(1, 0), (1/2, 1/2*a), (1/2, 1/6*a)]),
+                         Polygon(corners=[(1/2, 1/2*a), (0, 0), (1/2, 1/6*a)])]
 
                     ::
 
                         sage: P = polygons.regular_ngon(4)
                         sage: print(P.subdivide())
-                        [Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2)]),
-                         Polygon(vertices=[(1, 0), (1, 1), (1/2, 1/2)]),
-                         Polygon(vertices=[(1, 1), (0, 1), (1/2, 1/2)]),
-                         Polygon(vertices=[(0, 1), (0, 0), (1/2, 1/2)])]
+                        [Polygon(corners=[(0, 0), (1, 0), (1/2, 1/2)]),
+                         Polygon(corners=[(1, 0), (1, 1), (1/2, 1/2)]),
+                         Polygon(corners=[(1, 1), (0, 1), (1/2, 1/2)]),
+                         Polygon(corners=[(0, 1), (0, 0), (1/2, 1/2)])]
 
                     Sometimes alternating with :meth:`subdivide_edges` can produce a more
                     uniform subdivision::
 
                         sage: P = polygons.regular_ngon(4)
                         sage: print(P.subdivide_edges(2).subdivide())
-                        [Polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2)]),
-                         Polygon(vertices=[(1/2, 0), (1, 0), (1/2, 1/2)]),
-                         Polygon(vertices=[(1, 0), (1, 1/2), (1/2, 1/2)]),
-                         Polygon(vertices=[(1, 1/2), (1, 1), (1/2, 1/2)]),
-                         Polygon(vertices=[(1, 1), (1/2, 1), (1/2, 1/2)]),
-                         Polygon(vertices=[(1/2, 1), (0, 1), (1/2, 1/2)]),
-                         Polygon(vertices=[(0, 1), (0, 1/2), (1/2, 1/2)]),
-                         Polygon(vertices=[(0, 1/2), (0, 0), (1/2, 1/2)])]
+                        [Polygon(corners=[(0, 0), (1/2, 0), (1/2, 1/2)]),
+                         Polygon(corners=[(1/2, 0), (1, 0), (1/2, 1/2)]),
+                         Polygon(corners=[(1, 0), (1, 1/2), (1/2, 1/2)]),
+                         Polygon(corners=[(1, 1/2), (1, 1), (1/2, 1/2)]),
+                         Polygon(corners=[(1, 1), (1/2, 1), (1/2, 1/2)]),
+                         Polygon(corners=[(1/2, 1), (0, 1), (1/2, 1/2)]),
+                         Polygon(corners=[(0, 1), (0, 1/2), (1/2, 1/2)]),
+                         Polygon(corners=[(0, 1/2), (0, 0), (1/2, 1/2)])]
 
                     """
-                    vertices = self.vertices()
+                    vertices = [c.vector() for c in self.corners()]
                     center = self.centroid()
                     from flatsurf import Polygon
 
@@ -2228,19 +2303,19 @@ class EuclideanPolygons(Category_over_base_ring):
 
                         sage: from flatsurf import polygons
                         sage: P = polygons.regular_ngon(3); P
-                        Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
+                        Polygon(corners=[(0, 0), (1, 0), (1/2, 1/2*a)])
                         sage: P.subdivide_edges(1) == P
                         True
                         sage: P.subdivide_edges(2)
-                        Polygon(vertices=[(0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)])
+                        Polygon(corners=[(0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)])
                         sage: P.subdivide_edges(3)
-                        Polygon(vertices=[(0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)])
+                        Polygon(corners=[(0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)])
 
                     """
                     if parts < 1:
                         raise ValueError("parts must be a positive integer")
 
-                    steps = [e / parts for e in self.edges()]
+                    steps = [e.vector() / parts for e in self.sides()]
                     from flatsurf import Polygon
 
                     return Polygon(edges=[e for e in steps for p in range(parts)])
@@ -2314,7 +2389,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     M = K ** (dim * (dim - 1) // 2)
                     Jxx = Jyy = M.zero()
                     Jxy = matrix(K, dim)
-                    vertices = list(self.vertices())
+                    vertices = [c.vector() for c in self.corners()]
                     vertices.append(vertices[0])
 
                     for i in range(len(vertices) - 1):
@@ -2440,7 +2515,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: isometric, cert = S.is_isometric(T, certificate=True)
                         sage: assert isometric
                         sage: shift, rot = cert
-                        sage: Polygon(edges=[rot * S.edge((k + shift) % 4) for k in range(4)]).translate(T.vertex(0)) == T
+                        sage: Polygon(edges=[rot * S.side((k + shift) % 4).vector() for k in range(4)]).translate(T.corner(0).vector()) == T
                         True
 
 
@@ -2448,7 +2523,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: isometric, cert = S.is_isometric(T, certificate=True)
                         sage: assert isometric
                         sage: shift, rot = cert
-                        sage: Polygon(edges=[rot * S.edge(k + shift) for k in range(4)]).translate(T.vertex(0)) == T
+                        sage: Polygon(edges=[rot * S.side(k + shift).vector() for k in range(4)]).translate(T.corner(0).vector()) == T
                         True
                     """
                     from flatsurf.geometry.euclidean import EuclideanPolygon
@@ -2459,11 +2534,11 @@ class EuclideanPolygons(Category_over_base_ring):
                     if not other.is_convex():
                         raise TypeError("other must be convex")
 
-                    n = len(self.vertices())
-                    if len(other.vertices()) != n:
+                    n = len(self.corners())
+                    if len(other.corners()) != n:
                         return False
-                    sedges = self.edges()
-                    oedges = other.edges()
+                    sedges = [s.vector() for s in self.sides()]
+                    oedges = [s.vector() for s in other.sides()]
 
                     slengths = [x**2 + y**2 for x, y in sedges]
                     olengths = [x**2 + y**2 for x, y in oedges]
@@ -2517,11 +2592,11 @@ class EuclideanPolygons(Category_over_base_ring):
                     if type(self) is not type(other):
                         raise TypeError
 
-                    n = len(self.vertices())
-                    if len(other.vertices()) != n:
+                    n = len(self.corners())
+                    if len(other.corners()) != n:
                         return False
-                    sedges = self.edges()
-                    oedges = other.edges()
+                    sedges = [s.vector() for s in self.sides()]
+                    oedges = [s.vector() for s in other.sides()]
                     for i in range(n):
                         if sedges == oedges:
                             return (True, (i, 1)) if certificate else True
@@ -2553,7 +2628,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: half_translate, cert = S.is_half_translate(T2, certificate=True)
                         sage: assert half_translate
                         sage: shift, rot = cert
-                        sage: Polygon(edges=[rot * S.edge(k + shift) for k in range(3)]).translate(T2.vertex(0)) == T2
+                        sage: Polygon(edges=[rot * S.side(k + shift).vector() for k in range(3)]).translate(T2.corner(0).vector()) == T2
                         True
                         sage: S.is_half_translate(T3, certificate=True)
                         (False, None)
@@ -2561,18 +2636,18 @@ class EuclideanPolygons(Category_over_base_ring):
                     if type(self) is not type(other):
                         raise TypeError
 
-                    n = len(self.vertices())
-                    if len(other.vertices()) != n:
+                    n = len(self.corners())
+                    if len(other.corners()) != n:
                         return False
 
-                    sedges = self.edges()
-                    oedges = other.edges()
+                    sedges = [s.vector() for s in self.sides()]
+                    oedges = [s.vector() for s in other.sides()]
                     for i in range(n):
                         if sedges == oedges:
                             return (True, (i, 1)) if certificate else True
                         oedges.append(oedges.pop(0))
 
-                    assert oedges == other.edges()
+                    assert oedges == [s.vector() for s in other.sides()]
                     oedges = [-e for e in oedges]
                     for i in range(n):
                         if sedges == oedges:

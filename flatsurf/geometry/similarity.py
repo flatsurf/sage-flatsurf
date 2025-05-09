@@ -275,7 +275,7 @@ class Similarity(MultiplicativeGroupElement):
             sage: g
             (x, y) |-> (25*x + 4, 25*y + 10)
             sage: g(p)
-            Polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
+            Polygon(corners=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).category()
             Category of facade convex simple euclidean polygons over Algebraic Real Field
 
@@ -297,7 +297,7 @@ class Similarity(MultiplicativeGroupElement):
             if ring is not None:
                 parent = parent.change_ring(ring)
 
-            return parent.polygon(vertices=[self(v) for v in w.vertices()])
+            return parent.polygon(vertices=[self(v.vector()) for v in w.corners()])
 
         if ring is None:
             if self._sign.is_one():

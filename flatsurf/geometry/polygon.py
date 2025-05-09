@@ -11,12 +11,12 @@ EXAMPLES::
     sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
     sage: p = Polygon(edges=[(1,0), (-sqrt2,1+sqrt2), (sqrt2-1,-1-sqrt2)])
     sage: p
-    Polygon(vertices=[(0, 0), (1, 0), (-sqrt2 + 1, sqrt2 + 1)])
+    Polygon(corners=[(0, 0), (1, 0), (-sqrt2 + 1, sqrt2 + 1)])
 
     sage: M = MatrixSpace(K,2)
     sage: m = M([[1,1+sqrt2],[0,1]])
     sage: m * p
-    Polygon(vertices=[(0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)])
+    Polygon(corners=[(0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)])
 """
 
 # ****************************************************************************
@@ -147,7 +147,7 @@ class PolygonsConstructor:
             sage: from flatsurf.geometry.polygon import polygons
 
             sage: polygons.square()
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         return self.rectangle(side, side, parent=parent)
@@ -159,11 +159,11 @@ class PolygonsConstructor:
             sage: from flatsurf.geometry.polygon import polygons
 
             sage: polygons.rectangle(1,2)
-            Polygon(vertices=[(0, 0), (1, 0), (1, 2), (0, 2)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 2), (0, 2)])
 
             sage: K.<sqrt2> = QuadraticField(2)
             sage: polygons.rectangle(1,sqrt2)
-            Polygon(vertices=[(0, 0), (1, 0), (1, sqrt2), (0, sqrt2)])
+            Polygon(corners=[(0, 0), (1, 0), (1, sqrt2), (0, sqrt2)])
             sage: _.category()
             Category of facade convex simple euclidean rectangles over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
 
@@ -194,7 +194,7 @@ class PolygonsConstructor:
             sage: from flatsurf.geometry.polygon import polygons
             sage: T = polygons.triangle(3,4,5)
             sage: T
-            Polygon(vertices=[(0, 0), (1, 0), (-1/2*c0 + 3/2, -1/2*c0 + 3/2)])
+            Polygon(corners=[(0, 0), (1, 0), (-1/2*c0 + 3/2, -1/2*c0 + 3/2)])
             sage: T.base_ring()
             Number Field in c0 with defining polynomial x^2 - 3 with c0 = 1.732050807568878?
 
@@ -204,14 +204,14 @@ class PolygonsConstructor:
         Some fairly complicated examples::
 
             sage: polygons.triangle(1, 15, 21)  # long time (2s)
-            Polygon(vertices=[(0, 0),
+            Polygon(corners=[(0, 0),
                               (1, 0),
                               (1/2*c^34 - 17*c^32 + 264*c^30 - 2480*c^28 + 15732*c^26 - 142481/2*c^24 + 237372*c^22 - 1182269/2*c^20 +
                                1106380*c^18 - 1552100*c^16 + 3229985/2*c^14 - 2445665/2*c^12 + 654017*c^10 - 472615/2*c^8 + 107809/2*c^6 - 13923/2*c^4 + 416*c^2 - 6,
                                -1/2*c^27 + 27/2*c^25 - 323/2*c^23 + 1127*c^21 - 10165/2*c^19 + 31009/2*c^17 - 65093/2*c^15 + 46911*c^13 - 91091/2*c^11 + 57355/2*c^9 - 10994*c^7 + 4621/2*c^5 - 439/2*c^3 + 6*c)])
 
             sage: polygons.triangle(2, 13, 26)  # long time (3s)
-            Polygon(vertices=[(0, 0),
+            Polygon(corners=[(0, 0),
                               (1, 0),
                               (1/2*c^30 - 15*c^28 + 405/2*c^26 - 1625*c^24 + 8625*c^22 - 31878*c^20 + 168245/2*c^18 - 159885*c^16 + 218025*c^14 - 209950*c^12 + 138567*c^10 - 59670*c^8 + 15470*c^6 - 2100*c^4 + 225/2*c^2 - 1/2,
                                -1/2*c^39 + 19*c^37 - 333*c^35 + 3571*c^33 - 26212*c^31 + 139593*c^29 - 557844*c^27 + 1706678*c^25 - 8085237/2*c^23 + 7449332*c^21 -
@@ -234,10 +234,10 @@ class PolygonsConstructor:
 
             sage: p = polygons.regular_ngon(17)
             sage: p
-            Polygon(vertices=[(0, 0), (1, 0), ..., (-1/2*a^14 + 15/2*a^12 - 45*a^10 + 275/2*a^8 - 225*a^6 + 189*a^4 - 70*a^2 + 15/2, 1/2*a)])
+            Polygon(corners=[(0, 0), (1, 0), ..., (-1/2*a^14 + 15/2*a^12 - 45*a^10 + 275/2*a^8 - 225*a^6 + 189*a^4 - 70*a^2 + 15/2, 1/2*a)])
 
             sage: polygons.regular_ngon(3,field=AA)
-            Polygon(vertices=[(0, 0), (1, 0), (1/2, 0.866025403784439?)])
+            Polygon(corners=[(0, 0), (1, 0), (1/2, 0.866025403784439?)])
         """
         # TODO: deprecate field
 
@@ -278,12 +278,12 @@ class PolygonsConstructor:
 
             sage: P = polygons.right_triangle(1/3, 1)
             sage: P
-            Polygon(vertices=[(0, 0), (1, 0), (1, a)])
+            Polygon(corners=[(0, 0), (1, 0), (1, a)])
             sage: P.base_ring()
             Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
 
             sage: polygons.right_triangle(1/4,1)
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1)])
             sage: polygons.right_triangle(1/4,1).base_ring()
             Rational Field
         """
@@ -329,35 +329,35 @@ class PolygonsConstructor:
             doctest:warning
             ...
             UserWarning: calling Polygon() with positional arguments has been deprecated and will not be supported in a future version of sage-flatsurf; use edges= or vertices= explicitly instead
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: polygons((1,0),(0,1),(-1,0),(0,-1), ring=AA)
             doctest:warning
             ...
             UserWarning: ring has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: _.category()
             Category of facade convex simple euclidean polygons over Algebraic Real Field
 
             sage: polygons(vertices=[(0,0), (1,0), (0,1)])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
             sage: polygons(edges=[(2,0),(-1,1),(-1,-1)], base_point=(3,3))
             doctest:warning
             ...
             UserWarning: base_point has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead
-            Polygon(vertices=[(3, 3), (5, 3), (4, 4)])
+            Polygon(corners=[(3, 3), (5, 3), (4, 4)])
             sage: polygons(vertices=[(0,0),(2,0),(1,1)], base_point=(3,3))
-            Polygon(vertices=[(3, 3), (5, 3), (4, 4)])
+            Polygon(corners=[(3, 3), (5, 3), (4, 4)])
 
             sage: polygons(angles=[1,1,1,2], length=1)
             doctest:warning
             ...
             UserWarning: length has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use lengths instead
-            Polygon(vertices=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
+            Polygon(corners=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
             sage: polygons(angles=[1,1,1,2], length=2)
-            Polygon(vertices=[(0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)])
+            Polygon(corners=[(0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)])
             sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))  # tol 1e-9
-            Polygon(vertices=[(0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.270090756737727?, 0.831253875554907?)])
+            Polygon(corners=[(0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.270090756737727?, 0.831253875554907?)])
 
             sage: polygons(angles=[1]*5).angles()
             (3/10, 3/10, 3/10, 3/10, 3/10)
@@ -367,16 +367,16 @@ class PolygonsConstructor:
             sage: P = polygons(angles=[1,1,3,3], lengths=[3,1])
             sage: P.angles()
             (1/8, 1/8, 3/8, 3/8)
-            sage: e0 = P.edge(0); assert e0[0]**2 + e0[1]**2 == 3**2
-            sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
+            sage: e0 = P.side(0).vector(); assert e0[0]**2 + e0[1]**2 == 3**2
+            sage: e1 = P.side(1).vector(); assert e1[0]**2 + e1[1]**2 == 1
 
             sage: polygons(angles=[1, 1, 1, 2])
-            Polygon(vertices=[(0, 0), (1/10*c^3 + c^2 - 1/5*c - 3, 0), (1/20*c^3 + 1/2*c^2 - 1/20*c - 3/2, 1/20*c^2 + 1/2*c), (1/2*c^2 - 3/2, 1/2*c)])
+            Polygon(corners=[(0, 0), (1/10*c^3 + c^2 - 1/5*c - 3, 0), (1/20*c^3 + 1/2*c^2 - 1/20*c - 3/2, 1/20*c^2 + 1/2*c), (1/2*c^2 - 3/2, 1/2*c)])
 
             sage: polygons(angles=[1,1,1,8])
-            Polygon(vertices=[(0, 0), (c^6 - 6*c^4 + 8*c^2 + 3, 0), (1/2*c^4 - 3*c^2 + 9/2, 1/2*c^9 - 9/2*c^7 + 13*c^5 - 11*c^3 - 3*c), (1/2*c^6 - 7/2*c^4 + 7*c^2 - 3, 1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 21/2*c)])
+            Polygon(corners=[(0, 0), (c^6 - 6*c^4 + 8*c^2 + 3, 0), (1/2*c^4 - 3*c^2 + 9/2, 1/2*c^9 - 9/2*c^7 + 13*c^5 - 11*c^3 - 3*c), (1/2*c^6 - 7/2*c^4 + 7*c^2 - 3, 1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 21/2*c)])
             sage: polygons(angles=[1,1,1,8], lengths=[1, 1])
-            Polygon(vertices=[(0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)])
+            Polygon(corners=[(0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)])
 
         TESTS::
 
@@ -449,24 +449,24 @@ def Polygon(
 
         sage: from flatsurf import Polygon
         sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
-        Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
     A right triangle that is not based at the origin::
 
         sage: Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
-        Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
+        Polygon(corners=[(1, 0), (2, 0), (1, 1)])
 
     A right triangle at the origin, specified by giving the edge vectors::
 
         sage: Polygon(edges=[(1, 0), (-1, 1), (0, -1)])
-        Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
     When redundant information is given, it is checked for consistency::
 
         sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
-        Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (0, 1)])
         sage: Polygon(vertices=[(1, 0), (2, 0), (1, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
-        Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
+        Polygon(corners=[(1, 0), (2, 0), (1, 1)])
         sage: Polygon(vertices=[(0, 0), (2, 0), (1, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
         Traceback (most recent call last):
         ...
@@ -484,13 +484,13 @@ def Polygon(
     A polygon with prescribed angles::
 
         sage: Polygon(angles=[2, 1, 1])
-        Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
     Again, if vertices and edges are also specified, they must be compatible
     with the angles::
 
         sage: Polygon(angles=[2, 1, 1], vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
-        Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
         sage: Polygon(angles=[1, 2, 3], vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
         Traceback (most recent call last):
@@ -500,15 +500,15 @@ def Polygon(
     When angles are specified, side lengths can also be prescribed::
 
         sage: Polygon(angles=[1, 1, 1], lengths=[1, 1, 1])
-        Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*c)])
+        Polygon(corners=[(0, 0), (1, 0), (1/2, 1/2*c)])
 
     The function will deduce lengths if one or two are missing::
 
         sage: Polygon(angles=[1, 1, 1, 1], lengths=[1, 1, 1])
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         sage: Polygon(angles=[1, 1, 1, 1], lengths=[1, 1])
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         sage: Polygon(angles=[1, 1, 1, 1], lengths=[1])
         Traceback (most recent call last):
@@ -518,10 +518,10 @@ def Polygon(
     Equally, we deduce vertices or edges::
 
         sage: Polygon(angles=[1, 1, 1, 1], vertices=[(0, 0), (1, 0), (1, 1)])
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         sage: Polygon(angles=[1, 1, 1, 1], edges=[(1, 0), (0, 1)])
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
     When the angles are incompatible with the data, an error is reported (that
     might be somewhat cryptic at times)::
@@ -534,7 +534,7 @@ def Polygon(
     When lengths are given in addition to vertices or edges, they are checked for consistency::
 
         sage: Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], lengths=[1, 1, 1, 1])
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)], lengths=[1, 1, 1])
         Traceback (most recent call last):
@@ -592,12 +592,12 @@ def Polygon(
         sage: from flatsurf import EuclideanPlane
         sage: E = EuclideanPlane(QQ)
         sage: Polygon(edges=[E.line((0, 0), (1, 0)), E.line((0, 1), (-1, 1))])
-        Polygon(edges=[{y = 0}, {1 + -y = 0}])
+        Polygon(sides=[{y = 0}, {1 + -y = 0}])
 
     A cone in the real plane::
 
         sage: Polygon(edges=[E.ray((0, 0), (0, 1)), -E.ray((0,0), (1, 0))])
-        Polygon(edges=[Ray from (0, 0) in direction (0, 1), Ray to (0, 0) from direction (-1, 0)])
+        Polygon(sides=[Ray from (0, 0) in direction (0, 1), Ray to (0, 0) from direction (-1, 0)])
 
     """
     # TODO: Deprecate base_ring
@@ -983,13 +983,13 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
     if area == 0:
         raise ValueError("polygon has zero area")
 
-    if any(edge == 0 for edge in p.edges()):
+    if any(edge.vector() == 0 for edge in p.sides()):
         raise ValueError("polygon has zero edge")
 
-    for i in range(len(p.vertices())):
+    for i in range(len(p.corners())):
         from flatsurf.geometry.euclidean import is_anti_parallel
 
-        if is_anti_parallel(p.edge(i), p.edge(i + 1)):
+        if is_anti_parallel(p.side(i).vector(), p.side(i + 1).vector()):
             raise ValueError("polygon has anti-parallel edges")
 
     from flatsurf.geometry.categories import EuclideanPolygons
@@ -1020,13 +1020,13 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
         # Use EuclideanPolygon's angle() so we do not use the precomputed angles set by the category.
         if EuclideanPolygonsWithAnglesCategory._normalize_angles(angles) != tuple(
             EuclideanPolygons.ParentMethods.angle(p, i)
-            for i in range(len(p.vertices()))
+            for i in range(len(p.corners()))
         ):
             raise ValueError("polygon does not have the prescribed angles")
 
     if lengths:
-        for edge, length in zip(p.edges(), lengths):
-            if edge.norm() != length:
+        for edge, length in zip(p.sides(), lengths):
+            if edge.vector().norm() != length:
                 raise ValueError("polygon does not have the prescribed lengths")
 
     if convex and not p.is_convex():
@@ -1074,19 +1074,19 @@ def EuclideanPolygonsWithAngles(*angles):
         ...
         UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
         To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
-        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
 
     Instead, one should use :func:`Polygon`::
 
         sage: from flatsurf import Polygon
         sage: Polygon(angles=[1, 2, 5], lengths=[1])
-        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
 
     It is actually faster not to specify lengths since normalization can be
     costly (only relevant for polygons living in big number fields)::
 
         sage: Polygon(angles=[1, 2, 5])
-        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
 
     Polygons can also be defined over other number field implementations::
 
@@ -1094,7 +1094,7 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: pyeantic
         sage: p = P(K(1)) # optional: pyeantic  # random output due to deprecation warnings
         sage: p  # optional: pyeantic
-        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: p.base_ring() # optional: pyeantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
@@ -1104,7 +1104,7 @@ def EuclideanPolygonsWithAngles(*angles):
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
         sage: P(AA(1))
-        Polygon(vertices=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
+        Polygon(corners=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
         sage: _.base_ring()
         Algebraic Real Field
 
@@ -1113,9 +1113,9 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: from pyexactreal import ExactReals # optional: pyexactreal  # random output due to deprecation warnings with some versions of pkg_resources
         sage: R = ExactReals(P.base_ring()) # optional: pyexactreal
         sage: P(R(1)) # optional: pyexactreal
-        Polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
+        Polygon(corners=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
         sage: P(R(R.random_element([0.2, 0.3]))) # random output including some deprecation warnings, optional: pyexactreal
-        Polygon(vertices=[(0, 0),])
+        Polygon(corners=[(0, 0),])
                  (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
                  (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
                  ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
@@ -1132,7 +1132,7 @@ def EuclideanPolygonsWithAngles(*angles):
         (1, -1/2*c0 + 1, -1/2*c0 + 1)
         sage: p = P(*lengths)    # build one polygon with the given lengths
         sage: p
-        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: p.angles()
         (1/16, 1/8, 5/16)
         sage: P.angles(integral=False)
@@ -1155,7 +1155,7 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
         sage: p = P(*lengths)
         sage: p
-        Polygon(vertices=[(0, 0),
+        Polygon(corners=[(0, 0),
                           (-5/3*c^4 + 6*c^2 + 6, 0),
                           (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
                           (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
@@ -1175,7 +1175,7 @@ def EuclideanPolygonsWithAngles(*angles):
         doctest:warning
         ...
         UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
-        Polygon(vertices=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
+        Polygon(corners=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
 
     """
     if len(angles) == 1 and isinstance(angles[0], (tuple, list)):

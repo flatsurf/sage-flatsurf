@@ -372,9 +372,9 @@ class LInfinityMarkedTriangulation:
             sage: T = LInfinityMarkedTriangulation(2, gluings, types)
             sage: S = T.barycenter()
             sage: S.polygon(0)
-            Polygon(vertices=[(0, 0), (3/7, 13/21), (-3/7, 11/21)])
+            Polygon(corners=[(0, 0), (3/7, 13/21), (-3/7, 11/21)])
             sage: S.polygon(1)
-            Polygon(vertices=[(0, 0), (6/7, 2/21), (3/7, 13/21)])
+            Polygon(corners=[(0, 0), (6/7, 2/21), (3/7, 13/21)])
         """
         verts = [v.vector() for v in self.polytope().vertices()]
         b = sum(verts) / len(verts)

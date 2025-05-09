@@ -527,7 +527,7 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
 
                 sage: from flatsurf import EuclideanPolygonsWithAngles
                 sage: EuclideanPolygonsWithAngles(4, 3, 4, 4, 3, 4).an_element()
-                Polygon(vertices=[(0, 0),
+                Polygon(corners=[(0, 0),
                                   (1/22*c + 1, 0),
                                   (9*c^9 + 1/2*c^8 - 88*c^7 - 9/2*c^6 + 297*c^5 + 27/2*c^4 - 396*c^3 - 15*c^2 + 3631/22*c + 11/2, 1/2*c + 11),
                                   (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 4841/22*c + 9, c + 22),
@@ -553,11 +553,11 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
 
                 sage: from flatsurf import EuclideanPolygonsWithAngles
                 sage: EuclideanPolygonsWithAngles(1, 1, 1, 2, 5).random_element()
-                Polygon(vertices=[(0, 0), ...])
+                Polygon(corners=[(0, 0), ...])
                 sage: EuclideanPolygonsWithAngles(1,1,1,15,15,15).random_element()
-                Polygon(vertices=[(0, 0), ...])
+                Polygon(corners=[(0, 0), ...])
                 sage: EuclideanPolygonsWithAngles(1,15,1,15,1,15).random_element()
-                Polygon(vertices=[(0, 0), ...])
+                Polygon(corners=[(0, 0), ...])
 
             """
             if ring is None:
@@ -971,19 +971,19 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
                 UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
                 To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors,
                 use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
-                Polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
+                Polygon(corners=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
 
                 sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
                 sage: P = EuclideanPolygonsWithAngles([1, 2, 1, 2])
                 sage: Polygon(angles=[1, 2, 1, 2], lengths=lengths[:-2])
-                Polygon(vertices=[(0, 0), (1, 0), (3/2, 1/2*c), (1/2, 1/2*c)])
+                Polygon(corners=[(0, 0), (1, 0), (3/2, 1/2*c), (1/2, 1/2*c)])
                 sage: Polygon(angles=[1, 2, 1, 2], edges=[length * slope for (length, slope) in zip(lengths[:-2], P.slopes())])
-                Polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
+                Polygon(corners=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
 
                 sage: P = EuclideanPolygonsWithAngles(2, 2, 3, 13)
                 sage: r0, r1 = [r.vector() for r in P.lengths_polytope().rays()]
                 sage: P(r0 + r1)
-                Polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
+                Polygon(corners=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
 
                 sage: P = EuclideanPolygonsWithAngles([2, 2, 3, 13])
                 sage: Polygon(angles=[2, 2, 3, 13], lengths=r0 + r1)
@@ -991,7 +991,7 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
                 ...
                 ValueError: polygon has negative area; probably the vertices are not in counter-clockwise order
                 sage: Polygon(angles=[2, 2, 3, 13], edges=[length * slope for (length, slope) in zip(r0 + r1, P.slopes())])
-                Polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
+                Polygon(corners=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
 
             """
             # __call__() cannot be properly inherited in subcategories since it

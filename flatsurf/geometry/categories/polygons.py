@@ -229,7 +229,7 @@ class Polygons(Category_over_base_ring):
                 sage: S = polygons.square()
                 sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
                 sage: S.change_ring(K)
-                Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
             """
 

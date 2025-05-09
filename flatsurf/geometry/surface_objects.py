@@ -73,7 +73,7 @@ def Singularity(similarity_surface, label, v, limit=None):
         "Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead."
     )
     return similarity_surface.point(
-        label, similarity_surface.polygon(label).vertex(v), limit=limit
+        label, similarity_surface.polygon(label).corner(v).vector(), limit=limit
     )
 
 
@@ -177,7 +177,7 @@ class SurfacePoint(Element):
         from sage.all import ZZ
 
         if point in ZZ:
-            point = surface.polygon(label).vertex(point)
+            point = surface.polygon(label).corner(point).vector()
 
         if isinstance(point, EuclideanPoint):
             point = point.vector()
@@ -215,7 +215,7 @@ class SurfacePoint(Element):
                 def rotate(label, source_edge, direction):
                     if direction == -1:
                         source_edge = (source_edge - 1) % len(
-                            surface.polygon(label).vertices()
+                            surface.polygon(label).corners()
                         )
                     opposite_edge = surface.opposite_edge(label, source_edge)
                     if opposite_edge is None:
@@ -223,7 +223,7 @@ class SurfacePoint(Element):
                     label, source_edge = opposite_edge
                     if direction == 1:
                         source_edge = (source_edge + 1) % len(
-                            surface.polygon(label).vertices()
+                            surface.polygon(label).corners()
                         )
                     return label, source_edge
 
@@ -253,7 +253,7 @@ class SurfacePoint(Element):
             collect_representatives(label, source_edge, -1, limit)
 
             self._representatives = {
-                (label, surface.polygon(label).vertex(vertex))
+                (label, surface.polygon(label).corner(vertex).vector())
                 for (label, vertex) in self._representatives
             }
         else:
@@ -873,12 +873,12 @@ class SaddleConnection(SageObject):
 
             if traj.segments()[0].is_edge():
                 # Special case (the method below fails if the trajectory is just an edge).
-                self._holonomy = self._surface.polygon(start_data[0]).edge(
+                self._holonomy = self._surface.polygon(start_data[0]).side(
                     start_data[1]
-                )
-                self._end_holonomy = self._surface.polygon(self._end_data[0]).edge(
+                ).vector()
+                self._end_holonomy = self._surface.polygon(self._end_data[0]).side(
                     self._end_data[1]
-                )
+                ).vector()
             else:
                 from .similarity import SimilarityGroup
 
@@ -1000,9 +1000,9 @@ class SaddleConnection(SageObject):
         """
         return self._surface.tangent_vector(
             self._surfacetart_data[0],
-            self._surface.polygon(self._surfacetart_data[0]).vertex(
+            self._surface.polygon(self._surfacetart_data[0]).corner(
                 self._surfacetart_data[1]
-            ),
+            ).vector(),
             self._direction,
         )
 
@@ -1169,7 +1169,7 @@ class SaddleConnection(SageObject):
             sage: from flatsurf import *
             sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: H = S.homology()
-            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x._chain).items())
+            sage: holonomy = lambda x: sum(coeff * S.polygon(label).side(e).vector() for (label, e), coeff in dict(x._chain).items())
             sage: for sc in S.saddle_connections(5):
             ....:     h = H(sc)
             ....:     hol1 = holonomy(h)
@@ -1202,7 +1202,7 @@ class SaddleConnection(SageObject):
         h = H.zero()
         for s in segments:
             label = s.polygon_label()
-            n = len(surface.polygon(label).vertices())
+            n = len(surface.polygon(label).corners())
 
             start = s.start()
             if start.position().is_in_edge_interior():
@@ -1293,8 +1293,8 @@ class Cylinder(SageObject):
 
         p = ss.polygon(labels[0])
         e = edges[0]
-        min_y = ccw(v, p.vertex(e))
-        max_y = ccw(v, p.vertex((e + 1) % len(p.vertices())))
+        min_y = ccw(v, p.corner(e).vector())
+        max_y = ccw(v, p.corner((e + 1) % len(p.corners())).vector())
         if min_y >= max_y:
             raise ValueError("Combinatorial data does not represent a cylinder")
 
@@ -1305,7 +1305,7 @@ class Cylinder(SageObject):
         for i in range(1, len(edges)):
             e = edges[i]
             p = ss.polygon(labels[i])
-            y = ccw(v, p.vertex(e))
+            y = ccw(v, p.corner(e).vector())
             if y == min_y:
                 min_list.append(i)
             elif y > min_y:
@@ -1313,7 +1313,7 @@ class Cylinder(SageObject):
                 min_y = y
                 if min_y >= max_y:
                     raise ValueError("Combinatorial data does not represent a cylinder")
-            y = ccw(v, p.vertex((e + 1) % len(p.vertices())))
+            y = ccw(v, p.corner((e + 1) % len(p.corners())).vector())
             if y == max_y:
                 max_list.append(i)
             elif y < max_y:
@@ -1330,7 +1330,7 @@ class Cylinder(SageObject):
         for i in min_list:
             label = labels[i]
             p = ss.polygon(label)
-            vertices.append((i, p.vertex(edges[i])))
+            vertices.append((i, p.corner(edges[i]).vector()))
         i, vert_i = vertices[-1]
         vert_i = vert_i - v
         j, vert_j = vertices[0]
@@ -1341,7 +1341,7 @@ class Cylinder(SageObject):
             lj = labels[j]
             sc = SaddleConnection(
                 s,
-                (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
+                (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).corners())),
                 (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
             )
             sc_set_right.add(sc)
@@ -1355,7 +1355,7 @@ class Cylinder(SageObject):
                 lj = labels[j]
                 sc = SaddleConnection(
                     s,
-                    (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
+                    (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).corners())),
                     (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
                     limit=j - i,
                 )
@@ -1369,7 +1369,7 @@ class Cylinder(SageObject):
         for i in max_list:
             label = labels[i]
             p = ss.polygon(label)
-            vertices.append((i, p.vertex((edges[i] + 1) % len(p.vertices()))))
+            vertices.append((i, p.corner((edges[i] + 1) % len(p.corners())).vector()))
         i, vert_i = vertices[-1]
         vert_i = vert_i - v
         j, vert_j = vertices[0]
@@ -1380,7 +1380,7 @@ class Cylinder(SageObject):
             lj = labels[j]
             sc = SaddleConnection(
                 s,
-                (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
+                (lj[0], (edges[j] + 1) % len(ss.polygon(lj).corners())),
                 (~lj[1])(vert_i) - (~lj[1])(vert_j),
             )
             sc_set_left.add(sc)
@@ -1393,7 +1393,7 @@ class Cylinder(SageObject):
                 lj = labels[j]
                 sc = SaddleConnection(
                     s,
-                    (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
+                    (lj[0], (edges[j] + 1) % len(ss.polygon(lj).corners())),
                     (~lj[1])(vert_i) - (~lj[1])(vert_j),
                 )
                 sc_set_left.add(sc)
@@ -1407,19 +1407,19 @@ class Cylinder(SageObject):
         i = min_list[0]
         label = labels[i]
         p = ss.polygon(label)
-        right_point = p.vertex(edges[i])  # point on the right boundary
+        right_point = p.corner(edges[i]).vector()  # point on the right boundary
         i = max_list[0]
         label = labels[i]
         p = ss.polygon(label)
-        left_point = p.vertex((edges[i] + 1) % len(p.vertices()))
+        left_point = p.corner((edges[i] + 1) % len(p.corners())).vector()
         from flatsurf.geometry.euclidean import solve
 
         for i in range(len(edges)):
             label = labels[i]
             p = ss.polygon(label)
             e = edges[i]
-            v1 = p.vertex(e)
-            v2 = p.vertex((e + 1) % len(p.vertices()))
+            v1 = p.corner(e).vector()
+            v2 = p.corner((e + 1) % len(p.corners())).vector()
             a, b = solve(left_point, v, v1, v2 - v1)
             w1 = (~(label[1]))(v1 + b * (v2 - v1))
             a, b = solve(right_point, v, v1, v2 - v1)

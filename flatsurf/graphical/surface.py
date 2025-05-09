@@ -610,16 +610,16 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface(adjacencies=[])
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            GraphicalPolygon(corners=[(0, 0), (2, -2), (2, 0)])
             sage: gs.graphical_polygon(1)
-            GraphicalPolygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            GraphicalPolygon(corners=[(0, 0), (2, 0), (1, 3)])
             sage: print("Polygon 0, edge 0 is opposite "+str(gs.opposite_edge(0,0)))
             Polygon 0, edge 0 is opposite (1, 1)
             sage: gs.make_adjacent(0,0)
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            GraphicalPolygon(corners=[(0, 0), (2, -2), (2, 0)])
             sage: gs.graphical_polygon(1)
-            GraphicalPolygon(vertices=[(2/5, -14/5), (2, -2), (0, 0)])
+            GraphicalPolygon(corners=[(2/5, -14/5), (2, -2), (0, 0)])
         """
         pp, ee = self._ss.opposite_edge(p, e)
         if reverse:
@@ -842,11 +842,11 @@ class GraphicalSurface:
 
                     from flatsurf.geometry.euclidean import ccw
 
-                    if ccw(polygon.edge(vertex), direction) < 0:
+                    if ccw(polygon.side(vertex).vector(), direction) < 0:
                         continue
                     if (
                         ccw(
-                            polygon.edge((vertex - 1) % len(polygon.vertices())),
+                            polygon.side((vertex - 1) % len(polygon.corners())).vector(),
                             direction,
                         )
                         < 0

@@ -405,18 +405,18 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: s2=m*s
                 sage: TestSuite(s2).run()
                 sage: s2.polygon(0)
-                Polygon(vertices=[(0, 0), (1, 0), (3, 1), (2, 1)])
+                Polygon(corners=[(0, 0), (1, 0), (3, 1), (2, 1)])
 
             Testing multiplication by a matrix with negative determinant::
 
                 sage: from flatsurf import dilation_surfaces
                 sage: ds1 = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: ds1.polygon(0)
-                Polygon(vertices=[(0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)])
+                Polygon(corners=[(0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)])
                 sage: m = matrix(QQ, [[0, 1], [1, 0]]) # maps (x,y) to (y, x)
                 sage: ds2 = m*ds1
                 sage: ds2.polygon(0)
-                Polygon(vertices=[(0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)])
+                Polygon(corners=[(0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)])
             """
             if not switch_sides:
                 raise NotImplementedError
@@ -457,7 +457,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Translation Surface in H_1(0) built from a rectangle
 
                 sage: morphism.codomain().polygon(0)
-                Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+                Polygon(corners=[(0, 0), (2, 0), (2, 1), (0, 1)])
 
             """
             if in_place is None:
@@ -1020,7 +1020,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     start_edge = label, position.get_edge()
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                    start_holonomy = S.polygon(start_edge[0]).side(start_edge[1]).vector()
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
@@ -1068,20 +1068,20 @@ class SimilaritySurfaces(SurfaceCategory):
                         if opposite is None:
                             break
                         start_edge = opposite[0], (opposite[1] + 1) % len(
-                            S.polygon(opposite[0]).vertices()
+                            S.polygon(opposite[0]).corners()
                         )
                         if start_edge == initial:
                             break
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                    start_holonomy = S.polygon(start_edge[0]).side(start_edge[1]).vector()
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
                 similarity = similarity_from_vectors(
-                    S.polygon(start_edge[0]).edge(start_edge[1]), start_holonomy
+                    S.polygon(start_edge[0]).side(start_edge[1]).vector(), start_holonomy
                 )
 
                 edges = [(start_edge, start_holonomy)]
@@ -1090,11 +1090,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     exit_edge = (
                         edges[-1][0][0],
                         (edges[-1][0][1] - 1)
-                        % len(S.polygon(edges[-1][0][0]).vertices()),
+                        % len(S.polygon(edges[-1][0][0]).corners()),
                     )
-                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge(
+                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).side(
                         exit_edge[1]
-                    )
+                    ).vector()
                     edges.append((exit_edge, exit_holonomy))
 
                     enter_edge = S.opposite_edge(*exit_edge)
@@ -1110,9 +1110,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     if enter_edge == start_edge:
                         break
 
-                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge(
+                    enter_holonomy = similarity * S.polygon(enter_edge[0]).side(
                         enter_edge[1]
-                    )
+                    ).vector()
                     edges.append((enter_edge, enter_holonomy))
 
                 return edges
@@ -1151,7 +1151,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     else:
                         point = self(  # pylint: disable=not-callable
-                            label, polygon.vertex(0) + polygon.edge(0) / 2
+                            label, polygon.corner(0).vector() + polygon.side(0).vector() / 2
                         )
 
                     yield point
@@ -1332,9 +1332,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
                     sage: s = SimilaritySurfaceGenerators.example()
                     sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+                    Polygon(corners=[(0, 0), (2, -2), (2, 0)])
                     sage: s.polygon(1)
-                    Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+                    Polygon(corners=[(0, 0), (2, 0), (1, 3)])
                     sage: s.opposite_edge(0, 0)
                     (1, 1)
                     sage: m = s.edge_matrix(0, 0, projective=True)
@@ -1422,9 +1422,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     m3 = MatrixSpace(self.base_ring(), 3)()
                     m3[:2, :2] = m2
                     m3[2, 2] = 1
-                    m3[:2, 2] = self.polygon(pp).vertex(ee + 1) - m2 * self.polygon(
+                    m3[:2, 2] = self.polygon(pp).corner(ee + 1).vector() - m2 * self.polygon(
                         p
-                    ).vertex(e)
+                    ).corner(e).vector()
                     m3.set_immutable()
                     return m3
 
@@ -1460,9 +1460,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
                     sage: s = SimilaritySurfaceGenerators.example()
                     sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+                    Polygon(corners=[(0, 0), (2, -2), (2, 0)])
                     sage: s.polygon(1)
-                    Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+                    Polygon(corners=[(0, 0), (2, 0), (1, 3)])
                     sage: s.opposite_edge(0,0)
                     (1, 1)
                     sage: g = s.edge_transformation(0,0)
@@ -1476,16 +1476,16 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 G = SimilarityGroup(self.base_ring())
                 q = self.polygon(p)
-                a = q.vertex(e)
-                b = q.vertex(e + 1)
+                a = q.corner(e).vector()
+                b = q.corner(e + 1).vector()
                 # This is the similarity carrying the origin to a and (1,0) to b:
                 g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
 
                 pp, ee = self.opposite_edge(p, e)
                 qq = self.polygon(pp)
                 # Be careful here: opposite vertices are identified
-                aa = qq.vertex(ee + 1)
-                bb = qq.vertex(ee)
+                aa = qq.corner(ee + 1).vector()
+                bb = qq.corner(ee).vector()
                 # This is the similarity carrying the origin to aa and (1,0) to bb:
                 gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
 
@@ -1510,12 +1510,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.veech_double_n_gon(4)
                     sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: [s.opposite_edge(0,i) for i in range(4)]
                     [(1, 0), (1, 1), (1, 2), (1, 3)]
                     sage: ss = s.set_vertex_zero(0,1)
                     sage: ss.polygon(0)
-                    Polygon(vertices=[(0, 0), (0, 1), (-1, 1), (-1, 0)])
+                    Polygon(corners=[(0, 0), (0, 1), (-1, 1), (-1, 0)])
                     sage: [ss.opposite_edge(0,i) for i in range(4)]
                     [(1, 1), (1, 2), (1, 3), (1, 0)]
                     sage: TestSuite(ss).run()
@@ -1524,12 +1524,12 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: s = translation_surfaces.veech_2n_gon(2)
                     sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: [s.opposite_edge(0,i) for i in range(4)]
                     [(0, 2), (0, 3), (0, 0), (0, 1)]
                     sage: ss = s.set_vertex_zero(0,3)
                     sage: ss.polygon(0)
-                    Polygon(vertices=[(0, 0), (0, -1), (1, -1), (1, 0)])
+                    Polygon(corners=[(0, 0), (0, -1), (1, -1), (1, 0)])
                     sage: [ss.opposite_edge(0,i) for i in range(4)]
                     [(0, 2), (0, 3), (0, 0), (0, 1)]
                     sage: TestSuite(ss).run()
@@ -1763,7 +1763,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: T.labels()
                     (0,)
                     sage: T.polygons()
-                    (Polygon(vertices=[(0, 0), (-1, -3), (2, 0)]),)
+                    (Polygon(corners=[(0, 0), (-1, -3), (2, 0)]),)
                     sage: T.gluings()
                     (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)))
 
@@ -1776,7 +1776,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: S = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
                     sage: S.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+                    Polygon(corners=[(0, 0), (1, 0), (0, 1)])
                     sage: S.triangle_flip(0, 0, test=True)
                     doctest:warning
                     ...
@@ -1877,7 +1877,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 p2 = self.polygon(opposite_label)
 
                 p2 = Polygon(
-                    vertices=[sim(v) for v in p2.vertices()],
+                    vertices=[sim(v.vector()) for v in p2.corners()],
                     parent=self.euclidean_plane(),
                 )
 
@@ -1947,11 +1947,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s.join_polygons(0,0, in_place=True)
                     Translation Surface built from an equilateral triangle and a pentagon with 2 marked vertices
                     sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (0, 2*a), (-1, a)])
+                    Polygon(corners=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (0, 2*a), (-1, a)])
                     sage: s.join_polygons(0,4, in_place=True)
                     Translation Surface built from a rhombus
                     sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (1, 3*a), (0, 2*a), (-1, a)])
+                    Polygon(corners=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (1, 3*a), (0, 2*a), (-1, a)])
 
                 TESTS::
 
@@ -2183,7 +2183,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: T in TranslationSurfaces()
                     True
                     sage: T.polygon(T.root())
-                    Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+                    Polygon(corners=[(0, 0), (2, -2), (2, 0)])
 
                 """
                 if cover_type == "translation":
@@ -2333,7 +2333,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     Half-Translation Surface in Q_0(0, -1^4) built from a triangle
 
                     sage: T = S.triangulate().codomain()
-                    sage: len(T.polygon((0, 0)).vertices())
+                    sage: len(T.polygon((0, 0)).corners())
                     3
 
                 The surface returned is explicitly a triangulation of the
@@ -2410,12 +2410,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
                 poly2 = self.polygon(p2)
-                if len(poly1.vertices()) != 3 or len(poly2.vertices()) != 3:
+                if len(poly1.corners()) != 3 or len(poly2.corners()) != 3:
                     raise ValueError("Edge must be adjacent to two triangles.")
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
-                sim1 = similarity_from_vectors(poly1.edge(e1 + 2), -poly1.edge(e1 + 1))
-                sim2 = similarity_from_vectors(poly2.edge(e2 + 2), -poly2.edge(e2 + 1))
+                sim1 = similarity_from_vectors(poly1.side(e1 + 2).vector(), -poly1.side(e1 + 1).vector())
+                sim2 = similarity_from_vectors(poly2.side(e2 + 2).vector(), -poly2.side(e2 + 1).vector())
                 sim = sim1 * sim2
                 return sim[1][0] < 0
 
@@ -2431,10 +2431,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
                 sim1 = similarity_from_vectors(
-                    poly1.vertex(e1) - poly1.vertex(e1 + 2), -poly1.edge(e1 + 1)
+                    poly1.corner(e1).vector() - poly1.corner(e1 + 2).vector(), -poly1.side(e1 + 1).vector()
                 )
                 sim2 = similarity_from_vectors(
-                    poly2.vertex(e2) - poly2.vertex(e2 + 2), -poly2.edge(e2 + 1)
+                    poly2.corner(e2).vector() - poly2.corner(e2 + 2).vector(), -poly2.side(e2 + 1).vector()
                 )
                 sim = sim1 * sim2
 
@@ -2516,10 +2516,10 @@ class SimilaritySurfaces(SurfaceCategory):
                         # p1 is not circumscribed
                         return False
 
-                    for e1 in range(len(p1.vertices())):
+                    for e1 in range(len(p1.corners())):
                         c2 = self.edge_transformation(l1, e1) * c1
                         l2, e2 = self.opposite_edge(l1, e1)
-                        if c2.point_position(self.polygon(l2).vertex(e2 + 2)) != -1:
+                        if c2.point_position(self.polygon(l2).corner(e2 + 2).vector()) != -1:
                             # The circumscribed circle developed into the adjacent polygon
                             # contains a vertex in its interior or boundary.
                             return False
@@ -2561,7 +2561,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])
+                    Polygon(corners=[(0, 0), (-1, 0), (-1, -1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_triangulated()
                     True
@@ -2638,7 +2638,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.root()
                     (0, 0)
                     sage: S.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])
+                    Polygon(corners=[(0, 0), (-1, 0), (-1, -1)])
 
                     sage: S.is_delaunay_triangulated()
                     True
@@ -2725,7 +2725,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon(ss.root())
-                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
+                    Polygon(corners=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_decomposed()
                     True
@@ -2836,7 +2836,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: U.root()
                     (0, 0)
                     sage: U.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
+                    Polygon(corners=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
 
                 TESTS::
 
@@ -2973,7 +2973,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     return sc_list
                 if initial_vertex is None:
-                    for vertex in range(len(self.polygon(initial_label).vertices())):
+                    for vertex in range(len(self.polygon(initial_label).corners())):
                         self.saddle_connections(
                             squared_length_bound,
                             initial_label=initial_label,
@@ -2995,11 +2995,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     base_ring=self.base_ring(),
                 )
                 p = self.polygon(initial_label)
-                v = p.vertex(initial_vertex)
+                v = p.corner(initial_vertex).vector()
                 last_sim = SG(-v[0], -v[1])
 
                 # First check the edge eminating rightward from the start_vertex.
-                e = p.edge(initial_vertex)
+                e = p.side(initial_vertex).vector()
                 if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
                     from flatsurf.geometry.surface_objects import SaddleConnection
 
@@ -3007,11 +3007,11 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 # Represents the bounds of the beam of trajectories we are sending out.
                 wedge = (
-                    last_sim(p.vertex((initial_vertex + 1) % len(p.vertices()))),
+                    last_sim(p.corner((initial_vertex + 1) % len(p.corners())).vector()),
                     last_sim(
-                        p.vertex(
-                            (initial_vertex + len(p.vertices()) - 1) % len(p.vertices())
-                        )
+                        p.corner(
+                            (initial_vertex + len(p.corners()) - 1) % len(p.corners())
+                        ).vector()
                     ),
                 )
 
@@ -3022,8 +3022,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         initial_label,
                         wedge,
                         [
-                            (initial_vertex + len(p.vertices()) - i) % len(p.vertices())
-                            for i in range(2, len(p.vertices()))
+                            (initial_vertex + len(p.corners()) - i) % len(p.corners())
+                            for i in range(2, len(p.corners()))
                         ],
                     )
                 ]
@@ -3037,7 +3037,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     vert = verts.pop()
                     p = self.polygon(label)
                     # First check the vertex
-                    vert_position = sim(p.vertex(vert))
+                    vert_position = sim(p.corner(vert).vector())
                     from flatsurf.geometry.euclidean import ccw
 
                     if (
@@ -3061,7 +3061,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             )
                         )
                     # Now check if we should develop across the edge
-                    vert_position2 = sim(p.vertex((vert + 1) % len(p.vertices())))
+                    vert_position2 = sim(p.corner((vert + 1) % len(p.corners())).vector())
                     if (
                         ccw(vert_position, vert_position2) > 0
                         and ccw(wedge[0], vert_position2) > 0
@@ -3089,9 +3089,9 @@ class SimilaritySurfaces(SurfaceCategory):
                                 new_label,
                                 new_wedge,
                                 [
-                                    (new_edge + len(p.vertices()) - i)
-                                    % len(p.vertices())
-                                    for i in range(1, len(p.vertices()))
+                                    (new_edge + len(p.corners()) - i)
+                                    % len(p.corners())
+                                    for i in range(1, len(p.corners()))
                                 ],
                             )
                         )
@@ -3328,7 +3328,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 # Reestablish gluings between polygons
                 for label, polygon, subdivided in zip(labels, polygons, subdivideds):
-                    for e in range(len(polygon.vertices())):
+                    for e in range(len(polygon.corners())):
                         opposite = self.opposite_edge(label, e)
                         if opposite is not None:
                             for p in range(parts):
@@ -3694,12 +3694,12 @@ class SimilaritySurfaces(SurfaceCategory):
                         sage: from flatsurf import translation_surfaces
                         sage: s=translation_surfaces.veech_double_n_gon(4)
                         sage: s.polygon(1)
-                        Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
+                        Polygon(corners=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                         sage: [s.opposite_edge(0,i) for i in range(4)]
                         [(1, 0), (1, 1), (1, 2), (1, 3)]
                         sage: ss=s.standardize_polygons()
                         sage: ss.polygon(1)
-                        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
                         sage: [ss.opposite_edge(0,i) for i in range(4)]
                         [(1, 2), (1, 3), (1, 0), (1, 1)]
                         sage: TestSuite(ss).run()

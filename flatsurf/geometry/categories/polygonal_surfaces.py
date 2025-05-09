@@ -292,14 +292,14 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.polygons()
-                (Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]),)
+                (Polygon(corners=[(0, 0), (2, 0), (1, 4), (0, 5)]),)
 
             ::
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.infinite_staircase()
                 sage: S.polygons()
-                (Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), ...)
+                (Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)]), ...)
 
             """
             from flatsurf.geometry.surface import Polygons
@@ -482,7 +482,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 warnings.warn(
                     "edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead"
                 )
-                for edge in range(len(polygon.vertices())):
+                for edge in range(len(polygon.corners())):
                     yield label, edge
 
         def edges(self):
@@ -583,9 +583,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 doctest:warning
                 ...
                 UserWarning: label_polygon_iterator() has been deprecated and will be removed from a future version of sage-flatsurf; use zip(labels(), polygons()) instead
-                [(0, Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
+                [(0, Polygon(corners=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
                 sage: print(list(zip(S.labels(), S.polygons())))
-                [(0, Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
+                [(0, Polygon(corners=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
 
             """
             import warnings
@@ -611,7 +611,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.polygon(0)
-                Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                Polygon(corners=[(0, 0), (2, 0), (1, 4), (0, 5)])
 
             """
 
@@ -715,7 +715,7 @@ class PolygonalSurfaces(SurfaceCategory):
             )
 
             if self.is_finite_type():
-                return sum(len(p.vertices()) for p in self.polygons())
+                return sum(len(p.corners()) for p in self.polygons())
 
             from sage.rings.infinity import Infinity
 
@@ -744,7 +744,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             for lab in it:
                 p = self.polygon(lab)
-                for k in range(len(p.vertices())):
+                for k in range(len(p.corners())):
                     e = (lab, k)
                     f = self.opposite_edge(lab, k)
                     if f is None:
@@ -781,7 +781,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             for label in labels:
                 p = self.polygon(label)
-                for edge in range(len(p.vertices())):
+                for edge in range(len(p.corners())):
                     op_edge = self.opposite_edge(label, edge)
                     if op_edge is None:
                         continue
@@ -789,10 +789,10 @@ class PolygonalSurfaces(SurfaceCategory):
                     p2 = self.polygon(label2)
                     # TODO: clean this up when we have proper action of projective transformation
                     # on planar objects
-                    A0 = V(tuple(p.vertex(edge)) + (1,))
-                    B0 = V(tuple(p.vertex(edge + 1)) + (1,))
-                    A1 = V(tuple(p2.vertex(edge2)) + (1,))
-                    B1 = V(tuple(p2.vertex(edge2 + 1)) + (1,))
+                    A0 = V(tuple(p.corner(edge).vector()) + (1,))
+                    B0 = V(tuple(p.corner(edge + 1).vector()) + (1,))
+                    A1 = V(tuple(p2.corner(edge2).vector()) + (1,))
+                    B1 = V(tuple(p2.corner(edge2 + 1).vector()) + (1,))
                     m = self.edge_matrix(label, edge, projective=True)
                     imA0 = m * A0
                     imB0 = m * B0
@@ -1300,7 +1300,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     )
 
                 for p in self.polygons():
-                    if len(p.vertices()) != 3:
+                    if len(p.corners()) != 3:
                         return False
 
                 return True
@@ -1560,7 +1560,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 for lab in it:
                     p = self.polygon(lab)
-                    for k in range(len(p.vertices())):
+                    for k in range(len(p.corners())):
                         f = self.opposite_edge(lab, k)
                         tester.assertFalse(
                             f is None, "edge ({}, {}) is not glued".format(lab, k)

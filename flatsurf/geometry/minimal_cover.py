@@ -63,7 +63,7 @@ def _is_finite(surface):
     for label in surface.labels():
         polygon = surface.polygon(label)
 
-        for e in range(len(polygon.vertices())):
+        for e in range(len(polygon.corners())):
             m = surface.edge_matrix(label, e, projective=False)
 
             from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
@@ -211,16 +211,16 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
 
             sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("translation")
             sage: S.polygon((0, (1, 0)))
-            Polygon(vertices=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
+            Polygon(corners=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
 
             sage: S = translation_surfaces.square_torus().minimal_cover("planar")
             sage: root = S.root()
             sage: S.polygon(root)
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
             sage: S = similarity_surfaces.billiard(polygons.triangle(2, 3, 5)).minimal_cover("half-translation")
             sage: S.polygon((0, (1, 0)))
-            Polygon(vertices=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
+            Polygon(corners=[(0, 0), (1, 0), (1/4*c^2 - 1/4, 1/4*c)])
 
         """
         if not isinstance(label, tuple) or len(label) != 2:
@@ -235,7 +235,7 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
         V2 = FreeModule(self.base_ring(), 2)
         vertices_proj = [
             m * V3((x, y, 1))
-            for x, y in self.base_surface().polygon(base_label).vertices()
+            for x, y in [c.vector() for c in self.base_surface().polygon(base_label).corners()]
         ]
         vertices_aff = [V2((x / z, y / z)) for x, y, z in vertices_proj]
         return Polygon(vertices=vertices_aff)
@@ -279,7 +279,7 @@ class OrientedSimilaritySurfaceCover(OrientedSimilaritySurface):
 
             projective = False
 
-        if e < 0 or e >= len(self.polygon(p).vertices()):
+        if e < 0 or e >= len(self.polygon(p).corners()):
             raise ValueError("invalid edge index for this polygon")
 
         base_label, fiber = p

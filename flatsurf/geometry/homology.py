@@ -352,7 +352,7 @@ class SimplicialHomologyClass(Element):
         From this representation, we determine the holonomy vector that a chain
         encodes on a translation surface::
 
-            sage: sum(c * T.polygon(label).edge(edge) for ((label, edge), c) in coeffs.items())
+            sage: sum(c * T.polygon(label).side(edge).vector() for ((label, edge), c) in coeffs.items())
             (-1, 1)
 
         """
@@ -785,7 +785,7 @@ class SimplicialHomologyGroup(Parent):
             C1 = self.change(k=1).chain_module()
             boundary = C1.zero()
             for face, coefficient in chain:
-                for edge in range(len(self._surface.polygon(face).edges())):
+                for edge in range(len(self._surface.polygon(face).sides())):
                     if (face, edge) in C1.indices():
                         boundary += coefficient * C1((face, edge))
                     else:

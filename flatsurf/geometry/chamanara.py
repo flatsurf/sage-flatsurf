@@ -208,7 +208,7 @@ class ChamanaraSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C.polygon(0)
-            Polygon(vertices=[(0, 0), (1, 0), (-1, 2), (-1, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (-1, 2), (-1, 1)])
 
         """
         if lab not in ZZ:

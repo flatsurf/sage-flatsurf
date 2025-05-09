@@ -565,9 +565,9 @@ class TFractalSurface(OrientedSimilaritySurface):
             sage: import flatsurf.geometry.similarity_surface_generators as sfg
             sage: T = sfg.tfractal_surface()
             sage: T.polygon(('L',0))
-            Polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+            Polygon(corners=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
             sage: T.polygon(('LRL',0))
-            Polygon(vertices=[(0, 0), (1/8, 0), (1/8, 1/8), (0, 1/8)])
+            Polygon(corners=[(0, 0), (1/8, 0), (1/8, 1/8), (0, 1/8)])
         """
         w = self._words(lab[0])
         return (1 / self._r ** w.length()) * self._base_polygon(lab[1])
@@ -687,7 +687,7 @@ class SimilaritySurfaceGenerators:
         """
         s = MutableOrientedSimilaritySurface(P.base_ring())
         s.add_polygon(P)
-        for i in range(len(P.vertices())):
+        for i in range(len(P.corners())):
             s.glue((0, i), (0, i))
         s.set_immutable()
         return s
@@ -787,7 +787,7 @@ class SimilaritySurfaceGenerators:
         if not P.is_convex():
             # triangulate non-convex ones
             comb_edges = P.triangulation()
-            vertices = P.vertices()
+            vertices = [v.vector() for v in P.corners()]
             comb_triangles = SimilaritySurfaceGenerators._billiard_build_faces(
                 len(vertices), comb_edges
             )
@@ -824,7 +824,7 @@ class SimilaritySurfaceGenerators:
             P = triangles
         else:
             internal_edges = []
-            external_edges = [(0, i) for i in range(len(P.vertices()))]
+            external_edges = [(0, i) for i in range(len(P.corners()))]
             P = [P]
 
         m = len(P)
@@ -833,15 +833,15 @@ class SimilaritySurfaceGenerators:
             surface.add_polygon(p)
         for p in P:
             surface.add_polygon(
-                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edges())], parent=E)
+                Polygon(edges=[V((-x, y)) for x, y in reversed([side.vector() for side in p.sides()])], parent=E)
             )
         for p1, e1, p2, e2 in internal_edges:
             surface.glue((p1, e1), (p2, e2))
-            ne1 = len(surface.polygon(p1).vertices())
-            ne2 = len(surface.polygon(p2).vertices())
+            ne1 = len(surface.polygon(p1).corners())
+            ne2 = len(surface.polygon(p2).corners())
             surface.glue((m + p1, ne1 - e1 - 1), (m + p2, ne2 - e2 - 1))
         for p, e in external_edges:
-            ne = len(surface.polygon(p).vertices())
+            ne = len(surface.polygon(p).corners())
             surface.glue((p, e), (m + p, ne - e - 1))
 
         surface.set_immutable()
@@ -903,7 +903,7 @@ class SimilaritySurfaceGenerators:
 
         n = len(P.vertices())
         r = matrix(2, [-1, 0, 0, 1])
-        Q = Polygon(edges=[r * v for v in reversed(P.edges())])
+        Q = Polygon(edges=[r * side.vector() for side in reversed(P.sides())])
 
         surface = MutableOrientedSimilaritySurface(P.base_ring())
         surface.add_polygon(P, label=0)
@@ -1126,7 +1126,7 @@ class HalfTranslationSurfaceGenerators:
 
         Prev = [
             Polygon(
-                vertices=[(x, -y) for x, y in reversed(p.vertices())],
+                vertices=[(x, -y) for x, y in reversed([c.vector() for c in p.corners()])],
                 base_ring=base_ring,
             )
             for p in P
@@ -1218,7 +1218,7 @@ class TranslationSurfaceGenerators:
             sage: T
             Translation Surface in H_1(0) built from a quadrilateral
             sage: T.polygon(0)
-            Polygon(vertices=[(0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)])
+            Polygon(corners=[(0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)])
             sage: from flatsurf.geometry.categories import TranslationSurfaces
             sage: T in TranslationSurfaces()
             True
@@ -1795,8 +1795,8 @@ class TranslationSurfaceGenerators:
         if n < 3:
             raise ValueError
         o = ZZ_2 * polygons.regular_ngon(2 * n)
-        p1 = Polygon(edges=[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
-        p2 = Polygon(edges=[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
+        p1 = Polygon(edges=[o.side((2 * i + n) % (2 * n)).vector() for i in range(n)])
+        p2 = Polygon(edges=[o.side((2 * i + n + 1) % (2 * n)).vector() for i in range(n)])
         s = MutableOrientedSimilaritySurface(o.base_ring())
         s.add_polygon(o)
         s.add_polygon(p1)

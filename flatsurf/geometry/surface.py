@@ -458,7 +458,7 @@ class MutablePolygonalSurface(PolygonalSurface):
             0
 
             sage: S.polygon(0)
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         return self._polygons[label]
@@ -956,7 +956,7 @@ class MutablePolygonalSurface(PolygonalSurface):
             2
 
             sage: S.polygons()
-            (Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            (Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)]))
 
         .. SEEALSO::
 
@@ -1073,10 +1073,10 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 warnings.warn(
                     "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead."
                 )
-                if len(self.polygon(label).vertices()) != 3:
+                if len(self.polygon(label).corners()) != 3:
                     return False
                 if (
-                    len(self.polygon(self.opposite_edge(label, edge)[0]).vertices())
+                    len(self.polygon(self.opposite_edge(label, edge)[0]).corners())
                     != 3
                 ):
                     return False
@@ -1100,7 +1100,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         P = [self.polygon(lbl) for lbl in label]
 
-        if any(len(p.vertices()) != 3 for p in P):
+        if any(len(p.corners()) != 3 for p in P):
             raise ValueError("attached polygons must be triangles")
 
         if not self.is_convex(label[0], edge, strict=True):
@@ -1111,21 +1111,21 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         from flatsurf import Polygon
 
         T = self.edge_transformation(label[1], diagonal[1])
-        P[1] = Polygon(vertices=[T(v) for v in P[1].vertices()])
+        P[1] = Polygon(vertices=[T(v.vector()) for v in P[1].corners()])
 
         gluings = [
             [self.opposite_edge(lbl, (d + i) % 3) for i in range(3)]
             for (lbl, d) in zip(label, diagonal)
         ]
 
-        assert P[0].vertex(diagonal[0]) == P[1].vertex(diagonal[1] + 1)
-        assert P[0].vertex(diagonal[0] + 1) == P[1].vertex(diagonal[1])
+        assert P[0].corner(diagonal[0]).vector() == P[1].corner(diagonal[1] + 1).vector()
+        assert P[0].corner(diagonal[0] + 1).vector() == P[1].corner(diagonal[1]).vector()
 
         Q = [
             [
-                P[1 - i].vertex(diagonal[1 - i] + 2),
-                P[i].vertex(diagonal[i] + 2),
-                P[i].vertex(diagonal[i]),
+                P[1 - i].corner(diagonal[1 - i] + 2).vector(),
+                P[i].corner(diagonal[i] + 2).vector(),
+                P[i].corner(diagonal[i]).vector(),
             ]
             for i in range(2)
         ]
@@ -1135,7 +1135,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         ]
         # Shift the new polygons to the origin so things don't seem to wiggle
         # around randomly.
-        Q = [q.translate(-q.vertex(0)) for q in Q]
+        Q = [q.translate(-q.corner(0).vector()) for q in Q]
 
         for i in range(2):
             self.replace_polygon(label[i], Q[i])
@@ -1185,7 +1185,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             sage: s.set_immutable()
 
             sage: s.standardize_polygons().polygon(0)
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         if not in_place:
@@ -1196,9 +1196,9 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         cv = {}  # dictionary for non-zero canonical vertices
         for label, polygon in zip(self.labels(), self.polygons()):
             best = 0
-            best_pt = polygon.vertex(best)
-            for v in range(1, len(polygon.vertices())):
-                pt = polygon.vertex(v)
+            best_pt = polygon.corner(best).vector()
+            for v in range(1, len(polygon.corners())):
+                pt = polygon.corner(v).vector()
                 if (pt[1] < best_pt[1]) or (pt[1] == best_pt[1] and pt[0] < best_pt[0]):
                     best = v
                     best_pt = pt
@@ -1316,7 +1316,7 @@ class MutableOrientedSimilaritySurface(
             self.add_polygon(surface.polygon(label), label=label)
 
         for label in labels:
-            for edge in range(len(surface.polygon(label).vertices())):
+            for edge in range(len(surface.polygon(label).sides())):
                 cross = surface.opposite_edge(label, edge)
                 if cross and cross[0] in labels:
                     self.glue((label, edge), cross)
@@ -1557,8 +1557,8 @@ class MutableOrientedSimilaritySurface(
             cross_label, cross_edge = cross
             self._gluings[cross_label][cross_edge] = None
             self._transformations[cross_label][cross_edge] = None
-        self._gluings[label] = [None] * len(self.polygon(label).vertices())
-        self._transformations[label] = [None] * len(self.polygon(label).vertices())
+        self._gluings[label] = [None] * len(self.polygon(label).corners())
+        self._transformations[label] = [None] * len(self.polygon(label).corners())
 
     def set_edge_pairing(self, label0, edge0, label1, edge1):
         r"""
@@ -1654,7 +1654,7 @@ class MutableOrientedSimilaritySurface(
             UserWarning: change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead
 
             sage: S.polygon(0)
-            Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+            Polygon(corners=[(0, 0), (2, 0), (2, 2), (0, 2)])
 
         """
         import warnings
@@ -1669,10 +1669,10 @@ class MutableOrientedSimilaritySurface(
             )
 
         # Note that this obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
-        if len(polygon.vertices()) != len(self.polygon(label).vertices()):
+        if len(polygon.corners()) != len(self.polygon(label).corners()):
             self._unglue_polygon(label)
-            self._gluings[label] = [None] * len(polygon.vertices())
-            self._transformations[label] = [None] * len(polygon.vertices())
+            self._gluings[label] = [None] * len(polygon.corners())
+            self._transformations[label] = [None] * len(polygon.corners())
 
         self._polygons[label] = polygon
 
@@ -1682,7 +1682,7 @@ class MutableOrientedSimilaritySurface(
 
     def refine_polygon(self, label, surface, gluings):
         old = self.polygon(label)
-        old_gluings = [self.opposite_edge(label, e) for e in range(len(old.vertices()))]
+        old_gluings = [self.opposite_edge(label, e) for e in range(len(old.corners()))]
 
         self.remove_polygon(label)
 
@@ -1727,7 +1727,7 @@ class MutableOrientedSimilaritySurface(
             sage: M.move_polygon(2, S(1, 0, 1, 1))
             sage: TestSuite(M).run()
             sage: M.polygons()
-            (Polygon(vertices=[(2, 0), (2, -1), (3, -1), (3, 0)]), Polygon(vertices=[(0, 1), (1, 2), (0, 3), (-1, 2)]), Polygon(vertices=[(1, 1), (2, 1), (2, 2), (1, 2)]))
+            (Polygon(corners=[(2, 0), (2, -1), (3, -1), (3, 0)]), Polygon(corners=[(0, 1), (1, 2), (0, 3), (-1, 2)]), Polygon(corners=[(1, 1), (2, 1), (2, 2), (1, 2)]))
 
         """
         old = self.polygon(label)
@@ -1793,10 +1793,10 @@ class MutableOrientedSimilaritySurface(
         """
         old = self.polygon(label)
 
-        if len(old.vertices()) != len(polygon.vertices()):
+        if len(old.corners()) != len(polygon.corners()):
             from flatsurf.geometry.categories.polygons import Polygons
 
-            article, singular, plural = Polygons._describe_polygon(len(old.vertices()))
+            article, singular, plural = Polygons._describe_polygon(len(old.corners()))
             raise ValueError(f"polygon must be {article} {singular}")
 
         self._polygons[label] = polygon
@@ -1902,7 +1902,7 @@ class MutableOrientedSimilaritySurface(
                 "set_vertex_zero can only be done in_place for a mutable surface."
             )
         p = us.polygon(label)
-        n = len(p.vertices())
+        n = len(p.corners())
         if not (0 <= v < n):
             raise ValueError
         glue = []
@@ -1910,7 +1910,7 @@ class MutableOrientedSimilaritySurface(
         from flatsurf import Polygon
 
         pp = Polygon(
-            edges=[p.edge((i + v) % n) for i in range(n)], parent=us.euclidean_plane()
+            edges=[p.side((i + v) % n).vector() for i in range(n)], parent=us.euclidean_plane()
         )
 
         for i in range(n):
@@ -1945,7 +1945,7 @@ class MutableOrientedSimilaritySurface(
         old_gluings = {
             label: [
                 self.opposite_edge(label, e)
-                for e in range(len(self.polygon(label).vertices()))
+                for e in range(len(self.polygon(label).sides()))
             ]
             for label in self.labels()
         }
@@ -1999,15 +1999,15 @@ class MutableOrientedSimilaritySurface(
         edge_map = {}  # Store the pairs for the old edges.
         for i in range(e1):
             edge_map[len(es)] = (p1, i)
-            es.append(poly1.edge(i))
-        ne = len(poly2.vertices())
+            es.append(poly1.side(i).vector())
+        ne = len(poly2.corners())
         for i in range(1, ne):
             ee = (e2 + i) % ne
             edge_map[len(es)] = (p2, ee)
-            es.append(dt * poly2.edge(ee))
-        for i in range(e1 + 1, len(poly1.vertices())):
+            es.append(dt * poly2.side(ee).vector())
+        for i in range(e1 + 1, len(poly1.corners())):
             edge_map[len(es)] = (p1, i)
-            es.append(poly1.edge(i))
+            es.append(poly1.side(i).vector())
 
         from flatsurf import Polygon
 
@@ -2054,7 +2054,7 @@ class MutableOrientedSimilaritySurface(
             )
 
         poly = self.polygon(p)
-        ne = len(poly.vertices())
+        ne = len(poly.corners())
         if v1 < 0 or v2 < 0 or v1 >= ne or v2 >= ne:
             raise ValueError("Provided vertices out of bounds.")
         if abs(v1 - v2) <= 1 or abs(v1 - v2) >= ne - 1:
@@ -2096,13 +2096,13 @@ class MutableOrientedSimilaritySurface(
         for i in range(v2, ne + v1):
             old_to_new_labels[(p, i % ne)] = (p, i - v2 + 1)
 
-        for e in range(1, len(newpoly1.vertices())):
+        for e in range(1, len(newpoly1.corners())):
             pair = old_gluings[(p, (v2 + e - 1) % ne)]
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
             self.glue((p, e), (pair[0], pair[1]))
 
-        for e in range(1, len(newpoly2.vertices())):
+        for e in range(1, len(newpoly2.corners())):
             pair = old_gluings[(p, (v1 + e - 1) % ne)]
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
@@ -2130,7 +2130,7 @@ class MutableOrientedSimilaritySurface(
             sage: s2 = s.reposition_polygons()
             sage: TestSuite(s2).run()
             sage: s2.polygons()
-            (Polygon(vertices=[(0, 0), (5, 0), (0, 5)]), Polygon(vertices=[(0, 0), (0, -5), (5, 0)]))
+            (Polygon(corners=[(0, 0), (5, 0), (0, 5)]), Polygon(corners=[(0, 0), (0, -5), (5, 0)]))
 
         Check that it works with boundaries:;
 
@@ -2197,7 +2197,8 @@ class MutableOrientedSimilaritySurface(
 
             sage: from collections import defaultdict
             sage: d = defaultdict(list)
-            sage: for i, e in enumerate(p.edges()):
+            sage: for i, s in enumerate(p.sides()):
+            ....:     e = s.vector()
             ....:     e.set_immutable()
             ....:     d[e].append(i)
 
@@ -2338,7 +2339,7 @@ class MutableOrientedSimilaritySurface(
                     if ret != 0:
                         return ret
 
-                    for e in range(len(self.polygon(l1).vertices())):
+                    for e in range(len(self.polygon(l1).corners())):
                         ll1, e1 = self.opposite_edge(l1, e)
                         ll2, e2 = s2.opposite_edge(l2, e)
                         num1 = labels1.index(ll1)
@@ -2377,7 +2378,7 @@ class MutableOrientedSimilaritySurface(
                     if ret != 0:
                         return ret
 
-                    for e in range(len(self.polygon(l1).vertices())):
+                    for e in range(len(self.polygon(l1).corners())):
                         ll1, ee1 = self.opposite_edge(l1, e)
                         ll2, ee2 = s2.opposite_edge(l2, e)
                         num1 = labels1.index(ll1)
@@ -3248,10 +3249,10 @@ class Polygons(LabeledCollection):
 
             sage: for entry in zip(labels, polygons):
             ....:     print(entry)
-            (0, Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
-            (1, Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)]))
-            (3, Polygon(vertices=[(3, 0), (7/2, -1/2), (11/2, -1/2), (6, 0), (6, 1), (11/2, 3/2), (7/2, 3/2), (3, 1)]))
-            (2, Polygon(vertices=[(2, 0), (3, 0), (3, 1), (2, 1)]))
+            (0, Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            (1, Polygon(corners=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)]))
+            (3, Polygon(corners=[(3, 0), (7/2, -1/2), (11/2, -1/2), (6, 0), (6, 1), (11/2, 3/2), (7/2, 3/2), (3, 1)]))
+            (2, Polygon(corners=[(2, 0), (3, 0), (3, 1), (2, 1)]))
 
         """
         for label in self._surface.labels():
@@ -3334,7 +3335,7 @@ class Edges(LabeledSet):
             return False
 
         polygon = self._surface.polygon(label)
-        return 0 <= len(polygon.vertices()) < edge
+        return 0 <= len(polygon.corners()) < edge
 
 
 class Gluings(LabeledSet):

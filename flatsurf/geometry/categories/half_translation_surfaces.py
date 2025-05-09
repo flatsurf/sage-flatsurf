@@ -402,22 +402,22 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     lab = next(iter(self.labels()))
                     p = self.polygon(lab)
-                    u = p.edge(1)
-                    v = -p.edge(0)
+                    u = p.side(1).vector()
+                    v = -p.side(0).vector()
                     i = 1
                     from flatsurf.geometry.euclidean import ccw
 
                     while ccw(u, v) == 0:
                         i += 1
-                        u = p.edge(i)
-                        v = -p.edge(i - 1)
+                        u = p.side(i).vector()
+                        v = -p.side(i - 1).vector()
                     M = matrix(2, [u, v]).transpose().inverse()
                     assert M.det() > 0
                     hols = []
                     for lab in self.labels():
                         p = self.polygon(lab)
-                        for e in range(len(p.vertices())):
-                            w = M * p.edge(e)
+                        for e in range(len(p.corners())):
+                            w = M * p.side(e).vector()
                             hols.append(w[0])
                             hols.append(w[1])
                     if self.base_ring() is AA:
@@ -440,7 +440,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     relabelling = {}
                     k = 0
                     for lab in self.labels():
-                        m = len(self.polygon(lab).vertices())
+                        m = len(self.polygon(lab).corners())
                         relabelling[lab] = S.add_polygon(
                             Polygon(
                                 edges=[

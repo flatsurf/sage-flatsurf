@@ -98,7 +98,7 @@ class SimilaritySurfaceTangentVector:
             self._position = pos
         elif pos.is_in_edge_interior():
             e = pos.get_edge()
-            edge_v = p.edge(e)
+            edge_v = p.side(e).vector()
 
             if ccw(edge_v, vector) < 0 or is_anti_parallel(edge_v, vector):
                 # Need to move point and vector to opposite edge.
@@ -121,9 +121,9 @@ class SimilaritySurfaceTangentVector:
             v = pos.get_vertex()
             p = self.surface().polygon(polygon_label)
             # subsequent edge:
-            edge1 = p.edge(v)
+            edge1 = p.side(v).vector()
             # prior edge:
-            edge0 = p.edge((v - 1) % len(p.vertices()))
+            edge0 = p.side((v - 1) % len(p.corners())).vector()
             wp1 = ccw(edge1, vector)
             wp0 = ccw(edge0, vector)
             if wp1 < 0 or wp0 < 0:
@@ -133,10 +133,10 @@ class SimilaritySurfaceTangentVector:
             if wp0 == 0:
                 # vector points backward along edge 0
                 label2, e2 = self.surface().opposite_edge(
-                    polygon_label, (v - 1) % len(p.vertices())
+                    polygon_label, (v - 1) % len(p.corners())
                 )
                 similarity = self.surface().edge_transformation(
-                    polygon_label, (v - 1) % len(p.vertices())
+                    polygon_label, (v - 1) % len(p.corners())
                 )
                 point2 = similarity(point)
                 vector2 = similarity.derivative() * vector
@@ -277,7 +277,7 @@ class SimilaritySurfaceTangentVector:
         a vertex and represents the vector joining this edge to the next vertex."""
         if self.is_based_at_singularity():
             e = self.vertex()
-            if self.vector() == self.polygon().edge(e):
+            if self.vector() == self.polygon().side(e).vector():
                 return (self.polygon_label(), e)
         return None
 
@@ -323,9 +323,9 @@ class SimilaritySurfaceTangentVector:
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: s.polygon(0)
-            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            Polygon(corners=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            Polygon(corners=[(0, 0), (2, 0), (1, 3)])
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
             sage: V = tb.surface().base_ring()**2
             sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
@@ -398,12 +398,12 @@ class SimilaritySurfaceTangentVector:
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.regular_octagon()
-            sage: v = s.tangent_vector(0, (0,0), (1,1))
-            sage: v.clockwise_to((-1,-1))
+            sage: v = s.tangent_vector(0, (0, 0), (1, 1))
+            sage: v.clockwise_to((-1, -1))
             SimilaritySurfaceTangentVector in polygon 0 based at (0, a + 1) with vector (-1, -1)
-            sage: v.clockwise_to((1,1))
+            sage: v.clockwise_to((1, 1))
             SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1)
-            sage: v.clockwise_to((1,1), code=True)
+            sage: v.clockwise_to((1, 1), code=True)
             (SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1), [0, 5, 2])
         """
         if not w:
@@ -414,7 +414,7 @@ class SimilaritySurfaceTangentVector:
             v1 = self.vector()
             label = self.polygon_label()
             vertex = self.vertex()
-            v2 = s.polygon(label).edge(vertex)
+            v2 = s.polygon(label).side(vertex).vector()
             from sage.matrix.constructor import Matrix
 
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
@@ -431,21 +431,21 @@ class SimilaritySurfaceTangentVector:
                     codes.append(vertex)
                 label2, edge2 = s.opposite_edge(label, vertex)
                 der = der * s.edge_matrix(label2, edge2, projective=False)
-                v1 = der * (-s.polygon(label2).edge(edge2))
+                v1 = der * (-s.polygon(label2).side(edge2).vector())
                 label = label2
-                vertex = (edge2 + 1) % len(s.polygon(label2).vertices())
-                v2 = der * (s.polygon(label2).edge(vertex))
+                vertex = (edge2 + 1) % len(s.polygon(label2).corners())
+                v2 = der * (s.polygon(label2).side(vertex).vector())
             assert count < rotate_limit, "Reached limit!"
             if code:
                 return (
                     self.surface().tangent_vector(
-                        label, s.polygon(label).vertex(vertex), w
+                        label, s.polygon(label).corner(vertex).vector(), w
                     ),
                     codes,
                 )
             else:
                 return self.surface().tangent_vector(
-                    label, s.polygon(label).vertex(vertex), w
+                    label, s.polygon(label).corner(vertex).vector(), w
                 )
         else:
             raise NotImplementedError(
@@ -493,10 +493,10 @@ class SimilaritySurfaceTangentVector:
             v1 = self.vector()
             label = self.polygon_label()
             vertex = self.vertex()
-            previous_vertex = (vertex - 1 + len(s.polygon(label).vertices())) % len(
-                s.polygon(label).vertices()
+            previous_vertex = (vertex - 1 + len(s.polygon(label).corners())) % len(
+                s.polygon(label).corners()
             )
-            v2 = -s.polygon(label).edge(previous_vertex)
+            v2 = -s.polygon(label).side(previous_vertex).vector()
             from sage.matrix.constructor import Matrix
 
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
@@ -514,10 +514,10 @@ class SimilaritySurfaceTangentVector:
                     label = label2
                     vertex = edge2
                     previous_vertex = (
-                        vertex - 1 + len(s.polygon(label).vertices())
-                    ) % len(s.polygon(label).vertices())
-                    v1 = der * (s.polygon(label).edge(vertex))
-                    v2 = der * (-s.polygon(label).edge(previous_vertex))
+                        vertex - 1 + len(s.polygon(label).corners())
+                    ) % len(s.polygon(label).corners())
+                    v1 = der * (s.polygon(label).side(vertex).vector())
+                    v2 = der * (-s.polygon(label).side(previous_vertex).vector())
                     if ccw(v1, w) >= 0 and ccw(w, v2) > 0:
                         # We've found it!
                         break
@@ -525,13 +525,13 @@ class SimilaritySurfaceTangentVector:
             if code:
                 return (
                     self.surface().tangent_vector(
-                        label, s.polygon(label).vertex(vertex), w
+                        label, s.polygon(label).corner(vertex).vector(), w
                     ),
                     codes,
                 )
             else:
                 return self.surface().tangent_vector(
-                    label, s.polygon(label).vertex(vertex), w
+                    label, s.polygon(label).corner(vertex).vector(), w
                 )
         else:
             raise NotImplementedError(
@@ -654,9 +654,11 @@ class SimilaritySurfaceTangentBundle:
         return self._s
 
     def edge(self, polygon_label, edge_index):
-        r"""Return the vector leaving a vertex of the polygon which under straight-line flow travels
-        counterclockwise around the boundary of the polygon along the edge with the provided index.
-        The length of the vector matches the length of the indexed edge.
+        r"""
+        Return the vector leaving a vertex of the polygon which under
+        straight-line flow travels counterclockwise around the boundary of the
+        polygon along the edge with the provided index. The length of the
+        vector matches the length of the indexed edge.
 
         EXAMPLES::
 
@@ -665,13 +667,13 @@ class SimilaritySurfaceTangentBundle:
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: s.polygon(0)
-            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
-            sage: tb.edge(0,0)
+            Polygon(corners=[(0, 0), (2, -2), (2, 0)])
+            sage: tb.edge(0, 0)
             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, -2)
         """
         polygon = self.surface().polygon(polygon_label)
-        point = polygon.vertex(edge_index)
-        vector = polygon.edge(edge_index)
+        point = polygon.corner(edge_index).vector()
+        vector = polygon.side(edge_index).vector()
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)
 
     def clockwise_edge(self, polygon_label, edge_index):
@@ -687,15 +689,15 @@ class SimilaritySurfaceTangentBundle:
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: s.polygon(0)
-            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            Polygon(corners=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            Polygon(corners=[(0, 0), (2, 0), (1, 3)])
             sage: s.opposite_edge(0, 0)
             (1, 1)
             sage: tb.clockwise_edge(0,0)
             SimilaritySurfaceTangentVector in polygon 1 based at (2, 0) with vector (-1, 3)
         """
         polygon = self.surface().polygon(polygon_label)
-        point = polygon.vertex(edge_index + 1)
-        vector = -polygon.edge(edge_index)
+        point = polygon.corner(edge_index + 1).vector()
+        vector = -polygon.side(edge_index).vector()
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)

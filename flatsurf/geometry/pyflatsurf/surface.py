@@ -356,7 +356,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             sage: S = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
             sage: S.polygon((1, 2, 3))  # optional: pyflatsurf
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1)])
 
         """
         label = Surface_pyflatsurf._normalize_label(label)

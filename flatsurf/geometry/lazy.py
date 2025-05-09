@@ -224,7 +224,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             from bidict import bidict
 
             return triangulation, bidict(
-                {e: (reference_label, e) for e in range(len(reference_polygon.edges()))}
+                {e: (reference_label, e) for e in range(len(reference_polygon.sides()))}
             )
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -250,7 +250,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if label in self._reference.labels():
             if not self._is_triangulated(label):
                 return label
-            if len(self._reference.polygon(label).vertices()) == 3:
+            if len(self._reference.polygon(label).corners()) == 3:
                 return label
 
         if not isinstance(label, tuple):
@@ -279,7 +279,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.polygon((0, 0))
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1)])
 
         """
         reference_label = self._reference_label(label)
@@ -592,7 +592,7 @@ class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
             sage: S = translation_surfaces.infinite_staircase()
             sage: T = matrix([[2, 0], [0, 1]]) * S
             sage: T.polygon(0)
-            Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (2, 0), (2, 1), (0, 1)])
 
         """
         return self._reference.polygon(label)
@@ -716,7 +716,7 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
             sage: S = r * S
 
             sage: S.polygon(0)
-            Polygon(vertices=[(0, 0), (a, -a), (a + 2, -a), (2*a + 2, 0), (2*a + 2, 2), (a + 2, a + 2), (a, a + 2), (0, 2)])
+            Polygon(corners=[(0, 0), (a, -a), (a + 2, -a), (2*a + 2, 0), (2*a + 2, 2), (a + 2, a + 2), (a, a + 2), (0, 2)])
 
         """
         return self._matrix * self._reference.polygon(label)
@@ -742,7 +742,7 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         """
         reference_edge = edge
         if self._sgn() == -1:
-            reference_edge = len(self.polygon(label).edges()) - 1 - edge
+            reference_edge = len(self.polygon(label).sides()) - 1 - edge
 
         opposite_label, opposite_edge = self._reference.opposite_edge(
             label, reference_edge
@@ -750,7 +750,7 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
 
         if self._sgn() == -1:
             opposite_edge = (
-                len(self._reference.polygon(opposite_label).edges()) - 1 - opposite_edge
+                len(self._reference.polygon(opposite_label).sides()) - 1 - opposite_edge
             )
 
         return opposite_label, opposite_edge
@@ -895,7 +895,7 @@ class LazyMutableOrientedSimilaritySurface(
         sage: T = LazyMutableOrientedSimilaritySurface(S)
         sage: p = T.polygon(0)
         sage: p
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
         sage: q = 2 * p
 
         sage: S.replace_polygon(0, q)
@@ -905,7 +905,7 @@ class LazyMutableOrientedSimilaritySurface(
 
         sage: T.replace_polygon(0, q)
         sage: T.polygon(0)
-        Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+        Polygon(corners=[(0, 0), (2, 0), (2, 2), (0, 2)])
 
     """
 
@@ -1014,7 +1014,7 @@ class LazyMutableOrientedSimilaritySurface(
 
         """
         self._ensure_polygon(label)
-        for edge in range(len(self._surface.polygon(label).vertices())):
+        for edge in range(len(self._surface.polygon(label).corners())):
             cross = self._surface.opposite_edge(label, edge)
             if cross is None:
                 cross_label, cross_edge = self._reference.opposite_edge(label, edge)
@@ -1062,7 +1062,7 @@ class LazyMutableOrientedSimilaritySurface(
             sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.polygon(0)
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         self._ensure_polygon(label)
@@ -1112,7 +1112,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase().delaunay_triangulate().codomain()
-        sage: len(S.polygon(S.root()).vertices())
+        sage: len(S.polygon(S.root()).corners())
         3
         sage: TestSuite(S).run()  # long time (.8s)
         sage: S.is_delaunay_triangulated()
@@ -1253,7 +1253,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulate().codomain()
             sage: S.polygon((0, 0))
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1)])
 
         """
         if label not in self.labels():
@@ -1354,14 +1354,14 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             polygon = self._surface.polygon(label)
 
             for v in range(3):
-                V = polygon.vertex(v)
+                V = polygon.corner(v).vector()
                 if circle.point_position(V) == 1:
                     vertices_in_circumcircle = True
 
             for e in range(3):
                 if (
                     circle.line_segment_position(
-                        polygon.vertex(e), polygon.vertex(e + 1)
+                        polygon.corner(e).vector(), polygon.corner(e + 1).vector()
                     )
                     == 1
                 ):
@@ -1534,7 +1534,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: S = (m * S).delaunay_decompose().codomain()
 
         sage: S.polygon(S.root())
-        Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
+        Polygon(corners=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
 
         sage: S.is_delaunay_decomposed()
         True
@@ -1610,7 +1610,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_decompose().codomain()
             sage: S.polygon((0, 0))
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         if label not in self._reference.labels():
@@ -1621,7 +1621,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if label != self._label(cell):
             raise ValueError("no polygon with this label")
 
-        edges = [self._reference.polygon(edge[0]).edge(edge[1]) for edge in edges]
+        edges = [self._reference.polygon(edge[0]).side(edge[1]).vector() for edge in edges]
 
         from flatsurf import Polygon
 
@@ -2012,7 +2012,7 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
             sage: from flatsurf.geometry.chamanara import chamanara_surface
             sage: S = chamanara_surface(1/2)
             sage: S.polygon(0)
-            Polygon(vertices=[(0, 0), (1, 0), (-1, 2), (-1, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (-1, 2), (-1, 1)])
 
         """
         return self._reference.polygon(self._to_reference_label(label))

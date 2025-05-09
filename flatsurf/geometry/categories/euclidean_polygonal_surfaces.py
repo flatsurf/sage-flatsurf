@@ -219,8 +219,8 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
 
                 sage: labels = []
                 sage: p = s.polygon(1)
-                sage: for e in range(len(p.vertices())):
-                ....:     labels.append(str(p.edge(e)))
+                sage: for e in range(len(p.corners())):
+                ....:     labels.append(str(p.side(e).vector()))
                 sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, edge_labels=labels, edge_label_options={"color":"red"})
                 ...Graphics object consisting of 4 graphics primitives
 
@@ -247,7 +247,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                 else:
                     o = graphical_surface.non_adjacent_edge_options.copy()
                     o.update(edge_options)
-                for e in range(len(p.vertices())):
+                for e in range(len(p.corners())):
                     plt += gp.plot_edge(e, **o)
 
             if plot_edge_labels:
@@ -256,7 +256,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                 else:
                     o = graphical_surface.edge_label_options.copy()
                     o.update(edge_label_options)
-                for e in range(len(p.vertices())):
+                for e in range(len(p.corners())):
                     if edge_labels is None:
                         el = str(e)
                     else:

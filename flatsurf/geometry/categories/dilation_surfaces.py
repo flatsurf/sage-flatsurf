@@ -322,7 +322,7 @@ class DilationSurfaces(SurfaceCategory):
 
             for label in self.labels():
                 p = self.polygon(label)
-                edges = p.edges()
+                edges = [s.vector() for s in p.sides()]
                 if len(edges) != 3:
                     return (False, label) if certificate else False
                 s0, s1, s2 = map(slope, edges)
@@ -374,15 +374,15 @@ class DilationSurfaces(SurfaceCategory):
             # triangles
             poly1 = self.polygon(p1)
             poly2 = self.polygon(p2)
-            if len(poly1.vertices()) != 3 or len(poly2.vertices()) != 3:
+            if len(poly1.corners()) != 3 or len(poly2.corners()) != 3:
                 raise ValueError("edge must be adjacent to two triangles")
 
-            edge1 = poly1.edge(e1)
-            edge1L = poly1.edge(e1 - 1)
-            edge1R = poly1.edge(e1 + 1)
-            edge2 = poly2.edge(e2)
-            edge2L = poly2.edge(e2 - 1)
-            edge2R = poly2.edge(e2 + 1)
+            edge1 = poly1.side(e1).vector()
+            edge1L = poly1.side(e1 - 1).vector()
+            edge1R = poly1.side(e1 + 1).vector()
+            edge2 = poly2.side(e2).vector()
+            edge2L = poly2.side(e2 - 1).vector()
+            edge2R = poly2.side(e2 + 1).vector()
 
             # if one of the triangle is monochromatic and the edge is the largest
             sim = self.edge_transformation(p2, e2)
@@ -624,14 +624,14 @@ class DilationSurfaces(SurfaceCategory):
                     sage: t = (r * p * r * t0).l_infinity_delaunay_triangulation()
                     sage: systole_count = 0
                     sage: for l, e in t.edges():
-                    ....:     v = t.polygon(l).edge(e)
+                    ....:     v = t.polygon(l).side(e).vector()
                     ....:     systole_count += v[0]**2 + v[1]**2 == 1
                     sage: assert t.is_veering_triangulated() and systole_count == 8, (systole_count, {lab: t.polygon(lab) for lab in t.labels()}, t.gluings())
 
                     sage: t = (r**4 * p * r**5 * p**2 * r * t0).l_infinity_delaunay_triangulation()
                     sage: systole_count = 0
                     sage: for l, e in t.edges():
-                    ....:     v = t.polygon(l).edge(e)
+                    ....:     v = t.polygon(l).side(e).vector()
                     ....:     systole_count += v[0]**2 + v[1]**2 == 1
                     sage: assert t.is_veering_triangulated() and systole_count == 8, (systole_count, {lab: t.polygon(lab) for lab in t.labels()}, t.gluings())
 

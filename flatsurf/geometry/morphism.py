@@ -2966,10 +2966,10 @@ class TriangulationMorphism_base(SurfaceMorphism):
 
         """
         for preimage_label in self.domain().labels():
-            for e in range(len(self.domain().polygon(preimage_label).edges())):
+            for e in range(len(self.domain().polygon(preimage_label).sides())):
                 if self._image_edge(preimage_label, e) == (label, edge):
                     return preimage_label, e
-            for e in range(len(self.domain().polygon(preimage_label).edges())):
+            for e in range(len(self.domain().polygon(preimage_label).sides())):
                 if self._image_edge(preimage_label, e)[0] == label:
                     return preimage_label, None
 
@@ -3012,13 +3012,13 @@ class TriangulationMorphism_base(SurfaceMorphism):
         preimage_label, preimage_coordinates = p.representative()
         preimage_polygon = self.domain().polygon(preimage_label)
 
-        for preimage_edge in range(len(preimage_polygon.edges())):
-            relative_coordinates = preimage_coordinates - preimage_polygon.vertex(
+        for preimage_edge in range(len(preimage_polygon.sides())):
+            relative_coordinates = preimage_coordinates - preimage_polygon.corner(
                 preimage_edge
-            )
+            ).vector()
             image_label, image_edge = self._image_edge(preimage_label, preimage_edge)
             image_polygon = self.codomain().polygon(image_label)
-            image_coordinates = image_polygon.vertex(image_edge) + relative_coordinates
+            image_coordinates = image_polygon.corner(image_edge).vector() + relative_coordinates
             if image_polygon.contains_point(image_coordinates):
                 return self.codomain()(image_label, image_coordinates)
 
@@ -3050,14 +3050,14 @@ class TriangulationMorphism_base(SurfaceMorphism):
         image_label, image_coordinates = q.representative()
         image_polygon = self.codomain().polygon(image_label)
 
-        for image_edge in range(len(image_polygon.edges())):
-            relative_coordinates = image_coordinates - image_polygon.vertex(image_edge)
+        for image_edge in range(len(image_polygon.sides())):
+            relative_coordinates = image_coordinates - image_polygon.corner(image_edge).vector()
             preimage_label, preimage_edge = self._section_edge(image_label, image_edge)
             if preimage_edge is None:
                 continue
             preimage_polygon = self.domain().polygon(preimage_label)
             preimage_coordinates = (
-                preimage_polygon.vertex(preimage_edge) + relative_coordinates
+                preimage_polygon.corner(preimage_edge).vector() + relative_coordinates
             )
             assert preimage_polygon.contains_point(
                 preimage_coordinates

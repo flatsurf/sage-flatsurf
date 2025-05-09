@@ -334,7 +334,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         e = []
         er = []
         for i in args:
-            i = int(i) % len(s.polygon(p[-1]).vertices())
+            i = int(i) % len(s.polygon(p[-1]).corners())
             q, j = s.opposite_edge(p[-1], i)
             p.append(q)
             e.append(i)
@@ -371,7 +371,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         tree[p] = (None, None, None)
 
         wait = []  # list of edges of the dual graph, ie p1 -- (e1,e2) --> p2
-        for e in range(len(s.polygon(p).vertices())):
+        for e in range(len(s.polygon(p).corners())):
             pp, ee = s.opposite_edge(p, e)
             wait.append((pp, ee, p, e))
         while wait:
@@ -409,7 +409,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
             else:  # new branch
                 tree[p1] = (p2, e1, e2)
-                for e in range(len(s.polygon(p1).vertices())):
+                for e in range(len(s.polygon(p1).corners())):
                     if e != e1:
                         pp, ee = s.opposite_edge(p1, e)
                         wait.append((pp, ee, p1, e))

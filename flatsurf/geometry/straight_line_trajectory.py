@@ -172,7 +172,7 @@ class SegmentInPolygon:
             return False
         vv = self.start().vector()
         vertex = self.start().vertex()
-        ww = self.start().polygon().edge(vertex)
+        ww = self.start().polygon().side(vertex).vector()
         from flatsurf.geometry.euclidean import is_parallel
 
         return is_parallel(vv, ww)
@@ -199,9 +199,9 @@ class SegmentInPolygon:
 
             sage: s = similarity_surfaces.example()
             sage: s.polygon(0)
-            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            Polygon(corners=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            Polygon(corners=[(0, 0), (2, 0), (1, 3)])
             sage: v = s.tangent_vector(0, (0,0), (3,-1))
             sage: seg = SegmentInPolygon(v)
             sage: seg
@@ -757,7 +757,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
 
         T = self._get_iet(p)
         x = get_linearity_coeff(
-            poly.vertex(i + 1) - poly.vertex(i), start.point() - poly.vertex(i)
+            poly.corner(i + 1).vector() - poly.corner(i).vector(), start.point() - poly.corner(i).vector()
         )
         x *= T.length_bot(i)
 
@@ -845,8 +845,8 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         l0 = iet.length_bot(e0)
         l1 = iet.length_top(e1)
 
-        point0 = poly.vertex(e0) + poly.edge(e0) * x0 / l0
-        point1 = poly.vertex(e1) + poly.edge(e1) * (l1 - x1) / l1
+        point0 = poly.corner(e0).vector() + poly.side(e0).vector() * x0 / l0
+        point1 = poly.corner(e1).vector() + poly.side(e1).vector() * (l1 - x1) / l1
         v0 = self._s.tangent_vector(
             lab, point0, self._vector, ring=self._vector.base_ring()
         )

@@ -1748,7 +1748,7 @@ class FlatTriangulationConversion(Conversion):
             if half_edge < 0:
                 continue
 
-            vectors[half_edge - 1] = domain.polygon(polygon).edge(edge)
+            vectors[half_edge - 1] = domain.polygon(polygon).side(edge).vector()
 
         vector_conversion = VectorSpaceConversion.to_pyflatsurf_from_elements(vectors)
         return [vector_conversion(vector) for vector in vectors]
@@ -1782,7 +1782,7 @@ class FlatTriangulationConversion(Conversion):
         for polygon, edge in domain.edges():
             pyflatsurf_edge = pyflatsurf_labels[(polygon, edge)]
 
-            next_edge = (edge + 1) % len(domain.polygon(polygon).vertices())
+            next_edge = (edge + 1) % len(domain.polygon(polygon).corners())
             pyflatsurf_next_edge = pyflatsurf_labels[(polygon, next_edge)]
 
             vertex_permutation[pyflatsurf_next_edge] = -pyflatsurf_edge
@@ -2064,7 +2064,7 @@ class FlatTriangulationConversion(Conversion):
             self.codomain(),
             self((label, 0)),
             self.vector_space_conversion()(
-                coordinates - p.parent().polygon(label).vertex(0)
+                coordinates - p.parent().polygon(label).corner(0).vector()
             ),
         )
 
@@ -2091,7 +2091,7 @@ class FlatTriangulationConversion(Conversion):
         face = q.face()
         label, edge = self.section(face)
         coordinates = self.vector_space_conversion().section(q.vector(face))
-        coordinates += self.domain().polygon(label).vertex(edge)
+        coordinates += self.domain().polygon(label).corner(edge).vector()
 
         from flatsurf.geometry.surface_objects import SurfacePoint
 

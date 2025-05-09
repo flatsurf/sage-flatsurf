@@ -843,7 +843,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
     def polygon(
         self,
+        # TODO: Also provide corners; same for hyperbolic
         vertices=None,
+        # TODO: Also provide sides; same for hyperbolic
         edges=None,
         angles=None,
         lengths=None,
@@ -894,17 +896,17 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             sage: from flatsurf import EuclideanPlane
             sage: E = EuclideanPlane(QQ)
             sage: E.polygon(vertices=[(0, 0), (1, 0), (0, 1)])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
         A right triangle that is not based at the origin::
 
             sage: E.polygon(vertices=[(1, 0), (2, 0), (1, 1)])
-            Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
+            Polygon(corners=[(1, 0), (2, 0), (1, 1)])
 
         Vertices can also be actual points of the Euclidean plane::
 
             sage: E.polygon(vertices=[E.point(1, 0), (-1, 1), E.point(0, -1)])
-            Polygon(vertices=[(1, 0), (-1, 1), (0, -1)])
+            Polygon(corners=[(1, 0), (-1, 1), (0, -1)])
 
         Edges can also be segments in the Euclidean plane::
 
@@ -912,7 +914,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             ....:     E.point(0, 0).segment(E.point(1, 0)),
             ....:     E.point(1, 0).segment(E.point(0, 1)),
             ....:     E.point(0, 1).segment(E.point(0, 0))])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
         Or a mix of segments and vectors::
 
@@ -920,19 +922,19 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             ....:     E.point(0, 0).segment(E.point(1, 0)),
             ....:     (-1, 1),
             ....:     E.point(0, 1).segment(E.point(0, 0))])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
         A right triangle at the origin, specified by giving the edge vectors::
 
             sage: E.polygon(edges=[(1, 0), (-1, 1), (0, -1)])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
         When redundant information is given, it is checked for consistency::
 
             sage: E.polygon(vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
             sage: E.polygon(vertices=[(1, 0), (2, 0), (1, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
-            Polygon(vertices=[(1, 0), (2, 0), (1, 1)])
+            Polygon(corners=[(1, 0), (2, 0), (1, 1)])
             sage: E.polygon(vertices=[(0, 0), (2, 0), (1, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
             Traceback (most recent call last):
             ...
@@ -950,13 +952,13 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         A polygon with prescribed angles::
 
             sage: E.polygon(angles=[2, 1, 1])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
         Again, if vertices and edges are also specified, they must be compatible
         with the angles::
 
             sage: E.polygon(angles=[2, 1, 1], vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
-            Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (0, 1)])
 
             sage: E.polygon(angles=[1, 2, 3], vertices=[(0, 0), (1, 0), (0, 1)], edges=[(1, 0), (-1, 1), (0, -1)])
             Traceback (most recent call last):
@@ -967,15 +969,15 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
             sage: E = EuclideanPlane(QuadraticField(3))
             sage: E.polygon(angles=[1, 1, 1], lengths=[1, 1, 1])
-            Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
+            Polygon(corners=[(0, 0), (1, 0), (1/2, 1/2*a)])
 
         The function will deduce lengths if one or two are missing::
 
             sage: E.polygon(angles=[1, 1, 1, 1], lengths=[1, 1, 1])
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
             sage: E.polygon(angles=[1, 1, 1, 1], lengths=[1, 1])
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
             sage: E.polygon(angles=[1, 1, 1, 1], lengths=[1])
             Traceback (most recent call last):
@@ -985,10 +987,10 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         Equally, we deduce vertices or edges::
 
             sage: E.polygon(angles=[1, 1, 1, 1], vertices=[(0, 0), (1, 0), (1, 1)])
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
             sage: E.polygon(angles=[1, 1, 1, 1], edges=[(1, 0), (0, 1)])
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         When the angles are incompatible with the data, an error is reported (that
         might be somewhat cryptic at times)::
@@ -1001,7 +1003,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         When lengths are given in addition to vertices or edges, they are checked for consistency::
 
             sage: E.polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], lengths=[1, 1, 1, 1])
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
             sage: E.polygon(vertices=[(0, 0), (1, 0), (0, 1)], lengths=[1, 1, 1])
             Traceback (most recent call last):
@@ -1149,7 +1151,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         if not vertices:
             return
 
-        if polygon.vertices() != tuple(v.vector() for v in vertices):
+        if tuple(v.vector() for v in polygon.corners()) != tuple(v.vector() for v in vertices):
             raise ValueError("vertices and edges are not compatible")
 
     def _polygon_check_edges(self, polygon, edges):
@@ -1178,7 +1180,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         if EuclideanPolygonsWithAngles._normalize_angles(angles) != tuple(
             EuclideanPolygons.ParentMethods.angle(polygon, i)
-            for i in range(len(polygon.vertices()))
+            for i in range(len(polygon.corners()))
         ):
             raise ValueError("polygon does not have the prescribed angles")
 
@@ -1186,8 +1188,8 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         if not lengths:
             return
 
-        for edge, length in zip(polygon.edges(), lengths):
-            if edge.norm() != length:
+        for edge, length in zip(polygon.sides(), lengths):
+            if edge.vector().norm() != length:
                 raise ValueError("polygon does not have the prescribed lengths")
 
     def _polygon_normalize_vertices(self, n: int, vertices, choice):
@@ -3121,11 +3123,11 @@ class EuclideanSet(SageObject):
             sage: E = EuclideanPlane()
             sage: p = E.polygon(vertices = [(1,0),(0,1),(-1,-1)])
             sage: p
-            Polygon(vertices=[(1, 0), (0, 1), (-1, -1)])
+            Polygon(corners=[(1, 0), (0, 1), (-1, -1)])
             sage: matrix(ZZ, [[0, 1], [1, 0]]) * p
-            Polygon(vertices=[(0, 1), (-1, -1), (1, 0)])
+            Polygon(corners=[(0, 1), (-1, -1), (1, 0)])
             sage: matrix(ZZ,[[2, 0], [0, 1]]) * p
-            Polygon(vertices=[(2, 0), (0, 1), (-2, -1)])
+            Polygon(corners=[(2, 0), (0, 1), (-2, -1)])
         """
         return self._apply_2x2_matrix(m)
 
@@ -5401,10 +5403,10 @@ class EuclideanPolygon(EuclideanFacade):
         sage: from flatsurf import polygons, Polygon
         sage: s = polygons.square()
         sage: s
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         sage: Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
-        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
     TESTS::
 
@@ -5452,7 +5454,8 @@ class EuclideanPolygon(EuclideanFacade):
             (0, 0)
 
         """
-        return self.parent()(self.vertices()[0])
+        # TODO: Try harder to make this a finite point.
+        return self.corner(0)
 
     @cached_method
     def __hash__(self):
@@ -5501,7 +5504,7 @@ class EuclideanPolygon(EuclideanFacade):
             raise ValueError(
                 "__cmp__ only implemented for ConvexPolygons defined over the same base_ring"
             )
-        sign = len(self.vertices()) - len(other.vertices())
+        sign = len(self.corners()) - len(other.corners())
         if sign > 0:
             return 1
         if sign < 0:
@@ -5511,9 +5514,9 @@ class EuclideanPolygon(EuclideanFacade):
             return 1
         if sign < self.base_ring().zero():
             return -1
-        for v in range(1, len(self.vertices())):
-            p = self.vertex(v)
-            q = other.vertex(v)
+        for v in range(1, len(self.corners())):
+            p = self.corner(v).vector()
+            q = other.corner(v).vector()
             sign = p[0] - q[0]
             if sign > self.base_ring().zero():
                 return 1
@@ -5534,7 +5537,7 @@ class EuclideanPolygon(EuclideanFacade):
 
             sage: from flatsurf import Polygon
             sage: Polygon(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
-            Polygon(vertices=[(3, -2), (5, -2), (4, -1)])
+            Polygon(corners=[(3, -2), (5, -2), (4, -1)])
 
         """
         # TODO: Require in base class. Implement partially in base class. Probably more generally as apply_matrix or something like that.
@@ -5598,13 +5601,13 @@ class EuclideanPolygon(EuclideanFacade):
             sage: from flatsurf import polygons
             sage: S = polygons.square()
             sage: S
-            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(corners=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         if not self.is_finite():
-            return f"Polygon(edges={repr(list(self.sides()))})"
+            return f"Polygon(sides={repr(list(self.sides()))})"
 
-        return f"Polygon(vertices={repr(list(self.vertices()))})"
+        return f"Polygon(corners={repr(list(self.corners()))})"
 
     def marked_vertices(self):
         r"""
@@ -5627,31 +5630,6 @@ class EuclideanPolygon(EuclideanFacade):
             if s0.end() is not None and ccw(s0.direction(), s1.direction()) == 0:
                 marked.append(s0.end())
         return tuple(marked)
-
-    def vertices(self, marked=None, finite=None):
-        # TODO: Implement in the category only.
-        r"""
-        Return the vertices of this polygon in counterclockwise order as
-        vectors in the real plane.
-
-        INPUT:
-
-        - ``marked_vertices`` -- a boolean (default: ``True``); whether to
-          include vertices with a π angle in the output.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons
-            sage: s = polygons.square()
-            sage: s.vertices()
-            ((0, 0), (1, 0), (1, 1), (0, 1))
-
-        """
-        # TODO: Deprecate for corners.
-        return tuple(point.vector() for point in self.corners(marked=marked, finite=finite))
-
-    def side(self, e):
-        return self._edges[e % len(self._edges)]
 
     def sides(self):
         return self._edges
@@ -5755,7 +5733,7 @@ class EuclideanPolygon(EuclideanFacade):
             Q = P.change_ring(ring, geometry=geometry)
             if P is not Q:
                 # TODO: this is not good enough to rebuild a polygon
-                self = Q.polygon(vertices=self.vertices())
+                self = Q.polygon(vertices=self.corners())
 
         if oriented:
             raise ValueError("polygons cannot be oriented")

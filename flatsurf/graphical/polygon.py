@@ -75,7 +75,7 @@ class GraphicalPolygon:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.graphical_polygon(0)
-            GraphicalPolygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            GraphicalPolygon(corners=[(0, 0), (2, -2), (2, 0)])
 
         """
         return "Graphical" + repr(self.polygon())
@@ -103,25 +103,25 @@ class GraphicalPolygon:
         r"""
         Return the minimal x-coordinate of a vertex.
         """
-        return min(v[0] for v in self.polygon().vertices())
+        return min(v.vector()[0] for v in self.polygon().corners())
 
     def ymin(self):
         r"""
         Return the minimal y-coordinate of a vertex.
         """
-        return min(v[1] for v in self.polygon().vertices())
+        return min(v.vector()[1] for v in self.polygon().corners())
 
     def xmax(self):
         r"""
         Return the maximal x-coordinate of a vertex.
         """
-        return max(v[0] for v in self.polygon().vertices())
+        return max(v.vector()[0] for v in self.polygon().corners())
 
     def ymax(self):
         r"""
         Return the minimal y-coordinate of a vertex
         """
-        return max(v[1] for v in self.polygon().vertices())
+        return max(v.vector()[1] for v in self.polygon().corners())
 
     def bounding_box(self):
         r"""
