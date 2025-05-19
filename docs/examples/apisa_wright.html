@@ -620,7 +620,7 @@ consists of the <code class="docutils literal notranslate"><span class="pre">GL(
         <span class="c1"># .area() as reported by libflatsurf is actually twice the area</span>
         <span class="n">areas</span> <span class="o">=</span> <span class="p">[</span><span class="n">cyl</span><span class="o">.</span><span class="n">area</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">cyl</span> <span class="ow">in</span> <span class="n">dec</span><span class="o">.</span><span class="n">cylinders</span><span class="p">()]</span>
         <span class="n">moduli</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">/</span> <span class="n">area</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">area</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">holonomies</span><span class="p">,</span> <span class="n">areas</span><span class="p">)</span>
+            <span class="n">area</span> <span class="o">/</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">area</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">holonomies</span><span class="p">,</span> <span class="n">areas</span><span class="p">)</span>
         <span class="p">]</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;saddle connection number&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
@@ -646,7 +646,7 @@ num cylinders      : 6
 num minimal comps. : 0
 current dimension  : 3
 cyls. holonomies   : [(-1, 0), ((-4*a-2 ~ -7.6568542), 0), (-1, 0), (-2, 0), ((-4*a-2 ~ -7.6568542), 0), (-2, 0)]
-cyls. moduli       : [1, (-2*a+6 ~ 3.1715729), 1, 2, (-2*a+6 ~ 3.1715729), 2]
+cyls. moduli       : [1, (1/14*a+3/14 ~ 0.31530097), 1, (1/2 ~ 0.50000000), (1/14*a+3/14 ~ 0.31530097), (1/2 ~ 0.50000000)]
 ------------------------------
 saddle connection number 1
 holonomy           : (0, -1)
@@ -655,7 +655,7 @@ num cylinders      : 2
 num minimal comps. : 2
 current dimension  : 4
 cyls. holonomies   : [(0, (-2*a-5 ~ -7.8284271)), (0, (-2*a-5 ~ -7.8284271))]
-cyls. moduli       : [(2*a+5 ~ 7.8284271), (2*a+5 ~ 7.8284271)]
+cyls. moduli       : [(-2/17*a+5/17 ~ 0.12773958), (-2/17*a+5/17 ~ 0.12773958)]
 ------------------------------
 saddle connection number 2
 holonomy           : (-1, -1)
@@ -664,7 +664,7 @@ num cylinders      : 2
 num minimal comps. : 2
 current dimension  : 5
 cyls. holonomies   : [((-3*a-3 ~ -7.2426407), (-3*a-3 ~ -7.2426407)), ((-3*a-3 ~ -7.2426407), (-3*a-3 ~ -7.2426407))]
-cyls. moduli       : [(12*a+18 ~ 34.970563), (12*a+18 ~ 34.970563)]
+cyls. moduli       : [(-1/3*a+1/2 ~ 0.028595479), (-1/3*a+1/2 ~ 0.028595479)]
 ------------------------------
 </pre></div>
 </div>
@@ -675,7 +675,7 @@ num cylinders      : 2
 num minimal comps. : 1
 current dimension  : 6
 cyls. holonomies   : [((a-1 ~ 0.41421356), (-a-1 ~ -2.4142136)), ((a-1 ~ 0.41421356), (-a-1 ~ -2.4142136))]
-cyls. moduli       : [(-12*a+18 ~ 1.0294373), (-12*a+18 ~ 1.0294373)]
+cyls. moduli       : [(1/3*a+1/2 ~ 0.97140452), (1/3*a+1/2 ~ 0.97140452)]
 ------------------------------
 </pre></div>
 </div>
@@ -686,7 +686,7 @@ num cylinders      : 2
 num minimal comps. : 1
 current dimension  : 7
 cyls. holonomies   : [((284*a ~ 401.63665), (-268*a-376 ~ -755.00923)), ((284*a ~ 401.63665), (-268*a-376 ~ -755.00923))]
-cyls. moduli       : [(47880*a+67904 ~ 135616.55), (47880*a+67904 ~ 135616.55)]
+cyls. moduli       : [(-5985/3245552*a+1061/405694 ~ 7.3737316e-6), (-5985/3245552*a+1061/405694 ~ 7.3737316e-6)]
 </pre></div>
 </div>
 </div>
