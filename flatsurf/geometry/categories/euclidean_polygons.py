@@ -43,8 +43,6 @@ EXAMPLES::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
-from typing import Tuple, List
-
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.misc.cachefunc import cached_method
@@ -53,7 +51,7 @@ from sage.misc.abstract_method import abstract_method
 from sage.structure.element import get_coercion_model, Vector
 
 from flatsurf.geometry.categories.polygons import Polygons
-from flatsurf.geometry.euclidean import ccw, EuclideanPoint, EuclideanSegment, EuclideanLine
+from flatsurf.geometry.euclidean import ccw, EuclideanPoint, EuclideanSegment, EuclideanLine, EuclideanRay
 
 cm = get_coercion_model()
 
@@ -242,8 +240,8 @@ class EuclideanPolygons(Category_over_base_ring):
                 EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple()
             )
 
-        @abstract_method
-        def corners(self, marked=None, finite=None) -> Tuple[EuclideanPoint]:
+        @cached_method
+        def corners(self, marked=None, finite=None) -> tuple[EuclideanPoint, ...]:
             r"""
             Return the vertices of this polygon as points of the :class:`EuclideanPlane`.
 
@@ -274,7 +272,20 @@ class EuclideanPolygons(Category_over_base_ring):
                 ((0, 0), (1, 0), (1, 1), (0, 1))
 
             """
-            raise NotImplementedError
+            # TODO: Make this faster by caching?
+            if marked is not None:
+                sides = self.sides()
+                tangents = zip(sides[-1:] + sides[:-1], sides)
+
+                from flatsurf.geometry.euclidean import is_parallel
+                corners = tuple(f.start() for (e, f) in tangents if is_parallel(e.direction(), f.direction()) == marked)
+            else:
+                corners = tuple(e.start() for e in self.sides())
+
+            if finite is not None:
+                corners = tuple(point for point in corners if point.is_finite() == finite)
+
+            return corners
 
         def corner(self, i: int) -> EuclideanPoint:
             r"""
@@ -327,7 +338,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 len(self.corners()), len(self.corners(marked=True, finite=True)) + len(self.corners(marked=False, finite=True)) + len(self.corners(marked=True, finite=False)) + len(self.corners(marked=False, finite=False))
             )
 
-        def vertices(self, marked_vertices=True) -> Tuple[Vector]:
+        def vertices(self, marked_vertices=True) -> tuple[Vector, ...]:
             r"""
             Return the vertices of this polygon in counterclockwise order as
             vectors in the real plane.
@@ -387,7 +398,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return self.corner(i).vector()
 
-        def edges(self) -> List[Vector]:
+        def edges(self) -> list[Vector]:
             r"""
             Return the edges of this polygon as vectors in the plane going from
             one vertex to the next one.
@@ -443,16 +454,49 @@ class EuclideanPolygons(Category_over_base_ring):
             return self.side(i).vector()
 
         @abstract_method
-        def sides(self) -> Tuple[EuclideanLine | EuclideanSegment]:
+        def sides(self) -> tuple[EuclideanLine | EuclideanSegment, ...]:
+            r"""
+            Return the sides of this polygon as oriented segments, half-lines,
+            and lines in counter-clockwise order.
+
+            The sides are returned in an order that is compatible with
+            :meth:`corners`, i.e., the ``i``-th side starts at the ``i``-th
+            corner.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.sides()
+                ((0, 0) → (1, 0), (1, 0) → (1, 1), (1, 1) → (0, 1), (0, 1) → (0, 0))
+
+            """
             raise NotImplementedError
 
         def side(self, i: int):
+            r"""
+            Return the ``i``-th side of this polygon.
+
+            INPUT:
+
+            - ``i`` -- an integer; this is interpreted modulo the number of
+              sides
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+
+                sage: s.side(0)
+                (0, 0) → (1, 0)
+                sage: s.side(4)
+                (0, 0) → (1, 0)
+                sage: s.side(-2)
+                (1, 1) → (0, 1)
+
+            """
             sides = self.sides()
             return sides[i % len(sides)]
-
-        @abstract_method
-        def tangents(self, marked_corners=True, finite=None):
-            raise NotImplementedError
 
         def is_convex(self, strict=False):
             r"""
@@ -475,8 +519,9 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             from flatsurf.geometry.euclidean import ccw
 
-            for v, _, w in self.tangents():
-                consecutive_ccw = ccw(v, w)
+            sides = self.sides()
+            for e, f in zip(sides, sides[1:] + sides[:1]):
+                consecutive_ccw = ccw(-e.direction(), f.direction())
                 if strict:
                     if consecutive_ccw >= 0:
                         return False

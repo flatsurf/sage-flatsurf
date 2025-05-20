@@ -5634,46 +5634,6 @@ class EuclideanPolygon(EuclideanFacade):
     def sides(self):
         return self._edges
 
-    def corners(self, marked=None, finite=None) -> tuple[EuclideanPoint, ...]:
-        # TODO: Make this faster by caching?
-        if marked is not None:
-            # TODO: t, s should be rays and not vectors.
-            corners = tuple(point for (t, point, s) in self.tangents() if is_anti_parallel(t, s) == marked)
-        else:
-            corners = tuple(e.start() for e in self._edges)
-
-        if finite is not None:
-            corners = tuple(point for point in corners if point.is_finite() == finite)
-
-        return corners
-
-    def tangents(self) -> tuple[tuple[EuclideanRay, EuclideanPoint, EuclideanRay], ...]:
-        r"""
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: E = EuclideanPlane()
-            sage: p = E.polygon(edges=[E.ray((0,0), (1,0)), -E.ray((0, 0), (0, 1))])
-            sage: p.tangents()
-            [((0, 1), (0, 0), (1, 0)), ((-1, 0), [0:1:0], (0, -1))]
-
-        """
-        # TODO: Make this faster by caching?
-        # TODO: Implement in the category?
-        # TODO: Add the vertex as a point in the Euclidean plane instead of a vector.
-        # TODO: Add the tangent as a ray instead of a vector.
-        corners = []
-
-        n = len(self._edges)
-        for i in range(n):
-            # TODO: There must be a public way to implement this without reaching into the implementation details.
-            vertex = self._edges[i].start()
-            corners.append(
-                (-self._edges[i - 1].direction(), vertex, self._edges[i].direction())
-            )
-
-        return corners
-
     def _check(self, require_normalized=True):
         r"""
         Verify that this is a valid polygon.
@@ -5700,13 +5660,13 @@ class EuclideanPolygon(EuclideanFacade):
             if any(edge.dimension() == 0 for edge in self.sides()):
                 raise ValueError("polygon has zero edge")
 
-            for v, corner, w in self.tangents():
-                from flatsurf.geometry.euclidean import is_parallel
-
+            sides = self.sides()
+            for e, f in zip(sides, sides[1:] + sides[:1]):
+                corner = f.start()
                 if not corner.is_finite():
                     continue
 
-                if is_parallel(v, w):
+                if is_parallel(-e.direction(), f.direction()):
                     raise ValueError("polygon has anti-parallel edges")
 
         sides = self.sides()
@@ -5944,6 +5904,7 @@ class EuclideanDistances(Parent):
 
 
 # TODO: PRE-EUCLIDEAN-PLANE CODE HERE
+# All of this should go into the geometries.
 
 
 def is_cosine_sine_of_rational(cos, sin, scaled=False):
