@@ -321,7 +321,7 @@ class Polygons(Category_over_base_ring):
                 ('a', 'square', 'squares')
 
             """
-            marked_vertices = self.marked_vertices()
+            marked_vertices = self.corners(marked=True)
 
             if marked_vertices and self.area() != 0:
                 self = self.erase_marked_vertices()

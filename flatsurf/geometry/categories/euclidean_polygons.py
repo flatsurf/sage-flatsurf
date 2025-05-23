@@ -271,14 +271,32 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: s.corners(marked=False, finite=True)
                 ((0, 0), (1, 0), (1, 1), (0, 1))
 
+            A half plane has a single corner at infinite::
+
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane()
+                sage: p = E.polygon(edges=[E.line((0, 0), (1, 0))])
+
+                sage: p.corners()
+                ([1:0:0],)
+
+                sage: p.corners(finite=True)
+                ()
+
+            The angle at that infinite is (by convention) -π instead of π so
+            that the sum of angles in an n-gon is (n-2)π. Therefore, this
+            corner is not marked::
+
+                sage: p.corners(marked=True)
+                ()
+
             """
-            # TODO: Make this faster by caching?
             if marked is not None:
                 sides = self.sides()
                 tangents = zip(sides[-1:] + sides[:-1], sides)
 
                 from flatsurf.geometry.euclidean import is_parallel
-                corners = tuple(f.start() for (e, f) in tangents if is_parallel(e.direction(), f.direction()) == marked)
+                corners = tuple(f.start() for (e, f) in tangents if f.start().is_finite() and is_parallel(e.direction(), f.direction()) == marked)
             else:
                 corners = tuple(e.start() for e in self.sides())
 
@@ -533,7 +551,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
         def _test_marked_vertices(self, **options):
             r"""
-            Verify that :meth:`vertices` and :meth:`is_convex` are compatible.
+            Verify that :meth:`corners` and :meth:`is_convex` are compatible.
 
             EXAMPLES::
 
@@ -542,7 +560,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: S._test_marked_vertices()
 
             """
-            tester = self._tester(**options)
+            tester = self._tester(**options)  # pyright: ignore
 
             if self.is_convex():
                 tester.assertEqual(
@@ -577,7 +595,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if self.area() == 0:
                 return True
 
-            if self.marked_vertices():
+            if self.corners(marked=True):
                 return True
 
             return False
@@ -636,7 +654,6 @@ class EuclideanPolygons(Category_over_base_ring):
             return [vector((c, s)) for (c, s) in zip(cos, sin)]
 
         def erase_marked_vertices(self):
-            # TODO: Move implementation to EuclideanPolygon
             r"""
             Return a copy of this polygon without marked vertices.
 
@@ -660,23 +677,39 @@ class EuclideanPolygons(Category_over_base_ring):
             if not self.corners(marked=True):
                 return self
 
+            parent = self.parent()  # pyright: ignore
+
             sides = list(self.sides())
 
             at = 0
             while at < len(sides) and len(sides) > 1:
                 from flatsurf.geometry.euclidean import is_anti_parallel
                 if sides[at].start().is_finite() and is_anti_parallel(-sides[at - 1].direction(), sides[at].direction()):
-                    side = self.parent().segment(sides[at].line(), start=sides[at - 1]._start, end =sides[at]._end, oriented=True)
+                    start = sides[at - 1].start()
+                    if not start.is_finite():
+                        start = None
+
+                    end = sides[at].end()
+                    if not end.is_finite():
+                        end = None
+
+                    side = parent.segment(sides[at].line(), start=start, end=end, oriented=True)
                     sides.pop(at)
                     sides[at - 1] = side
                 else:
                     at += 1
 
-            return self.parent().polygon(edges=sides)
+            return parent.polygon(edges=sides)
 
         def is_equilateral(self):
             r"""
             Return whether all sides of this polygon have the same length.
+
+            .. NOTE::
+
+                Two sides have the same length if they are the same up to an
+                isometry in SO(2). In particular, lines and rays do not have
+                the same length in non-compact polygons.
 
             EXAMPLES::
 
@@ -685,24 +718,48 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: p.is_equilateral()
                 True
 
-            """
-            if all(not side.is_compact() for side in self.sides()):
-                # TODO: this case is ambiguous as there are half-infinite and bi-infinite sides
-                return True
+            For a non-compact polygon, when all its sides are lines, or all its
+            sides are rays::
 
-            if not all(side.is_compact() for side in self.sides()):
+                sage: from flatsurf import EuclideanPlane
+                sage: E = EuclideanPlane()
+
+                sage: p = E.polygon(edges=[E.line((0, 0), (1,0))])
+                sage: p.is_equilateral()
+                True
+
+            ::
+
+                sage: p = E.polygon(edges=[E.ray((0, 0), (1,0)), -E.ray((0, 0), (-1, 0))])
+                sage: p.is_equilateral()
+                True
+
+            """
+            if not self.is_compact():  # pyright: ignore
+                if all(side.start().is_ideal() and side.end().is_ideal() for side in self.sides()):
+                    # All sides are lines
+                    return True
+
+                if all(side.start().is_finite() != side.end().is_finite() for side in self.sides()):
+                    # All sides are rays
+                    return True
+
                 return False
 
-            return len({side.vector()[0] ** 2 + side.vector()[1] ** 2 for side in self.sides()}) == 1
+            return len({side.vector() * side.vector() for side in self.sides()}) == 1
 
-        # TODO: fix me when for non-compact polygons
-        # - either all angles are finite and the code works
-        # - either all vertices are at infinity and the code should be adapted
-        # - or there is a mix of finite and infinite vertex and the function
-        #   should return False
         def is_equiangular(self):
             r"""
             Return whether all sides of this polygon meet at the same angle.
+
+            .. NOTE::
+
+                We consider the Euclidean plane to be part of the complex
+                projective line, i.e., all lines and rays meet at the point at
+                infinity. The angle they meet at can be determined by applying
+                a change of coordinates such as mapping z to 1/z. However, we
+                consider the angles at infinity to be negative so that sum of
+                the angles of an n-gon is (n-2)π.
 
             EXAMPLES::
 
@@ -713,15 +770,44 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: p.is_equiangular()
                 True
 
+            The upper half plane has a single vertex at infinity with angle -π::
+
                 sage: p = E.polygon(edges=[E.line((0, 0), (1,0))])
                 sage: p.is_equiangular()
                 True
 
+            The upper half plane with a marked point at zero has angle π and -π::
+
                 sage: p = E.polygon(edges=[E.ray((0, 0), (1,0)), -E.ray((0, 0), (-1, 0))])
-                sage: p.is_equiangular()  # known bug
+                sage: p.is_equiangular()
                 False
 
+            The polygon formed by a ray and its negative has two zero angles::
+
+                sage: p = E.polygon(edges=[E.ray((0, 0), (1,0)), -E.ray((0, 0), (1, 0))], check=False)
+                sage: p.is_equiangular()
+                True
+
             """
+            finites = self.corners(finite=True)
+            infinites = self.corners(finite=False)
+            sides = self.sides()
+
+            for e, f in zip(sides, sides[1:] + sides[:1]):
+                if e.direction() != -f.direction():
+                    break
+            else:
+                # A polygon with all angles 0. (In particular the empty polygon.)
+                return True
+
+            if finites and infinites:
+                # A polygon with finite and infinite vertices must have
+                # positive and negative angle now.
+                return False
+
+            # A polygon is equiangular if all its changes in slope are the same.
+            # (This is also true for a polygon with only infinite vertices but
+            # the only such connected simple polygon is the half plane.)
             slopes = self.slopes(relative=True)
 
             from flatsurf.geometry.euclidean import is_parallel

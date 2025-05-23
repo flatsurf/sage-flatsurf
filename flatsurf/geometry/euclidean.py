@@ -5618,18 +5618,16 @@ class EuclideanPolygon(EuclideanFacade):
             sage: from flatsurf import polygons
             sage: s = polygons.square()
             sage: s.marked_vertices()
+            doctest:warning
+            ...
+            UserWarning: marked_vertices() has been deprecated and will be removed in a future version of sage-flatsurf; use [c.vector() for c in corners(marked=True)] instead
             ()
 
         """
-        # TODO: Deprecate.
-        marked = []
-        n = len(self._edges)
-        for i in range(n):
-            s0 = self._edges[i]
-            s1 = self._edges[(i + 1) % n]
-            if s0.end() is not None and ccw(s0.direction(), s1.direction()) == 0:
-                marked.append(s0.end())
-        return tuple(marked)
+        import warnings
+        warnings.warn("marked_vertices() has been deprecated and will be removed in a future version of sage-flatsurf; use [c.vector() for c in corners(marked=True)] instead")
+
+        return tuple(c.vector() for c in self.corners(marked=True))
 
     def sides(self):
         return self._edges
