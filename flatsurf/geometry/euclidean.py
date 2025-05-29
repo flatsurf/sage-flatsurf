@@ -127,7 +127,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         category = category or Sets()
 
-        return super().__classcall__(  # pyright: ignore
+        return super().__classcall__(  # type: ignore
             cls, base_ring=base_ring, geometry=geometry, category=category
         )
 

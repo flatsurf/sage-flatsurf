@@ -550,7 +550,7 @@ class SimplicialHomologyGroup(Parent):
 
         from sage.categories.all import Rings
 
-        if coefficients not in Rings():  # pyright: ignore[reportCallIssue]
+        if coefficients not in Rings():  # type: ignore
             raise TypeError("coefficients must be a ring")
 
         if relative:
@@ -1163,7 +1163,7 @@ class SimplicialHomologyGroup(Parent):
 
         return [
             sum(c * g for (c, g) in zip(row, self.gens())) for row in C
-        ]  # pyright: ignore
+        ]  # type: ignore
 
     def _test_symplectic_basis(self, **options):
         r"""

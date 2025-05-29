@@ -69,8 +69,6 @@ class EuclideanPolygons(Category_over_base_ring):
 
     """
 
-    # TODO: Use type: ignore instead of pyright everywhere.
-    # TODO: Figure out if there is a good generic type: ignoresomethingspecific we can put at the very top of this file.
     def super_categories(self):  # type: ignore
         r"""
         Return the categories Euclidean polygons are also contained in, namely
@@ -194,7 +192,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 if not is_cosine_sine_of_rational(cos, sin, scaled=True):
                     return False
 
-            self._refine_category_(self.category().Rational())  # pyright: ignore
+            self._refine_category_(self.category().Rational())  # type: ignore
 
             return True
 
@@ -236,7 +234,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: s._test_is_simple()
 
             """
-            tester = self._tester(**options)  # pyright: ignore
+            tester = self._tester(**options)  # type: ignore
 
             tester.assertEqual(
                 EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple()
@@ -346,7 +344,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: s._test_corners()
 
             """
-            tester = self._tester(**options)  # pyright: ignore
+            tester = self._tester(**options)  # type: ignore
 
             tester.assertEqual(
                 len(self.corners()), len(self.corners(finite=True)) + len(self.corners(finite=False))
@@ -562,7 +560,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: S._test_marked_vertices()
 
             """
-            tester = self._tester(**options)  # pyright: ignore
+            tester = self._tester(**options)  # type: ignore
 
             if self.is_convex():
                 tester.assertEqual(
@@ -679,7 +677,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if not self.corners(marked=True):
                 return self
 
-            parent = self.parent()  # pyright: ignore
+            parent = self.parent()  # type: ignore
 
             sides = list(self.sides())
 
@@ -737,7 +735,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            if not self.is_compact():  # pyright: ignore
+            if not self.is_compact():  # type: ignore
                 if all(side.start().is_ideal() and side.end().is_ideal() for side in self.sides()):
                     # All sides are lines
                     return True
