@@ -69,7 +69,9 @@ class EuclideanPolygons(Category_over_base_ring):
 
     """
 
-    def super_categories(self):  # pyright: ignore[reportIncompatibleMethodOverride]
+    # TODO: Use type: ignore instead of pyright everywhere.
+    # TODO: Figure out if there is a good generic type: ignoresomethingspecific we can put at the very top of this file.
+    def super_categories(self):  # type: ignore
         r"""
         Return the categories Euclidean polygons are also contained in, namely
         the polygons.
@@ -109,7 +111,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
             )
 
-            return self.base_ring().fraction_field() ** 2  # pyright: ignore
+            return self.base_ring().fraction_field() ** 2  # type: ignore
 
         def module(self):
             r"""
@@ -132,7 +134,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "module() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 instead"
             )
 
-            return self.base_ring() ** 2  # pyright: ignore
+            return self.base_ring() ** 2  # type: ignore
 
         def field(self):
             r"""
@@ -153,7 +155,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead"
             )
 
-            return self.base_ring().fraction_field()  # pyright: ignore
+            return self.base_ring().fraction_field()  # type: ignore
 
         @cached_method
         def is_rational(self):
