@@ -1,3 +1,6 @@
+# type: ignore
+# Type checkers cannot handle SageMath's category framework yet. So we ignore
+# any type checks completely in this file.
 r"""
 The category of Euclidean polygons defined in the real plane.
 
@@ -51,7 +54,7 @@ from sage.misc.abstract_method import abstract_method
 from sage.structure.element import get_coercion_model, Vector
 
 from flatsurf.geometry.categories.polygons import Polygons
-from flatsurf.geometry.euclidean import ccw, EuclideanPoint, EuclideanSegment, EuclideanLine, EuclideanRay
+from flatsurf.geometry.euclidean import ccw, EuclideanPoint, EuclideanSegment, EuclideanLine
 
 cm = get_coercion_model()
 
@@ -69,7 +72,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
     """
 
-    def super_categories(self):  # type: ignore
+    def super_categories(self):
         r"""
         Return the categories Euclidean polygons are also contained in, namely
         the polygons.
@@ -109,7 +112,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
             )
 
-            return self.base_ring().fraction_field() ** 2  # type: ignore
+            return self.base_ring().fraction_field() ** 2
 
         def module(self):
             r"""
@@ -132,7 +135,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "module() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 instead"
             )
 
-            return self.base_ring() ** 2  # type: ignore
+            return self.base_ring() ** 2
 
         def field(self):
             r"""
@@ -153,7 +156,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 "field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead"
             )
 
-            return self.base_ring().fraction_field()  # type: ignore
+            return self.base_ring().fraction_field()
 
         @cached_method
         def is_rational(self):
@@ -192,7 +195,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 if not is_cosine_sine_of_rational(cos, sin, scaled=True):
                     return False
 
-            self._refine_category_(self.category().Rational())  # type: ignore
+            self._refine_category_(self.category().Rational())
 
             return True
 
@@ -234,7 +237,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: s._test_is_simple()
 
             """
-            tester = self._tester(**options)  # type: ignore
+            tester = self._tester(**options)
 
             tester.assertEqual(
                 EuclideanPolygons.ParentMethods.is_simple(self), self.is_simple()
@@ -344,7 +347,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: s._test_corners()
 
             """
-            tester = self._tester(**options)  # type: ignore
+            tester = self._tester(**options)
 
             tester.assertEqual(
                 len(self.corners()), len(self.corners(finite=True)) + len(self.corners(finite=False))
@@ -560,7 +563,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: S._test_marked_vertices()
 
             """
-            tester = self._tester(**options)  # type: ignore
+            tester = self._tester(**options)
 
             if self.is_convex():
                 tester.assertEqual(
@@ -677,7 +680,7 @@ class EuclideanPolygons(Category_over_base_ring):
             if not self.corners(marked=True):
                 return self
 
-            parent = self.parent()  # type: ignore
+            parent = self.parent()
 
             sides = list(self.sides())
 
@@ -735,7 +738,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            if not self.is_compact():  # type: ignore
+            if not self.is_compact():
                 if all(side.start().is_ideal() and side.end().is_ideal() for side in self.sides()):
                     # All sides are lines
                     return True
@@ -867,7 +870,6 @@ class EuclideanPolygons(Category_over_base_ring):
             g = Graphics()
 
             from flatsurf.graphical.hyperbolic import (
-                CartesianPathPlotCommand,
                 CartesianPathPlot,
             )
 
@@ -969,7 +971,6 @@ class EuclideanPolygons(Category_over_base_ring):
         def _plot_commands(self):
             from flatsurf.graphical.hyperbolic import (
                 CartesianPathPlotCommand,
-                CartesianPathPlot,
             )
 
             commands = []
@@ -1407,12 +1408,11 @@ class EuclideanPolygons(Category_over_base_ring):
                 Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
             """
-            # TODO: Restore this warning.
-            # import warnings
+            import warnings
 
-            # warnings.warn(
-            #     "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
-            # )
+            warnings.warn(
+                "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
+            )
 
             from sage.all import VectorSpace
 
@@ -2099,7 +2099,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         assert not direction.is_zero()
                     v = start_vertex
                     n = len(self.corners())
-                    for i in range(len(self.corners())):
+                    for _ in range(len(self.corners())):
                         if (
                             ccw(self.side(v).vector(), direction) >= 0
                             and ccw(self.side(v + n - 1).vector(), direction) > 0
@@ -2449,7 +2449,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     steps = [e.vector() / parts for e in self.sides()]
                     from flatsurf import Polygon
 
-                    return Polygon(edges=[e for e in steps for p in range(parts)])
+                    return Polygon(edges=[e for e in steps for _ in range(parts)])
 
                 def j_invariant(self):
                     r"""
@@ -2510,7 +2510,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     K = self.base_ring()
                     try:
-                        V, from_V, to_V = K.vector_space()
+                        _, __, to_V = K.vector_space()
                     except (AttributeError, ValueError):
                         raise ValueError(
                             "the surface needs to be define over a number field"
