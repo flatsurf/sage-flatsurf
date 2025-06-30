@@ -11,7 +11,7 @@ r"""
 #
 #        Copyright (C) 2016-2022 W. Patrick Hooper
 #                      2016-2022 Vincent Delecroix
-#                           2023 Julian Rüth
+#                      2023-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -30,17 +30,6 @@ from collections import deque
 
 from flatsurf.geometry.euclidean import line_intersection
 from flatsurf.geometry.surface_objects import SaddleConnection
-
-# Vincent question:
-# using deque has the disadvantage of losing the initial points
-# ideally doig
-#  my_line[i]
-# we should always access to the same element
-
-# I wanted to be able to flow backward thus inserting at the beginning of a list.
-# Perhaps it would be better to model this on a deque-like class that is indexed by
-# all integers rather than just the non-negative ones? Do you know of such
-# a class? Alternately, we could store an offset.
 
 
 def get_linearity_coeff(u, v):
@@ -84,6 +73,7 @@ def get_linearity_coeff(u, v):
         raise ValueError("zero vector")
 
 
+# TODO: Does this assume convexity?
 class SegmentInPolygon:
     r"""
     Maximal segment in a polygon of a similarity surface
@@ -401,9 +391,9 @@ class AbstractStraightLineTrajectory:
 
         s = segments[0]
         start = s.start()
-        if start._position._position_type == start._position.EDGE_INTERIOR:
+        if start.position()._position_type == start.position().EDGE_INTERIOR:
             p = s.polygon_label()
-            e = start._position.get_edge()
+            e = start.position().get_edge()
             lab = (p, e) if alphabet is None else alphabet.get((p, e))
             if lab is not None:
                 coding.append(lab)
@@ -412,7 +402,7 @@ class AbstractStraightLineTrajectory:
             s = segments[i]
             end = s.end()
             p = s.polygon_label()
-            e = end._position.get_edge()
+            e = end.position().get_edge()
             lab = (p, e) if alphabet is None else alphabet.get((p, e))
             if lab is not None:
                 coding.append(lab)
@@ -420,11 +410,11 @@ class AbstractStraightLineTrajectory:
         s = segments[-1]
         end = s.end()
         if (
-            end._position._position_type == end._position.EDGE_INTERIOR
+            end.position()._position_type == end.position().EDGE_INTERIOR
             and end.invert() != start
         ):
             p = s.polygon_label()
-            e = end._position.get_edge()
+            e = end.position().get_edge()
             lab = (p, e) if alphabet is None else alphabet.get((p, e))
             if lab is not None:
                 coding.append(lab)
@@ -740,7 +730,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
             return
 
         start = seg.start()
-        pos = start._position
+        pos = start.position()
         if pos._position_type == pos.EDGE_INTERIOR:
             i = pos.get_edge()
         elif pos._position_type == pos.VERTEX:

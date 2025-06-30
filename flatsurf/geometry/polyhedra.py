@@ -32,7 +32,7 @@ from flatsurf.geometry.straight_line_trajectory import (
     StraightLineTrajectory,
     SegmentInPolygon,
 )
-from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
+from flatsurf.geometry.tangent_bundle import TangentVector
 
 
 class ConeSurfaceToPolyhedronMap(SageObject):
@@ -55,7 +55,7 @@ class ConeSurfaceToPolyhedronMap(SageObject):
         Currently works with
         - StraightLineTrajectory -- returns the corresponding list of points on the polyhedron
         - SegmentInPolygon -- returns the corresponding pair of points on the polyhedron
-        - SimilaritySurfaceTangentVector -- returns a pair of points corresponding to the image point and image of the tangent vector.
+        - TangentVector -- returns a pair of points corresponding to the image point and image of the tangent vector.
         """
         if isinstance(o, StraightLineTrajectory):
             points = []
@@ -75,7 +75,7 @@ class ConeSurfaceToPolyhedronMap(SageObject):
                 self._md[label][0] + self._md[label][1] * o.start().point(),
                 self._md[label][0] + self._md[label][1] * o.end().point(),
             )
-        if isinstance(o, SimilaritySurfaceTangentVector):
+        if isinstance(o, TangentVector):
             # Map to a pair of vectors conisting of the image of the basepoint and the image of the vector.
             label = o.polygon_label()
             point = o.point()

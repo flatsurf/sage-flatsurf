@@ -103,6 +103,8 @@ class IdentityMapping(SurfaceMapping):
     def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._codomain.base_ring():
+            ring = None
         return self._codomain.tangent_vector(
             tangent_vector.polygon_label(),
             tangent_vector.point(),
@@ -113,6 +115,8 @@ class IdentityMapping(SurfaceMapping):
     def pull_vector_back(self, tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._domain.base_ring():
+            ring = None
         return self._domain.tangent_vector(
             tangent_vector.polygon_label(),
             tangent_vector.point(),
@@ -234,6 +238,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
     def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._codomain.base_ring():
+            ring = None
         if tangent_vector.polygon_label() == self._removed_label:
             return self._codomain.tangent_vector(
                 self._saved_label,
@@ -254,6 +260,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         Applies the inverse of the mapping to the provided vector.
         """
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._domain.base_ring():
+            ring = None
         if tangent_vector.polygon_label() == self._saved_label:
             p = tangent_vector.point()
             v = self._domain.polygon(self._saved_label).vertex(self._glued_edge)
@@ -404,6 +412,9 @@ class SplitPolygonsMapping(SurfaceMapping):
     def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._codomain.base_ring():
+            ring = None
+
         if tangent_vector.polygon_label() == self._p:
             point = tangent_vector.point()
             vertex1 = self._domain.polygon(self._p).vertex(self._v1)
@@ -460,6 +471,8 @@ class SplitPolygonsMapping(SurfaceMapping):
     def pull_vector_back(self, tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._domain.base_ring():
+            ring = None
         if tangent_vector.polygon_label() == self._p:
             return self._domain.tangent_vector(
                 self._p,
@@ -708,6 +721,8 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._codomain.base_ring():
+            ring = None
         label = tangent_vector.polygon_label()
         return self.codomain().tangent_vector(
             label,
@@ -719,6 +734,8 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def pull_vector_back(self, tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._domain.base_ring():
+            ring = None
         label = tangent_vector.polygon_label()
         return self.domain().tangent_vector(
             label,
@@ -780,6 +797,8 @@ class ReindexMapping(SurfaceMapping):
         r"""Applies the mapping to the provided vector."""
         # There is no change- we just move it to the new surface.
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._codomain.base_ring():
+            ring = None
         return self.codomain().tangent_vector(
             self._f[tangent_vector.polygon_label()],
             tangent_vector.point(),
@@ -790,6 +809,8 @@ class ReindexMapping(SurfaceMapping):
     def pull_vector_back(self, tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
+        if ring is self._domain.base_ring():
+            ring = None
         return self.domain().tangent_vector(
             self._b[tangent_vector.polygon_label()],
             tangent_vector.point(),
@@ -856,9 +877,9 @@ def canonicalize_translation_surface_mapping(s):
         sage: TestSuite(m.codomain()).run()
         sage: s=m.domain()
         sage: v=s.tangent_vector(0,(0,0),(1,1))
-        sage: w=m.push_vector_forward(v)
-        sage: print(w)
-        SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (a + 3, 1)
+        sage: m.push_vector_forward(v)
+        (a + 3, 1) at vertex 0 of polygon 0
+
     """
     from flatsurf.geometry.categories import TranslationSurfaces
 

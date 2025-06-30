@@ -698,7 +698,7 @@ class GraphicalSurface:
         r"""Converts from graphical coordinates to similarity surface coordinates.
 
         A point always must be provided. If a vector v is provided then a
-        SimilaritySurfaceTangentVector will be returned. If v is not provided, then a
+        TangentVector will be returned. If v is not provided, then a
         SurfacePoint is returned.
 
         INPUT:
@@ -746,13 +746,13 @@ class GraphicalSurface:
             sage: gs.to_surface((1,-2))
             Point (1, 1/2) of polygon 1
             sage: gs.to_surface((1,-2), v=(1,0))
-            SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
+            TangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.infinite_staircase()
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((4,4), (1,1), search_all=True, search_limit=20)
-            SimilaritySurfaceTangentVector in polygon 8 based at (0, 0) with vector (1, 1)
+            TangentVector in polygon 8 based at (0, 0) with vector (1, 1)
 
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")

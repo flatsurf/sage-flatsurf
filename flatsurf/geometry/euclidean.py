@@ -11,7 +11,7 @@ A loose collection of tools for Euclidean geometry in the plane.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2023 Julian Rüth
+#                      2020-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -533,22 +533,34 @@ def is_segment_intersecting(e1, e2):
     return 2  # middle intersection
 
 
-def is_between(e0, e1, f):
+def is_between(e0, e1, f, strict=True):
     r"""
-    Check whether the vector ``f`` is strictly in the sector formed by the vectors
-    ``e0`` and ``e1`` (in counter-clockwise order).
+    Check whether the vector ``f`` is (strictly) in the sector formed by the
+    vectors ``e0`` and ``e1`` (in counter-clockwise order).
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.euclidean import is_between
         sage: is_between((1, 0), (1, 1), (2, 1))
         True
+        sage: is_between((1, 0), (1, 1), (2, 2))
+        False
+        sage: is_between((1, 0), (1, 1), (2, 2), strict=False)
+        True
+
+    TESTS::
 
         sage: from itertools import product
         sage: vecs = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
         sage: for (i, vi), (j, vj), (k, vk) in product(enumerate(vecs), repeat=3):
         ....:     assert is_between(vi, vj, vk) == ((i == j and i != k) or i < k < j or k < j < i or j < i < k), ((i, vi), (j, vj), (k, vk))
     """
+    if not strict:
+        if is_parallel(e0, f):
+            return True
+        if is_parallel(f, e1):
+            return True
+
     if e0[0] * e1[1] > e1[0] * e0[1]:
         # positive determinant
         # [ e0[0] e1[0] ]^-1 = [ e1[1] -e1[0] ]
@@ -725,6 +737,31 @@ def slope(a, rotate=1):
     if rotate == -1:
         return 1 if y else -1
     raise ValueError("invalid argument rotate={}".format(rotate))
+
+
+def rotate(v, direction):
+    r"""
+    Return a rotated version of ``v`` that is parallel with ``direction``.
+
+    EXAMPLES::
+
+       sage: from flatsurf.geometry.euclidean import rotate
+       sage: V = QQ**2
+       sage: v = V((1, 1))
+       sage: rotate(v, V((-2, -2)))
+       (-1, -1)
+       sage: rotate(v, V((1, 0)))
+       Traceback (most recent call last):
+       ...
+       TypeError: unable to convert sqrt(2) to a rational
+
+       sage: V = AA**2
+       sage: v = V((1, 1))
+       sage: rotate(v, V((1, 0)))
+       (1.414213562373095?, 0)
+
+    """
+    return v.base_ring()((v.dot_product(v) / direction.dot_product(direction)).sqrt()) * direction
 
 
 def time_on_ray(p, direction, q):

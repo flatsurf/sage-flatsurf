@@ -555,7 +555,7 @@ class SurfacePoint(Element):
             *args, **kwargs
         )
 
-    def __repr__(self):
+    def __repr__(self, uppercase=True, shortened=False):
         r"""
         Return a printable representation of this point.
 
@@ -568,23 +568,32 @@ class SurfacePoint(Element):
 
         """
 
-        def render(label, coordinates):
-            if self.is_vertex():
-                vertex = (
-                    self.surface()
-                    .polygon(label)
-                    .get_point_position(coordinates)
-                    .get_vertex()
-                )
-                return "Vertex {} of polygon {}".format(vertex, label)
-
-            return "Point {} of polygon {}".format(coordinates, label)
-
         # We pick a specific representative to make our lives easier when doctesting
         return min(
-            render(label, coordinates)
+            self._repr_representative(label, coordinates, uppercase=uppercase, shortened=shortened)
             for (label, coordinates) in self.representatives()
         )
+
+    def _repr_representative(self, label, coordinates, uppercase=True, shortened=False):
+        if self.is_vertex():
+            kind = "Vertex" if uppercase else "vertex"
+            vertex = (
+                self.surface()
+                .polygon(label)
+                .get_point_position(coordinates)
+                .get_vertex()
+            )
+            info = f"{vertex} of polygon {label}"
+
+        else:
+            info = f"{coordinates!r} of polygon {label}"
+
+            if shortened:
+                return info
+
+            kind = "Point" if uppercase else "point"
+        
+        return f"{kind} {info}"
 
     def __eq__(self, other):
         r"""
