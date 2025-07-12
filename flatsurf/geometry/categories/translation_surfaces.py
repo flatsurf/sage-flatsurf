@@ -28,7 +28,7 @@ EXAMPLES::
 #
 #        Copyright (C) 2013-2019 Vincent Delecroix
 #                      2013-2019 W. Patrick Hooper
-#                      2023-2024 Julian Rüth
+#                      2023-2025 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -421,6 +421,19 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         sage: s1.cmp(s2) == 0
                         True
                         sage: hash(s1) == hash(s2)
+                        True
+
+                    TESTS:
+
+                    Verify that the example in the Warwick notes works:
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: s = translation_surfaces.veech_double_n_gon(5).canonicalize()
+                        sage: p = s.polygon(0)
+                        sage: modulus = (p.vertex(3)[1] - p.vertex(2)[1]) / (p.vertex(2)[0] - p.vertex(4)[0])
+                        sage: ss = matrix(s.base_ring(), [[1, ~modulus], [0, 1]]) * s
+                        sage: ss = ss.delaunay_decomposition()
+                        sage: ss.canonicalize() == s
                         True
 
                     """
