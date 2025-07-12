@@ -3109,6 +3109,28 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: len(S.saddle_connections(63**2, initial_label=0, initial_vertex=0))
                     19
 
+                Verify that #351 has been resolved::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+
+                    sage: K.<a> = NumberField(x^4 - 2*x^3 - 5*x^2 + 6*x - 1, embedding=.2)
+                    sage: a1 = vector(K, (2 * a^3 - 3 * a^2 - 10 * a + 3, 1 / 4))
+                    sage: a2 = vector(K, (4 / 3 * a^3 - 2 * a^2 - 26 / 3 * a + 8 / 3, -1 / 5))
+                    sage: b1 = vector(K, (0, 2 / 3 * a^3 - a^2 - 13 / 3 * a + 11 / 6))
+                    sage: b2 = vector(K, (-1 / 4, 2 / 3 * a^3 - a^2 - 13 / 3 * a + 5 / 3))
+                    sage: P = Polygon(edges=[a1, a2, b1, -a2, b2, -a1, -b2, -b1])
+                    sage: S = MutableOrientedSimilaritySurface(K)
+                    sage: S.add_polygon(P)
+                    0
+                    sage: S.glue((0, 0), (0, 5))
+                    sage: S.glue((0, 1), (0, 3))
+                    sage: S.glue((0, 2), (0, 7))
+                    sage: S.glue((0, 4), (0, 6))
+                    sage: S.set_immutable()
+
+                    sage: len(S.saddle_connections(1))
+                    12
+
                 """
                 if squared_length_bound <= 0:
                     raise ValueError
