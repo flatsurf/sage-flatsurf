@@ -524,18 +524,15 @@ document.write(`
         <span class="k">elif</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
             <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">polygon_label</span><span class="p">)</span>
-            <span class="c1"># subsequent edge:</span>
-            <span class="n">edge1</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="c1"># prior edge:</span>
-            <span class="n">edge0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">()))</span>
-            <span class="n">wp1</span> <span class="o">=</span> <span class="n">ccw</span><span class="p">(</span><span class="n">edge1</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span>
-            <span class="n">wp0</span> <span class="o">=</span> <span class="n">ccw</span><span class="p">(</span><span class="n">edge0</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">wp1</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">wp0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="kn">from</span><span class="w"> </span><span class="nn">flatsurf.geometry.euclidean</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_between</span>
+
+            <span class="k">if</span> <span class="n">is_between</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">vector</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;Singular point with vector pointing away from polygon&quot;</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="n">wp0</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># vector points backward along edge 0</span>
+            <span class="k">if</span> <span class="n">is_anti_parallel</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">vector</span><span class="p">):</span>
+                <span class="c1"># vector points backward along previous edge</span>
                 <span class="n">label2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span>
                     <span class="n">polygon_label</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span>
                 <span class="p">)</span>
@@ -551,7 +548,7 @@ document.write(`
                     <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label2</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">point2</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># vector points along edge1 in that directior or points into polygons interior</span>
+                <span class="c1"># vector points along subsequent edge or points into polygons interior</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_polygon_label</span> <span class="o">=</span> <span class="n">polygon_label</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_point</span> <span class="o">=</span> <span class="n">point</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_vector</span> <span class="o">=</span> <span class="n">vector</span>
@@ -784,7 +781,6 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">()</span>
         <span class="n">point2</span><span class="p">,</span> <span class="n">pos2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">flow_to_exit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
-        <span class="c1"># diff=point2-point</span>
         <span class="n">new_vector</span> <span class="o">=</span> <span class="n">SimilaritySurfaceTangentVector</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bundle</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span> <span class="n">point2</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
         <span class="p">)</span>

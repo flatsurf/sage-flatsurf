@@ -3651,6 +3651,28 @@ document.write(`
 <span class="sd">                    sage: len(S.saddle_connections(63**2, initial_label=0, initial_vertex=0))</span>
 <span class="sd">                    19</span>
 
+<span class="sd">                Verify that #351 has been resolved::</span>
+
+<span class="sd">                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon</span>
+
+<span class="sd">                    sage: K.&lt;a&gt; = NumberField(x^4 - 2*x^3 - 5*x^2 + 6*x - 1, embedding=.2)</span>
+<span class="sd">                    sage: a1 = vector(K, (2 * a^3 - 3 * a^2 - 10 * a + 3, 1 / 4))</span>
+<span class="sd">                    sage: a2 = vector(K, (4 / 3 * a^3 - 2 * a^2 - 26 / 3 * a + 8 / 3, -1 / 5))</span>
+<span class="sd">                    sage: b1 = vector(K, (0, 2 / 3 * a^3 - a^2 - 13 / 3 * a + 11 / 6))</span>
+<span class="sd">                    sage: b2 = vector(K, (-1 / 4, 2 / 3 * a^3 - a^2 - 13 / 3 * a + 5 / 3))</span>
+<span class="sd">                    sage: P = Polygon(edges=[a1, a2, b1, -a2, b2, -a1, -b2, -b1])</span>
+<span class="sd">                    sage: S = MutableOrientedSimilaritySurface(K)</span>
+<span class="sd">                    sage: S.add_polygon(P)</span>
+<span class="sd">                    0</span>
+<span class="sd">                    sage: S.glue((0, 0), (0, 5))</span>
+<span class="sd">                    sage: S.glue((0, 1), (0, 3))</span>
+<span class="sd">                    sage: S.glue((0, 2), (0, 7))</span>
+<span class="sd">                    sage: S.glue((0, 4), (0, 6))</span>
+<span class="sd">                    sage: S.set_immutable()</span>
+
+<span class="sd">                    sage: len(S.saddle_connections(1))</span>
+<span class="sd">                    12</span>
+
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">squared_length_bound</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span>
