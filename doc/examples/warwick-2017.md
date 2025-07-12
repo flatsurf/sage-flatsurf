@@ -44,9 +44,7 @@ AA(modulus)
 jupyter:
   outputs_hidden: false
 ---
-m = matrix(s.base_ring(), [[1, 2], [0, 1]])
-show(matrix(AA, m))
-ss = m * s
+ss = matrix(s.base_ring(), [[1, ~modulus], [0, 1]]) * s
 ss.plot()
 ```
 
@@ -55,7 +53,7 @@ ss = ss.delaunay_decomposition()
 ss.plot()
 ```
 
-The following checks that the matrix m stabilizes s; actually, it does not, see [#230](https://github.com/flatsurf/sage-flatsurf/issues/230):
+We verify that the matrix m stabilizes s:
 
 ```{code-cell}
 ---
