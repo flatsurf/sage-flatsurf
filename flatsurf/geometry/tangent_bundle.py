@@ -120,18 +120,14 @@ class SimilaritySurfaceTangentVector:
         elif pos.is_vertex():
             v = pos.get_vertex()
             p = self.surface().polygon(polygon_label)
-            # subsequent edge:
-            edge1 = p.edge(v)
-            # prior edge:
-            edge0 = p.edge((v - 1) % len(p.vertices()))
-            wp1 = ccw(edge1, vector)
-            wp0 = ccw(edge0, vector)
-            if wp1 < 0 or wp0 < 0:
+
+            from flatsurf.geometry.euclidean import is_between
+            if is_between(-p.edge(v - 1), p.edge(v), vector):
                 raise ValueError(
                     "Singular point with vector pointing away from polygon"
                 )
-            if wp0 == 0:
-                # vector points backward along edge 0
+            if is_anti_parallel(p.edge(v - 1), vector):
+                # vector points backward along previous edge
                 label2, e2 = self.surface().opposite_edge(
                     polygon_label, (v - 1) % len(p.vertices())
                 )
@@ -147,7 +143,7 @@ class SimilaritySurfaceTangentVector:
                     self.surface().polygon(label2).get_point_position(point2)
                 )
             else:
-                # vector points along edge1 in that directior or points into polygons interior
+                # vector points along subsequent edge or points into polygons interior
                 self._polygon_label = polygon_label
                 self._point = point
                 self._vector = vector
@@ -339,7 +335,6 @@ class SimilaritySurfaceTangentVector:
         """
         p = self.polygon()
         point2, pos2 = p.flow_to_exit(self.point(), self.vector())
-        # diff=point2-point
         new_vector = SimilaritySurfaceTangentVector(
             self.bundle(), self.polygon_label(), point2, -self.vector()
         )
