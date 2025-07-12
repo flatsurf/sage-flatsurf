@@ -1,5 +1,5 @@
 r"""
-Eskin-McMullen-Mukamel-Write quadrilaterals from the article
+Eskin-McMullen-Mukamel-Wright quadrilaterals from the article
 "Billiards, quadrilaterals and moduli spaces"
 
 Note that in some cases, the billiards might give a Veech surface and not
