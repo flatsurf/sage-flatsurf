@@ -122,6 +122,7 @@ class SimilaritySurfaceTangentVector:
             p = self.surface().polygon(polygon_label)
 
             from flatsurf.geometry.euclidean import is_between
+
             if is_between(-p.edge(v - 1), p.edge(v), vector):
                 raise ValueError(
                     "Singular point with vector pointing away from polygon"
