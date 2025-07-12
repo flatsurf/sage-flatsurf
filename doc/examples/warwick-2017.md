@@ -49,7 +49,7 @@ ss.plot()
 ```
 
 ```{code-cell}
-ss = ss.delaunay_decomposition()
+ss = ss.delaunay_decompose().codomain()
 ss.plot()
 ```
 

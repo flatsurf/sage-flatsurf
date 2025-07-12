@@ -432,7 +432,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         sage: p = s.polygon(0)
                         sage: modulus = (p.vertex(3)[1] - p.vertex(2)[1]) / (p.vertex(2)[0] - p.vertex(4)[0])
                         sage: ss = matrix(s.base_ring(), [[1, ~modulus], [0, 1]]) * s
-                        sage: ss = ss.delaunay_decomposition()
+                        sage: ss = ss.delaunay_decompose().codomain()
                         sage: ss.canonicalize() == s
                         True
 
