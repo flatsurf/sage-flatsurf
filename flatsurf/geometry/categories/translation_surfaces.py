@@ -425,7 +425,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                     TESTS:
 
-                    Verify that the example in the Warwick notes works:
+                    Verify that the example in the Warwick notes works::
 
                         sage: from flatsurf import translation_surfaces
                         sage: s = translation_surfaces.veech_double_n_gon(5).canonicalize()
