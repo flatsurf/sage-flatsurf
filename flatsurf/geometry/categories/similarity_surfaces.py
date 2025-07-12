@@ -3121,6 +3121,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: P = Polygon(edges=[a1, a2, b1, -a2, b2, -a1, -b2, -b1])
                     sage: S = MutableOrientedSimilaritySurface(K)
                     sage: S.add_polygon(P)
+                    0
                     sage: S.glue((0, 0), (0, 5))
                     sage: S.glue((0, 1), (0, 3))
                     sage: S.glue((0, 2), (0, 7))
