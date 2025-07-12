@@ -513,36 +513,27 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="n">show</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
-<span class="n">ss</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">s</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="o">~</span><span class="n">modulus</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span> <span class="o">*</span> <span class="n">s</span>
 <span class="n">ss</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><html>\(\displaystyle \left(\begin{array}{rr}
-1 & 2 \\
-0 & 1
-\end{array}\right)\)</html></div><img alt="../_images/051bfe90dd19f8b708abe8a82b412a7183e51eee4492a9e51e8a013aa61297af.png" src="../_images/051bfe90dd19f8b708abe8a82b412a7183e51eee4492a9e51e8a013aa61297af.png" />
+<img alt="../_images/6e16321a63458e174bdc8b82eb45114b83ff4246ea987c399eea496835902e84.png" src="../_images/6e16321a63458e174bdc8b82eb45114b83ff4246ea987c399eea496835902e84.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">ss</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/sage-flatsurf/sage-flatsurf/flatsurf/geometry/categories/similarity_surfaces.py:2891: UserWarning: delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead
-  warnings.warn(
-</pre></div>
-</div>
-<img alt="../_images/e93a482268ac2b5e93631871e7eda988a6ac38519411c7e24122b4b5bc8825bb.png" src="../_images/e93a482268ac2b5e93631871e7eda988a6ac38519411c7e24122b4b5bc8825bb.png" />
+<img alt="../_images/a33db4861af62f1a15626d4383620c4a44138e368835466237a658bb622ed4c3.png" src="../_images/a33db4861af62f1a15626d4383620c4a44138e368835466237a658bb622ed4c3.png" />
 </div>
 </div>
-<p>The following checks that the matrix m stabilizes s; actually, it does not, see <a class="reference external" href="https://github.com/flatsurf/sage-flatsurf/issues/230">#230</a>:</p>
+<p>We verify that the matrix m stabilizes s:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss</span><span class="o">.</span><span class="n">canonicalize</span><span class="p">()</span> <span class="o">==</span> <span class="n">s</span>
@@ -550,7 +541,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
 </div>
