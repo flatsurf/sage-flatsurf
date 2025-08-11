@@ -31,7 +31,7 @@ jobs:
       matrix:
         on: [ ubuntu-24.04, macos-13, macos-14 ]
     steps:
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v5
       with:
         name: unix-installer
     - name: Extract installer
@@ -45,7 +45,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with: { fetch-depth: 0 }
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v5
       with:
         name: unix-installer
         path: installer/win/
@@ -62,7 +62,7 @@ jobs:
         source installer/unix/version.sh
         mv wsldl.exe installer/win/sage-flatsurf-$VERSION.exe
     - name: Compile .iss to .exe installer
-      uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
       with:
         path: installer/win/installer.iss
         options: /O+
