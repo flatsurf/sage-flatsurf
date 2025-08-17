@@ -60,6 +60,7 @@ Demos of some of the capabilities of sage-flatsurf:
    examples/straight_line_flow
    examples/warwick-2017
    examples/boshernitzan_conjecture
+   examples/monotile
 
 Module Reference
 ================
