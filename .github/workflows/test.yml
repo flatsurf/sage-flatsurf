@@ -15,8 +15,8 @@ jobs:
         environment: [ sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, sagemath-103, sagemath-104, sagemath-105, dev]
         on: [ ubuntu-24.04, macos-13 ] # we do not test macos-14 yet since we don't have osx-arm64 in our pyproject.toml
     steps:
-    - uses: actions/checkout@v4
-    - uses: prefix-dev/setup-pixi@v0.8.4
+    - uses: actions/checkout@v5
+    - uses: prefix-dev/setup-pixi@v0.9.0
       with:
         # We test with the version that the installer uses in .ensure-pixi.sh
         pixi-version: v0.39.5
