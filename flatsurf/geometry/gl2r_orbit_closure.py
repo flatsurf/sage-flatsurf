@@ -64,7 +64,7 @@ they are generally not parabolic::
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2019-2022 Julian Rüth
+#        Copyright (C) 2019-2025 Julian Rüth
 #                      2020      Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
@@ -130,7 +130,7 @@ class GL2ROrbitClosure:
 
         sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
         sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-        sage: O._U.base_ring() # optional: pyflatsurf
+        sage: O._tangent_space.base_ring()  # optional: pyflatsurf
         Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
 
     We now illustrate the projection::
@@ -204,18 +204,7 @@ class GL2ROrbitClosure:
             self.H[i] = self.V2._isomorphic_vector_space(self.V2(s))
         self.Hdual = self.Omega * self.H
 
-        # Note that we don't use Sage vector spaces because they are usually
-        # way too slow (in particular we avoid calling .echelonize())
-        self._U = matrix(self.V2._algebraic_ring(), self.d)
-
-        # Computing the rank of _U can be very expensive. Therefore, we use
-        # that rank _Ubar ≤ rank _U where _Ubar = _U mod _p for some prime
-        # ideal's valuation _p, see _rank().
-        # Since _p is a bit expensive to compute, it's initialized on demand.
-        self._p = None
-        self._Ubar = None
-
-        self._U_rank = 0
+        self._tangent_space = LazyTangentSpace(self.V2, self.d)
 
         self.update_tangent_space_from_vector(self.H.transpose()[0])
         self.update_tangent_space_from_vector(self.H.transpose()[1])
@@ -226,8 +215,9 @@ class GL2ROrbitClosure:
 
         Note that this is not the dimension of the orbit closure but only a
         lower bound. It is always at least 2 (coming from a GL(2,R)-orbit).
-        The current tangent space could be refined via
-        :meth:`update_tangent_space_from_flow_decomposition`.
+        The current tangent space can be refined via
+        :meth:`update_tangent_space_from_flow_decomposition` and
+        :meth:`update_tangent_space_from_vector`.
 
         EXAMPLES::
 
@@ -251,7 +241,7 @@ class GL2ROrbitClosure:
             9
             10
         """
-        return self._U_rank
+        return self._tangent_space.dimension()
 
     def ambient_stratum(self):
         r"""
@@ -275,10 +265,7 @@ class GL2ROrbitClosure:
         return Stratum([a - 1 for a in angles], 1)
 
     def base_ring(self):
-        r"""
-        Return the underlying base ring
-        """
-        return self._U.base_ring()
+        return self.V2._algebraic_ring()
 
     def field_of_definition(self):
         r"""
@@ -325,11 +312,11 @@ class GL2ROrbitClosure:
             sage: O.field_of_definition()  # long time, optional: pyflatsurf
             Rational Field
         """
-        M = self._U.echelon_form()
+        M = matrix(self._tangent_space.basis()).echelon_form()
 
         from flatsurf.geometry.subfield import subfield_from_elements
 
-        L, elts, phi = subfield_from_elements(M.base_ring(), M[: self._U_rank].list())
+        L, _, _ = subfield_from_elements(M.base_ring(), M.list())
 
         return L
 
@@ -344,7 +331,7 @@ class GL2ROrbitClosure:
         return min([h1, h2, h3], key=lambda x: x.index())
 
     def __repr__(self):
-        return f"GL(2,R)-orbit closure of dimension at least {self._U_rank} in {self.ambient_stratum()} (ambient dimension {self.d})"
+        return f"GL(2,R)-orbit closure of dimension at least {self.dimension()} in {self.ambient_stratum()} (ambient dimension {self.d})"
 
     def holonomy(self, v):
         r"""
@@ -372,7 +359,7 @@ class GL2ROrbitClosure:
         return self.V(v) * self.Hdual
 
     def tangent_space_basis(self):
-        return self._U[: self._U_rank].rows()
+        return self._tangent_space.basis()
 
     def lift(self, v):
         r"""
@@ -497,7 +484,7 @@ class GL2ROrbitClosure:
             6
         """
         return (
-            self.absolute_homology().matrix() * self._U[: self._U_rank].transpose()
+            self.absolute_homology().matrix() * matrix(self._tangent_space.basis()).transpose()
         ).rank()
 
     def _spanning_tree(self, root=None):
@@ -701,6 +688,7 @@ class GL2ROrbitClosure:
         return B
 
     def decomposition(self, v, limit=-1):
+        # TODO: It's bad that this method lives here.
         v = self.V2(v)
 
         from flatsurf.features import pyflatsurf_feature
@@ -717,6 +705,7 @@ class GL2ROrbitClosure:
         return decomposition
 
     def decompositions(self, bound, limit=-1, bfs=False):
+        # TODO: It's bad that this method lives here.
         limit = int(limit)
 
         connections = self._surface.connections().bound(int(bound))
@@ -742,9 +731,11 @@ class GL2ROrbitClosure:
             yield self.decomposition(direction, limit)
 
     def decompositions_depth_first(self, bound, limit=-1):
+        # TODO: It's bad that this method lives here.
         return self.decompositions(bound, bfs=False, limit=limit)
 
     def decompositions_breadth_first(self, bound, limit=-1):
+        # TODO: It's bad that this method lives here.
         return self.decompositions(bound, bfs=True, limit=limit)
 
     def is_teichmueller_curve(self, bound, limit=-1):
@@ -860,129 +851,17 @@ class GL2ROrbitClosure:
 
     def cylinder_deformation_subspace(self, decomposition):
         r"""
-        Return a subspace included in the tangent space to the GL(2,R)-orbit
-        closure computed from the flow decomposition ``decomposition``.
+        Return a basis of the subspace included in the tangent space to the
+        GL(2,R)-orbit closure computed from the flow decomposition
+        ``decomposition``.
 
-        From A. Wright cylinder deformation Theorem.
+        From A. Wright Cylinder Deformation Theorem.
         """
 
-        def eliminate_denominators(fractions):
-            r"""
-            Given a list of ``fractions``, pairs of numerators `n_i` and
-            denominators `d_i`, return a list of fractions `c n_i/d_i` scaled
-            uniformly such that the value can be represented in the underlying
-            ring.
-            """
-            fractions = list(fractions)
-            try:
-                return [x.parent()(x / y) for x, y in fractions]
-            except (ValueError, ArithmeticError, NotImplementedError):
-                denominators = {denominator for numerator, denominator in fractions}
-                return [
-                    numerator * prod([d for d in denominators if denominator != d])
-                    for (numerator, denominator) in fractions
-                ]
+        module_fractions = self.cylinder_modules(decomposition)
+        circumferences = self.cylinder_circumferences(decomposition)
 
-        module_fractions = []
-        vcyls = []
-        kz = self.flow_decomposition_kontsevich_zorich_cocycle(decomposition)
-        for component in decomposition.components():
-            if (
-                component.cylinder() == False
-            ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
-                continue
-            elif (
-                component.cylinder() == True
-            ):  # we are comparing to a boost tribool so this cannot be replaced with "is True"  # noqa
-                vcyls.append(self.cylinder_circumference(component, *kz))
-
-                width = self.V2._isomorphic_vector_space.base_ring()(
-                    self.V2.base_ring()(component.width())
-                )
-                height = self.V2._isomorphic_vector_space.base_ring()(
-                    self.V2.base_ring()(
-                        component.vertical().project(component.circumferenceHolonomy())
-                    )
-                )
-                module_fractions.append((width, height))
-            else:
-                return []
-
-        if not module_fractions:
-            return []
-
-        modules = eliminate_denominators(module_fractions)
-
-        if hasattr(modules[0], "_backend"):
-            # Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.
-            from functools import reduce
-
-            parent = reduce(
-                lambda m, n: m.span(m, n),
-                [module._backend.module() for module in modules],
-                modules[0]._backend.module(),
-            )
-            modules = [
-                module.parent()(module._backend.promote(parent)) for module in modules
-            ]
-
-        def to_rational_vector(x):
-            r"""
-            Return the rational coefficients of `x` over its implicit basis,
-            e.g., if `x` is in a number field K, return the coefficients of x
-            in `K` as a vector space over the rationals.
-            """
-            if x.parent() in [ZZ, QQ]:
-                ret = [QQ(x)]
-            elif hasattr(x, "vector"):
-                ret = x.vector()
-            elif hasattr(x, "renf_elem"):
-                ret = x.parent().number_field(x).vector()
-            elif hasattr(x, "_backend"):
-                from itertools import chain
-
-                ret = list(
-                    chain(
-                        *[
-                            to_rational_vector(
-                                self.V2.base_ring().base_ring()(
-                                    self.V2.base_ring().base_ring()(c)
-                                )
-                            )
-                            for c in x._backend.coefficients()
-                        ]
-                    )
-                )
-            else:
-                raise NotImplementedError(
-                    "cannot turn {}, i.e., a {}, into a rational vector yet".format(
-                        x, type(x)
-                    )
-                )
-
-            assert all(y in QQ for y in ret)
-            return ret
-
-        assert all(module.parent() is modules[0].parent() for module in modules)
-        M = matrix([to_rational_vector(module) for module in modules])
-        assert M.base_ring() is QQ
-        relations = self._left_kernel_matrix(M)
-        assert len(vcyls) == len(module_fractions) == relations.ncols()
-
-        vectors = [
-            sum(
-                t * vcyl * module[1]
-                for (t, vcyl, module) in zip(relation, vcyls, module_fractions)
-            )
-            for relation in self._right_kernel_matrix(relations).rows()
-        ]
-
-        assert all(
-            v.base_ring() is self.V2._isomorphic_vector_space.base_ring()
-            for v in vectors
-        )
-
-        return vectors
+        return list(self._tangent_space.cylinder_deformation_subspace(module_fractions, circumferences))
 
     def _flow_decomposition_spanning_tree(self, decomposition, sc_index, sc_comp):
         r"""
@@ -1141,6 +1020,55 @@ class GL2ROrbitClosure:
         assert A.det().is_unit()
         return A, sc_index, proj
 
+    def cylinder_circumferences(self, decomposition):
+        kz = self.flow_decomposition_kontsevich_zorich_cocycle(decomposition)
+
+        vcyls = []
+
+        for component in decomposition.components():
+            if (
+                component.cylinder() == False
+            ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
+                continue
+            elif (
+                component.cylinder() == True
+            ):  # we are comparing to a boost tribool so this cannot be replaced with "is True"  # noqa
+                vcyls.append(self.cylinder_circumference(component, *kz))
+
+            else:
+                return []
+
+        return vcyls
+
+    def cylinder_module(self, cylinder):
+        width = self.V2._isomorphic_vector_space.base_ring()(
+            self.V2.base_ring()(cylinder.width())
+        )
+        height = self.V2._isomorphic_vector_space.base_ring()(
+            self.V2.base_ring()(
+                cylinder.vertical().project(cylinder.circumferenceHolonomy())
+            )
+        )
+
+        return width, height
+
+    def cylinder_modules(self, decomposition):
+        modules = []
+
+        for component in decomposition.components():
+            if (
+                component.cylinder() == False
+            ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
+                continue
+            elif (
+                component.cylinder() == True
+            ):  # we are comparing to a boost tribool so this cannot be replaced with "is True"  # noqa
+                modules.append(self.cylinder_module(component))
+            else:
+                return []
+
+        return modules
+
     def update_tangent_space_from_flow_decomposition(self, decomposition):
         r"""
         Update the current tangent space by using the cylinder deformation vectors from ``decomposition``.
@@ -1185,52 +1113,13 @@ class GL2ROrbitClosure:
             (5, 4, 4): 7
             (5, 5, 3): 4
         """
-        if self._U_rank == self._U.nrows():
-            return
-        for v in self.cylinder_deformation_subspace(decomposition):
-            self.update_tangent_space_from_vector(v)
-            if self._U_rank == self._U.nrows():
-                return
+        circumferences = self.cylinder_circumferences(decomposition)
+        modules = self.cylinder_modules(decomposition)
 
-    def _rank(self):
-        r"""
-        Return a lower bound for the rank of the matrix _U.
-        """
-        while True:
-            if self._p is not None:
-                try:
-                    self._Ubar = self._U.apply_map(
-                        phi=self._p.reduce, R=self._p.residue_field()
-                    )
-                    break
-                except ValueError:
-                    # The matrix _U cannot be reduced mod p because some entries have negative valuation.
-                    pass
-
-            p = 2**30 if self._p is None else self._p.p()
-
-            from sage.all import next_prime
-
-            self._p = ZZ.valuation(next_prime(p)).extensions(self._U.base_ring())[0]
-
-        return self._Ubar.rank()
+        self._tangent_space.update_from_flow_decomposition(circumferences, modules)
 
     def update_tangent_space_from_vector(self, v):
-        if self._U_rank == self._U.nrows():
-            return
-
-        v = vector(v)
-
-        if v.base_ring() is not self.V2._algebraic_ring():
-            for gen, p in self.V2.decomposition(v):
-                self.update_tangent_space_from_vector(p)
-            return
-
-        self._U[self._U_rank] = v
-        rank = self._rank()
-        if rank > self._U_rank:
-            assert rank == self._U_rank + 1
-            self._U_rank += 1
+        self._tangent_space.update_from_vector(v)
 
     def __eq__(self, other):
         r"""
@@ -1308,11 +1197,300 @@ class GL2ROrbitClosure:
         return (
             GL2ROrbitClosure,
             (self._surface,),
-            {"_U": self._U, "_U_rank": self._U_rank},
         )
 
-    @classmethod
-    def _right_kernel_matrix(cls, M):
+
+class LazyTangentSpace:
+    def __init__(self, V2, ambient_dimension):
+        # TODO: Find a better name for V2 here and above.
+        self.V2 = V2
+        self._ambient_dimension = ambient_dimension
+
+        self._pending_for_dimension = []
+        self._pending_for_basis = []
+
+        # The tangent space we have constructed so far.
+        # Can only be safely accessed after a call to _require_basis.
+        # Note that we don't use Sage vector spaces because they are usually
+        # way too slow (in particular we avoid calling .echelonize())
+        self._basis = []
+
+        # The tangent space vectors reduced modulo a prime ideal _p of the
+        # number field containing its entries.
+        # This is used to determine the dimension of the tangent space without
+        # constructing the full matrix U and computing its rank.
+        from sage.all import GF
+        self._U_bar = matrix(GF(2), 0, ambient_dimension)
+        self._primes = iter(self._create_primes())
+        self._prime = None
+
+    def base_ring(self):
+        return self.V2._algebraic_ring()
+
+    def _create_primes(self):
+        from sage.all import next_prime
+
+        p = 2**60
+
+        while True:
+            p = next_prime(p)
+
+            yield ZZ.valuation(p).extensions(self.V2._algebraic_ring())[0]
+
+    def _require_dimension(self):
+        for item in self._pending_for_dimension:
+            self._update_dimension(item)
+
+        self._pending_for_dimension = []
+
+    def _require_basis(self, require_dimension=True):
+        if require_dimension:
+            self._require_dimension()
+
+        for item, row in self._pending_for_basis:
+            self._update_basis(item, row)
+
+        self._pending_for_basis = []
+
+    def dimension(self):
+        self._require_dimension()
+
+        return self._U_bar.nrows()
+
+    def basis(self):
+        self._require_basis()
+
+        return self._basis[:]
+
+    def _update_dimension(self, item):
+        if isinstance(item, tuple):
+            increases = self._update_dimension_from_decomposition(*item)
+        else:
+            increases = self._update_dimension_from_vector(item)
+
+        self._pending_for_basis.append((item, increases))
+
+    def _update_dimension_from_decomposition(self, circumferences, module_fractions) -> list[int]:
+        increases = []
+
+        for i, v in enumerate(self.cylinder_deformation_subspace(circumferences, module_fractions, reduced=True)):
+            if self._update_dimension_from_reduced_vector(v):
+                increases.append(i)
+
+        return increases
+
+    def _reduce_vector(self, v):
+        assert v.base_ring() is self.V2._algebraic_ring(), f"Expected vector over {self.V2._algebraic_ring()} but found vector over {v.base_ring()}"
+
+        while True:
+            p = self._require_p()
+
+            try:
+                return v.apply_map(phi=p.reduce, R=p.residue_field())
+            except ValueError:
+                self._require_p(force_next=True)
+
+    def _decomposition(self, v):
+        # TODO: Fix upstream in pyflatsurf
+        if v.base_ring() is QQ:
+            return [(QQ.one(), v)]
+        return self.V2.decomposition(v)
+
+    def _update_dimension_from_vector(self, v) -> list[int]:
+        assert v.base_ring() is self.V2.base_ring()
+
+        decompositions = []
+
+        # Rewrite v as vectors over base_ring(), i.e., the underlying SageMath
+        # number field. (This extracts the different components of a vector
+        # over exact-real. Otherwise, this is just a simple cast between an
+        # e-antic number field and a SageMath number field.)
+        for i, (_, w) in enumerate(self._decomposition(v)):
+            assert all(x.parent() is self.base_ring() for x in w)
+
+            w = vector(self.base_ring(), w)
+            if self._update_dimension_from_reduced_vector(self._reduce_vector(w)):
+                decompositions.append(i)
+
+        return decompositions
+
+    def _update_dimension_from_reduced_vector(self, v) -> bool:
+        if self._U_bar.nrows() == self._ambient_dimension:
+            return False
+
+        U_bar = matrix(self._U_bar.base_ring(), self._U_bar.nrows() + 1, self._U_bar.ncols(), self._U_bar.rows() + [v])
+
+        if U_bar.rank() != U_bar.nrows():
+            return False
+
+        self._U_bar = U_bar
+        return True
+
+    def _update_basis(self, item, rows: list[int]):
+        if isinstance(item, tuple):
+            self._update_basis_from_decomposition(*item, rows)
+        else:
+            self._update_basis_from_vector(item, rows)
+
+    def _update_basis_from_decomposition(self, circumferences, module_fractions, rows: list[int]):
+        for v in self.cylinder_deformation_subspace(circumferences, module_fractions, rows=rows):
+            self._basis.append(v)
+
+    def _update_basis_from_vector(self, v, rows: list[int]):
+        # Rewrite v as vectors over base_ring(), i.e., the underlying SageMath
+        # number field. (This extracts the different components of a vector
+        # over exact-real. Otherwise, this is just a simple cast between an
+        # e-antic number field and a SageMath number field.)
+        for i, (_, w) in enumerate(self._decomposition(v)):
+            if i not in rows:
+                continue
+
+            assert len(self._basis) < self._U_bar.nrows()
+
+            assert all(x.parent() is self.base_ring() for x in w)
+            w = vector(self.base_ring(), w)
+            self._basis.append(w)
+
+    def _require_p(self, force_next=None):
+        if force_next or self._prime is None:
+            self._require_basis(require_dimension=False)
+            assert len(self._basis) == self._U_bar.nrows()
+            while True:
+                self._prime = next(self._primes)
+
+                try:
+                    reduced_basis = [v.apply_map(phi=self._prime.reduce(), R=self._prime.residue_field()) for v in self._basis]
+                except ValueError:
+                    continue
+
+                self._U_bar = matrix(self._prime.residue_field(), self._U_bar.nrows(), self._U_bar.ncols(), reduced_basis)
+                break
+        return self._prime
+
+    def update_from_flow_decomposition(self, circumferences, modules):
+        self._pending_for_dimension.append((circumferences, modules))
+
+    def update_from_vector(self, v):
+        if len(v) != self._ambient_dimension:
+            raise TypeError(f"Expected vector of length {self._ambient_dimension} but found vector of length {len(v)}")
+
+        if v.base_ring() is not self.V2.base_ring():
+            raise NotImplementedError(f"Expected vector over {self.V2.base_ring()} but found vector over {v.base_ring()}")
+
+        self._pending_for_dimension.append(v)
+
+    @staticmethod
+    def _cylinder_deformation_subspace_eliminate_denominators(fractions):
+        r"""
+        Given a list of ``fractions``, pairs of numerators `n_i` and
+        denominators `d_i`, return a list of fractions `c n_i/d_i` scaled
+        uniformly such that the value can be represented in the underlying
+        ring.
+        """
+        fractions = list(fractions)
+        try:
+            return [x.parent()(x / y) for x, y in fractions]
+        except (ValueError, ArithmeticError, NotImplementedError):
+            denominators = {denominator for numerator, denominator in fractions}
+            return [
+                numerator * prod([d for d in denominators if denominator != d])
+                for (numerator, denominator) in fractions
+            ]
+
+    def _cylinder_deformation_subspace_rational_vector(self, x):
+        r"""
+        Return the rational coefficients of `x` over its implicit basis,
+        e.g., if `x` is in a number field K, return the coefficients of x
+        in `K` as a vector space over the rationals.
+        """
+        if x.parent() in [ZZ, QQ]:
+            ret = [QQ(x)]
+        elif hasattr(x, "vector"):
+            ret = x.vector()
+        elif hasattr(x, "renf_elem"):
+            ret = x.parent().number_field(x).vector()
+        elif hasattr(x, "_backend"):
+            from itertools import chain
+
+            ret = list(
+                chain(
+                    *[
+                        self._cylinder_deformation_subspace_rational_vector(
+                            self.V2.base_ring().base_ring()(
+                                self.V2.base_ring().base_ring()(c)
+                            )
+                        )
+                        for c in x._backend.coefficients()
+                    ]
+                )
+            )
+        else:
+            raise NotImplementedError(
+                "cannot turn {}, i.e., a {}, into a rational vector yet".format(
+                    x, type(x)
+                )
+            )
+
+        assert all(y in QQ for y in ret)
+        return ret
+
+    def _cylinder_deformation_subspace_unify_parent(self, modules):
+        if hasattr(modules[0], "_backend"):
+            # Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.
+            from functools import reduce
+
+            parent = reduce(
+                lambda m, n: m.span(m, n),
+                [module._backend.module() for module in modules],
+                modules[0]._backend.module(),
+            )
+            modules = [
+                module.parent()(module._backend.promote(parent)) for module in modules
+            ]
+
+        assert all(module.parent() is modules[0].parent() for module in modules)
+        return modules
+
+    def cylinder_deformation_subspace(self, circumferences, module_fractions, reduced=False, rows=None):
+        assert len(circumferences) == len(module_fractions)
+
+        if not module_fractions:
+            return []
+
+        modules = self._cylinder_deformation_subspace_eliminate_denominators(module_fractions)
+        modules = self._cylinder_deformation_subspace_unify_parent(modules)
+
+        M = matrix([self._cylinder_deformation_subspace_rational_vector(module) for module in modules])
+        assert M.base_ring() is QQ
+        relations = self._left_kernel_matrix(M)
+        assert len(circumferences) == len(module_fractions) == relations.ncols()
+
+        row = 0
+        for relation in self._right_kernel_matrix(relations).rows():
+            v = sum(
+                t * circumference * denominator
+                for (t, circumference, (_, denominator)) in zip(relation, circumferences, module_fractions)
+            )
+
+            # TODO: This is a bit odd. Should this really live over the SageMath number field now suddenly?
+            assert v.base_ring() is self.V2._isomorphic_vector_space.base_ring()
+
+            # TODO: There seems to be no reason to return the subspace in terms of the exact-real module. So we just expand to the base ring of the module instead.
+            for _, w in self._decomposition(v):
+                w = vector(self.base_ring(), w)
+                if reduced:
+                    w = self._reduce_vector(w)
+
+                skip = rows is not None and row not in rows
+                row += 1
+                
+                if skip:
+                    continue
+
+                yield w
+
+    @staticmethod
+    def _right_kernel_matrix(M):
         r"""
         Compute the right kernel of the rational matrix `M`.
 
@@ -1352,11 +1530,11 @@ class GL2ROrbitClosure:
 
         return ker
 
-    @classmethod
-    def _left_kernel_matrix(cls, M):
+    @staticmethod
+    def _left_kernel_matrix(M):
         r"""
         Compute the left kernel of the rational matrix `M`.
 
         See https://github.com/flatsurf/sage-flatsurf/issues/100.
         """
-        return cls._right_kernel_matrix(M.transpose())
+        return LazyTangentSpace._right_kernel_matrix(M.transpose())
