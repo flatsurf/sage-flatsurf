@@ -1294,6 +1294,7 @@ class LazyTangentSpace:
         # TODO: Fix upstream in pyflatsurf
         if v.base_ring() is QQ:
             return [(QQ.one(), v)]
+
         return self.V2.decomposition(v)
 
     def _update_dimension_from_vector(self, v) -> list[int]:
@@ -1451,6 +1452,29 @@ class LazyTangentSpace:
         assert all(module.parent() is modules[0].parent() for module in modules)
         return modules
 
+    def _cylinder_deformation_subspace_reduce(self, relations, circumferences, decomposed_denominators):
+        assert all(denominator.parent() is self.base_ring() for denominators in decomposed_denominators for denominator in denominators)
+
+        while True:
+            prime = self._require_p()
+            k = prime.residue_field()
+
+            reduced_relations = [relation.change_ring(k) for relation in relations]
+            try:
+                reduced_circumferences = [circumference.change_ring(k) for circumference in circumferences]
+            except ZeroDivisionError:
+                self._require_p(force_next=True)
+                continue
+
+            try:
+                reduced_denominators = [[prime.reduce(d) for d in ds] for ds in decomposed_denominators]
+            except ValueError:
+                self._require_p(force_next=True)
+                continue
+
+            return reduced_relations, reduced_circumferences, reduced_denominators
+
+
     def cylinder_deformation_subspace(self, circumferences, module_fractions, reduced=False, rows=None):
         assert len(circumferences) == len(module_fractions)
 
@@ -1464,30 +1488,31 @@ class LazyTangentSpace:
         assert M.base_ring() is QQ
         relations = self._left_kernel_matrix(M)
         assert len(circumferences) == len(module_fractions) == relations.ncols()
+        relations = self._right_kernel_matrix(relations).rows()
+
+        # TODO: This code is horrible. Find a better way to do this.
+        decomposed_denominators = [dict(self._decomposition(vector([denominator]))) for (_, denominator) in module_fractions]
+        transcendentals = set(sum((list(d.keys()) for d in decomposed_denominators), []))
+        decomposed_denominators = [[dd.get(transcendental, [self.base_ring().zero()])[0] for dd in decomposed_denominators] for transcendental in transcendentals]
+
+        if reduced:
+            relations, circumferences, decomposed_denominators = self._cylinder_deformation_subspace_reduce(relations, circumferences, decomposed_denominators)
 
         row = 0
-        for relation in self._right_kernel_matrix(relations).rows():
-            v = sum(
-                t * circumference * denominator
-                for (t, circumference, (_, denominator)) in zip(relation, circumferences, module_fractions)
-            )
-
-            # TODO: This is a bit odd. Should this really live over the SageMath number field now suddenly?
-            assert v.base_ring() is self.V2._isomorphic_vector_space.base_ring()
-
-            # TODO: There seems to be no reason to return the subspace in terms of the exact-real module. So we just expand to the base ring of the module instead.
-            for _, w in self._decomposition(v):
-                w = vector(self.base_ring(), w)
-                if reduced:
-                    w = self._reduce_vector(w)
+        for relation in relations:
+            for denominators in decomposed_denominators:
+                assert len(relation) == len(circumferences) == len(denominators)
 
                 skip = rows is not None and row not in rows
                 row += 1
-                
+
                 if skip:
                     continue
 
-                yield w
+                yield sum(
+                    t * circumference * denominator
+                    for (t, circumference, denominator) in zip(relation, circumferences, denominators)
+                )
 
     @staticmethod
     def _right_kernel_matrix(M):
