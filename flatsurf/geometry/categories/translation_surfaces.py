@@ -116,11 +116,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
         @staticmethod
         def _is_translation_surface(surface, positive=True, limit=None):
             r"""
-            Return whether ``surface`` is a translation surface by checking how its
-            polygons are glued.
+            Return whether ``surface`` is a translation surface by
+            checking how its polygons are glued.
 
             This is a helper method for
-            :meth:`flatsurf.geometry.categories.similarity_surfaces.ParentMethods.is_translation_surface.
+            :meth:`flatsurf.geometry.categories.similarity_surfaces.ParentMethods.is_translation_surface`.
 
             INPUT:
 

@@ -6047,7 +6047,7 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         if not isinstance(geodesic, HyperbolicOrientedGeodesic):
             raise TypeError("geodesic must be an oriented geodesic")
 
-        if not geodesic.parent() is parent:
+        if geodesic.parent() is not parent:
             raise ValueError("geodesic must be in parent")
 
         self._geodesic = geodesic
