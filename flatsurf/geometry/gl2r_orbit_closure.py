@@ -431,7 +431,7 @@ class GL2ROrbitClosure:
         u[:k] = v
         from sage.all import Fields
 
-        if not self.V2.base_ring() in Fields():
+        if self.V2.base_ring() not in Fields():
             assert all(uu._backend.coefficients().size() == 1 for uu in u)
             u = u.parent().change_ring(self.V2.base_ring().base_ring())(
                 [uu._backend.coefficients()[0] for uu in u]

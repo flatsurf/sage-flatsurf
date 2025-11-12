@@ -1277,16 +1277,16 @@ class SimplicialHomologyGroup(Parent):
 
     def _Hom_(self, Y, category=None):
         r"""
-                Return the space of morphisms from this homology to ``Y``.
-        k        EXAMPLES::
+        Return the space of morphisms from this homology to ``Y``.
 
-                    sage: from flatsurf import translation_surfaces
-                    sage: S = translation_surfaces.square_torus()
-                    sage: H = S.homology()
+        EXAMPLES::
 
-                    sage: End(H)
-                    Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: H = S.homology()
 
+            sage: End(H)
+            Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)
         """
         if isinstance(Y, SimplicialHomologyGroup):
             return SimplicialHomologyMorphismSpace(self, Y, category=category)

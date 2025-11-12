@@ -38,7 +38,7 @@ from flatsurf.geometry.surface import (
 from flatsurf.geometry.origami import Origami
 
 
-ZZ_1 = ZZ(1)
+ZZ_1 = ZZ.one()
 ZZ_2 = ZZ(2)
 
 
@@ -184,7 +184,7 @@ class EInfinitySurface(OrientedSimilaritySurface):
             (0,)
 
         """
-        return (ZZ(0),)
+        return (ZZ.zero(),)
 
     def _repr_(self):
         r"""
