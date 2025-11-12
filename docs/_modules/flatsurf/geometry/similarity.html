@@ -1030,10 +1030,9 @@ document.write(`
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a typical element of this group.</span>
 
-<span class="sd">        EXAMPLES:</span>
+<span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf.geometry.similarity import SimilarityGroup</span>
-
 <span class="sd">            sage: SimilarityGroup(QQ)._an_element_()</span>
 <span class="sd">            (x, y) |-&gt; (3*x + 4*y + 2, 4*x - 3*y - 1)</span>
 
@@ -1044,7 +1043,6 @@ document.write(`
 
 <span class="sd">            :meth:`sage.structure.parent.Parent.an_element` which relies on</span>
 <span class="sd">            this method and should be called instead</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
