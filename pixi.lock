@@ -28152,8 +28152,8 @@ packages:
   - sphinx
 - pypi: ./
   name: sage-flatsurf
-  version: 0.7.4
-  sha256: 7699cd66ba825d96c19375b9ef69f6a74b86e326f40091f65740da76baf80753
+  version: 0.8.0
+  sha256: 34702d3c8674c7685a3e6cc27a398a5ac1a7ba9c292cf15627471ff988a4af6f
   requires_dist:
   - bidict
   - more-itertools

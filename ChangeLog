@@ -4,6 +4,34 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.8.0
+====================
+
+**Added:**
+
+* Added ``flow_to_exit()`` for non-convex polygons.
+* Added support for SageMath 10.6.
+* Addded support for Apple Silicon and macOS 15.
+
+**Changed:**
+
+* Changed documentation theme to sphinx-book-theme.
+
+**Deprecated:**
+
+* Deprecated use of ``point`` and ``direction`` in a polygon's ``flow_to_exit()`` if their coordinates do not convert into the base ring of the polygon.
+
+**Fixed:**
+
+* Fixed computation of saddle connections in surfaces that are not strictly convex.
+* Fixed some corner cases where a polygon's ``flow_to_exit`` returned the wrong point.
+* Fixed creation of tangent vectors in non-convex surfaces.
+* Fixed pyflatsurf conversions for all rings supported in pyflatsurf.
+* Fixed plotting of tangent vectors in surfaces so that they show up at the correct base point.
+* Fixed a normalization error in a Dehn twist example in the documentation.
+
+
+
 v0.7.4
 ====================
 
