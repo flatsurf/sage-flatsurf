@@ -2068,6 +2068,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2025b-h78e105d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/unicodedata2-16.0.0-py312h66e93f0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/urllib3-2.4.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/veerer-0.2.0-py312h4c3975b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wcwidth-0.2.13-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/webencodings-0.5.1-pyhd8ed1ab_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.45.1-pyhd8ed1ab_1.conda
@@ -2405,6 +2406,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2025b-h78e105d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/unicodedata2-16.0.0-py312h01d7ebd_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/urllib3-2.4.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/veerer-0.2.0-py312h80b0991_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wcwidth-0.2.13-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/webencodings-0.5.1-pyhd8ed1ab_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.45.1-pyhd8ed1ab_1.conda
@@ -23214,7 +23216,7 @@ packages:
 - pypi: ./
   name: sage-flatsurf
   version: 0.7.4
-  sha256: 4489aa16fe54e5a06f4d727369dfd44efee8cae670374ce69c88743d31d1aa01
+  sha256: 8d6e0efb769323a4e03641558792e1eec49a9fc8ffbae8e77b9f83e3f6cd3d08
   requires_dist:
   - bidict
   - more-itertools
@@ -26297,6 +26299,35 @@ packages:
   - pkg:pypi/urllib3?source=hash-mapping
   size: 101735
   timestamp: 1750271478254
+- conda: https://conda.anaconda.org/conda-forge/linux-64/veerer-0.2.0-py312h4c3975b_2.conda
+  sha256: e057da6ebb69307e624787f7f82e092155e50b11adbc563b1f64b00865ce0818
+  md5: d329f25d08743e07b2f19ae45ca72329
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=14
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - sagelib
+  license: GPL-2.0-or-later
+  license_family: GPL
+  purls:
+  - pkg:pypi/veerer?source=hash-mapping
+  size: 359480
+  timestamp: 1763466471979
+- conda: https://conda.anaconda.org/conda-forge/osx-64/veerer-0.2.0-py312h80b0991_2.conda
+  sha256: 6a394e911bc93d90be7e2608d3d4b37a27fe2ed03b6d5ca43ba13a4ba11ad4f6
+  md5: 50919b17f121423b2a79035378c10fd2
+  depends:
+  - __osx >=10.13
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - sagelib
+  license: GPL-2.0-or-later
+  license_family: GPL
+  purls:
+  - pkg:pypi/veerer?source=hash-mapping
+  size: 349244
+  timestamp: 1763466746170
 - conda: https://conda.anaconda.org/conda-forge/noarch/virtualenv-20.30.0-pyhd8ed1ab_0.conda
   sha256: 1dbb24b144f7b8400b30cca760cdee1b7de61716cd7f06d7ea82b741645823ce
   md5: c0e0b4a09aa5a698a1bdd4ebfe28be38
