@@ -12,11 +12,43 @@ jobs:
     runs-on: "${{ matrix.on }}"
     strategy:
       matrix:
-        environment: [ sagemath-97, sagemath-98, sagemath-100, sagemath-101, sagemath-102, sagemath-103, sagemath-104, sagemath-105, dev]
-        on: [ ubuntu-24.04, macos-13 ] # we do not test macos-14 yet since we don't have osx-arm64 in our pyproject.toml
+        include:
+        - { environment: "sagemath-97", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-97", on: "macos-14" }
+        - { environment: "sagemath-98", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-98", on: "macos-14" }
+        - { environment: "sagemath-100", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-100", on: "macos-14" }
+        - { environment: "sagemath-101", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-101", on: "macos-14" }
+        - { environment: "sagemath-102", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-102", on: "macos-14" }
+        - { environment: "sagemath-103", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-103", on: "macos-14" }
+        - { environment: "sagemath-104", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-104", on: "macos-14" }
+        - { environment: "sagemath-105", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-105", on: "macos-14" }
+        - { environment: "sagemath-106", on: "ubuntu-24.04" }
+        # Note that this test will run with Rosetta, i.e., osx-64, because there is no osx-arm64 platform for this envirnoment in pyproject.toml.
+        - { environment: "sagemath-106", on: "macos-14" }
+        - { environment: "dev", on: "ubuntu-24.04" }
+        # We should use macos-15-intel to test osx-64 but the xcode shipped there is incompatible with the latest build of cppyy-cling on conda-forge.
+        # So we rely on the latest non-Silicon with an old xcode that is available on GitHub.
+        # Note that this runner will be retired soon, so we need to switch to macos-14 here somehow but explicitly tell pixi to use Rosetta.
+        - { environment: "dev", on: "macos-13" }
+        - { environment: "dev", on: "macos-14" }
     steps:
-    - uses: actions/checkout@v5
-    - uses: prefix-dev/setup-pixi@v0.9.0
+    - uses: actions/checkout@v6
+    - uses: prefix-dev/setup-pixi@v0.9.3
       with:
         # We test with the version that the installer uses in .ensure-pixi.sh
         pixi-version: v0.39.5

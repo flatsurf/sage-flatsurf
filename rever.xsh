@@ -43,8 +43,8 @@ $ACTIVITIES = [
     'pixi',
     'changelog',
     'tag',
-    'push_tag',
     'build',
+    'push_tag',
     'twine',
     'ghrelease',
 ]

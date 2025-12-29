@@ -363,9 +363,9 @@ class ConeSurfaces(SurfaceCategory):
                                 sage: from flatsurf import translation_surfaces
                                 sage: translation_surfaces.octagon_and_squares()._test_genus()
 
-                            .. [Massart2021] \D. Massart. A short introduction to translation
-                            surfaces, Veech surfaces, and Teichműller dynamics.
-                            https://hal.science/hal-03300179/document
+                            .. [Massart2021] D. Massart. A short introduction to translation
+                                surfaces, Veech surfaces, and Teichműller dynamics.
+                                https://hal.science/hal-03300179/document
 
                             """
                             tester = self._tester(**options)

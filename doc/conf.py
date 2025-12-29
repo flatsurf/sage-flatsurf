@@ -10,7 +10,7 @@ project = "sage-flatsurf"
 copyright = "2016-2025, the sage-flatsurf authors"
 author = 'the sage-flatsurf authors'
 
-release = '0.7.4'
+release = '0.8.0'
 
 extensions = [
     # We need to use SageMath's autodoc to render nested classes in categories

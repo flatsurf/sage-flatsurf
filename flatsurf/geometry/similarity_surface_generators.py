@@ -38,7 +38,7 @@ from flatsurf.geometry.surface import (
 from flatsurf.geometry.origami import Origami
 
 
-ZZ_1 = ZZ(1)
+ZZ_1 = ZZ.one()
 ZZ_2 = ZZ(2)
 
 
@@ -184,7 +184,7 @@ class EInfinitySurface(OrientedSimilaritySurface):
             (0,)
 
         """
-        return (ZZ(0),)
+        return (ZZ.zero(),)
 
     def _repr_(self):
         r"""
@@ -767,7 +767,7 @@ class SimilaritySurfaceGenerators:
             sage: TestSuite(S).run()
             sage: S = S.minimal_cover(cover_type="translation")
             sage: TestSuite(S).run()
-            sage: S = S.erase_marked_points() # optional: pyflatsurf
+            sage: S = S.erase_marked_points() # optional: pyflatsurf  # random output due to deprecation warnings in cppyy
             sage: TestSuite(S).run()
             sage: S, _ = S.normalized_coordinates()
             sage: TestSuite(S).run()

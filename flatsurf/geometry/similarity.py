@@ -593,10 +593,9 @@ class SimilarityGroup(UniqueRepresentation, Group):
         r"""
         Return a typical element of this group.
 
-        EXAMPLES:
+        EXAMPLES::
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
-
             sage: SimilarityGroup(QQ)._an_element_()
             (x, y) |-> (3*x + 4*y + 2, 4*x - 3*y - 1)
 
@@ -607,7 +606,6 @@ class SimilarityGroup(UniqueRepresentation, Group):
 
             :meth:`sage.structure.parent.Parent.an_element` which relies on
             this method and should be called instead
-
         """
         return self(3, 4, 2, -1, -1)
 
