@@ -16,7 +16,7 @@
 
 **Fixed:**
 
-* <news item>
+* Fixed error when calling ``FlatTriangulationConversion.vector_space_conversion`` for some exact-real surfaces.
 
 **Performance:**
 

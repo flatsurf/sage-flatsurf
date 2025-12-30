@@ -2100,9 +2100,33 @@ class FlatTriangulationConversion(Conversion):
             sage: conversion.vector_space_conversion()  # optional: pyflatsurf
             Conversion from Vector space of dimension 2 over Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to flatsurf::Vector<eantic::renf_elem_class>
 
+        TESTS::
+
+            sage: from pyexactreal import ZZModule, RealNumber  # optional: pyexactreal
+            sage: M = ZZModule(RealNumber.rational(1), RealNumber.random())  # optional: pyexactreal
+            sage: one = M.gen(0R)  # optional: pyexactreal
+            sage: μ = M.gen(1R)  # optional: pyexactreal
+
+            sage: from pyflatsurf import Surface, flatsurf  # optional: pyflatsurf
+            sage: V = flatsurf.Vector['exactreal::Element<exactreal::IntegerRing>']  # optional: pyexactreal  # optional: pyflatsurf
+            sage: u = V(one, 0R*one)  # optional: pyexactreal  # optional: pyflatsurf
+            sage: v = V(0R*one, μ)  # optional: pyexactreal  # optional: pyflatsurf
+
+            sage: vectors = [u, v, u+v]  # optional: pyexactreal  # optional: pyflatsurf
+            sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+            sage: S = Surface(vertices, vectors)  # optional: pyexactreal  # optional: pyflatsurf
+
+            sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+            sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal  # optional: pyflatsurf
+            sage: conversion.vector_space_conversion()  # optional: pyexactreal  # optional: pyflatsurf
+            Conversion from Ambient free module of rank 2 over the integral domain Real Numbers as (Integer Ring)-Module to flatsurf::Vector<exactreal::Element<exactreal::IntegerRing>>
+
         """
+        ring_conversion = self.ring_conversion()
+
         return VectorSpaceConversion.to_pyflatsurf(
-            self.ring_conversion().domain() ** 2,
+            ring_conversion.domain() ** 2,
+            ring_conversion=ring_conversion
         )
 
     def __call__(self, x):
