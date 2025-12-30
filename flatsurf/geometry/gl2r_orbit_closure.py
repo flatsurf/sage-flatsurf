@@ -7,8 +7,6 @@ GL(2,R)-orbit closure of translation surfaces
       the ratio of circumferences. We should provide a method, .reset_field_of_definition or
       something similar
 
-    - flow decompositions should be accessible on surfaces rather than on ``GL2ROrbitClosure``
-
 EXAMPLES:
 
 Let us first construct a Veech surface in the stratum H(2)::
@@ -60,6 +58,8 @@ they are generally not parabolic::
     sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
     True
 """
+
+# TODO: Verify that all methods here return SageMath objects
 
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
@@ -172,16 +172,10 @@ class GL2ROrbitClosure:
                 "cannot compute orbit closure of a non-translation surface"
                 )
 
-        base_ring = surface.base_ring()
         self._surface = surface
 
-        # A model of the vector space R² in libflatsurf, e.g., to represent the
-        # vector associated to a saddle connection.
-        import pyflatsurf.vector
-        self.V2 = pyflatsurf.vector.Vectors(base_ring)
-
-        # We construct a spanning set of edges, that is a subset of the
-        # edges that form a basis of H_1(S, Sigma; Z)
+        # We construct a spanning set of edges, that is a subset of the edges
+        # of the flat triangulation that form a basis of H_1(S, Sigma; Z).
         # It comes together with a projection matrix
         t, m = self._spanning_tree()
         assert set(t.keys()) == {f[2] for f in self._flat_triangulation().faces()}
@@ -190,24 +184,26 @@ class GL2ROrbitClosure:
         for e in self._flat_triangulation().edges():
             if e.positive() not in v and e.negative() not in v:
                 self.spanning_set.append(e)
+
         self.d = len(self.spanning_set)
+
         assert 3 * self.d - 3 == self._flat_triangulation().size()
         assert m.rank() == self.d
-        m = m.transpose()
+
         # projection matrix from Z^E to H_1(S, Sigma; Z) in the basis
         # of spanning edges
-        self.proj = matrix(ZZ, [r for r in m.rows() if not r.is_zero()])
+        self.proj = matrix(ZZ, [r for r in m.columns() if r])
 
         self.Omega = self._intersection_matrix(t, self.spanning_set)
 
-        self.V = FreeModule(self.V2.base_ring(), self.d)
-        self.H = matrix(self.V2.base_ring(), self.d, 2)
-        for i in range(self.d):
-            s = self._flat_triangulation().fromHalfEdge(self.spanning_set[i].positive())
-            self.H[i] = self.V2._isomorphic_vector_space(self.V2(s))
+        self.V = FreeModule(self._surface.base_ring(), self.d)
+        self.H = matrix(self._surface.base_ring(), [
+            self._vector_space_conversion().section(self._flat_triangulation().fromHalfEdge(e.positive()))
+            for e in self.spanning_set
+        ])
         self.Hdual = self.Omega * self.H
 
-        self._tangent_space = LazyTangentSpace(self.V2, self.d)
+        self._tangent_space = LazyTangentSpace(surface, self.d)
 
         self.update_tangent_space_from_vector(self.H.transpose()[0])
         self.update_tangent_space_from_vector(self.H.transpose()[1])
@@ -215,6 +211,26 @@ class GL2ROrbitClosure:
     @cached_method
     def _flat_triangulation(self):
         return self._surface.pyflatsurf().codomain().flat_triangulation()
+
+    @cached_method
+    def _vector_space_conversion(self):
+        from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+        return FlatTriangulationConversion.from_pyflatsurf(self._flat_triangulation()).vector_space_conversion()
+
+    @cached_method
+    def _ring_conversion(self):
+        return self._vector_space_conversion().ring_conversion()
+
+    @property
+    @cached_method
+    def V2(self):
+        import warnings
+        warnings.warn("V2 has been deprecated as a property for GL2ROrbitClosure and will be removed in a future version of sage-flatsurf; use surface.pyflatsurf()._pyflatsurf_conversion.vector_space_conversion()._vectors() instead if you really need that parent")
+
+        # A model of the vector space R² in libflatsurf, e.g., to represent the
+        # vector associated to a saddle connection.
+        import pyflatsurf.vector
+        return pyflatsurf.vector.Vectors(self._surface.base_ring())
 
     def dimension(self):
         r"""
@@ -272,7 +288,12 @@ class GL2ROrbitClosure:
         return Stratum([a - 1 for a in angles], 1)
 
     def base_ring(self):
-        return self.V2._algebraic_ring()
+        # TODO: This doesn't really have anything to do with "vectors". We
+        # should reimplement this in sage-flatsurf and drop the implementation
+        # in pyflatsurf.
+        # TODO: This code is repeated in LazyTangentSpace.base_ring()
+        from pyflatsurf.vector import Vectors
+        return Vectors(self._surface_base_ring)._algebraic_ring()
 
     def field_of_definition(self):
         r"""
@@ -354,7 +375,7 @@ class GL2ROrbitClosure:
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
             sage: edges = O._flat_triangulation().edges() # optional: pyflatsurf
             sage: F = FreeModule(ZZ, len(edges)) # optional: pyflatsurf
-            sage: all(O.V2(O.holonomy(O.proj * F.gen(i))).vector == O.V2(O._flat_triangulation().fromHalfEdge(e.positive())).vector for i, e in enumerate(edges)) # optional: pyflatsurf
+            sage: all(O.holonomy(O.proj * F.gen(i)) == O._vector_space_conversion().section(O._flat_triangulation().fromHalfEdge(e.positive())) for i, e in enumerate(edges)) # optional: pyflatsurf
             True
         """
         return self.V(v) * self.H
@@ -384,10 +405,10 @@ class GL2ROrbitClosure:
             sage: v0 = O.lift(u0)  # optional: pyflatsurf
             sage: v1 = O.lift(u1)  # optional: pyflatsurf
             sage: span([v0, v1])  # optional: pyflatsurf
-            Vector space of degree 9 and dimension 2 over Real Embedded Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
+            Vector space of degree 9 and dimension 2 over Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
             Basis matrix:
-            [ 1  0  -1   (1/8*l+7/8 ~ 1.2965352)  (-1/8*l+1/8 ~ -0.29653517)  -1   (5/8*l-5/8 ~ 1.4826758)  (-1/2*l+3/2 ~ -0.18614066)  (-5/8*l+13/8 ~ -0.48267583)]
-            [ 0  1  -1  (1/4*l-1/4 ~ 0.59307033)  (-1/4*l+1/4 ~ -0.59307033)   0  (1/4*l-1/4 ~ 0.59307033)                           0   (-1/4*l+1/4 ~ -0.59307033)]
+            [            1             0            -1   1/8*l + 7/8  -1/8*l + 1/8            -1   5/8*l - 5/8  -1/2*l + 3/2 -5/8*l + 13/8]
+            [            0             1            -1   1/4*l - 1/4  -1/4*l + 1/4             0   1/4*l - 1/4             0  -1/4*l + 1/4]
 
         This can be used to deform the surface::
 
@@ -402,10 +423,11 @@ class GL2ROrbitClosure:
             sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
             sage: dreal = d1/132 + d2/227 + d3/1280 - d4/13201  # long time (above), optional: pyflatsurf
             sage: dimag = d1/141 - d2/233 + d4/1230 + d4/14250  # long time (above), optional: pyflatsurf
-            sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
+            sage: d = [O._vector_space_conversion()((x,y)) for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
             sage: S2 = O._flat_triangulation() + d  # long time (6s), optional: pyflatsurf
 
-            sage: O2 = GL2ROrbitClosure(S2.surface())  # long time (above), optional: pyflatsurf
+            sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf  # optional: pyflatsurf
+            sage: O2 = GL2ROrbitClosure(Surface_pyflatsurf(S2.surface()))  # long time (above), optional: pyflatsurf
             sage: for d in O2.decompositions(1, 20):  # long time (25s, #124), optional: pyflatsurf
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
 
@@ -421,15 +443,15 @@ class GL2ROrbitClosure:
             A[i, e.index()] = 1
         for i, b in enumerate(bdry):
             A[k + i, :] = b
-        u = vector(self.V2.base_ring(), n + 1)
-        u[:k] = v
-        from sage.all import Fields
 
-        if self.V2.base_ring() not in Fields():
-            assert all(uu._backend.coefficients().size() == 1 for uu in u)
-            u = u.parent().change_ring(self.V2.base_ring().base_ring())(
-                [uu._backend.coefficients()[0] for uu in u]
-            )
+        u = vector(self._surface.base_ring(), n + 1)
+        u[:k] = v
+
+        from sage.all import Fields
+        if u.base_ring() not in Fields():
+            # TODO: Test this with an exact-real surface.
+            u = u.change_ring(u.base_ring().base_ring())
+
         return A.solve_right(u)
 
     def absolute_homology(self):
@@ -439,9 +461,6 @@ class GL2ROrbitClosure:
             return self.V
         rows = []
 
-        from flatsurf.features import pyflatsurf_feature
-
-        pyflatsurf_feature.require()
         import pyflatsurf
 
         for e in self.spanning_set:
@@ -696,7 +715,10 @@ class GL2ROrbitClosure:
 
     def decomposition(self, v, limit=-1):
         # TODO: It's bad that this method lives here.
-        v = self.V2(v)
+        vector_space_conversion = self._vector_space_conversion()
+
+        if type(v) is not vector_space_conversion.codomain():
+            v = vector_space_conversion(vector_space_conversion.domain()(v))
 
         from flatsurf.features import pyflatsurf_feature
 
@@ -704,7 +726,7 @@ class GL2ROrbitClosure:
         import pyflatsurf
 
         decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
-            self._flat_triangulation(), v.vector
+            self._flat_triangulation(), v
         )
 
         if limit != 0:
@@ -773,7 +795,7 @@ class GL2ROrbitClosure:
             1 2 3
             1 3 3
         """
-        if self.V2.base_ring in [ZZ, QQ]:
+        if self._surface.base_ring() in [ZZ, QQ]:
             # square tiled surface
             return True
 
@@ -850,8 +872,7 @@ class GL2ROrbitClosure:
 
         # check
         hol = self.holonomy_dual(circumference)
-        holbis = component.circumferenceHolonomy()
-        holbis = self.V2._isomorphic_vector_space(self.V2(holbis))
+        holbis = self._vector_space_conversion().section(component.circumferenceHolonomy())
         assert hol == holbis, (hol, holbis)
 
         return circumference
@@ -1048,14 +1069,9 @@ class GL2ROrbitClosure:
         return vcyls
 
     def cylinder_module(self, cylinder):
-        width = self.V2._isomorphic_vector_space.base_ring()(
-            self.V2.base_ring()(cylinder.width())
-        )
-        height = self.V2._isomorphic_vector_space.base_ring()(
-            self.V2.base_ring()(
-                cylinder.vertical().project(cylinder.circumferenceHolonomy())
-            )
-        )
+        section  = self._ring_conversion().section
+        width = section(cylinder.width())
+        height = section(cylinder.vertical().project(cylinder.circumferenceHolonomy()))
 
         return width, height
 
@@ -1203,14 +1219,13 @@ class GL2ROrbitClosure:
         """
         return (
             GL2ROrbitClosure,
-            (self._flat_triangulation(),),
+            (self._surface,),
         )
 
 
 class LazyTangentSpace:
-    def __init__(self, V2, ambient_dimension):
-        # TODO: Find a better name for V2 here and above.
-        self.V2 = V2
+    def __init__(self, surface, ambient_dimension):
+        self._surface_base_ring = surface.base_ring()
         self._ambient_dimension = ambient_dimension
 
         self._pending_for_dimension = []
@@ -1231,8 +1246,13 @@ class LazyTangentSpace:
         self._primes = iter(self._create_primes())
         self._prime = None
 
+    @cached_method
     def base_ring(self):
-        return self.V2._algebraic_ring()
+        # TODO: This doesn't really have anything to do with "vectors". We
+        # should reimplement this in sage-flatsurf and drop the implementation
+        # in pyflatsurf.
+        from pyflatsurf.vector import Vectors
+        return Vectors(self._surface_base_ring)._algebraic_ring()
 
     def _create_primes(self):
         from sage.all import next_prime
@@ -1242,7 +1262,7 @@ class LazyTangentSpace:
         while True:
             p = next_prime(p)
 
-            yield ZZ.valuation(p).extensions(self.V2._algebraic_ring())[0]
+            yield ZZ.valuation(p).extensions(self.base_ring())[0]
 
     def _require_dimension(self):
         for item in self._pending_for_dimension:
@@ -1287,7 +1307,7 @@ class LazyTangentSpace:
         return increases
 
     def _reduce_vector(self, v):
-        assert v.base_ring() is self.V2._algebraic_ring(), f"Expected vector over {self.V2._algebraic_ring()} but found vector over {v.base_ring()}"
+        assert v.base_ring() is self.base_ring(), f"Expected vector over {self.base_ring()} but found vector over {v.base_ring()}"
 
         while True:
             p = self._require_p()
@@ -1302,10 +1322,14 @@ class LazyTangentSpace:
         if v.base_ring() is QQ:
             return [(QQ.one(), v)]
 
-        return self.V2.decomposition(v)
+        # TODO: This doesn't really have anything to do with "vectors". We
+        # should reimplement this in sage-flatsurf and drop the implementation
+        # in pyflatsurf.
+        from pyflatsurf.vector import Vectors
+        return Vectors(self._surface_base_ring).decomposition(v)
 
     def _update_dimension_from_vector(self, v) -> list[int]:
-        assert v.base_ring() is self.V2.base_ring()
+        assert v.base_ring() is self._surface_base_ring
 
         decompositions = []
 
@@ -1382,8 +1406,8 @@ class LazyTangentSpace:
         if len(v) != self._ambient_dimension:
             raise TypeError(f"Expected vector of length {self._ambient_dimension} but found vector of length {len(v)}")
 
-        if v.base_ring() is not self.V2.base_ring():
-            raise NotImplementedError(f"Expected vector over {self.V2.base_ring()} but found vector over {v.base_ring()}")
+        if v.base_ring() is not self._surface_base_ring:
+            raise NotImplementedError(f"Expected vector over {self._surface_base_ring} but found vector over {v.base_ring()}")
 
         self._pending_for_dimension.append(v)
 
@@ -1418,15 +1442,16 @@ class LazyTangentSpace:
         elif hasattr(x, "renf_elem"):
             ret = x.parent().number_field(x).vector()
         elif hasattr(x, "_backend"):
-            from itertools import chain
+            # TODO: This should probably live elsewhere.
+            from flatsurf.geometry.pyflatsurf.conversion import RingConversion
+            section = RingConversion.to_pyflatsurf(self.base_ring()).section
 
+            from itertools import chain
             ret = list(
                 chain(
                     *[
                         self._cylinder_deformation_subspace_rational_vector(
-                            self.V2.base_ring().base_ring()(
-                                self.V2.base_ring().base_ring()(c)
-                            )
+                            section(c)
                         )
                         for c in x._backend.coefficients()
                     ]

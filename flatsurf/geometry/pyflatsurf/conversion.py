@@ -1732,6 +1732,9 @@ class VectorSpaceConversion(Conversion):
             ]
         )
 
+    def ring_conversion(self):
+        return self._ring_conversion
+
 
 class FlatTriangulationConversion(Conversion):
     r"""
