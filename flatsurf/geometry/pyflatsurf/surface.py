@@ -246,14 +246,19 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             sage: S = translation_surfaces.square_torus().triangulate().codomain()
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
-            sage: Surface_pyflatsurf._from_flatsurf(S)  # optional: pyflatsurf
+            sage: mor = Surface_pyflatsurf._from_flatsurf(S); mor  # optional: pyflatsurf
             pyflatsurf conversion morphism:
               From: Triangulation of Translation Surface in H_1(0) built from a square
               To:   Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
+        TESTS::
+
+            sage: Surface_pyflatsurf._from_flatsurf(mor.codomain())
+            Identity endomorphism of Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+
         """
         if isinstance(surface, Surface_pyflatsurf):
-            return surface
+            return surface.pyflatsurf()
 
         if not surface.is_triangulated():
             triangulation = surface.triangulate()

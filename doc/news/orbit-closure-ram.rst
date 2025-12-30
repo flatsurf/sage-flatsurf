@@ -18,6 +18,7 @@
 **Fixed:**
 
 * Fixed error when calling ``FlatTriangulationConversion.vector_space_conversion`` for some exact-real surfaces.
+* Fixed ``pyflatsurf()`` for pyflatsurf backed surfaces.
 
 **Performance:**
 
