@@ -651,3 +651,112 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     return FlatTriangulationConversion.from_pyflatsurf(
                         deformed
                     ).domain()
+
+                def slopes(self, bound=-1, algorithm=None):
+                    flat_triangulation = self.pyflatsurf().codomain().flat_triangulation()
+
+                    bound = int(bound)
+
+                    if algorithm is None:
+                        algorithm = "byLength"
+
+                    if algorithm == "byLength":
+                        connections = flat_triangulation.connections().bound(int(bound)).byLength()
+                    elif algorithm == "byAngle":
+                        connections = flat_triangulation.connections().bound(int(bound))
+                    else:
+                        raise NotImplementedError("unsupported algorithm for slopes()")
+
+                    # TODO: Use something exposed on pyflatsurf() instead.
+                    from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+                    vector_space_conversion = FlatTriangulationConversion.from_pyflatsurf(flat_triangulation).vector_space_conversion()
+
+                    slopes = None
+
+                    import cppyy
+
+                    for connection in connections:
+                        direction = connection.vector()
+                        if slopes is None:
+                            slopes = cppyy.gbl.std.set[
+                                type(direction), type(direction).CompareSlope
+                            ]()
+                        if slopes.find(direction) != slopes.end():
+                            continue
+                        slopes.insert(direction)
+                        yield vector_space_conversion.section(direction)
+
+                def _decomposition(self, slope, limit=-1):
+                    r"""
+                    EXAMPLES:
+
+                    Let us first construct a Veech surface in the stratum H(2)::
+
+                        sage: from flatsurf import translation_surfaces
+
+                        sage: x = polygen(QQ)
+                        sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
+                        sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
+                        sage: S._decomposition((1,2)).cylinders() # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+                        [Cylinder with perimeter [...]]
+
+                    The following is also a Veech surface. However the flow decomposition
+                    in directions with long cylinders might not discover them if a limit
+                    is set::
+
+                        sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
+                        sage: l = S.base_ring().gen()
+                        sage: dec = S._decomposition((8*l - 25, 16), 9) # optional: pyflatsurf
+                        sage: dec.undeterminedComponents() # optional: pyflatsurf
+                        [Component with perimeter [...]]
+
+                    Further refinement might change the status of undetermined components::
+
+                        sage: import pyflatsurf # optional: pyflatsurf
+                        sage: dec.decompose(10r) # optional: pyflatsurf
+                        True
+                        sage: dec.undeterminedComponents() # optional: pyflatsurf
+                        []
+
+                    Veech surfaces have the property that any saddle connection direction is
+                    parabolic::
+
+                        sage: S = translation_surfaces.veech_double_n_gon(5)
+                        sage: for slope in S.slopes(bound=3):  # optional: pyflatsurf
+                        ....:     assert S._decomposition(slope).parabolic()
+
+                    For surfaces in rank one loci, even though they are completely periodic,
+                    they are generally not parabolic::
+
+                        sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
+                        sage: decompositions = [S._decomposition(slope) for slope in S.slopes(bound=6)]  # optional: pyflatsurf
+
+                        sage: all((d.hasCylinder() == False) or d.parabolic() for d in decompositions)  # optional: pyflatsurf
+                        False
+                        sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in decompositions)  # optional: pyflatsurf
+                        True
+
+                    """
+                    limit = int(limit)
+
+                    # TODO: Expose the ring and vector space conversion on pyflatsurf() somehow.
+                    flat_triangulation = self.pyflatsurf().codomain().flat_triangulation()
+
+                    from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+                    vector_space_conversion = FlatTriangulationConversion.from_pyflatsurf(flat_triangulation).vector_space_conversion()
+
+                    if type(slope) is not vector_space_conversion.codomain():
+                        slope = vector_space_conversion(vector_space_conversion.domain()(slope))
+
+                    from flatsurf.features import pyflatsurf_feature
+
+                    pyflatsurf_feature.require()
+                    import pyflatsurf
+
+                    decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
+                        flat_triangulation, slope
+                    )
+
+                    if limit != 0:
+                        decomposition.decompose(limit)
+                    return decomposition

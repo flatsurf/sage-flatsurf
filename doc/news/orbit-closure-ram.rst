@@ -1,6 +1,6 @@
 **Added:**
 
-* <news item>
+* Added ``slopes()`` and ``_decomposition()`` to all translation surfaces; these were originally only implemented on ``GL2ROrbitClosure``. Note that ``_decomposition()`` does not return a proper sage-flatsurf object yet but a libflatsurf ``FlowDecomposition`` defined over the corresponding flat triangulation.
 
 **Changed:**
 
@@ -9,6 +9,7 @@
 **Deprecated:**
 
 * Deprecated construction of GL2ROrbitClosure from pyflatsurf flat triangulations, instead all orbit closures should be created from actual sage-flatsurf surfaces.
+* Deprecated flow decomposition machinery on GL2ROrbitClosure, i.e., ``decomposition()``, ``decompositions()``, ``decompositions_depth_first()``, and ``decompositions_breadth_first()``.
 
 **Removed:**
 

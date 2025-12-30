@@ -2503,8 +2503,8 @@ def from_pyflatsurf(T):
         sage: for i in range(5): S.glue((0, i), (0, 5+i))
         sage: S.set_immutable()
         sage: M = S
-        sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
-        sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
+        sage: slope = list(M.slopes(bound=2, algorithm="byAngle"))[2]  # optional: pyflatsurf
+        sage: D0 = M._decomposition(slope)  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
         Translation Surface in H_2(1^2) built from 2 isosceles triangles and 6 triangles

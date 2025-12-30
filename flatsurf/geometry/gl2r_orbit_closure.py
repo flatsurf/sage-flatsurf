@@ -7,56 +7,6 @@ GL(2,R)-orbit closure of translation surfaces
       the ratio of circumferences. We should provide a method, .reset_field_of_definition or
       something similar
 
-EXAMPLES:
-
-Let us first construct a Veech surface in the stratum H(2)::
-
-    sage: from flatsurf import translation_surfaces
-    sage: from flatsurf import GL2ROrbitClosure
-
-    sage: x = polygen(QQ)
-    sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
-    sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
-    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-    sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf
-    [Cylinder with perimeter [...]]
-
-The following is also a Veech surface. However the flow decomposition
-in directions with long cylinders might not discover them if a limit
-is set::
-
-    sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
-    sage: l = S.base_ring().gen()
-    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-    sage: dec = O.decomposition((8*l - 25, 16), 9) # optional: pyflatsurf
-    sage: dec.undeterminedComponents() # optional: pyflatsurf
-    [Component with perimeter [...]]
-
-Further refinement might change the status of undetermined components::
-
-    sage: import pyflatsurf # optional: pyflatsurf
-    sage: dec.decompose(10r) # optional: pyflatsurf
-    True
-    sage: dec.undeterminedComponents() # optional: pyflatsurf
-    []
-
-Veech surfaces have the property that any saddle connection direction is
-parabolic::
-
-    sage: S = translation_surfaces.veech_double_n_gon(5)
-    sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-    sage: all(d.parabolic() for d in O.decompositions_depth_first(3))  # optional: pyflatsurf
-    True
-
-For surfaces in rank one loci, even though they are completely periodic,
-they are generally not parabolic::
-
-    sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
-    sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-    sage: all((d.hasCylinder() == False) or d.parabolic() for d in O.decompositions(6))  # optional: pyflatsurf
-    False
-    sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
-    True
 """
 
 # TODO: Verify that all methods here return SageMath objects
@@ -97,7 +47,7 @@ class GL2ROrbitClosure:
         sage: T = polygons.triangle(3, 3, 5)
         sage: S = similarity_surfaces.billiard(T)
         sage: S = S.minimal_cover(cover_type="translation")
-        sage: GL2ROrbitClosure(S)  # optional: pyflatsurf
+        sage: GL2ROrbitClosure(S)  # optional: pyflatsurf  # random output due to deprecation warnings in some versions of cppyy
         GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
 
     Computing an orbit closure over an exact real ring with transcendental elements::
@@ -114,7 +64,8 @@ class GL2ROrbitClosure:
         sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: pyexactreal
         GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
         sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-        sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: pyexactreal
+        sage: for slope in S.slopes(1):  # long time, optional: pyflatsurf, optional: pyexactreal
+        ....:     decomposition = S._decomposition(slope)
         ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
         ....:     if O.dimension() == bound: break
         sage: O  # long time, optional: pyflatsurf, optional: pyexactreal
@@ -210,25 +161,96 @@ class GL2ROrbitClosure:
 
     @cached_method
     def _flat_triangulation(self):
+        r"""
+        Return the libflatsurf surface which we use to compute the flow
+        decompositions that we process to build thet tangent space.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(3, 3, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O._flat_triangulation()  # optional: pyflatsurf
+            FlatTriangulationCombinatorial(...) with vectors ...
+
+        """
         return self._surface.pyflatsurf().codomain().flat_triangulation()
 
     @cached_method
     def _vector_space_conversion(self):
+        r"""
+        Return a conversion from the real embedded two dimensional space in
+        which the surface is defined to the vectors in which
+        :meth:`_flat_triangulation` is defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(3, 3, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O._vector_space_conversion()  # optional: pyflatsurf
+            Conversion from Vector space of dimension 2 over Number Field in c with defining polynomial x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11 with c = 1.979642883761866? to flatsurf::Vector<eantic::renf_elem_class>
+
+        """
         from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
         return FlatTriangulationConversion.from_pyflatsurf(self._flat_triangulation()).vector_space_conversion()
 
     @cached_method
     def _ring_conversion(self):
+        r"""
+        Return a conversion from the real embedded field in
+        which the coordinates of the surface live to the coordinates that the
+        :meth:`_flat_triangulation` uses.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(3, 3, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O._ring_conversion()  # optional: pyflatsurf
+            Conversion from Number Field in c with defining polynomial x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11 with c = 1.979642883761866? to NumberField(c^10 - 11*c^8 + 44*c^6 - 77*c^4 + 55*c^2 - 11, [1.979642883761865464752184075553437574753038743897433375677230890 +/- 1.53e-64])
+
+        """
         return self._vector_space_conversion().ring_conversion()
 
     @property
     @cached_method
     def V2(self):
+        r"""
+        A model of the vector space R² in libflatsurf, e.g., to represent the
+        vector associated to a saddle connection.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(3, 3, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O.V2  # optional: pyflatsurf
+            doctest:warning
+            ...
+            UserWarning: V2 has been deprecated as a property for GL2ROrbitClosure and will be removed in a future version of sage-flatsurf; use surface.pyflatsurf()._pyflatsurf_conversion.vector_space_conversion()._vectors() instead if you really need that parent
+            Flatsurf Vectors over Real Embedded Number Field in c with defining polynomial x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11 with c = 1.979642883761866?
+
+        """
         import warnings
         warnings.warn("V2 has been deprecated as a property for GL2ROrbitClosure and will be removed in a future version of sage-flatsurf; use surface.pyflatsurf()._pyflatsurf_conversion.vector_space_conversion()._vectors() instead if you really need that parent")
 
-        # A model of the vector space R² in libflatsurf, e.g., to represent the
-        # vector associated to a saddle connection.
         import pyflatsurf.vector
         return pyflatsurf.vector.Vectors(self._surface.base_ring())
 
@@ -245,15 +267,16 @@ class GL2ROrbitClosure:
         EXAMPLES::
 
             sage: from flatsurf import Polygon, similarity_surfaces
-            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
             sage: T = Polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: O.dimension() # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O.dimension()  # optional: pyflatsurf
             2
             sage: bound = T.category().billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
+            sage: for slope in S.slopes(bound=1, algorithm="byAngle"):  # long time, optional: pyflatsurf
+            ....:     decomposition = S._decomposition(slope)
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
             ....:     print(O.dimension())
@@ -263,6 +286,7 @@ class GL2ROrbitClosure:
             7
             9
             10
+
         """
         return self._tangent_space.dimension()
 
@@ -277,9 +301,10 @@ class GL2ROrbitClosure:
             sage: T = Polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: O.ambient_stratum() # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O.ambient_stratum()  # optional: pyflatsurf
             H_3(4, 0^4)
+
         """
         from surface_dynamics import Stratum
 
@@ -288,12 +313,50 @@ class GL2ROrbitClosure:
         return Stratum([a - 1 for a in angles], 1)
 
     def base_ring(self):
-        # TODO: This doesn't really have anything to do with "vectors". We
-        # should reimplement this in sage-flatsurf and drop the implementation
-        # in pyflatsurf.
-        # TODO: This code is repeated in LazyTangentSpace.base_ring()
-        from pyflatsurf.vector import Vectors
-        return Vectors(self._surface_base_ring)._algebraic_ring()
+        r"""
+        Return the ring of coefficients for the tangent space.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: T = Polygon(angles=(1, 3, 5))
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O.base_ring()  # optional: pyflatsurf
+            Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?
+
+        ::
+
+            sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
+            sage: from pyexactreal import ExactReals  # optional: pyexactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+
+            sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
+            sage: R = ExactReals(E.base_ring())  # optional: pyexactreal
+            sage: slopes = E.slopes()
+            sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: pyexactreal
+            sage: S = similarity_surfaces.billiard(T)  # optional: pyexactreal
+            sage: S = S.minimal_cover(cover_type="translation")  # optional: pyexactreal
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf, optional: pyexactreal
+            sage: O.base_ring()  # optional: pyflatsurf, optional: pyexactreal
+            Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+        """
+        base_ring = self._surface.base_ring()
+
+        from pyexactreal.exact_reals import ExactReals
+        if isinstance(base_ring, ExactReals):
+            # Determine the ring underlying the exact reals and convert to the
+            # standard SageMath representation, i.e., NumberField instead of
+            # RealEmbeddedNumberField.
+            base_ring = base_ring.base_ring()
+            if base_ring in [ZZ, QQ]:
+                pass
+            else:
+                base_ring = base_ring.number_field
+
+        return base_ring
 
     def field_of_definition(self):
         r"""
@@ -321,9 +384,9 @@ class GL2ROrbitClosure:
             sage: O.field_of_definition() # optional: pyflatsurf, optional: pyexactreal
             Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
             sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: pyexactreal
+            sage: for slope in S.slopes():  # long time, optional: pyflatsurf, optional: pyexactreal
             ....:     if O.dimension() == bound: break
-            ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
+            ....:     O.update_tangent_space_from_flow_decomposition(S._decomposition(slope))
             sage: O.field_of_definition()  # long time, optional: pyflatsurf, optional: pyexactreal
             Rational Field
 
@@ -334,9 +397,9 @@ class GL2ROrbitClosure:
             sage: O.field_of_definition() # optional: pyflatsurf
             Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
             sage: bound = T.category().billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
+            sage: for slope in S.slopes(): # long time, optional: pyflatsurf
             ....:     if O.dimension() == bound: break
-            ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
+            ....:     O.update_tangent_space_from_flow_decomposition(S._decomposition(slope))
             sage: O.field_of_definition()  # long time, optional: pyflatsurf
             Rational Field
         """
@@ -350,7 +413,10 @@ class GL2ROrbitClosure:
 
     def _half_edge_to_face(self, h):
         r"""
-        Return a canonical half-edge encoding the face bounded by ``h``.
+        Return a canonical half-edge encoding the face bounded by the half edge
+        with identifier ``h``.
+
+        This is a helper method for :meth:`_spanning_tree`.
         """
         surface = self._flat_triangulation()
         h1 = h
@@ -363,7 +429,11 @@ class GL2ROrbitClosure:
 
     def holonomy(self, v):
         r"""
-        Return the holonomy of ``v`` (with respect to the chosen homology basis)
+        Return the holonomy of ``v`` (with respect to the chosen homology basis).
+
+        OUTPUT:
+
+        A two-dimensional vector over the base ring of the translation surface.
 
         EXAMPLES::
 
@@ -375,8 +445,14 @@ class GL2ROrbitClosure:
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
             sage: edges = O._flat_triangulation().edges() # optional: pyflatsurf
             sage: F = FreeModule(ZZ, len(edges)) # optional: pyflatsurf
-            sage: all(O.holonomy(O.proj * F.gen(i)) == O._vector_space_conversion().section(O._flat_triangulation().fromHalfEdge(e.positive())) for i, e in enumerate(edges)) # optional: pyflatsurf
-            True
+
+            sage: for i, e in enumerate(edges):  # optional: pyflatsurf
+            ....:     holonomy = O.holonomy(O.proj * F.gen(i))
+            ....:     vector = O._flat_triangulation().fromHalfEdge(e.positive())
+            ....:
+            ....:     assert holonomy.parent() is S.base_ring()**2
+            ....:     assert holonomy == O._vector_space_conversion().section(vector)
+
         """
         return self.V(v) * self.H
 
@@ -393,6 +469,10 @@ class GL2ROrbitClosure:
         r"""
         Given a vector in the "spanning set basis" return a vector on the full basis of
         edges.
+
+        The vectors are returned as columns in a matrix. Each column
+        corresponds to one edge in the underlying :meth:`_flat_triangulation`
+        ordered as returned by its ``.edges()``.
 
         EXAMPLES::
 
@@ -416,7 +496,8 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation").erase_marked_points() # long time (3s, #122), optional: pyflatsurf
             sage: O = GL2ROrbitClosure(S)  # long time (above), optional: pyflatsurf
-            sage: for d in O.decompositions(4, 20):  # long time (2s, #124), optional: pyflatsurf
+            sage: for slope in S.slopes(bound=4): # long time (2s, #124), optional: pyflatsurf
+            ....:     d = S._decomposition(slope, limit=20)
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.dimension() == 4:
             ....:         break
@@ -427,9 +508,27 @@ class GL2ROrbitClosure:
             sage: S2 = O._flat_triangulation() + d  # long time (6s), optional: pyflatsurf
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf  # optional: pyflatsurf
-            sage: O2 = GL2ROrbitClosure(Surface_pyflatsurf(S2.surface()))  # long time (above), optional: pyflatsurf
-            sage: for d in O2.decompositions(1, 20):  # long time (25s, #124), optional: pyflatsurf
+            sage: S2 = Surface_pyflatsurf(S2.surface())  # long time (above), optional: pyflatsurf
+            sage: O2 = GL2ROrbitClosure(S2)  # long time (above), optional: pyflatsurf
+            sage: for slope in S2.slopes(bound=1):  # long time (25s, #124), optional: pyflatsurf
+            ....:     d = S2._decomposition(slope, limit=20)
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
+
+        TESTS:
+
+        Verify that this also works with exact-real coefficients::
+
+            sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
+            sage: from pyexactreal import ExactReals  # optional: pyexactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+
+            sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
+            sage: R = ExactReals(E.base_ring())  # optional: pyexactreal
+            sage: slopes = E.slopes()
+            sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: pyexactreal
+            sage: S = similarity_surfaces.billiard(T)  # optional: pyexactreal
+            sage: S = S.minimal_cover(cover_type="translation")  # optional: pyexactreal
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf, optional: pyexactreal
+            sage: d1, d2, d3, d4 = [O.lift(b) for b in O.tangent_space_basis()]  # optional: pyflatsurf, optional: pyexactreal
 
         """
         # given the values on the spanning edges we reconstruct the unique vector that
@@ -447,9 +546,9 @@ class GL2ROrbitClosure:
         u = vector(self._surface.base_ring(), n + 1)
         u[:k] = v
 
-        from sage.all import Fields
-        if u.base_ring() not in Fields():
-            # TODO: Test this with an exact-real surface.
+
+        from pyexactreal.exact_reals import ExactReals
+        if isinstance(u.base_ring(), ExactReals):
             u = u.change_ring(u.base_ring().base_ring())
 
         return A.solve_right(u)
@@ -502,7 +601,8 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(5, 100):  # long time (3s)  # optional: pyflatsurf
+            sage: for slope in S.slopes():  # long time (3s)  # optional: pyflatsurf
+            ....:     d = S._decomposition(slope, limit=100)
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.dimension() == 9:
             ....:         break
@@ -671,7 +771,8 @@ class GL2ROrbitClosure:
         r"""
         Return the list of boundaries (ie sum of edges around a triangular face).
 
-        These are elements of H_1(S, Sigma; Z).
+        These are elements of H_1(S, Sigma; Z). The entries of the returned
+        vector correspond to the edges of the :meth:`_flat_triangulation`.
 
         TESTS::
 
@@ -714,57 +815,28 @@ class GL2ROrbitClosure:
         return B
 
     def decomposition(self, v, limit=-1):
-        # TODO: It's bad that this method lives here.
-        vector_space_conversion = self._vector_space_conversion()
+        import warnings
+        warnings.warn("decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use ._decomposition() on the translation surface instead")
 
-        if type(v) is not vector_space_conversion.codomain():
-            v = vector_space_conversion(vector_space_conversion.domain()(v))
-
-        from flatsurf.features import pyflatsurf_feature
-
-        pyflatsurf_feature.require()
-        import pyflatsurf
-
-        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
-            self._flat_triangulation(), v
-        )
-
-        if limit != 0:
-            decomposition.decompose(int(limit))
-        return decomposition
+        return self._surface._decomposition(v, limit=limit)
 
     def decompositions(self, bound, limit=-1, bfs=False):
-        # TODO: It's bad that this method lives here.
-        limit = int(limit)
+        import warnings
+        warnings.warn("decompositions() has been deprecated and will be removed in a future version of sage-flatsurf; use ._decomposition() and .slopes() on the translation surface instead")
 
-        connections = self._flat_triangulation().connections().bound(int(bound))
-        if bfs:
-            connections = connections.byLength()
-
-        slopes = None
-
-        from flatsurf.features import cppyy_feature
-
-        cppyy_feature.require()
-        import cppyy
-
-        for connection in connections:
-            direction = connection.vector()
-            if slopes is None:
-                slopes = cppyy.gbl.std.set[
-                    type(direction), type(direction).CompareSlope
-                ]()
-            if slopes.find(direction) != slopes.end():
-                continue
-            slopes.insert(direction)
-            yield self.decomposition(direction, limit)
+        for slope in self._surface.slopes(bound=bound, algorithm="byLength" if bfs else "byAngle"):
+            yield self._surface._decomposition(slope, limit=limit)
 
     def decompositions_depth_first(self, bound, limit=-1):
-        # TODO: It's bad that this method lives here.
+        import warnings
+        warnings.warn("decompositions_depth_first() has been deprecated and will be removed in a future version of sage-flatsurf; use ._decomposition() and .slopes() on the translation surface instead")
+
         return self.decompositions(bound, bfs=False, limit=limit)
 
     def decompositions_breadth_first(self, bound, limit=-1):
-        # TODO: It's bad that this method lives here.
+        import warnings
+        warnings.warn("decompositions_breadth_first() has been deprecated and will be removed in a future version of sage-flatsurf; use ._decomposition() and .slopes() on the translation surface instead")
+
         return self.decompositions(bound, bfs=True, limit=limit)
 
     def is_teichmueller_curve(self, bound, limit=-1):
@@ -815,7 +887,8 @@ class GL2ROrbitClosure:
         if k.degree() > genus or not k.is_totally_real():
             return False
 
-        for decomposition in self.decompositions_depth_first(bound, limit):
+        for slope in self._surface.slopes(bound=bound, algorithm="byAngle"):
+            decomposition = self._surface._decomposition(slope, limit=limit)
             if (
                 decomposition.parabolic() == False
             ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
@@ -842,8 +915,7 @@ class GL2ROrbitClosure:
 
             sage: S = translation_surfaces.veech_double_n_gon(5)
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for dec in O.decompositions_depth_first(1):  # optional: pyflatsurf
-            ....:     break
+            sage: dec = next(iter(S._decomposition(slope) for slope in S.slopes(bound=1)))  # optional: pyflatsurf
             sage: c0, c1 = dec.components() # optional: pyflatsurf
             sage: kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
             sage: O.cylinder_circumference(c0, *kz) # optional: pyflatsurf
@@ -989,7 +1061,8 @@ class GL2ROrbitClosure:
 
             sage: S = translation_surfaces.square_torus()
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for dec in O.decompositions_depth_first(3):  # optional: pyflatsurf
+            sage: for slope in S.slopes(bound=3, algorithm="byAngle"):  # optional: pyflatsurf
+            ....:     dec = S._decomposition(slope)
             ....:     kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
             ....:     print(kz[0])
             [ 0  1]
@@ -1105,7 +1178,8 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(1):  # long time (1s), optional: pyflatsurf
+            sage: for slope in S.slopes(bound=1):  # long time (1s), optional: pyflatsurf
+            ....:     d = S._decomposition(slope)
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             sage: assert O.dimension() == 2  # long time (above), optional: pyflatsurf
 
@@ -1123,7 +1197,8 @@ class GL2ROrbitClosure:
             ....:     S = S.minimal_cover(cover_type="translation")
             ....:     O = GL2ROrbitClosure(S)  # optional: pyflatsurf
             ....:     nsteps = 0
-            ....:     for d in islice(O.decompositions(3,100), 10):  # optional: pyflatsurf
+            ....:     for slope in islice(S.slopes(bound=3, algorithm="byAngle"), 10):
+            ....:         d = S._decomposition(slope, limit=100)
             ....:         O.update_tangent_space_from_flow_decomposition(d)
             ....:         nsteps += 1
             ....:         if O.dimension() == dim:
