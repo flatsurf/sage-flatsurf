@@ -653,6 +653,41 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     ).domain()
 
                 def slopes(self, bound=-1, algorithm=None):
+                    r"""
+                    Return all the slopes of saddle connection holonomies in this surface.
+
+                    INPUT:
+
+                    - ``bound`` -- an integer (default: ``-1``); if given, only consider
+                      saddle connections of length up to this bound.
+
+                    - ``algorithm`` -- one of ``"byAngle"``, ``"byLength"``, or
+                      ``None`` (default: ``None``); in which order to enumerate
+                      saddle connections; the default corresponds to
+                      ``"byLength"`` at the moment.
+
+                    EXAMPLES:
+
+                    This method returns an infinite generator of slopes if no
+                    bound has been specified::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.arnoux_yoccoz(4)
+
+                        sage: from itertools import islice
+                        sage: list(islice(S.slopes(), 10))  # optional: pyflatsurf
+                        [(1/2*alpha^2, 2/3*alpha^3 + 1/3*alpha^2 - 1/3),
+                         (1/2*alpha^2, -2/3*alpha^3 - 1/3*alpha^2 + 1/3),
+                         (1/2*alpha^3 + 1/2*alpha^2, alpha^3),
+                         (-1/2*alpha^3 - 1/2*alpha^2, alpha^3),
+                         (-1/2*alpha, 1/3*alpha^3 + 2/3*alpha^2 + alpha - 2/3),
+                         (1/2*alpha, 1/3*alpha^3 + 2/3*alpha^2 + alpha - 2/3),
+                         (1/2*alpha^2 + 1/2*alpha - 1/2, alpha^2),
+                         (-1/2*alpha^2 - 1/2*alpha + 1/2, alpha^2),
+                         (-1/2*alpha^3, 1/3*alpha^3 - 1/3*alpha^2 + 1/3),
+                         (1/2*alpha^3, 1/3*alpha^3 - 1/3*alpha^2 + 1/3)]
+
+                    """
                     flat_triangulation = self.pyflatsurf().codomain().flat_triangulation()
 
                     bound = int(bound)
@@ -688,6 +723,19 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 def _decomposition(self, slope, limit=-1):
                     r"""
+                    Return the flow decomposition in direction ``slope``.
+
+                    If ``limit`` is given, only that many steps or Zorich
+                    induction are performed to decompose the flow decomposition
+                    into cylinders (and minimal copmonents.)
+
+                    .. NOTE::
+
+                        This method is internal since it returns a wrapper of a
+                        libflatsurf object that does not fit nicely into the
+                        sage-flatsurf framework. Eventually, we should provide
+                        a proper sage-flatsurf wrapper for that object.
+
                     EXAMPLES:
 
                     Let us first construct a Veech surface in the stratum H(2)::
