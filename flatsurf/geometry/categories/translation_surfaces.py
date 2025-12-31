@@ -688,7 +688,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                          (1/2*alpha^3, 1/3*alpha^3 - 1/3*alpha^2 + 1/3)]
 
                     """
-                    flat_triangulation = self.pyflatsurf().codomain().flat_triangulation()
+                    surface = self.pyflatsurf().codomain()
 
                     bound = int(bound)
 
@@ -696,15 +696,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         algorithm = "byLength"
 
                     if algorithm == "byLength":
-                        connections = flat_triangulation.connections().bound(int(bound)).byLength()
+                        connections = surface.flat_triangulation().connections().bound(int(bound)).byLength()
                     elif algorithm == "byAngle":
-                        connections = flat_triangulation.connections().bound(int(bound))
+                        connections = surface.flat_triangulation().connections().bound(int(bound))
                     else:
                         raise NotImplementedError("unsupported algorithm for slopes()")
-
-                    # TODO: Use something exposed on pyflatsurf() instead.
-                    from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
-                    vector_space_conversion = FlatTriangulationConversion.from_pyflatsurf(flat_triangulation).vector_space_conversion()
 
                     slopes = None
 
@@ -719,7 +715,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         if slopes.find(direction) != slopes.end():
                             continue
                         slopes.insert(direction)
-                        yield vector_space_conversion.section(direction)
+                        yield surface.vector_space_conversion().section(direction)
 
                 def _decomposition(self, slope, limit=-1):
                     r"""
@@ -785,13 +781,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         True
 
                     """
-                    limit = int(limit)
+                    surface = self.pyflatsurf().codomain()
 
-                    # TODO: Expose the ring and vector space conversion on pyflatsurf() somehow.
-                    flat_triangulation = self.pyflatsurf().codomain().flat_triangulation()
-
-                    from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
-                    vector_space_conversion = FlatTriangulationConversion.from_pyflatsurf(flat_triangulation).vector_space_conversion()
+                    vector_space_conversion = surface.vector_space_conversion()
 
                     if type(slope) is not vector_space_conversion.codomain():
                         slope = vector_space_conversion(vector_space_conversion.domain()(slope))
@@ -802,9 +794,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     import pyflatsurf
 
                     decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
-                        flat_triangulation, slope
+                        surface.flat_triangulation(), slope
                     )
 
                     if limit != 0:
-                        decomposition.decompose(limit)
+                        decomposition.decompose(int(limit))
                     return decomposition

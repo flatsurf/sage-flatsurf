@@ -200,30 +200,7 @@ class GL2ROrbitClosure:
             Conversion from Vector space of dimension 2 over Number Field in c with defining polynomial x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11 with c = 1.979642883761866? to flatsurf::Vector<eantic::renf_elem_class>
 
         """
-        from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
-        return FlatTriangulationConversion.from_pyflatsurf(self._flat_triangulation()).vector_space_conversion()
-
-    @cached_method
-    def _ring_conversion(self):
-        r"""
-        Return a conversion from the real embedded field in
-        which the coordinates of the surface live to the coordinates that the
-        :meth:`_flat_triangulation` uses.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-
-            sage: T = polygons.triangle(3, 3, 5)
-            sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: O._ring_conversion()  # optional: pyflatsurf
-            Conversion from Number Field in c with defining polynomial x^10 - 11*x^8 + 44*x^6 - 77*x^4 + 55*x^2 - 11 with c = 1.979642883761866? to NumberField(c^10 - 11*c^8 + 44*c^6 - 77*c^4 + 55*c^2 - 11, [1.979642883761865464752184075553437574753038743897433375677230890 +/- 1.53e-64])
-
-        """
-        return self._vector_space_conversion().ring_conversion()
+        return self._surface.pyflatsurf().codomain().vector_space_conversion()
 
     @property
     @cached_method
@@ -1142,7 +1119,7 @@ class GL2ROrbitClosure:
         return vcyls
 
     def cylinder_module(self, cylinder):
-        section  = self._ring_conversion().section
+        section  = self._vector_space_conversion().ring_conversion().section
         width = section(cylinder.width())
         height = section(cylinder.vertical().project(cylinder.circumferenceHolonomy()))
 

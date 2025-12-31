@@ -160,6 +160,12 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         """
         return self._flat_triangulation
 
+    def vector_space_conversion(self):
+        return self._vector_space_conversion
+
+    def ring_conversion(self):
+        return self._vector_space_conversion.ring_conversion()
+
     def is_mutable(self):
         r"""
         Return whether this surface is mutable.

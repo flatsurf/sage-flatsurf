@@ -1,6 +1,7 @@
 **Added:**
 
 * Added ``slopes()`` and ``_decomposition()`` to all translation surfaces; these were originally only implemented on ``GL2ROrbitClosure``. Note that ``_decomposition()`` does not return a proper sage-flatsurf object yet but a libflatsurf ``FlowDecomposition`` defined over the corresponding flat triangulation.
+* Added ``vector_space_conversion()`` and ``ring_conversion()`` to pyflatsurf backed surfaces to get direct access to the underlying map from SageMath to libflatsurf objects.
 
 **Changed:**
 
