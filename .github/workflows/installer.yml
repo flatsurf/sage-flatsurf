@@ -20,7 +20,7 @@ jobs:
     - name: Create installer
       run: ./installer/unix/build-installer.sh
     - name: Provide installer as a build artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: unix-installer
         path: ./*.unix.tar.gz
@@ -31,7 +31,7 @@ jobs:
       matrix:
         on: [ ubuntu-24.04, macos-13, macos-14 ]
     steps:
-    - uses: actions/download-artifact@v6
+    - uses: actions/download-artifact@v7
       with:
         name: unix-installer
     - name: Extract installer
@@ -45,7 +45,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
       with: { fetch-depth: 0 }
-    - uses: actions/download-artifact@v6
+    - uses: actions/download-artifact@v7
       with:
         name: unix-installer
         path: installer/win/
@@ -67,7 +67,7 @@ jobs:
         path: installer/win/installer.iss
         options: /O+
     - name: Provide installer as a build artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: windows-installer
         path: ./installer/win/Output/*.exe

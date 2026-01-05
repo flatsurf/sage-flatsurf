@@ -22,11 +22,11 @@ jobs:
       - name: detect broken links
         run: pixi run doc-linkcheck
       - name: provide documentation as artifact for netlify workflow
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: doc
           path: doc/_build/html
-      - uses: JamesIves/github-pages-deploy-action@v4.7.4
+      - uses: JamesIves/github-pages-deploy-action@v4.7.6
         with:
           branch: gh-pages
           folder: doc/_build/html
