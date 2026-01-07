@@ -654,7 +654,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 def slopes(self, bound=-1, algorithm=None):
                     r"""
-                    Return all the slopes of saddle connection holonomies in this surface.
+                    Return all the slopes of saddle connection holonomies in
+                    this surface as pairs ``(x, y)``.
 
                     INPUT:
 
