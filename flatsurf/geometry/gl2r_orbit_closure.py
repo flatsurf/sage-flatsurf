@@ -127,7 +127,6 @@ class GL2ROrbitClosure:
 
         # We construct a spanning set of edges, that is a subset of the edges
         # of the flat triangulation that form a basis of H_1(S, Sigma; Z).
-        # It comes together with a projection matrix
         t, m = self._spanning_tree()
         assert set(t.keys()) == {f[2] for f in self._flat_triangulation().faces()}
         self.spanning_set = []
@@ -141,8 +140,8 @@ class GL2ROrbitClosure:
         assert 3 * self.d - 3 == self._flat_triangulation().size()
         assert m.rank() == self.d
 
-        # projection matrix from Z^E to H_1(S, Sigma; Z) in the basis
-        # of spanning edges
+        # Projection matrix from Z^E to H_1(S, Sigma; Z) in the basis of
+        # spanning edges
         self.proj = matrix(ZZ, [r for r in m.columns() if r])
 
         self.Omega = self._intersection_matrix(t, self.spanning_set)
@@ -328,9 +327,7 @@ class GL2ROrbitClosure:
             # standard SageMath representation, i.e., NumberField instead of
             # RealEmbeddedNumberField.
             base_ring = base_ring.base_ring()
-            if base_ring in [ZZ, QQ]:
-                pass
-            else:
+            if base_ring not in [ZZ, QQ]:
                 base_ring = base_ring.number_field
 
         return base_ring
@@ -388,25 +385,19 @@ class GL2ROrbitClosure:
 
         return L
 
-    def _half_edge_to_face(self, h):
-        r"""
-        Return a canonical half-edge encoding the face bounded by the half edge
-        with identifier ``h``.
-
-        This is a helper method for :meth:`_spanning_tree`.
-        """
-        surface = self._flat_triangulation()
-        h1 = h
-        h2 = surface.nextInFace(h1)
-        h3 = surface.nextInFace(h2)
-        return min([h1, h2, h3], key=lambda x: x.index())
-
     def __repr__(self):
         return f"GL(2,R)-orbit closure of dimension at least {self.dimension()} in {self.ambient_stratum()} (ambient dimension {self.d})"
 
     def holonomy(self, v):
         r"""
-        Return the holonomy of ``v`` (with respect to the chosen homology basis).
+        Return the holonomy of the relative homology class ``v``.
+
+        INPUT:
+
+        - ``v`` -- a vector with one entry for each element in the basis of
+          relative homology as given by ``spanning_set`` (note that the
+          numbering there refers to the underlying :meth:`_flat_triangulation``
+          surface.)
 
         OUTPUT:
 
@@ -435,7 +426,19 @@ class GL2ROrbitClosure:
 
     def holonomy_dual(self, v):
         r"""
-        Return the holonomy of the dual of ``v``
+        Return the holonomy of the dual of the relative homology class ``v``.
+
+        INPUT:
+
+        - ``v`` -- a vector with one entry for each element in the basis of
+          relative homology as given by ``spanning_set`` (note that the
+          numbering there refers to the underlying :meth:`_flat_triangulation``
+          surface.)
+
+        OUTPUT:
+
+        A two-dimensional vector over the base ring of the translation surface.
+
         """
         return self.V(v) * self.Hdual
 
@@ -638,7 +641,7 @@ class GL2ROrbitClosure:
         if root is None:
             root = next(iter(self._flat_triangulation().edges())).positive()
 
-        root = self._half_edge_to_face(root)
+        root = self._spanning_tree_half_edge_to_face(root)
         t = {root: None}  # face -> half edge to take to go to the root
         todo = [root]
         edges = []  # store edges in topological order to perform Gauss reduction
@@ -646,7 +649,7 @@ class GL2ROrbitClosure:
             f = todo.pop()
             for _ in range(3):
                 f1 = -f
-                g = self._half_edge_to_face(f1)
+                g = self._spanning_tree_half_edge_to_face(f1)
                 if g not in t:
                     t[g] = f1
                     todo.append(g)
@@ -677,6 +680,19 @@ class GL2ROrbitClosure:
                 assert proj[j, i1] == 0
 
         return (t, proj)
+
+    def _spanning_tree_half_edge_to_face(self, h):
+        r"""
+        Return a canonical half-edge encoding the face bounded by the half edge
+        with identifier ``h``.
+
+        This is a helper method for :meth:`_spanning_tree`.
+        """
+        surface = self._flat_triangulation()
+        h1 = h
+        h2 = surface.nextInFace(h1)
+        h3 = surface.nextInFace(h2)
+        return min([h1, h2, h3], key=lambda x: x.index())
 
     def _intersection_matrix(self, t, spanning_set):
         r"""
