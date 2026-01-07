@@ -5,7 +5,7 @@
 
 **Changed:**
 
-* Changed return types of methods of GL2ROrbitClosure to always return SageMath objects, e.g., instead of return e-antic number field elements, they now return SageMath number field elements. This change might break calling code if it is too reliant on the exact types returned.
+* Changed return types of methods of GL2ROrbitClosure to always return SageMath objects, e.g., instead of returning e-antic number field elements, they now return SageMath number field elements. This change might break calling code if it is too reliant on the exact types returned.
 
 **Deprecated:**
 
