@@ -1733,6 +1733,18 @@ class VectorSpaceConversion(Conversion):
         )
 
     def ring_conversion(self):
+        r"""
+        Return the conversion on the level of base rings underlying this
+        conversion of vector spaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf.conversion import VectorSpaceConversion
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyflatsurf
+            sage: conversion.ring_conversion()  # optional: pyflatsurf
+            Conversion from Rational Field to __gmp_expr<__mpq_struct[1],__mpq_struct[1]>
+
+        """
         return self._ring_conversion
 
 
