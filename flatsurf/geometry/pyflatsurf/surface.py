@@ -161,9 +161,34 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         return self._flat_triangulation
 
     def vector_space_conversion(self):
+        r"""
+        Return the conversion from the two-dimensional real SageMath vector
+        space underlying this surface to the corresponding ``Vector`` type in
+        libflatsurf.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.pyflatsurf().codomain().vector_space_conversion()  # optional: pyflatsurf
+            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>>
+
+        """
         return self._vector_space_conversion
 
     def ring_conversion(self):
+        r"""
+        Return the conversion from the real embedded base ring of this surface
+        to the corresponding C++ type in libflatsurf.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.pyflatsurf().codomain().ring_conversion()  # optional: pyflatsurf
+            Conversion from Rational Field to __gmp_expr<__mpq_struct[1],__mpq_struct[1]>
+
+        """
         return self._vector_space_conversion.ring_conversion()
 
     def is_mutable(self):
