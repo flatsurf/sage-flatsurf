@@ -55,9 +55,8 @@ https://github.com/flatsurf/sage-flatsurf/issues/166)::
     sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion  # optional: pyflatsurf
     sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
     sage: T = conversion.codomain()  # optional: pyflatsurf
-    sage: O = GL2ROrbitClosure(T)  # optional: pyflatsurf
 
-    sage: D = O.decomposition((13, 37))  # optional: pyflatsurf
+    sage: D = S._decomposition((13, 37))  # optional: pyflatsurf
     sage: cylinder = D.cylinders()[0]  # optional: pyflatsurf
 
     sage: H = SimplicialHomology(S)
