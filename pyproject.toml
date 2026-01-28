@@ -47,8 +47,8 @@ sagemath-104 = ["sagemath-104", "flipper", "gmpxxyy", "pyeantic", "pyexactreal",
 sagemath-105 = ["sagemath-105", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 sagemath-106 = ["sagemath-106", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "test"]
 asv = ["asv"]
-doc = ["doc", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf"]
-dev = ["dev", "sagemath-107", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf", "ipyvue-flatsurf", "test", "lint"]
+doc = ["doc", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf", "veerer"]
+dev = ["dev", "sagemath-107", "flipper", "gmpxxyy", "pyeantic", "pyexactreal", "pyflatsurf", "ipyvue-flatsurf", "test", "lint", "veerer"]
 
 # Shared dependencies for all features below.
 [tool.pixi.dependencies]
@@ -73,8 +73,8 @@ pytest-xdist = "*"
 pytest-repeat = "*"
 
 [tool.pixi.feature.test.tasks]
-doctest = "sage -tp --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF flatsurf doc"
-doctest-long = "sage -tp --long --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF flatsurf doc"
+doctest = "sage -tp --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF$SAGE_OPTIONALS_VEERER flatsurf doc"
+doctest-long = "sage -tp --long --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF$SAGE_OPTIONALS_VEERER flatsurf doc"
 
 [tool.pixi.feature.flipper]
 activation.env.SAGE_OPTIONALS_FLIPPER = ",flipper"
@@ -107,6 +107,13 @@ activation.env.SAGE_OPTIONALS_PYFLATSURF = ",pyflatsurf"
 pyflatsurf = ">=3.15.2,<4"
 # our pyflatsurf tests in conversion.py rely on some more recent fixes of pyexactreal
 pyexactreal = ">=4.0.1,<5"
+
+[tool.pixi.feature.veerer]
+activation.env.SAGE_OPTIONALS_VEERER = ",veerer"
+
+[tool.pixi.feature.veerer.dependencies]
+veerer = "*"
+gap = "*"
 
 [tool.pixi.feature.ipyvue-flatsurf.pypi-dependencies]
 ipyvue-flatsurf = ">=0.6.0,<0.7.0"
@@ -150,7 +157,6 @@ myst-nb = "*"
 scipy = "*"
 sphinx = ">=7,<8"
 tachyon = "*"
-veerer = "*"
 linkchecker = "*"
 sphinx-book-theme = "*"
 
