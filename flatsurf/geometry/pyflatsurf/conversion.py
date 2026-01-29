@@ -1732,6 +1732,21 @@ class VectorSpaceConversion(Conversion):
             ]
         )
 
+    def ring_conversion(self):
+        r"""
+        Return the conversion on the level of base rings underlying this
+        conversion of vector spaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf.conversion import VectorSpaceConversion
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyflatsurf
+            sage: conversion.ring_conversion()  # optional: pyflatsurf
+            Conversion from Rational Field to __gmp_expr<__mpq_struct[1],__mpq_struct[1]>
+
+        """
+        return self._ring_conversion
+
 
 class FlatTriangulationConversion(Conversion):
     r"""
@@ -2100,9 +2115,33 @@ class FlatTriangulationConversion(Conversion):
             sage: conversion.vector_space_conversion()  # optional: pyflatsurf
             Conversion from Vector space of dimension 2 over Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to flatsurf::Vector<eantic::renf_elem_class>
 
+        TESTS::
+
+            sage: from pyexactreal import ZZModule, RealNumber  # optional: pyexactreal
+            sage: M = ZZModule(RealNumber.rational(1), RealNumber.random())  # optional: pyexactreal
+            sage: one = M.gen(0R)  # optional: pyexactreal
+            sage: μ = M.gen(1R)  # optional: pyexactreal
+
+            sage: from pyflatsurf import Surface, flatsurf  # optional: pyflatsurf
+            sage: V = flatsurf.Vector['exactreal::Element<exactreal::IntegerRing>']  # optional: pyexactreal  # optional: pyflatsurf
+            sage: u = V(one, 0R*one)  # optional: pyexactreal  # optional: pyflatsurf
+            sage: v = V(0R*one, μ)  # optional: pyexactreal  # optional: pyflatsurf
+
+            sage: vectors = [u, v, u+v]  # optional: pyexactreal  # optional: pyflatsurf
+            sage: vertices = [[1R, 3R, 2R, -1R, -3R, -2R]]
+            sage: S = Surface(vertices, vectors)  # optional: pyexactreal  # optional: pyflatsurf
+
+            sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
+            sage: conversion = FlatTriangulationConversion.from_pyflatsurf(S)  # optional: pyexactreal  # optional: pyflatsurf
+            sage: conversion.vector_space_conversion()  # optional: pyexactreal  # optional: pyflatsurf
+            Conversion from Ambient free module of rank 2 over the integral domain Real Numbers as (Integer Ring)-Module to flatsurf::Vector<exactreal::Element<exactreal::IntegerRing>>
+
         """
+        ring_conversion = self.ring_conversion()
+
         return VectorSpaceConversion.to_pyflatsurf(
-            self.ring_conversion().domain() ** 2,
+            ring_conversion.domain() ** 2,
+            ring_conversion=ring_conversion
         )
 
     def __call__(self, x):
@@ -2476,8 +2515,8 @@ def from_pyflatsurf(T):
         sage: for i in range(5): S.glue((0, i), (0, 5+i))
         sage: S.set_immutable()
         sage: M = S
-        sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
-        sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
+        sage: slope = list(M.slopes(bound=2, algorithm="byAngle"))[2]  # optional: pyflatsurf
+        sage: D0 = M._decomposition(slope)  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
         Translation Surface in H_2(1^2) built from 2 isosceles triangles and 6 triangles

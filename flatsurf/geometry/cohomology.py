@@ -12,7 +12,7 @@ The absolute cohomology of the regular octagon::
 A basis of cohomology::
 
     sage: H.gens()
-    [{B[(0, 1)]: 1}, {B[(0, 2)]: 1}, {B[(0, 3)]: 1}, {B[(0, 0)]: 1}]
+    [{[(0, 1)]: 1}, {[(0, 2)]: 1}, {[(0, 3)]: 1}, {[(0, 0)]: 1}]
 
 The absolute cohomology of the unfolding of the (3, 4, 13) triangle::
 
@@ -99,7 +99,7 @@ class SimplicialCohomologyClass(Element):
             sage: f, _, _, _ = H.gens()
 
             sage: f
-            {B[(0, 1)]: 1}
+            {[(0, 1)]: 1}
 
         """
         return repr(self._values)
@@ -351,7 +351,7 @@ class SimplicialCohomologyGroup(Parent):
             sage: H(0)
             {}
             sage: H({gen: 1 for gen in H.homology().gens()})
-            {B[(0, 1)]: 1, B[(0, 0)]: 1}
+            {[(0, 1)]: 1, [(0, 0)]: 1}
 
         """
         if not x:
@@ -392,10 +392,101 @@ class SimplicialCohomologyGroup(Parent):
             sage: T = translation_surfaces.square_torus()
             sage: H = SimplicialCohomology(T)
             sage: H.gens()
-            [{B[(0, 1)]: 1}, {B[(0, 0)]: 1}]
+            [{[(0, 1)]: 1}, {[(0, 0)]: 1}]
 
         """
         return [self({gen: 1}) for gen in self.homology().gens()]
+
+    ## TODO: Make this work here.
+    ## def field_of_definition(self):
+    ##     r"""
+    ##     Return the field of definition of the current subspace.
+
+    ##     .. WARNING::
+
+    ##         This involves the computation of the echelon form of the matrix. It
+    ##         might be rather expensive if the computation of the tangent space is
+    ##         not terminated.
+
+    ##     EXAMPLES::
+
+    ##         sage: from flatsurf import Polygon, similarity_surfaces, EuclideanPolygonsWithAngles
+    ##         sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+    ##         sage: from pyexactreal import ExactReals  # optional: pyexactreal
+    ##         sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
+    ##         sage: R = ExactReals(E.base_ring())  # optional: pyexactreal
+    ##         sage: slopes = E.slopes()
+    ##         sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: pyexactreal
+    ##         sage: S = similarity_surfaces.billiard(T)  # optional: pyexactreal
+    ##         sage: S = S.minimal_cover(cover_type="translation")  # optional: pyexactreal
+    ##         sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: pyexactreal
+    ##         GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
+    ##         sage: O.field_of_definition() # optional: pyflatsurf, optional: pyexactreal
+    ##         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+    ##         sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
+    ##         sage: for slope in S.slopes():  # long time, optional: pyflatsurf, optional: pyexactreal
+    ##         ....:     if O.dimension() == bound: break
+    ##         ....:     O.update_tangent_space_from_flow_decomposition(S._decomposition(slope))
+    ##         sage: O.field_of_definition()  # long time, optional: pyflatsurf, optional: pyexactreal
+    ##         Rational Field
+
+    ##         sage: T = Polygon(angles=(1, 3, 5))
+    ##         sage: S = similarity_surfaces.billiard(T)
+    ##         sage: S = S.minimal_cover(cover_type="translation")
+    ##         sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
+    ##         sage: O.field_of_definition() # optional: pyflatsurf
+    ##         Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
+    ##         sage: bound = T.category().billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
+    ##         sage: for slope in S.slopes(): # long time, optional: pyflatsurf
+    ##         ....:     if O.dimension() == bound: break
+    ##         ....:     O.update_tangent_space_from_flow_decomposition(S._decomposition(slope))
+    ##         sage: O.field_of_definition()  # long time, optional: pyflatsurf
+    ##         Rational Field
+    ##     """
+    ##     M = matrix(self._tangent_space.basis()).echelon_form()
+
+    ##     from flatsurf.geometry.subfield import subfield_from_elements
+
+    ##     L, _, _ = subfield_from_elements(M.base_ring(), M.list())
+
+    ##     return L
+
+    ## TODO: Make this available for subspaces
+    ## def absolute_dimension(self):
+    ##     r"""
+    ##     Return the absolute dimension of the tangent space, i.e., the dimension
+    ##     of the image of the tangent space in absolute cohomology.
+
+    ##     EXAMPLES::
+
+    ##         sage: from flatsurf import polygons, similarity_surfaces
+    ##         sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+    ##         sage: T = polygons.triangle(1,3,4)  # Veech octagon
+    ##         sage: S = similarity_surfaces.billiard(T)
+    ##         sage: S = S.minimal_cover("translation")
+    ##         sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+    ##         sage: O.absolute_dimension()  # optional: pyflatsurf
+    ##         2
+
+    ##     The triangular billiard (5,6,7) belongs to the canonical double cover of
+    ##     the stratum Q(5,3,0^3) in genus 3. The orbit is dense and we can check
+    ##     that the absolute dimension is indeed `6 = 2 rank`::
+
+    ##         sage: T = polygons.triangle(5,6,7)
+    ##         sage: S = similarity_surfaces.billiard(T)
+    ##         sage: S = S.minimal_cover("translation")
+    ##         sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+    ##         sage: for slope in S.slopes():  # long time (3s)  # optional: pyflatsurf
+    ##         ....:     d = S._decomposition(slope, limit=100)
+    ##         ....:     O.update_tangent_space_from_flow_decomposition(d)
+    ##         ....:     if O.dimension() == 9:
+    ##         ....:         break
+    ##         sage: O.absolute_dimension()  # long time (above)  # optional: pyflatsurf
+    ##         6
+    ##     """
+    ##     return (
+    ##         self.absolute_homology().matrix() * matrix(self._tangent_space.basis()).transpose()
+    ##     ).rank()
 
 
 def SimplicialCohomology(

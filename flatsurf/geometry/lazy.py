@@ -267,6 +267,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         return label[0]
 
+    # TODO: Why does this speed things up so much? Should we do this?
+    @cached_method
     def polygon(self, label):
         r"""
         Return the polygon with ``label``.
@@ -291,6 +293,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         return triangulation.polygon(label)
 
+    # TODO: Why does this speed things up so much? Should we do this?
+    @cached_method
     def opposite_edge(self, label, edge):
         r"""
         Return the polygon label and edge index when crossing over the ``edge``

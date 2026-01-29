@@ -32,7 +32,7 @@ requires = ["hatchling"]
 [tool.hatch.build.targets.wheel]
 packages = ["flatsurf"]
 
-[tool.pixi.project]
+[tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64"]
 
@@ -72,9 +72,17 @@ pytest = "*"
 pytest-xdist = "*"
 pytest-repeat = "*"
 
-[tool.pixi.feature.test.tasks]
-doctest = "sage -tp --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF flatsurf doc"
-doctest-long = "sage -tp --long --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF flatsurf doc"
+[tool.pixi.feature.test.tasks.doctest]
+args = [
+  { "arg" = "paths", default = "flatsurf doc" },
+]
+cmd = "sage -tp --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF {{ paths }}"
+
+[tool.pixi.feature.test.tasks.doctest-long]
+args = [
+  { "arg" = "paths", default = "flatsurf doc" },
+]
+cmd = "sage -tp --long --force-lib --optional=sage$SAGE_OPTIONALS_FLIPPER$SAGE_OPTIONALS_PYEANTIC$SAGE_OPTIONALS_PYEXACTREAL$SAGE_OPTIONALS_PYFLATSURF {{ paths }}"
 
 [tool.pixi.feature.flipper]
 activation.env.SAGE_OPTIONALS_FLIPPER = ",flipper"

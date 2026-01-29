@@ -7,64 +7,12 @@ GL(2,R)-orbit closure of translation surfaces
       the ratio of circumferences. We should provide a method, .reset_field_of_definition or
       something similar
 
-    - flow decompositions should be accessible on surfaces rather than on ``GL2ROrbitClosure``
-
-EXAMPLES:
-
-Let us first construct a Veech surface in the stratum H(2)::
-
-    sage: from flatsurf import translation_surfaces
-    sage: from flatsurf import GL2ROrbitClosure
-
-    sage: x = polygen(QQ)
-    sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
-    sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
-    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-    sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf
-    [Cylinder with perimeter [...]]
-
-The following is also a Veech surface. However the flow decomposition
-in directions with long cylinders might not discover them if a limit
-is set::
-
-    sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
-    sage: l = S.base_ring().gen()
-    sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-    sage: dec = O.decomposition((8*l - 25, 16), 9) # optional: pyflatsurf
-    sage: dec.undeterminedComponents() # optional: pyflatsurf
-    [Component with perimeter [...]]
-
-Further refinement might change the status of undetermined components::
-
-    sage: import pyflatsurf # optional: pyflatsurf
-    sage: dec.decompose(10r) # optional: pyflatsurf
-    True
-    sage: dec.undeterminedComponents() # optional: pyflatsurf
-    []
-
-Veech surfaces have the property that any saddle connection direction is
-parabolic::
-
-    sage: S = translation_surfaces.veech_double_n_gon(5)
-    sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-    sage: all(d.parabolic() for d in O.decompositions_depth_first(3))  # optional: pyflatsurf
-    True
-
-For surfaces in rank one loci, even though they are completely periodic,
-they are generally not parabolic::
-
-    sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
-    sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-    sage: all((d.hasCylinder() == False) or d.parabolic() for d in O.decompositions(6))  # optional: pyflatsurf
-    False
-    sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
-    True
 """
 
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2019-2022 Julian Rüth
+#        Copyright (C) 2019-2026 Julian Rüth
 #                      2020      Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
@@ -81,10 +29,10 @@ they are generally not parabolic::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from sage.all import FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
+from sage.all import FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod, cached_method, SageObject
 
 
-class GL2ROrbitClosure:
+class GL2ROrbitClosure(SageObject):
     r"""
     Lower bound approximation to the tangent space of a GL(2,R)-orbit closure of a
     linear family of translation surfaces.
@@ -97,7 +45,7 @@ class GL2ROrbitClosure:
         sage: T = polygons.triangle(3, 3, 5)
         sage: S = similarity_surfaces.billiard(T)
         sage: S = S.minimal_cover(cover_type="translation")
-        sage: GL2ROrbitClosure(S)  # optional: pyflatsurf
+        sage: GL2ROrbitClosure(S)  # optional: pyflatsurf  # random output due to deprecation warnings in some versions of cppyy
         GL(2,R)-orbit closure of dimension at least 2 in H_5(4, 2^2) (ambient dimension 12)
 
     Computing an orbit closure over an exact real ring with transcendental elements::
@@ -114,7 +62,8 @@ class GL2ROrbitClosure:
         sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: pyexactreal
         GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
         sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-        sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: pyexactreal
+        sage: for slope in S.slopes(1):  # long time, optional: pyflatsurf, optional: pyexactreal
+        ....:     decomposition = S._decomposition(slope)
         ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
         ....:     if O.dimension() == bound: break
         sage: O  # long time, optional: pyflatsurf, optional: pyexactreal
@@ -130,7 +79,7 @@ class GL2ROrbitClosure:
 
         sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
         sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-        sage: O._U.base_ring() # optional: pyflatsurf
+        sage: O._tangent_space.base_ring()  # optional: pyflatsurf
         Number Field in a with defining polynomial x^3 - 2 with a = 1.259921049894873?
 
     We now illustrate the projection::
@@ -151,74 +100,61 @@ class GL2ROrbitClosure:
     """
 
     def __init__(self, surface):
-        from flatsurf.geometry.categories import TranslationSurfaces
-        from flatsurf.geometry.surface import Surface_base
+        from flatsurf.features import pyflatsurf_feature
+        pyflatsurf_feature.require()
 
-        if isinstance(surface, Surface_base):
-            if surface not in TranslationSurfaces():
-                raise NotImplementedError(
-                    "cannot compute orbit closure of a non-translation surface"
+        if surface.__class__.__name__.startswith("FlatTriangulation<"):
+            import warnings
+            warnings.warn("Creating a GL2ROrbitClosure from a FlatTriangulation has been deprecated and will be removed from a future version of sage-flatsurf; create GL2ROrbitClosure from a sage-flatsurf surface directly instead")
+
+            from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
+            surface = Surface_pyflatsurf(surface)
+
+        from flatsurf.geometry.surface import Surface_base
+        if not isinstance(surface, Surface_base):
+            raise TypeError("surface must be a translation surface")
+
+        from flatsurf.geometry.categories import TranslationSurfaces
+        if surface not in TranslationSurfaces():  # pyright: ignore[reportCallIssue]
+            raise NotImplementedError(
+                "cannot compute orbit closure of a non-translation surface"
                 )
 
-            base_ring = surface.base_ring()
-            self._surface = surface.pyflatsurf().codomain().flat_triangulation()
-        else:
-            from flatsurf.geometry.pyflatsurf.conversion import sage_ring
+        if not surface.is_connected():
+            raise NotImplementedError(
+                "cannot compute orbit closures for non-connected surfaces"
+            )
 
-            base_ring = sage_ring(surface)
-            self._surface = surface
+        self._surface = surface
+        self._tangent_space = LazyTangentSpace(surface, self.ambient_dimension())
 
-        # A model of the vector space R² in libflatsurf, e.g., to represent the
-        # vector associated to a saddle connection.
-        from flatsurf.features import pyflatsurf_feature
+        for v in self.cohomology().tautological_subspace().basis():
+            self.update_tangent_space_from_cohomology_class(v)
 
-        pyflatsurf_feature.require()
-        import pyflatsurf.vector
+    @cached_method
+    def homology(self, relative=True):
+        r"""
+        Return the (relative) homology used in the orbit closure computations.
 
-        self.V2 = pyflatsurf.vector.Vectors(base_ring)
+        EXAMPLES::
 
-        # We construct a spanning set of edges, that is a subset of the
-        # edges that form a basis of H_1(S, Sigma; Z)
-        # It comes together with a projection matrix
-        t, m = self._spanning_tree()
-        assert set(t.keys()) == {f[2] for f in self._surface.faces()}
-        self.spanning_set = []
-        v = set(t.values())
-        for e in self._surface.edges():
-            if e.positive() not in v and e.negative() not in v:
-                self.spanning_set.append(e)
-        self.d = len(self.spanning_set)
-        assert 3 * self.d - 3 == self._surface.size()
-        assert m.rank() == self.d
-        m = m.transpose()
-        # projection matrix from Z^E to H_1(S, Sigma; Z) in the basis
-        # of spanning edges
-        self.proj = matrix(ZZ, [r for r in m.rows() if not r.is_zero()])
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
 
-        self.Omega = self._intersection_matrix(t, self.spanning_set)
+            sage: T = polygons.triangle(3, 3, 5)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
 
-        self.V = FreeModule(self.V2.base_ring(), self.d)
-        self.H = matrix(self.V2.base_ring(), self.d, 2)
-        for i in range(self.d):
-            s = self._surface.fromHalfEdge(self.spanning_set[i].positive())
-            self.H[i] = self.V2._isomorphic_vector_space(self.V2(s))
-        self.Hdual = self.Omega * self.H
+            sage: O.homology()  # optional: pyflatsurf
+            H₁(Minimal Translation Cover of Genus 0 Rational Cone Surface built from 2 isosceles triangles, {...})
 
-        # Note that we don't use Sage vector spaces because they are usually
-        # way too slow (in particular we avoid calling .echelonize())
-        self._U = matrix(self.V2._algebraic_ring(), self.d)
+            sage: O.homology(relative=False)  # optional: pyflatsurf
+            H₁(Minimal Translation Cover of Genus 0 Rational Cone Surface built from 2 isosceles triangles)
 
-        # Computing the rank of _U can be very expensive. Therefore, we use
-        # that rank _Ubar ≤ rank _U where _Ubar = _U mod _p for some prime
-        # ideal's valuation _p, see _rank().
-        # Since _p is a bit expensive to compute, it's initialized on demand.
-        self._p = None
-        self._Ubar = None
-
-        self._U_rank = 0
-
-        self.update_tangent_space_from_vector(self.H.transpose()[0])
-        self.update_tangent_space_from_vector(self.H.transpose()[1])
+        """
+        return self._surface.homology(relative=self._surface.vertices() if relative else None)
 
     def dimension(self):
         r"""
@@ -226,21 +162,23 @@ class GL2ROrbitClosure:
 
         Note that this is not the dimension of the orbit closure but only a
         lower bound. It is always at least 2 (coming from a GL(2,R)-orbit).
-        The current tangent space could be refined via
-        :meth:`update_tangent_space_from_flow_decomposition`.
+        The current tangent space can be refined via
+        :meth:`update_tangent_space_from_flow_decomposition` and
+        :meth:`update_tangent_space_from_vector`.
 
         EXAMPLES::
 
             sage: from flatsurf import Polygon, similarity_surfaces
-            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
             sage: T = Polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: O.dimension() # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O.dimension()  # optional: pyflatsurf
             2
             sage: bound = T.category().billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
+            sage: for slope in S.slopes(bound=1, algorithm="byAngle"):  # long time, optional: pyflatsurf
+            ....:     decomposition = S._decomposition(slope)
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
             ....:     print(O.dimension())
@@ -250,8 +188,9 @@ class GL2ROrbitClosure:
             7
             9
             10
+
         """
-        return self._U_rank
+        return self._tangent_space.dimension()
 
     def ambient_stratum(self):
         r"""
@@ -264,91 +203,66 @@ class GL2ROrbitClosure:
             sage: T = Polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: O.ambient_stratum() # optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O.ambient_stratum()  # optional: pyflatsurf
             H_3(4, 0^4)
-        """
-        from surface_dynamics import Stratum
 
-        surface = self._surface
-        angles = [surface.angle(v) for v in surface.vertices()]
-        return Stratum([a - 1 for a in angles], 1)
+        """
+        return self._surface.stratum()
+
+    def ambient_dimension(self):
+        return self.homology().betti_number()
 
     def base_ring(self):
         r"""
-        Return the underlying base ring
-        """
-        return self._U.base_ring()
-
-    def field_of_definition(self):
-        r"""
-        Return the field of definition of the current subspace.
-
-        .. WARNING::
-
-            This involves the computation of the echelon form of the matrix. It
-            might be rather expensive if the computation of the tangent space is
-            not terminated.
+        Return the ring of coefficients for the tangent space.
 
         EXAMPLES::
 
-            sage: from flatsurf import Polygon, similarity_surfaces, EuclideanPolygonsWithAngles
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-            sage: from pyexactreal import ExactReals  # optional: pyexactreal
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
+            sage: T = Polygon(angles=(1, 3, 5))
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover(cover_type="translation")
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: O.base_ring()  # optional: pyflatsurf
+            Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?
+
+        ::
+
+            sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
+            sage: from pyexactreal import ExactReals  # optional: pyexactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+
             sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
             sage: R = ExactReals(E.base_ring())  # optional: pyexactreal
             sage: slopes = E.slopes()
             sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: pyexactreal
             sage: S = similarity_surfaces.billiard(T)  # optional: pyexactreal
             sage: S = S.minimal_cover(cover_type="translation")  # optional: pyexactreal
-            sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: pyexactreal
-            GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
-            sage: O.field_of_definition() # optional: pyflatsurf, optional: pyexactreal
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf, optional: pyexactreal
+            sage: O.base_ring()  # optional: pyflatsurf, optional: pyexactreal
             Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-            sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: pyexactreal
-            ....:     if O.dimension() == bound: break
-            ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
-            sage: O.field_of_definition()  # long time, optional: pyflatsurf, optional: pyexactreal
-            Rational Field
 
-            sage: T = Polygon(angles=(1, 3, 5))
-            sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: O.field_of_definition() # optional: pyflatsurf
-            Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
-            sage: bound = T.category().billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
-            sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
-            ....:     if O.dimension() == bound: break
-            ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
-            sage: O.field_of_definition()  # long time, optional: pyflatsurf
-            Rational Field
         """
-        M = self._U.echelon_form()
+        base_ring = self._surface.base_ring()
 
-        from flatsurf.geometry.subfield import subfield_from_elements
+        from pyexactreal.exact_reals import ExactReals
+        if isinstance(base_ring, ExactReals):
+            # Determine the ring underlying the exact reals and convert to the
+            # standard SageMath representation, i.e., NumberField instead of
+            # RealEmbeddedNumberField.
+            base_ring = base_ring.base_ring()
+            if base_ring not in [ZZ, QQ]:
+                base_ring = base_ring.number_field
 
-        L, elts, phi = subfield_from_elements(M.base_ring(), M[: self._U_rank].list())
+        return base_ring
 
-        return L
+    def _repr_(self):
+        return f"GL(2,R)-orbit closure of dimension at least {self.dimension()} in {self.ambient_stratum()} (ambient dimension {self.d})"
 
-    def _half_edge_to_face(self, h):
+    def tangent_space_basis(self):
         r"""
-        Return a canonical half-edge encoding the face bounded by ``h``.
-        """
-        surface = self._surface
-        h1 = h
-        h2 = surface.nextInFace(h1)
-        h3 = surface.nextInFace(h2)
-        return min([h1, h2, h3], key=lambda x: x.index())
-
-    def __repr__(self):
-        return f"GL(2,R)-orbit closure of dimension at least {self._U_rank} in {self.ambient_stratum()} (ambient dimension {self.d})"
-
-    def holonomy(self, v):
-        r"""
-        Return the holonomy of ``v`` (with respect to the chosen homology basis)
+        Return a basis of the tangent space constructed so far as a subspace of relative cohomology.
 
         EXAMPLES::
 
@@ -358,400 +272,30 @@ class GL2ROrbitClosure:
             sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
             sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: edges = O._surface.edges() # optional: pyflatsurf
-            sage: F = FreeModule(ZZ, len(edges)) # optional: pyflatsurf
-            sage: all(O.V2(O.holonomy(O.proj * F.gen(i))).vector == O.V2(O._surface.fromHalfEdge(e.positive())).vector for i, e in enumerate(edges)) # optional: pyflatsurf
-            True
-        """
-        return self.V(v) * self.H
+            sage: O.tangent_space_basis()
+            [(1, 0, a, -a), (1, -1, 1, 0)]
 
-    def holonomy_dual(self, v):
-        r"""
-        Return the holonomy of the dual of ``v``
-        """
-        return self.V(v) * self.Hdual
-
-    def tangent_space_basis(self):
-        return self._U[: self._U_rank].rows()
-
-    def lift(self, v):
-        r"""
-        Given a vector in the "spanning set basis" return a vector on the full basis of
-        edges.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, translation_surfaces, similarity_surfaces
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-
-            sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,0)
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: u0,u1 = O.tangent_space_basis()  # optional: pyflatsurf
-            sage: v0 = O.lift(u0)  # optional: pyflatsurf
-            sage: v1 = O.lift(u1)  # optional: pyflatsurf
-            sage: span([v0, v1])  # optional: pyflatsurf
-            Vector space of degree 9 and dimension 2 over Real Embedded Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
-            Basis matrix:
-            [ 1  0  -1   (1/8*l+7/8 ~ 1.2965352)  (-1/8*l+1/8 ~ -0.29653517)  -1   (5/8*l-5/8 ~ 1.4826758)  (-1/2*l+3/2 ~ -0.18614066)  (-5/8*l+13/8 ~ -0.48267583)]
-            [ 0  1  -1  (1/4*l-1/4 ~ 0.59307033)  (-1/4*l+1/4 ~ -0.59307033)   0  (1/4*l-1/4 ~ 0.59307033)                           0   (-1/4*l+1/4 ~ -0.59307033)]
-
-        This can be used to deform the surface::
-
-            sage: T = polygons.triangle(3,4,13)
-            sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation").erase_marked_points() # long time (3s, #122), optional: pyflatsurf
-            sage: O = GL2ROrbitClosure(S)  # long time (above), optional: pyflatsurf
-            sage: for d in O.decompositions(4, 20):  # long time (2s, #124), optional: pyflatsurf
-            ....:     O.update_tangent_space_from_flow_decomposition(d)
-            ....:     if O.dimension() == 4:
-            ....:         break
-            sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
-            sage: dreal = d1/132 + d2/227 + d3/1280 - d4/13201  # long time (above), optional: pyflatsurf
-            sage: dimag = d1/141 - d2/233 + d4/1230 + d4/14250  # long time (above), optional: pyflatsurf
-            sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
-            sage: S2 = O._surface + d  # long time (6s), optional: pyflatsurf
-
-            sage: O2 = GL2ROrbitClosure(S2.surface())  # long time (above), optional: pyflatsurf
-            sage: for d in O2.decompositions(1, 20):  # long time (25s, #124), optional: pyflatsurf
-            ....:     O2.update_tangent_space_from_flow_decomposition(d)
+        # TODO: Once this uses the homology machinery, add the corresponding cohomology classes.
 
         """
-        # given the values on the spanning edges we reconstruct the unique vector that
-        # vanishes on the boundary
-        bdry = self.boundaries()
-        n = self._surface.edges().size()
-        k = len(self.spanning_set)
-        assert k + len(bdry) == n + 1
-        A = matrix(QQ, n + 1, n)
-        for i, e in enumerate(self.spanning_set):
-            A[i, e.index()] = 1
-        for i, b in enumerate(bdry):
-            A[k + i, :] = b
-        u = vector(self.V2.base_ring(), n + 1)
-        u[:k] = v
-        from sage.all import Fields
-
-        if self.V2.base_ring() not in Fields():
-            assert all(uu._backend.coefficients().size() == 1 for uu in u)
-            u = u.parent().change_ring(self.V2.base_ring().base_ring())(
-                [uu._backend.coefficients()[0] for uu in u]
-            )
-        return A.solve_right(u)
-
-    def absolute_homology(self):
-        vert_index = {v: i for i, v in enumerate(self._surface.vertices())}
-        m = len(vert_index)
-        if m == 1:
-            return self.V
-        rows = []
-
-        from flatsurf.features import pyflatsurf_feature
-
-        pyflatsurf_feature.require()
-        import pyflatsurf
-
-        for e in self.spanning_set:
-            r = [0] * m
-            i = vert_index[
-                pyflatsurf.flatsurf.Vertex.target(
-                    e.positive(), self._surface.combinatorial()
-                )
-            ]
-            j = vert_index[
-                pyflatsurf.flatsurf.Vertex.source(
-                    e.positive(), self._surface.combinatorial()
-                )
-            ]
-            if i != j:
-                r[i] = 1
-                r[j] = -1
-            rows.append(r)
-        return matrix(rows).left_kernel()
-
-    def absolute_dimension(self):
-        r"""
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-            sage: T = polygons.triangle(1,3,4)  # Veech octagon
-            sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation")
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: O.absolute_dimension()  # optional: pyflatsurf
-            2
-
-        The triangular billiard (5,6,7) belongs to the canonical double cover of
-        the stratum Q(5,3,0^3) in genus 3. The orbit is dense and we can check
-        that the absolute dimension is indeed `6 = 2 rank`::
-
-            sage: T = polygons.triangle(5,6,7)
-            sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation")
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(5, 100):  # long time (3s)  # optional: pyflatsurf
-            ....:     O.update_tangent_space_from_flow_decomposition(d)
-            ....:     if O.dimension() == 9:
-            ....:         break
-            sage: O.absolute_dimension()  # long time (above)  # optional: pyflatsurf
-            6
-        """
-        return (
-            self.absolute_homology().matrix() * self._U[: self._U_rank].transpose()
-        ).rank()
-
-    def _spanning_tree(self, root=None):
-        r"""
-        Return a pair ``(tree, proj)`` where
-
-        - ``tree`` is a tree encoded in a dictionary. Its keys are the faces
-          (coded by their minimal adjacent half-edge) and the corresponding
-          value is the half-edge to cross to go toward the root face.
-
-        - ``proj`` a projection matrix : for a vector ``v``, the vector
-          ``v * proj`` is cohomologous to ``v`` and only takes values on the
-          spanning set.
-
-        EXAMPLES:
-
-        The following example illustrate the projection matrix::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-            sage: T = polygons.triangle(1,3,4)
-            sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation")
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: num_edges = O._surface.edges().size()  # optional: pyflatsurf
-            sage: V = VectorSpace(QQ, num_edges)  # optional: pyflatsurf
-            sage: tree, proj = O._spanning_tree()  # optional: pyflatsurf
-
-        The matrix ``proj`` is indeed a projection::
-
-            sage: proj * proj == proj # optional: pyflatsurf
-            True
-
-        We now check that the matrix maps vectors to cohomologous vectors and
-        takes values only on the chosen spanning set of edges::
-
-            sage: values = tree.values()  # optional: pyflatsurf
-            sage: indices = set(e.index() for e in O._surface.edges() if e.positive() not in values and e.negative() not in values)  # optional: pyflatsurf
-            sage: B = V.subspace(O.boundaries())  # optional: pyflatsurf
-            sage: for e in range(num_edges):  # optional: pyflatsurf
-            ....:     v = V.gen(e)
-            ....:     assert (v * proj - v) in B
-            ....:     if e in indices:
-            ....:         assert v * proj == v
-            ....:     else:
-            ....:         assert (proj * v).is_zero()
-        """
-        if root is None:
-            root = next(iter(self._surface.edges())).positive()
-
-        root = self._half_edge_to_face(root)
-        t = {root: None}  # face -> half edge to take to go to the root
-        todo = [root]
-        edges = []  # store edges in topological order to perform Gauss reduction
-        while todo:
-            f = todo.pop()
-            for _ in range(3):
-                f1 = -f
-                g = self._half_edge_to_face(f1)
-                if g not in t:
-                    t[g] = f1
-                    todo.append(g)
-                    edges.append(f1)
-
-                f = self._surface.nextInFace(f)
-
-        # gauss reduction
-        n = self._surface.size()
-        proj = identity_matrix(ZZ, n)
-        edges.reverse()
-        for f1 in edges:
-            f2 = self._surface.nextInFace(f1)
-            f3 = self._surface.nextInFace(f2)
-            assert self._surface.nextInFace(f3) == f1
-
-            i1 = f1.index()
-            s1 = -1 if i1 % 2 else 1
-            i2 = f2.index()
-            s2 = -1 if i2 % 2 else 1
-            i3 = f3.index()
-            s3 = -1 if i3 % 2 else 1
-            i1 = f1.edge().index()
-            i2 = f2.edge().index()
-            i3 = f3.edge().index()
-            proj[i1] = -s1 * (s2 * proj[i2] + s3 * proj[i3])
-            for j in range(n):
-                assert proj[j, i1] == 0
-
-        return (t, proj)
-
-    def _intersection_matrix(self, t, spanning_set):
-        r"""
-        Given a spanning tree, compute the associated intersection matrix.
-
-        It can be used to compute holonomies. (we can be off by a - sign)
-        """
-        d = len(spanning_set)
-        h = spanning_set[0].positive()
-        all_edges = {e.positive() for e in spanning_set}
-        all_edges.update([e.negative() for e in spanning_set])
-        contour = []
-        contour_inv = {}  # half edge -> position in contour
-        while h not in contour_inv:
-            contour_inv[h] = len(contour)
-            contour.append(h)
-            h = self._surface.nextAtVertex(-h)
-            while h not in all_edges:
-                h = self._surface.nextAtVertex(h)
-
-        assert len(contour) == len(all_edges)
-
-        # two curves intersect when their relative position in the contour
-        # are x y x y or y x y x
-        Omega = matrix(ZZ, d)
-        for i in range(len(spanning_set)):
-            ei = spanning_set[i]
-            pi1 = contour_inv[ei.positive()]
-            pi2 = contour_inv[ei.negative()]
-            if pi1 > pi2:
-                si = -1
-                pi1, pi2 = pi2, pi1
-            else:
-                si = 1
-            for j in range(i + 1, len(spanning_set)):
-                ej = spanning_set[j]
-                pj1 = contour_inv[ej.positive()]
-                pj2 = contour_inv[ej.negative()]
-                if pj1 > pj2:
-                    sj = -1
-                    pj1, pj2 = pj2, pj1
-                else:
-                    sj = 1
-
-                # pj1 pj2 pi1 pi2: pj2 < pi1
-                # pi1 pi2 pj1 pj2: pi2 < pj1
-                # pi1 pj1 pj2 pi2: pi1 < pj1 and pj2 < pi2
-                # pj1 pi1 pi2 pj2: pj1 < pi1 and pi2 < pj2
-                if (
-                    (pj2 < pi1)
-                    or (pi2 < pj1)
-                    or (pj1 > pi1 and pj2 < pi2)
-                    or (pj1 < pi1 and pj2 > pi2)
-                ):
-                    # no intersection
-                    continue
-
-                if pi1 < pj1 < pi2:
-                    # one sign
-                    Omega[i, j] = si * sj
-                else:
-                    # other sign
-                    assert pi1 < pj2 < pi2, (pi1, pi2, pj1, pj2)
-                    Omega[i, j] = -si * sj
-                Omega[j, i] = -Omega[i, j]
-        return Omega
-
-    def boundaries(self):
-        r"""
-        Return the list of boundaries (ie sum of edges around a triangular face).
-
-        These are elements of H_1(S, Sigma; Z).
-
-        TESTS::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-
-            sage: from itertools import product
-            sage: for a in range(1,5):  # long time (1s), optional: pyflatsurf
-            ....:     for b in range(a, 5):
-            ....:         for c in range(b, 5):
-            ....:             if gcd([a, b, c]) != 1 or (a,b,c) == (1,1,2):
-            ....:                 continue
-            ....:             T = polygons.triangle(a, b, c)
-            ....:             S = similarity_surfaces.billiard(T)
-            ....:             S = S.minimal_cover(cover_type="translation")
-            ....:             O = GL2ROrbitClosure(S)
-            ....:             for b in O.boundaries():
-            ....:                 assert (O.proj * b).is_zero()
-        """
-        n = self._surface.size()
-        V = FreeModule(ZZ, n)
-        B = []
-        for f1, f2, f3 in self._surface.faces():
-            i1 = f1.index()
-            s1 = -1 if i1 % 2 else 1
-            i2 = f2.index()
-            s2 = -1 if i2 % 2 else 1
-            i3 = f3.index()
-            s3 = -1 if i3 % 2 else 1
-            i1 = f1.edge().index()
-            i2 = f2.edge().index()
-            i3 = f3.edge().index()
-            v = [0] * n
-            v[i1] = 1
-            v[i2] = s1 * s2
-            v[i3] = s1 * s3
-            B.append(V(v))
-            B[-1].set_immutable()
-
-        return B
-
-    def decomposition(self, v, limit=-1):
-        v = self.V2(v)
-
-        from flatsurf.features import pyflatsurf_feature
-
-        pyflatsurf_feature.require()
-        import pyflatsurf
-
-        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
-            self._surface, v.vector
-        )
-
-        if limit != 0:
-            decomposition.decompose(int(limit))
-        return decomposition
-
-    def decompositions(self, bound, limit=-1, bfs=False):
-        limit = int(limit)
-
-        connections = self._surface.connections().bound(int(bound))
-        if bfs:
-            connections = connections.byLength()
-
-        slopes = None
-
-        from flatsurf.features import cppyy_feature
-
-        cppyy_feature.require()
-        import cppyy
-
-        for connection in connections:
-            direction = connection.vector()
-            if slopes is None:
-                slopes = cppyy.gbl.std.set[
-                    type(direction), type(direction).CompareSlope
-                ]()
-            if slopes.find(direction) != slopes.end():
-                continue
-            slopes.insert(direction)
-            yield self.decomposition(direction, limit)
-
-    def decompositions_depth_first(self, bound, limit=-1):
-        return self.decompositions(bound, bfs=False, limit=limit)
-
-    def decompositions_breadth_first(self, bound, limit=-1):
-        return self.decompositions(bound, bfs=True, limit=limit)
+        # TODO: Return a subspace of cohomology instead.
+        return self._tangent_space.basis()
 
     def is_teichmueller_curve(self, bound, limit=-1):
         r"""
-        Return ``False`` when the program can find a direction which is either completely
-        periodic with incomensurable moduli or a direction with at least one cylinder
-        and at least one minimal component.
+        Search for a direction which is either
+        * completely periodic with incomensurable moduli or
+        * with at least one cylinder and at least one minimal component.
+
+        Return ``False`` if such a direction is found and ``Unknown`` otherwise.
+
+        INPUT:
+
+        - ``bound`` -- consider directions coming from saddle connections up to this length
+        - ``limit`` -- the number of Zorich induction steps to perform to
+          determine whether a flow component might be a cylinder; if -1, the
+          default, then induction steps are performed until the component is
+          determined to be a cylinder or minimal.
 
         EXAMPLES::
 
@@ -775,7 +319,7 @@ class GL2ROrbitClosure:
             1 2 3
             1 3 3
         """
-        if self.V2.base_ring in [ZZ, QQ]:
+        if self._surface.base_ring() in [ZZ, QQ]:
             # square tiled surface
             return True
 
@@ -788,14 +332,15 @@ class GL2ROrbitClosure:
             # square tiled
             return True
 
-        nv = len(self._surface.vertices())
-        ne = len(self._surface.edges())
-        nf = len(self._surface.faces())
+        nv = len(self._flat_triangulation().vertices())
+        ne = len(self._flat_triangulation().edges())
+        nf = len(self._flat_triangulation().faces())
         genus = (ne - nv - nf) // 2 + 1
         if k.degree() > genus or not k.is_totally_real():
             return False
 
-        for decomposition in self.decompositions_depth_first(bound, limit):
+        for slope in self._surface.slopes(bound=bound, algorithm="byAngle"):
+            decomposition = self._surface._decomposition(slope, limit=limit)
             if (
                 decomposition.parabolic() == False
             ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
@@ -803,343 +348,21 @@ class GL2ROrbitClosure:
 
         return Unknown
 
-    def cylinder_circumference(self, component, A, sc_index, proj):
-        r"""
-        Return the circumference of the cylinder ``component`` in the homology
-        of the underlying surface.
-
-        INPUT:
-
-        - ``component`` -- a cylinder
-
-        - ``A``, ``sc_index``, ``proj`` -- the output of
-          ``flow_decomposition_kontsevich_zorich_cocycle``
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-
-            sage: S = translation_surfaces.veech_double_n_gon(5)
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for dec in O.decompositions_depth_first(1):  # optional: pyflatsurf
-            ....:     break
-            sage: c0, c1 = dec.components() # optional: pyflatsurf
-            sage: kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
-            sage: O.cylinder_circumference(c0, *kz) # optional: pyflatsurf
-            (1, 1, 1, -1)
-            sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
-            (0, 0, 1, 0)
-
-        """
-        if (
-            component.cylinder() != True
-        ):  # we are comparing to a boost tribool so this cannot be replaced by "is not True"  # noqa
-            raise ValueError
-
-        perimeters = list(component.perimeter())
-        per = perimeters[0]
-        assert not per.vertical()
-        sc = per.saddleConnection()
-        i = sc_index[sc]
-        if i < 0:
-            s = -1
-            i = -i - 1
-        else:
-            s = 1
-        v = s * proj.column(i)
-        circumference = -A.solve_right(v)
-
-        # check
-        hol = self.holonomy_dual(circumference)
-        holbis = component.circumferenceHolonomy()
-        holbis = self.V2._isomorphic_vector_space(self.V2(holbis))
-        assert hol == holbis, (hol, holbis)
-
-        return circumference
-
     def cylinder_deformation_subspace(self, decomposition):
         r"""
-        Return a subspace included in the tangent space to the GL(2,R)-orbit
-        closure computed from the flow decomposition ``decomposition``.
+        Return a basis of the subspace included in the tangent space to the
+        GL(2,R)-orbit closure computed from the flow decomposition
+        ``decomposition``.
 
-        From A. Wright cylinder deformation Theorem.
+        From A. Wright Cylinder Deformation Theorem.
         """
+        # TODO: Return a subspace of relative cohomology.
+        # TODO: Add example.
 
-        def eliminate_denominators(fractions):
-            r"""
-            Given a list of ``fractions``, pairs of numerators `n_i` and
-            denominators `d_i`, return a list of fractions `c n_i/d_i` scaled
-            uniformly such that the value can be represented in the underlying
-            ring.
-            """
-            fractions = list(fractions)
-            try:
-                return [x.parent()(x / y) for x, y in fractions]
-            except (ValueError, ArithmeticError, NotImplementedError):
-                denominators = {denominator for numerator, denominator in fractions}
-                return [
-                    numerator * prod([d for d in denominators if denominator != d])
-                    for (numerator, denominator) in fractions
-                ]
+        module_fractions = self.cylinder_modules(decomposition)
+        circumferences = self.cylinder_circumferences(decomposition)
 
-        module_fractions = []
-        vcyls = []
-        kz = self.flow_decomposition_kontsevich_zorich_cocycle(decomposition)
-        for component in decomposition.components():
-            if (
-                component.cylinder() == False
-            ):  # we are comparing to a boost tribool so this cannot be replaced by "is False"  # noqa
-                continue
-            elif (
-                component.cylinder() == True
-            ):  # we are comparing to a boost tribool so this cannot be replaced with "is True"  # noqa
-                vcyls.append(self.cylinder_circumference(component, *kz))
-
-                width = self.V2._isomorphic_vector_space.base_ring()(
-                    self.V2.base_ring()(component.width())
-                )
-                height = self.V2._isomorphic_vector_space.base_ring()(
-                    self.V2.base_ring()(
-                        component.vertical().project(component.circumferenceHolonomy())
-                    )
-                )
-                module_fractions.append((width, height))
-            else:
-                return []
-
-        if not module_fractions:
-            return []
-
-        modules = eliminate_denominators(module_fractions)
-
-        if hasattr(modules[0], "_backend"):
-            # Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.
-            from functools import reduce
-
-            parent = reduce(
-                lambda m, n: m.span(m, n),
-                [module._backend.module() for module in modules],
-                modules[0]._backend.module(),
-            )
-            modules = [
-                module.parent()(module._backend.promote(parent)) for module in modules
-            ]
-
-        def to_rational_vector(x):
-            r"""
-            Return the rational coefficients of `x` over its implicit basis,
-            e.g., if `x` is in a number field K, return the coefficients of x
-            in `K` as a vector space over the rationals.
-            """
-            if x.parent() in [ZZ, QQ]:
-                ret = [QQ(x)]
-            elif hasattr(x, "vector"):
-                ret = x.vector()
-            elif hasattr(x, "renf_elem"):
-                ret = x.parent().number_field(x).vector()
-            elif hasattr(x, "_backend"):
-                from itertools import chain
-
-                ret = list(
-                    chain(
-                        *[
-                            to_rational_vector(
-                                self.V2.base_ring().base_ring()(
-                                    self.V2.base_ring().base_ring()(c)
-                                )
-                            )
-                            for c in x._backend.coefficients()
-                        ]
-                    )
-                )
-            else:
-                raise NotImplementedError(
-                    "cannot turn {}, i.e., a {}, into a rational vector yet".format(
-                        x, type(x)
-                    )
-                )
-
-            assert all(y in QQ for y in ret)
-            return ret
-
-        assert all(module.parent() is modules[0].parent() for module in modules)
-        M = matrix([to_rational_vector(module) for module in modules])
-        assert M.base_ring() is QQ
-        relations = self._left_kernel_matrix(M)
-        assert len(vcyls) == len(module_fractions) == relations.ncols()
-
-        vectors = [
-            sum(
-                t * vcyl * module[1]
-                for (t, vcyl, module) in zip(relation, vcyls, module_fractions)
-            )
-            for relation in self._right_kernel_matrix(relations).rows()
-        ]
-
-        assert all(
-            v.base_ring() is self.V2._isomorphic_vector_space.base_ring()
-            for v in vectors
-        )
-
-        return vectors
-
-    def _flow_decomposition_spanning_tree(self, decomposition, sc_index, sc_comp):
-        r"""
-        Helper for :meth:`flow_decomposition_kontsevich_zorich_cocycle`.
-
-        The method is similar to `_spanning_tree` but adapted to the basis used
-        in the flow decomposition ``decomposition``. It returns  a pair ``(tree,
-        proj)`` where ``tree`` is a tree encoded in a dictionary and ``proj`` is a
-        projection matrix.
-
-        INPUT:
-
-        - ``decomposition`` -- a flow decomposition
-
-        - ``sc_index`` -- a dictionary whose keys are the saddle connections on the
-          boundary of ``decomposition`` and the corresponding values are the indices
-          used in the matrix
-
-        - ``sc_comp`` -- a dictionary whose keys are the saddle connections on the
-          boundary of ``decomposition`` and the corresponding values are the indices
-          of the components of ``decomposition``
-        """
-        components = list(decomposition.components())
-
-        n = len(sc_index)
-        assert n % 2 == 0
-        n //= 2
-
-        for p in components[0].perimeter():
-            break
-        t = {0: None}  # face -> half edge to take to go to the root
-        todo = [0]
-        edges = []  # store edges in topological order to perform Gauss reduction
-        while todo:
-            i = todo.pop()
-            c = components[i]
-            for sc in c.perimeter():
-                sc1 = -sc.saddleConnection()
-                j = sc_comp[sc1]
-                if j not in t:
-                    t[j] = sc1
-                    todo.append(j)
-                    edges.append(sc1)
-
-        # gauss reduction
-        spanning_set = set(range(n))
-        proj = identity_matrix(ZZ, n)
-        edges.reverse()
-        for sc1 in edges:
-            i1 = sc_index[sc1]
-            if i1 < 0:
-                s1 = -1
-                i1 = -i1 - 1
-            else:
-                s1 = 1
-            comp = components[sc_comp[sc1]]
-            proj[i1] = 0
-            for p in comp.perimeter():
-                sc = p.saddleConnection()
-                if sc == sc1:
-                    continue
-                j = sc_index[sc]
-                if j < 0:
-                    s = -1
-                    j = -j - 1
-                else:
-                    s = 1
-                proj[i1] = -s1 * s * proj[j]
-
-            spanning_set.remove(i1)
-            for j in range(n):
-                assert proj[j, i1] == 0
-
-        return (t, sorted(spanning_set), proj)
-
-    def flow_decomposition_kontsevich_zorich_cocycle(self, decomposition):
-        r"""
-        Base change from the homology of ``decomposition`` to the underlying surface.
-
-        Return a triple ``A``, ``sc_index``, ``proj`` where
-
-        - ``A`` is a `d \times d` matrix where `d` is the dimension of the ambient stratum
-          (ie the dimension of the homology relative to the singularities)
-
-        - ``sc_index`` is a dictionary whose keys are saddle connections appearing
-          in the various components of this decomposition and the corresponding value
-          is an integral index
-
-        - ``proj`` is a projection matrix from vectors expressed as a sum of saddle
-          connections appearing in this component to the chosen representative of
-          cohomology with respect to this component
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-
-            sage: S = translation_surfaces.square_torus()
-            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for dec in O.decompositions_depth_first(3):  # optional: pyflatsurf
-            ....:     kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
-            ....:     print(kz[0])
-            [ 0  1]
-            [-1 -1]
-            [ 0  1]
-            [-1 -2]
-            [-1 -1]
-            [ 1  0]
-            [-1 -1]
-            [ 2  1]
-            [-2 -1]
-            [ 3  1]
-            [-1 -1]
-            [ 3  2]
-            [1 0]
-            [0 1]
-            [ 1  0]
-            [-1  1]
-
-        """
-        sc_pos = (
-            []
-        )  # list of positive boundary saddle connections (store only one orientation for each)
-        sc_index = (
-            {}
-        )  # inverse of sc_pos (and also reverse orientation with negative index)
-        sc_comp = {}
-        n_saddles = 0
-        components = list(decomposition.components())
-        n_components = len(components)
-        for i, comp in enumerate(components):
-            for p in comp.perimeter():
-                sc = p.saddleConnection()
-                sc_comp[sc] = i
-                if sc not in sc_index:
-                    sc_index[sc] = n_saddles
-                    sc_pos.append(sc)
-                    sc_index[-sc] = -n_saddles - 1
-                    n_saddles += 1
-
-        t, spanning_set, proj = self._flow_decomposition_spanning_tree(
-            decomposition, sc_index, sc_comp
-        )
-        assert proj.rank() == len(spanning_set) == n_saddles - n_components + 1
-        proj = proj.transpose()
-        proj = matrix(ZZ, [r for r in proj.rows() if not r.is_zero()])
-        assert proj.nrows() == self.proj.nrows()
-
-        # Write the base change V^*(T') -> V^*(T) relative to our bases
-        A = matrix(ZZ, self.d)
-        for i, sc in enumerate(spanning_set):
-            sc = sc_pos[sc]
-            c = sc.chain()
-            for edge in self._surface.edges():
-                A[i] += ZZ(str(c[edge])) * self.proj.column(edge.index())
-        assert A.det().is_unit()
-        return A, sc_index, proj
+        return list(self._tangent_space.cylinder_deformation_subspace(module_fractions, circumferences))
 
     def update_tangent_space_from_flow_decomposition(self, decomposition):
         r"""
@@ -1154,7 +377,8 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: for d in O.decompositions(1):  # long time (1s), optional: pyflatsurf
+            sage: for slope in S.slopes(bound=1):  # long time (1s), optional: pyflatsurf
+            ....:     d = S._decomposition(slope)
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             sage: assert O.dimension() == 2  # long time (above), optional: pyflatsurf
 
@@ -1172,7 +396,8 @@ class GL2ROrbitClosure:
             ....:     S = S.minimal_cover(cover_type="translation")
             ....:     O = GL2ROrbitClosure(S)  # optional: pyflatsurf
             ....:     nsteps = 0
-            ....:     for d in islice(O.decompositions(3,100), 10):  # optional: pyflatsurf
+            ....:     for slope in islice(S.slopes(bound=3, algorithm="byAngle"), 10):
+            ....:         d = S._decomposition(slope, limit=100)
             ....:         O.update_tangent_space_from_flow_decomposition(d)
             ....:         nsteps += 1
             ....:         if O.dimension() == dim:
@@ -1184,53 +409,25 @@ class GL2ROrbitClosure:
             (5, 3, 3): 4
             (5, 4, 4): 7
             (5, 5, 3): 4
+
         """
-        if self._U_rank == self._U.nrows():
-            return
-        for v in self.cylinder_deformation_subspace(decomposition):
-            self.update_tangent_space_from_vector(v)
-            if self._U_rank == self._U.nrows():
-                return
+        circumferences = self.cylinder_circumferences(decomposition)
+        modules = self.cylinder_modules(decomposition)
 
-    def _rank(self):
-        r"""
-        Return a lower bound for the rank of the matrix _U.
-        """
-        while True:
-            if self._p is not None:
-                try:
-                    self._Ubar = self._U.apply_map(
-                        phi=self._p.reduce, R=self._p.residue_field()
-                    )
-                    break
-                except ValueError:
-                    # The matrix _U cannot be reduced mod p because some entries have negative valuation.
-                    pass
-
-            p = 2**30 if self._p is None else self._p.p()
-
-            from sage.all import next_prime
-
-            self._p = ZZ.valuation(next_prime(p)).extensions(self._U.base_ring())[0]
-
-        return self._Ubar.rank()
+        self._tangent_space.update_from_flow_decomposition(circumferences, modules)
 
     def update_tangent_space_from_vector(self, v):
-        if self._U_rank == self._U.nrows():
-            return
+        r"""
+        Enlarge the currently determined tangent space with ``v`` which is a
+        direction in the tangent space encoded as a relative cohomology class.
 
-        v = vector(v)
+        EXAMPLES::
 
-        if v.base_ring() is not self.V2._algebraic_ring():
-            for gen, p in self.V2.decomposition(v):
-                self.update_tangent_space_from_vector(p)
-            return
+            TODO
 
-        self._U[self._U_rank] = v
-        rank = self._rank()
-        if rank > self._U_rank:
-            assert rank == self._U_rank + 1
-            self._U_rank += 1
+        """
+        # TODO: v should probably be required to be a relative cohomology class
+        self._tangent_space.update_from_vector(v)
 
     def __eq__(self, other):
         r"""
@@ -1249,7 +446,7 @@ class GL2ROrbitClosure:
             True
 
         """
-        return self._surface == other._surface
+        return type(self) == type(other) and self._surface == other._surface
 
     def __ne__(self, other):
         r"""
@@ -1308,15 +505,618 @@ class GL2ROrbitClosure:
         return (
             GL2ROrbitClosure,
             (self._surface,),
-            {"_U": self._U, "_U_rank": self._U_rank},
         )
 
-    @classmethod
-    def _right_kernel_matrix(cls, M):
+
+class LazyTangentSpace:
+    r"""
+    Helper for :class:`GL2ROrbitClosure` that keeps track of the tangent space
+    computed thus far.
+
+    EXAMPLES::
+
+        # TODO
+
+    """
+    def __init__(self, surface, ambient_dimension):
+        self._surface_base_ring = surface.base_ring()
+        self._ambient_dimension = ambient_dimension
+
+        self._pending_for_dimension = []
+        self._pending_for_basis = []
+
+        # The tangent space we have constructed so far as relative cohomology classes.
+        # Can only be safely accessed after a call to _require_basis.
+        # Note that we don't use Sage vector spaces because they are usually
+        # way too slow (in particular we avoid calling .echelonize())
+        # TODO: Actually use relative cohomology classes.
+        self._basis = []
+
+        # The tangent space vectors reduced modulo a prime ideal _p of the
+        # number field containing its entries.
+        # This is used to determine the dimension of the tangent space without
+        # constructing the full matrix U and computing its rank.
+        from sage.all import GF
+        self._U_bar = matrix(GF(2), 0, ambient_dimension)
+        self._primes = iter(self._create_primes())
+        self._prime = None
+
+    @cached_method
+    def base_ring(self):
+        # TODO: Examples and docstring.
+        # TODO: This doesn't really have anything to do with "vectors". We
+        # should reimplement this in sage-flatsurf and drop the implementation
+        # in pyflatsurf.
+        from pyflatsurf.vector import Vectors
+        return Vectors(self._surface_base_ring)._algebraic_ring()
+
+    def _create_primes(self):
+        r"""
+        Returns an infinite sequence of big prime ideals of the
+        :meth:`base_ring` to speed up operations by computing the basis of the
+        tangent space modulo these primes.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        from sage.all import next_prime
+
+        p = 2**60
+
+        while True:
+            p = next_prime(p)
+
+            yield ZZ.valuation(p).extensions(self.base_ring())[0]
+
+    def _require_dimension(self):
+        r"""
+        Ensure that all the dimension reported by this tangent space
+        incorporated all the data submitted via the ``_update_dimension...()``
+        calls.
+
+        Automatically called when :meth:`dimension` is accessed.
+        """
+        for item in self._pending_for_dimension:
+            self._update_dimension(item)
+
+        self._pending_for_dimension = []
+
+    def _require_basis(self, require_dimension=True):
+        r"""
+        Ensure that the basis reported by this tangent space incorporated all
+        the data submitted via the ``_update_dimension...()`` calls.
+
+        Automatically called when :meth:`basis` is accessed.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        if require_dimension:
+            self._require_dimension()
+
+        for item, row in self._pending_for_basis:
+            self._update_basis(item, row)
+
+        self._pending_for_basis = []
+
+    def dimension(self):
+        r"""
+        Return the current dimension of this tangent space.
+
+        EXAMPLES::
+
+            # TODO
+
+        """
+        self._require_dimension()
+
+        return self._U_bar.nrows()
+
+    def basis(self):
+        r"""
+        Return a basis of the currently known tangent space as relative
+        cohomology classes.
+
+        EXAMPLES::
+
+            # TODO
+
+        """
+        self._require_basis()
+
+        # TODO: Ensure that these are actually cohomology classes
+        return self._basis[:]
+
+    def _update_dimension(self, item):
+        r"""
+        Incorporate ``item`` into the known dimension of this tangent space.
+
+        This is a helper method for :meth:`_require_dimension`.
+
+        .. SEEALSO::
+
+            :meth:`update_basis` for the corresponding operation to incorporate
+            information into the currently known basis.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        if isinstance(item, tuple):
+            increases = self._update_dimension_from_decomposition(*item)
+        else:
+            increases = self._update_dimension_from_vector(item)
+
+        self._pending_for_basis.append((item, increases))
+
+    def _update_dimension_from_decomposition(self, circumferences, module_fractions) -> list[int]:
+        r"""
+        Incorporate the cylinder ``circumferences`` and their moduli into known
+        dimension of this tangent space.
+
+        This is a helper method for :meth:`_update_dimension`.
+
+        Return the indexes of the tangent space vectors extracted from the data
+        that actually lead to an increase in the dimension.
+
+        EXAMPLES::
+
+            # TODO
+
+        """
+        increases = []
+
+        for i, v in enumerate(self.cylinder_deformation_subspace(circumferences, module_fractions, reduced=True)):
+            if self._update_dimension_from_reduced_vector(v):
+                increases.append(i)
+
+        return increases
+
+    def _reduce_vector(self, v):
+        r"""
+        Return a reduction of the vector ``v`` (defined over the
+        :meth:`base_ring`) modulo a big prime ideal.
+
+        This is a helper method for :meth:`_update_dimension_from_vector`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        assert v.base_ring() is self.base_ring(), f"Expected vector over {self.base_ring()} but found vector over {v.base_ring()}"
+
+        while True:
+            p = self._require_p()
+
+            try:
+                return v.apply_map(phi=p.reduce, R=p.residue_field())
+            except ValueError:
+                self._require_p(force_next=True)
+
+    def _decomposition(self, v):
+        r"""
+        Write ``v`` as a linear combination over a transcendental basis.
+
+        This is a trivial operation unless working over exact-real rings.
+
+        This is a helper method for :meth:`_update_dimension_from_vector`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        # TODO: Fix upstream in pyflatsurf
+        if v.base_ring() is QQ:
+            return [(QQ.one(), v)]
+
+        # TODO: This doesn't really have anything to do with "vectors". We
+        # should reimplement this in sage-flatsurf and drop the implementation
+        # in pyflatsurf.
+        from pyflatsurf.vector import Vectors
+        return Vectors(self._surface_base_ring).decomposition(v)
+
+    def _update_dimension_from_vector(self, v) -> list[int]:
+        r"""
+        Incorporate a direction ``v`` in the tangent space into the known
+        dimension of this tangent space.
+
+        This is a helper method for :meth:`_update_dimension`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        # TODO: Ensure that v is a relative cohomology class and document that.
+        assert v.base_ring() is self._surface_base_ring
+
+        decompositions = []
+
+        # Rewrite v as vectors over base_ring(), i.e., the underlying SageMath
+        # number field. (This extracts the different components of a vector
+        # over exact-real. Otherwise, this is just a simple cast between an
+        # e-antic number field and a SageMath number field.)
+        for i, (_, w) in enumerate(self._decomposition(v)):
+            assert all(x.parent() is self.base_ring() for x in w)
+
+            w = vector(self.base_ring(), w)
+            if self._update_dimension_from_reduced_vector(self._reduce_vector(w)):
+                decompositions.append(i)
+
+        return decompositions
+
+    def _update_dimension_from_reduced_vector(self, v) -> bool:
+        r"""
+        Incorporate a direction ``v`` in the tangent space (reduced module a
+        prime) into the known dimension of this tangent space.
+
+        This is a helper method for :meth:`_update_dimension_from_vector`.
+
+        EXAMPLES::
+
+            TODO
+        """
+        if self._U_bar.nrows() == self._ambient_dimension:
+            return False
+
+        U_bar = matrix(self._U_bar.base_ring(), self._U_bar.nrows() + 1, self._U_bar.ncols(), self._U_bar.rows() + [v])
+
+        if U_bar.rank() != U_bar.nrows():
+            return False
+
+        self._U_bar = U_bar
+        return True
+
+    def _update_basis(self, item, rows: list[int]):
+        r"""
+        Enlarge the recorded base for this tangent space from the ``item``.
+
+        The item might encode several tangent space vectors, e.g., if it is a
+        flow decomposition or if it is a vector over some exact-reals. For that
+        purpose, ``rows`` contains the indexes of the resulting tangent space
+        vectors encoded that lead to an increase in the dimension computation
+        and are therefore the indexes that must lead to an increase in the
+        basis.
+
+        This is a helper method for :meth:`_require_basis`.
+
+        .. SEEALSO::
+
+            :meth:`_require_dimension` for the corresponding method that
+            ensures the correct dimension and also sets up the ``rows`` list
+            for this method.
+
+        EXAMPLES::
+
+            TODO
+        """
+        if isinstance(item, tuple):
+            assert len(item) == 2, "item must be a pair of circumferences and moduli"
+            self._update_basis_from_decomposition(item[0], item[1], rows)
+        else:
+            self._update_basis_from_vector(item, rows)
+
+    def _update_basis_from_decomposition(self, circumferences, module_fractions, rows: list[int]):
+        r"""
+        Enlarge the recorded basis for this tangent space from the circumferences and moduli.
+
+        See :meth:`_update_basis` for the meaning of ``rows``.
+
+        This is a helper method for :meth:`_update_basis`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        for v in self.cylinder_deformation_subspace(circumferences, module_fractions, rows=rows):
+            self._basis.append(v)
+
+    def _update_basis_from_vector(self, v, rows: list[int]):
+        r"""
+        Enlarge the recorded basis for this tangent space from the tangent vector ``v``.
+
+        See :meth:`_update_basis` for the meaning of ``rows``.
+
+        This is a helper method for :meth:`_update_basis`.
+
+        EXAMPLES::
+
+            TODO
+        """
+        # Rewrite v as vectors over base_ring(), i.e., the underlying SageMath
+        # number field. (This extracts the different components of a vector
+        # over exact-real. Otherwise, this is just a simple cast between an
+        # e-antic number field and a SageMath number field.)
+        for i, (_, w) in enumerate(self._decomposition(v)):
+            if i not in rows:
+                continue
+
+            assert len(self._basis) < self._U_bar.nrows()
+
+            assert all(x.parent() is self.base_ring() for x in w)
+            w = vector(self.base_ring(), w)
+            self._basis.append(w)
+
+    def _require_p(self, force_next=None):
+        r"""
+        Ensure that ``_prime`` is a prime ideal of :meth:`base_ring` such that
+        the known basis of the tangent space can be reduced module that prime.
+
+        If ``force_next`` is set, then we advance to the next prime even if
+        already had already been selected.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        if force_next or self._prime is None:
+            self._require_basis(require_dimension=False)
+            assert len(self._basis) == self._U_bar.nrows()
+            while True:
+                self._prime = next(self._primes)
+
+                try:
+                    reduced_basis = [v.apply_map(phi=self._prime.reduce(), R=self._prime.residue_field()) for v in self._basis]
+                except ValueError:
+                    continue
+
+                self._U_bar = matrix(self._prime.residue_field(), self._U_bar.nrows(), self._U_bar.ncols(), reduced_basis)
+                break
+        return self._prime
+
+    def update_from_flow_decomposition(self, circumferences, modules):
+        r"""
+        Enlarge this tangent space with the ``circumferences`` and ``modules``
+        derived from a flow decomposition.
+
+        This is a helper method for
+        :meth:`GL2ROrbitClosure.update_tangent_space_from_flow_decomposition`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        # TODO: Should circumferences and modules be different types?
+        self._pending_for_dimension.append((circumferences, modules))
+
+    def update_from_vector(self, v):
+        # TODO: Actually make v be a rel cohomology class.
+        r"""
+        Enlarge this tangent space with the tangent space element ``v``.
+
+        This is a helper method for
+        :meth:`GL2ROrbitClosure.update_tangent_space_from_vector`.
+
+        INPUT:
+
+        - ``v`` -- a relative cohomology class representing a direction in the
+          tangent space.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        if len(v) != self._ambient_dimension:
+            raise TypeError(f"Expected vector of length {self._ambient_dimension} but found vector of length {len(v)}")
+
+        if v.base_ring() is not self._surface_base_ring:
+            raise NotImplementedError(f"Expected vector over {self._surface_base_ring} but found vector over {v.base_ring()}")
+
+        self._pending_for_dimension.append(v)
+
+    @staticmethod
+    def _cylinder_deformation_subspace_eliminate_denominators(fractions):
+        r"""
+        Given a list of ``fractions``, pairs of numerators `n_i` and
+        denominators `d_i`, return a list of fractions `c n_i/d_i` scaled
+        uniformly such that the value can be represented in the underlying
+        ring.
+
+        This is a helper method for meth:`cylinder_deformation_subspace`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        fractions = list(fractions)
+        try:
+            return [x.parent()(x / y) for x, y in fractions]
+        except (ValueError, ArithmeticError, NotImplementedError):
+            denominators = {denominator for numerator, denominator in fractions}
+            return [
+                numerator * prod([d for d in denominators if denominator != d])
+                for (numerator, denominator) in fractions
+            ]
+
+    def _cylinder_deformation_subspace_rational_vector(self, x):
+        r"""
+        Return the rational coefficients of `x` over its implicit basis,
+        e.g., if `x` is in a number field K, return the coefficients of x
+        in `K` as a vector space over the rationals.
+
+        This is a helper method for :meth:`cylinder_deformation_subspace`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        if x.parent() in [ZZ, QQ]:
+            ret = [QQ(x)]
+        elif hasattr(x, "vector"):
+            ret = x.vector()
+        elif hasattr(x, "renf_elem"):
+            ret = x.parent().number_field(x).vector()
+        elif hasattr(x, "_backend"):
+            # TODO: This should probably live elsewhere.
+            from flatsurf.geometry.pyflatsurf.conversion import RingConversion
+            section = RingConversion.to_pyflatsurf(self.base_ring()).section
+
+            from itertools import chain
+            ret = list(
+                chain(
+                    *[
+                        self._cylinder_deformation_subspace_rational_vector(
+                            section(c)
+                        )
+                        for c in x._backend.coefficients()
+                    ]
+                )
+            )
+        else:
+            raise NotImplementedError(
+                "cannot turn {}, i.e., a {}, into a rational vector yet".format(
+                    x, type(x)
+                )
+            )
+
+        assert all(y in QQ for y in ret)
+        return ret
+
+    def _cylinder_deformation_subspace_unify_parent(self, modules):
+        r"""
+        Return all ``modules`` as elements of the same parent.
+
+        This is a helper method for :meth:`cylinder_deformation_subspace`.
+
+        INPUT::
+
+        - ``modules`` -- pairs of elements, encoding ``width`` and ``height``.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        if hasattr(modules[0], "_backend"):
+            # Make sure all modules live in the same K-Module so that .coefficients() below produces coefficient lists of the same length.
+            from functools import reduce
+
+            parent = reduce(
+                lambda m, n: m.span(m, n),
+                [module._backend.module() for module in modules],
+                modules[0]._backend.module(),
+            )
+            modules = [
+                module.parent()(module._backend.promote(parent)) for module in modules
+            ]
+
+        assert all(module.parent() is modules[0].parent() for module in modules)
+        return modules
+
+    def _cylinder_deformation_subspace_reduce(self, relations, circumferences, decomposed_denominators):
+        r"""
+        Return the provided data reduced module the prime ideal returned by :meth:`_require_p`.
+
+        This is a helper method for :meth:`cylinder_deformation_subspace` used
+        to speed up computations by then performing computations in a finite
+        field instead of an unwieldy number field.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        assert all(denominator.parent() is self.base_ring() for denominators in decomposed_denominators for denominator in denominators)
+
+        while True:
+            prime = self._require_p()
+            k = prime.residue_field()
+
+            reduced_relations = [relation.change_ring(k) for relation in relations]
+            try:
+                reduced_circumferences = [circumference.change_ring(k) for circumference in circumferences]
+            except ZeroDivisionError:
+                self._require_p(force_next=True)
+                continue
+
+            try:
+                reduced_denominators = [[prime.reduce(d) for d in ds] for ds in decomposed_denominators]
+            except ValueError:
+                self._require_p(force_next=True)
+                continue
+
+            return reduced_relations, reduced_circumferences, reduced_denominators
+
+    def cylinder_deformation_subspace(self, circumferences, module_fractions, reduced=False, rows=None):
+        r"""
+        Return tangent vectors obtained from the cylinder ``circumferences``
+        and their corresponding moduli ``module_fractions``.
+
+        INPUT:
+
+        - ``circumferences`` -- TODO
+        - ``module_fractions`` -- TODO
+        - ``reduced`` -- TODO
+        - ``rows`` -- TODO
+
+        EXAMPLES:
+
+            TODO
+
+        """
+        assert len(circumferences) == len(module_fractions)
+
+        if not module_fractions:
+            return []
+
+        modules = self._cylinder_deformation_subspace_eliminate_denominators(module_fractions)
+        modules = self._cylinder_deformation_subspace_unify_parent(modules)
+
+        M = matrix([self._cylinder_deformation_subspace_rational_vector(module) for module in modules])
+        assert M.base_ring() is QQ
+        relations = self._left_kernel_matrix(M)
+        assert len(circumferences) == len(module_fractions) == relations.ncols()
+        relations = self._right_kernel_matrix(relations).rows()
+
+        # TODO: This code is horrible. Find a better way to do this.
+        decomposed_denominators = [dict(self._decomposition(vector([denominator]))) for (_, denominator) in module_fractions]
+        transcendentals = set(sum((list(d.keys()) for d in decomposed_denominators), []))
+        decomposed_denominators = [[dd.get(transcendental, [self.base_ring().zero()])[0] for dd in decomposed_denominators] for transcendental in transcendentals]
+
+        if reduced:
+            relations, circumferences, decomposed_denominators = self._cylinder_deformation_subspace_reduce(relations, circumferences, decomposed_denominators)
+
+        row = 0
+        for relation in relations:
+            for denominators in decomposed_denominators:
+                assert len(relation) == len(circumferences) == len(denominators)
+
+                skip = rows is not None and row not in rows
+                row += 1
+
+                if skip:
+                    continue
+
+                yield sum(
+                    t * circumference * denominator
+                    for (t, circumference, denominator) in zip(relation, circumferences, denominators)
+                )
+
+    @staticmethod
+    def _right_kernel_matrix(M):
         r"""
         Compute the right kernel of the rational matrix `M`.
 
-        See https://github.com/flatsurf/sage-flatsurf/issues/100.
+        This speeds up the unfortunate algorithm selection in upstream
+        SageMath, see https://github.com/flatsurf/sage-flatsurf/issues/100.
+
+        EXAMPLES::
+
+            TODO
+
         """
         M = M._clear_denom()[0]
 
@@ -1352,11 +1152,17 @@ class GL2ROrbitClosure:
 
         return ker
 
-    @classmethod
-    def _left_kernel_matrix(cls, M):
+    @staticmethod
+    def _left_kernel_matrix(M):
         r"""
         Compute the left kernel of the rational matrix `M`.
 
-        See https://github.com/flatsurf/sage-flatsurf/issues/100.
+        This speeds up the unfortunate algorithm selection in upstream
+        SageMath, see https://github.com/flatsurf/sage-flatsurf/issues/100.
+
+        EXAMPLES::
+
+            TODO
+
         """
-        return cls._right_kernel_matrix(M.transpose())
+        return LazyTangentSpace._right_kernel_matrix(M.transpose())

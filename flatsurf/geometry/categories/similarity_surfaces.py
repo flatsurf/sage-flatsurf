@@ -701,6 +701,113 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, k, coefficients, relative, implementation, category
             )
 
+        def chains(
+            self,
+            k=1,
+            coefficients=None,
+            relative=None,
+            category=None,
+        ):
+            r"""
+            Return the ``k``-th simplicial chain module of this surface.
+
+            INPUT:
+
+            - ``k`` -- an integer (default: ``1``)
+
+            - ``coefficients`` -- a ring (default: the integer ring); consider
+              chains with coefficients in this ring
+
+            - ``relative`` -- a set (default: the empty set); if non-empty, then
+              the chains modulo the chains in ``relative`` are constructed.
+
+            - ``category`` -- a category; if not specified, a category for the
+              chain module is chosen automatically depending on
+              ``coefficients``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: S.chains()
+                C₁(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+                sage: S.chains(0)
+                C₀(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            """
+            if self.is_mutable():
+                raise ValueError("surface must be immutable to compute chain module")
+
+            from sage.all import ZZ
+
+            k = ZZ(k)
+
+            coefficients = coefficients or ZZ
+
+            relative = frozenset(relative or {})
+
+            if category is None:
+                from sage.categories.all import Modules
+
+                category = Modules(coefficients)
+
+            return self._chains(
+                k=k,
+                coefficients=coefficients,
+                relative=relative,
+                category=category,
+            )
+
+        @cached_surface_method
+        def _chains(self, k, coefficients, relative, category):
+            r"""
+            Return the ``k``-th free chain module of this surface.
+
+            This is a helper method for :meth:`chains` which passes
+            normalized parameters to us. The approach chosen here is quite
+            non-standard. Usually, one would not use a cached method but make
+            :class:`SimplicialChainModule` a unique representation. But this
+            is not possible because equal surfaces can be non-identical so the
+            chains of non-identical surfaces would be identical. We work
+            around this issue by attaching the chains to the actual surface
+            so a surface has a unique chain module, but it is different from
+            another equal surface's.
+
+            A proper fix for the underlying problem could be to change
+            :meth:`MutableOrientedSimilaritySurface.set_immutable` to return an
+            immutable copy of the surface so that all immutable surfaces are
+            unique.
+
+            TESTS:
+
+            Chains of a surface is unique::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: S.chains() is S.chains()
+                True
+
+            But non-identical surfaces have different chains::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+                sage: T.set_immutable()
+                sage: S == T
+                True
+                sage: S is T
+                False
+                sage: S.chains() is T.chains()
+                False
+
+            """
+            from flatsurf.geometry.homology import SimplicialChainModule
+
+            return SimplicialChainModule(
+                self, k, coefficients, relative, category
+            )
+
+
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
         The category of oriented surfaces built from Euclidean polygons that

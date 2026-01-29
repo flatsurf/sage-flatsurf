@@ -31,7 +31,7 @@ EXAMPLES::
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2024 Julian Rüth
+#        Copyright (C) 2024-2026 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
     def _image_edge(self, label, edge):
         r"""
-        Helper method for :meth:`_image_homology_edge` and others.
+        Helper method for :meth:`_image_chain_edge` and others.
 
         EXAMPLES::
 
@@ -97,17 +97,17 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         edge = label.index(half_edge)
         return (label, edge)
 
-    def _image_homology_edge(self, label, edge, codomain):
+    def _image_chain_edge(self, label, edge, domain, codomain):
         r"""
-        Implements :meth:`SurfaceMorphism._image_homology_edge`.
+        Implements :meth:`SurfaceMorphism._image_chain_edge`.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
-            sage: to_pyflatsurf._image_homology_edge((0, 0), 0, codomain=to_pyflatsurf.codomain().homology())  # optional: pyflatsurf
-            B[((1, 2, 3), 0)]
+            sage: to_pyflatsurf._image_chain_edge((0, 0), 0, domain=S.chains(), codomain=to_pyflatsurf.codomain().chains())  # optional: pyflatsurf
+            [((1, 2, 3), 0)]
 
         """
         return codomain(self._image_edge(label, edge))
@@ -236,7 +236,7 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
     def _image_half_edge(self, half_edge):
         r"""
-        Helper method for :meth:`_image_homology_edge` and others.
+        Helper method for :meth:`_image_chain_edge` and others.
 
         EXAMPLES::
 
@@ -252,17 +252,17 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
         edge = label.index(half_edge)
         return (label, edge)
 
-    def _image_homology_edge(self, label, edge, codomain):
+    def _image_chain_edge(self, label, edge, domain, codomain):
         r"""
-        Implements :meth:`SurfaceMorphism._image_homology_edge`.
+        Implements :meth:`SurfaceMorphism._image_chain_edge`.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: from_pyflatsurf = S.pyflatsurf().section()  # optional: pyflatsurf
-            sage: from_pyflatsurf._image_homology_edge((1, 2, 3), 0, codomain=from_pyflatsurf.codomain().homology())  # optional: pyflatsurf
-            B[((0, 0), 0)]
+            sage: from_pyflatsurf._image_chain_edge((1, 2, 3), 0, domain=S.chains(), codomain=from_pyflatsurf.codomain().chains())  # optional: pyflatsurf
+            [((0, 0), 0)]
 
         """
         half_edge = label[edge]
@@ -428,9 +428,9 @@ class Morphism_Deformation(SurfaceMorphism):
         """
         return repr(self._deformation)
 
-    def _image_homology_edge(self, label, edge, codomain):
+    def _image_chain_edge(self, label, edge, domain, codomain):
         r"""
-        Implements :meth:`SurfaceMorphism._image_homology_edge`.
+        Implements :meth:`SurfaceMorphism._image_chain_edge`.
 
         EXAMPLES::
 

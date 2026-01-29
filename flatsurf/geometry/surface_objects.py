@@ -1165,7 +1165,7 @@ class SaddleConnection(SageObject):
             sage: from flatsurf import *
             sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: H = S.homology()
-            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x._chain).items())
+            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x.chain()).items())
             sage: for sc in S.saddle_connections(5):
             ....:     h = H(sc)
             ....:     hol1 = holonomy(h)
