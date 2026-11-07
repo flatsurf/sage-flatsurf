@@ -498,6 +498,74 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return [vector((c, s)) for (c, s) in zip(cos, sin)]
 
+        def is_right_triangle(self):
+            r"""
+            Return whether this is a triangle with a right angle.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 1)])
+                sage: P.is_right_triangle()
+                True
+
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (3, 1)])
+                sage: P.is_right_triangle()
+                False
+
+            Polygons that are not triangles are never right triangles::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().is_right_triangle()
+                False
+
+            """
+            if len(self.vertices()) != 3:
+                return False
+
+            slopes = self.slopes(relative=True)
+            return any(slope[0] == 0 for slope in slopes)
+
+        def is_isosceles_triangle(self):
+            r"""
+            Return whether this is a triangle with two sides of equal length.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+                sage: P.is_isosceles_triangle()
+                True
+
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 1)])
+                sage: P.is_isosceles_triangle()
+                False
+
+            An equilateral triangle is isosceles::
+
+                sage: from flatsurf import polygons
+                sage: polygons.regular_ngon(3).is_isosceles_triangle()
+                True
+
+            Polygons that are not triangles are never isosceles triangles::
+
+                sage: polygons.square().is_isosceles_triangle()
+                False
+
+            """
+            if len(self.vertices()) != 3:
+                return False
+
+            slopes = self.slopes(relative=True)
+
+            from flatsurf.geometry.euclidean import is_parallel
+
+            return (
+                is_parallel(slopes[0], slopes[1])
+                or is_parallel(slopes[0], slopes[2])
+                or is_parallel(slopes[1], slopes[2])
+            )
+
         def erase_marked_vertices(self):
             r"""
             Return a copy of this polygon without marked vertices.

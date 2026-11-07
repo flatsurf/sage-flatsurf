@@ -241,13 +241,63 @@ class PolygonPosition:
         return self._position_type
 
     def get_edge(self):
+        r"""
+        Return the edge in whose interior this point is.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+
+            sage: pos = S.get_point_position((1/2, 0))
+            sage: pos.get_edge()
+            0
+
+            sage: pos = S.get_point_position((0, 1/2))
+            sage: pos.get_edge()
+            3
+
+        A vertex is not in the interior of an edge::
+
+            sage: pos = S.get_point_position((0, 0))
+            sage: pos.get_edge()
+            Traceback (most recent call last):
+            ...
+            ValueError: not in the interior of any edge
+
+            sage: pos = S.get_point_position((1/2, 1/2))
+            sage: pos.get_edge()
+            Traceback (most recent call last):
+            ...
+            ValueError: not in the interior of any edge
+
+        """
         if not self.is_in_edge_interior():
-            raise ValueError("Asked for edge when not in edge interior.")
+            raise ValueError("not in the interior of any edge")
         return self._edge
 
     def get_vertex(self):
+        r"""
+        Return the vertex at which this point is.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+
+            sage: pos = S.get_point_position((1, 1))
+            sage: pos.get_vertex()
+            2
+
+            sage: pos = S.get_point_position((1/2, 0))
+            sage: pos.get_vertex()
+            Traceback (most recent call last):
+            ...
+            ValueError: not at any vertex
+
+        """
         if not self.is_vertex():
-            raise ValueError("Asked for vertex when not a vertex.")
+            raise ValueError("not at any vertex")
         return self._vertex
 
 

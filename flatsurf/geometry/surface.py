@@ -157,8 +157,16 @@ class MutablePolygonalSurface(Surface_base):
         self._roots = ()
 
         self._polygons = {}
+        self._gluings = {}
 
         self._mutable = True
+
+        from flatsurf.geometry.categories import PolygonalSurfaces
+
+        if category is None:
+            category = PolygonalSurfaces().FiniteType()
+
+        category &= PolygonalSurfaces().FiniteType()
 
         super().__init__(base, category=category)
 
@@ -228,6 +236,13 @@ class MutablePolygonalSurface(Surface_base):
             raise ValueError("polygon label already present in this surface")
 
         self._polygons[label] = polygon.change_ring(self.base_ring())
+
+        assert label not in self._gluings
+        self._gluings[label] = [None] * len(polygon.vertices())
+
+        if self._roots:
+            self._roots = self._roots + (label,)
+
         return label
 
     def add_polygons(self, polygons):
@@ -295,6 +310,9 @@ class MutablePolygonalSurface(Surface_base):
         """
         if not self._mutable:
             raise Exception("cannot modify an immutable surface")
+
+        self._unglue_polygon(label)
+        self._gluings.pop(label)
 
         self._polygons.pop(label)
         self._roots = tuple(root for root in self._roots if root != label)
@@ -598,66 +616,6 @@ class MutablePolygonalSurface(Surface_base):
 
         return f"{self._describe_surface()} built from {self._describe_polygons()}"
 
-    def _describe_surface(self):
-        r"""
-        Return a string describing this kind of surface.
-
-        This is a helper method for :meth:`_repr_`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S._describe_surface()
-            'Translation Surface'
-
-        """
-        return "Surface"
-
-    def _describe_polygons(self):
-        r"""
-        Return a string describing the nature of the polygons that make up this surface.
-
-        This is a helper method for :meth:`_repr_`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S._describe_polygons()
-            ''
-
-        """
-        polygons = [
-            (-len(p.erase_marked_vertices().vertices()), p.describe_polygon())
-            for p in self.polygons()
-        ]
-        polygons.sort()
-        polygons = [description for (edges, description) in polygons]
-
-        if not polygons:
-            return ""
-
-        collated = []
-        while polygons:
-            count = 1
-            polygon = polygons.pop()
-            while polygons and polygons[-1] == polygon:
-                count += 1
-                polygons.pop()
-
-            if count == 1:
-                collated.append(f"{polygon[0]} {polygon[1]}")
-            else:
-                collated.append(f"{count} {polygon[2]}")
-
-        description = collated.pop()
-
-        if collated:
-            description = ", ".join(collated) + " and " + description
-
-        return description
-
     def set_root(self, root):
         r"""
         Set ``root`` as the label at which exploration of a connected component
@@ -905,6 +863,252 @@ class MutablePolygonalSurface(Surface_base):
         """
         return Polygons_MutableOrientedSimilaritySurface(self)
 
+    def glue(self, x, y):
+        r"""
+        Glue ``x`` and ``y`` with an (orientation preserving) similarity.
+
+        INPUT:
+
+        - ``x`` -- a pair consisting of a polygon label and an edge index for
+          that polygon
+
+        - ``y`` -- a pair consisting of a polygon label and an edge index for
+          that polygon
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygons.square())
+            0
+
+        Glue two opposite sides of the square to each other::
+
+            sage: S.glue((0, 1), (0, 3))
+
+        Glue the other sides of the square to themselves::
+
+            sage: S.glue((0, 0), (0, 0))
+            sage: S.glue((0, 2), (0, 2))
+
+        Note that existing gluings are removed when gluing already glued
+        sides::
+
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.set_immutable()
+
+            sage: S
+            Translation Surface in H_1(0) built from a square
+
+        """
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
+
+        if x[0] not in self._polygons:
+            raise ValueError
+
+        if y[0] not in self._polygons:
+            raise ValueError
+
+        self.unglue(*x)
+        self.unglue(*y)
+
+        if self._roots:
+            component = set(self.component(x[0]))
+            if y[0] not in component:
+                # Gluing will join two connected components.
+                cross_component = set(self.component(y[0]))
+                for root in reversed(self._roots):
+                    if root in component or root in cross_component:
+                        self._roots = tuple([r for r in self._roots if r != root])
+                        break
+                else:
+                    assert False, "did not find any root to eliminate"
+
+        self._gluings[x[0]][x[1]] = y
+        self._gluings[y[0]][y[1]] = x
+
+    def unglue(self, label, edge):
+        r"""
+        Unglue the side ``edge`` of the polygon ``label`` if it is glued.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
+
+            sage: T = translation_surfaces.square_torus()
+
+            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
+
+            sage: S.unglue(0, 0)
+
+            sage: S.gluings()
+            (((0, 1), (0, 3)), ((0, 3), (0, 1)))
+
+            sage: S.set_immutable()
+            sage: S
+            Translation Surface with boundary built from a square
+
+        """
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
+
+        cross = self._gluings[label][edge]
+        if cross is not None:
+            self._gluings[cross[0]][cross[1]] = None
+
+        self._gluings[label][edge] = None
+
+        if cross is not None and self._roots:
+            component = set(self.component(label))
+            if cross[0] not in component:
+                # Ungluing created a new connected component.
+                cross_component = set(self.component(cross[0]))
+                assert label not in cross_component
+                for root in self._roots:
+                    if root in component:
+                        self._roots = self._roots + (
+                            LabeledView(
+                                surface=self, view=cross_component, finite=True
+                            ).min(),
+                        )
+                        break
+                    if root in cross_component:
+                        self._roots = self._roots + (
+                            LabeledView(
+                                surface=self, view=component, finite=True
+                            ).min(),
+                        )
+                        break
+                else:
+                    assert False, "did not find any root to split"
+
+    def _unglue_polygon(self, label):
+        r"""
+        Remove all gluigns from polygon ``label``.
+
+        This is a helper method to completely unglue a polygon before removing
+        or replacing it.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
+
+            sage: T = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
+
+            sage: S._unglue_polygon(0)
+            sage: S.gluings()
+            ()
+
+        """
+        for edge, cross in enumerate(self._gluings[label]):
+            if cross is None:
+                continue
+            cross_label, cross_edge = cross
+            self._gluings[cross_label][cross_edge] = None
+        self._gluings[label] = [None] * len(self.polygon(label).vertices())
+
+    def replace_polygon(self, label, polygon):
+        r"""
+        Replace the polygon ``label`` with ``polygon`` while keeping its
+        gluings intact.
+
+        INPUT:
+
+        - ``label`` -- an element of :meth:`~.MutablePolygonalSurface.labels`
+
+        - ``polygon`` -- a Euclidean polygon
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
+
+        The replacement of a polygon must have the same number of sides::
+
+            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2)]))
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon must be a quadrilateral
+
+        To replace the polygon without keeping its glueings, remove the polygon
+        first and then add a new one::
+
+            sage: S.remove_polygon(0)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (2, 0), (2, 2)]), label=0)
+            0
+
+        """
+        old = self.polygon(label)
+
+        if len(old.vertices()) != len(polygon.vertices()):
+            from flatsurf.geometry.categories.polygons import Polygons
+
+            article, singular, plural = Polygons._describe_polygon(len(old.vertices()))
+            raise ValueError(f"polygon must be {article} {singular}")
+
+        self._polygons[label] = polygon
+
+    def opposite_edge(self, label, edge=None):
+        r"""
+        Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        INPUT:
+
+        - ``label`` -- one of the labels included in :meth:`~.MutablePolygonalSurface.labels`
+
+        - ``edge`` -- a non-negative integer to specify an edge (the edges
+          of a polygon are numbered starting from zero).
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+
+            sage: S.glue((0, 0), (0, 1))
+            sage: S.glue((0, 2), (0, 2))
+
+            sage: S.opposite_edge(0, 0)
+            (0, 1)
+            sage: S.opposite_edge(0, 1)
+            (0, 0)
+            sage: S.opposite_edge(0, 2)
+            (0, 2)
+            sage: S.opposite_edge(0, 3)
+
+            sage: S.opposite_edge((0, 0))
+            doctest:warning
+            ...
+            UserWarning: calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead
+            (0, 1)
+
+        """
+        if edge is None:
+            import warnings
+
+            warnings.warn(
+                "calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead"
+            )
+            label, edge = label
+        return self._gluings[label][edge]
+
 
 class OrientedSimilaritySurface(Surface_base):
     r"""
@@ -938,43 +1142,6 @@ class OrientedSimilaritySurface(Surface_base):
         category &= SimilaritySurfaces().Oriented()
 
         super().__init__(base, category=category)
-
-    def _describe_surface(self):
-        if not self.is_finite_type():
-            return "Surface built from infinitely many polygons"
-
-        if not self.is_connected():
-            # Many checks do not work yet if a surface is not connected, so we stop here.
-            return "Disconnected Surface"
-
-        if self.is_translation_surface(positive=True):
-            description = "Translation Surface"
-        elif self.is_translation_surface(positive=False):
-            description = "Half-Translation Surface"
-        elif self.is_dilation_surface(positive=True):
-            description = "Positive Dilation Surface"
-        elif self.is_dilation_surface(positive=False):
-            description = "Dilation Surface"
-        elif self.is_cone_surface():
-            description = "Cone Surface"
-            if self.is_rational_surface():
-                description = f"Rational {description}"
-        else:
-            description = "Surface"
-
-        if hasattr(self, "stratum"):
-            try:
-                description += f" in {self.stratum()}"
-            except NotImplementedError:
-                # Computation of the stratum might fail due to #227.
-                pass
-        elif self.genus is not NotImplemented:
-            description = f"Genus {self.genus()} {description}"
-
-        if self.is_with_boundary():
-            description += " with boundary"
-
-        return description
 
 
 class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
@@ -1191,8 +1358,6 @@ class MutableOrientedSimilaritySurface(
     """
 
     def __init__(self, base, category=None):
-        self._gluings = {}
-
         from flatsurf.geometry.categories import SimilaritySurfaces
 
         if category is None:
@@ -1273,175 +1438,6 @@ class MutableOrientedSimilaritySurface(
             self.set_roots(root for root in surface.roots() if root in labels)
 
         return self
-
-    def add_polygon(self, polygon, *, label=None):
-        # Overrides add_polygon from MutablePolygonalSurface
-        label = super().add_polygon(polygon, label=label)
-        assert label not in self._gluings
-        self._gluings[label] = [None] * len(polygon.vertices())
-
-        if self._roots:
-            self._roots = self._roots + (label,)
-
-        return label
-
-    def remove_polygon(self, label):
-        # Overrides remove_polygon from MutablePolygonalSurface
-        self._unglue_polygon(label)
-        self._gluings.pop(label)
-
-        super().remove_polygon(label)
-
-    def glue(self, x, y):
-        r"""
-        Glue ``x`` and ``y`` with an (orientation preserving) similarity.
-
-        INPUT:
-
-        - ``x`` -- a pair consisting of a polygon label and an edge index for
-          that polygon
-
-        - ``y`` -- a pair consisting of a polygon label and an edge index for
-          that polygon
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
-
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(polygons.square())
-            0
-
-        Glue two opposite sides of the square to each other::
-
-            sage: S.glue((0, 1), (0, 3))
-
-        Glue the other sides of the square to themselves::
-
-            sage: S.glue((0, 0), (0, 0))
-            sage: S.glue((0, 2), (0, 2))
-
-        Note that existing gluings are removed when gluing already glued
-        sides::
-
-            sage: S.glue((0, 0), (0, 2))
-            sage: S.set_immutable()
-
-            sage: S
-            Translation Surface in H_1(0) built from a square
-
-        """
-        if not self._mutable:
-            raise Exception(
-                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
-            )
-
-        if x[0] not in self._polygons:
-            raise ValueError
-
-        if y[0] not in self._polygons:
-            raise ValueError
-
-        self.unglue(*x)
-        self.unglue(*y)
-
-        if self._roots:
-            component = set(self.component(x[0]))
-            if y[0] not in component:
-                # Gluing will join two connected components.
-                cross_component = set(self.component(y[0]))
-                for root in reversed(self._roots):
-                    if root in component or root in cross_component:
-                        self._roots = tuple([r for r in self._roots if r != root])
-                        break
-                else:
-                    assert False, "did not find any root to eliminate"
-
-        self._gluings[x[0]][x[1]] = y
-        self._gluings[y[0]][y[1]] = x
-
-    def unglue(self, label, edge):
-        r"""
-        Unglue the side ``edge`` of the polygon ``label`` if it is glued.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
-
-            sage: T = translation_surfaces.square_torus()
-
-            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
-
-            sage: S.unglue(0, 0)
-
-            sage: S.gluings()
-            (((0, 1), (0, 3)), ((0, 3), (0, 1)))
-
-            sage: S.set_immutable()
-            sage: S
-            Translation Surface with boundary built from a square
-
-        """
-        if not self._mutable:
-            raise Exception(
-                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
-            )
-
-        cross = self._gluings[label][edge]
-        if cross is not None:
-            self._gluings[cross[0]][cross[1]] = None
-
-        self._gluings[label][edge] = None
-
-        if cross is not None and self._roots:
-            component = set(self.component(label))
-            if cross[0] not in component:
-                # Ungluing created a new connected component.
-                cross_component = set(self.component(cross[0]))
-                assert label not in cross_component
-                for root in self._roots:
-                    if root in component:
-                        self._roots = self._roots + (
-                            LabeledView(
-                                surface=self, view=cross_component, finite=True
-                            ).min(),
-                        )
-                        break
-                    if root in cross_component:
-                        self._roots = self._roots + (
-                            LabeledView(
-                                surface=self, view=component, finite=True
-                            ).min(),
-                        )
-                        break
-                else:
-                    assert False, "did not find any root to split"
-
-    def _unglue_polygon(self, label):
-        r"""
-        Remove all gluigns from polygon ``label``.
-
-        This is a helper method to completely unglue a polygon before removing
-        or replacing it.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
-
-            sage: T = translation_surfaces.square_torus()
-            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
-
-            sage: S._unglue_polygon(0)
-            sage: S.gluings()
-            ()
-
-        """
-        for edge, cross in enumerate(self._gluings[label]):
-            if cross is None:
-                continue
-            cross_label, cross_edge = cross
-            self._gluings[cross_label][cross_edge] = None
-        self._gluings[label] = [None] * len(self.polygon(label).vertices())
 
     def set_edge_pairing(self, label0, edge0, label1, edge1):
         r"""
@@ -1579,101 +1575,6 @@ class MutableOrientedSimilaritySurface(
                 self.glue(gluings[old_gluings[edge][1]], opposite)
             else:
                 self.glue(old_gluings[edge], opposite)
-
-    def replace_polygon(self, label, polygon):
-        r"""
-        Replace the polygon ``label`` with ``polygon`` while keeping its
-        gluings intact.
-
-        INPUT:
-
-        - ``label`` -- an element of :meth:`~.MutablePolygonalSurface.labels`
-
-        - ``polygon`` -- a Euclidean polygon
-
-        EXAMPLES::
-
-            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
-            0
-            sage: S.glue((0, 0), (0, 2))
-            sage: S.glue((0, 1), (0, 3))
-
-            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
-
-        The replacement of a polygon must have the same number of sides::
-
-            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2)]))
-            Traceback (most recent call last):
-            ...
-            ValueError: polygon must be a quadrilateral
-
-        To replace the polygon without keeping its glueings, remove the polygon
-        first and then add a new one::
-
-            sage: S.remove_polygon(0)
-            sage: S.add_polygon(Polygon(vertices=[(0, 0), (2, 0), (2, 2)]), label=0)
-            0
-
-        """
-        old = self.polygon(label)
-
-        if len(old.vertices()) != len(polygon.vertices()):
-            from flatsurf.geometry.categories.polygons import Polygons
-
-            article, singular, plural = Polygons._describe_polygon(len(old.vertices()))
-            raise ValueError(f"polygon must be {article} {singular}")
-
-        self._polygons[label] = polygon
-
-    def opposite_edge(self, label, edge=None):
-        r"""
-        Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
-
-        INPUT:
-
-        - ``label`` -- one of the labels included in :meth:`~.MutablePolygonalSurface.labels`
-
-        - ``edge`` -- a non-negative integer to specify an edge (the edges
-          of a polygon are numbered starting from zero).
-
-        EXAMPLES::
-
-            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
-            0
-
-            sage: S.glue((0, 0), (0, 1))
-            sage: S.glue((0, 2), (0, 2))
-
-            sage: S.opposite_edge(0, 0)
-            (0, 1)
-            sage: S.opposite_edge(0, 1)
-            (0, 0)
-            sage: S.opposite_edge(0, 2)
-            (0, 2)
-            sage: S.opposite_edge(0, 3)
-
-            sage: S.opposite_edge((0, 0))
-            doctest:warning
-            ...
-            UserWarning: calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead
-            (0, 1)
-
-        """
-        if edge is None:
-            import warnings
-
-            warnings.warn(
-                "calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead"
-            )
-            label, edge = label
-        return self._gluings[label][edge]
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
