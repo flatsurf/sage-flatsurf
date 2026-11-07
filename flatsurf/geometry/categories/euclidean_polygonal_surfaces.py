@@ -86,6 +86,48 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
         want to put it here.
         """
 
+        def _polygon_coordinates(self, label, point, ring=None):
+            r"""
+            Return ``point`` in the coordinates of the polygon ``label``.
+
+            This is a helper method for
+            :class:`~flatsurf.geometry.surface_objects.SurfacePoint` which
+            turns the coordinates provided by the user into the immutable
+            vectors that the polygons of this surface work with.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``point`` -- coordinates of a point in the plane of that
+              polygon, e.g., a tuple or a vector
+
+            - ``ring`` -- a ring or ``None`` (default: ``None``); the ring
+              of the coordinates, the base ring of this surface if ``None``
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: p = S._polygon_coordinates(0, (1/2, 0))
+                sage: p
+                (1/2, 0)
+                sage: p.parent()
+                Vector space of dimension 2 over Rational Field
+                sage: p.is_immutable()
+                True
+
+                sage: S._polygon_coordinates(0, (1/2, 0), ring=AA).parent()
+                Vector space of dimension 2 over Algebraic Real Field
+
+            """
+            if ring is None:
+                ring = self.base_ring()
+
+            point = (ring**2)(point)
+            point.set_immutable()
+            return point
+
         def graphical_surface(self, *args, **kwargs):
             r"""
             Return a graphical representation of this surface.

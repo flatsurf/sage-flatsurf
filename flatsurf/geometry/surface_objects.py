@@ -120,6 +120,8 @@ class SurfacePoint(Element):
         True
         sage: p.coordinates(2)
         ((1/2, 1),)
+        sage: p.representative(2)
+        (2, (1/2, 1))
 
     A point can have even more representations when it is a vertex::
 
@@ -178,8 +180,7 @@ class SurfacePoint(Element):
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
-        point = (ring**2)(point)
-        point.set_immutable()
+        point = surface._polygon_coordinates(label, point, ring=ring)
 
         position = polygon.get_point_position(point)
 
@@ -196,10 +197,9 @@ class SurfacePoint(Element):
             opposite_edge = surface.opposite_edge(label, position.get_edge())
             if opposite_edge is not None:
                 cross_label, cross_edge = opposite_edge
-                cross_point = surface.edge_transformation(label, position.get_edge())(
-                    point
+                cross_point = (
+                    surface.edge_transformation(label, position.get_edge()) * point
                 )
-                cross_point.set_immutable()
 
                 self._representatives.add((cross_label, cross_point))
         elif position.is_vertex():
@@ -343,10 +343,16 @@ class SurfacePoint(Element):
         """
         return self._representatives
 
-    def representative(self):
+    def representative(self, label=None):
         r"""
-        Return a representative of this point, i.e., the first of
-        :meth:`representatives`.
+        Return a representative of this point as a pair of a polygon label and
+        coordinates.
+
+        INPUT:
+
+        - ``label`` -- a polygon label or ``None`` (default: ``None``); if
+          ``None``, return the first of :meth:`representatives`, otherwise
+          return a representative in the polygon ``label``
 
         EXAMPLES::
 
@@ -358,8 +364,40 @@ class SurfacePoint(Element):
             sage: p.representative()  # random output: depends on the Python version
             (2, (1, 0))
 
+        A representative in a given polygon::
+
+            sage: p = S.point(1, (1/2, 0))
+            sage: p.representative(2)
+            (2, (1/2, 1))
+
+        A vertex can have several representatives in the same polygon; one of
+        them is returned, :meth:`coordinates` returns all of them::
+
+            sage: p = S.point(1, (0, 0))
+            sage: label, coordinates = p.representative(1)
+            sage: label
+            1
+            sage: coordinates in p.coordinates(1)
+            True
+
+        A point in the interior of a polygon has no representative in the
+        other polygons::
+
+            sage: p = S.point(1, (1/2, 1/2))
+            sage: p.representative(2)
+            Traceback (most recent call last):
+            ...
+            ValueError: point has no representative in polygon 2
+
         """
-        return next(iter(self.representatives()))
+        if label is None:
+            return next(iter(self.representatives()))
+
+        for representative in self.representatives():
+            if representative[0] == label:
+                return representative
+
+        raise ValueError(f"point has no representative in polygon {label}")
 
     def vertex_set(self):
         r"""
@@ -491,7 +529,7 @@ class SurfacePoint(Element):
 
     def coordinates(self, label):
         r"""
-        Return coordinates for the point in the in the polygon ``label``.
+        Return coordinates for the point in the polygon ``label``.
 
         EXAMPLES::
 

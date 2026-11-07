@@ -201,7 +201,7 @@ class MutablePolygonalSurface(Surface_base):
 
         INPUT:
 
-        - ``polygon`` -- a simple Euclidean polygon
+        - ``polygon`` -- a simple polygon
 
         - ``label`` -- a hashable identifier or ``None`` (default: ``None``);
           if ``None`` an integer identifier is automatically selected
@@ -531,6 +531,25 @@ class MutablePolygonalSurface(Surface_base):
             sage: S == T
             False
 
+        Surfaces with the same polygons but different gluings are distinct::
+
+            sage: T.add_polygon(polygons.square())
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S == T
+            False
+
+        Surfaces over different rings are distinct::
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: T = MutableOrientedSimilaritySurface(AA)
+
+            sage: S == T
+            False
+
+            sage: S == S
+            True
+
         TESTS::
 
             sage: S = MutableOrientedSimilaritySurface(QQ)
@@ -562,6 +581,9 @@ class MutablePolygonalSurface(Surface_base):
         if self._mutable != other._mutable:
             return False
 
+        if self._gluings != other._gluings:
+            return False
+
         return True
 
     def __hash__(self):
@@ -588,7 +610,14 @@ class MutablePolygonalSurface(Surface_base):
         if self._mutable:
             raise TypeError("cannot hash a mutable surface")
 
-        return hash((tuple(self.labels()), tuple(self.polygons()), self._roots))
+        return hash(
+            (
+                tuple(self.labels()),
+                tuple(self.polygons()),
+                self._roots,
+                tuple(self.gluings()),
+            )
+        )
 
     def _repr_(self):
         r"""
@@ -865,7 +894,11 @@ class MutablePolygonalSurface(Surface_base):
 
     def glue(self, x, y):
         r"""
-        Glue ``x`` and ``y`` with an (orientation preserving) similarity.
+        Glue the edges ``x`` and ``y`` of polygons of this surface.
+
+        The map that identifies the two edges is determined by the geometry
+        of the surface, e.g., an orientation preserving similarity for
+        :class:`MutableOrientedSimilaritySurface`.
 
         INPUT:
 
@@ -904,7 +937,7 @@ class MutablePolygonalSurface(Surface_base):
         """
         if not self._mutable:
             raise Exception(
-                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+                "cannot modify immutable surface; create a mutable copy first"
             )
 
         if x[0] not in self._polygons:
@@ -955,7 +988,7 @@ class MutablePolygonalSurface(Surface_base):
         """
         if not self._mutable:
             raise Exception(
-                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+                "cannot modify immutable surface; create a mutable copy first"
             )
 
         cross = self._gluings[label][edge]
@@ -1023,7 +1056,7 @@ class MutablePolygonalSurface(Surface_base):
 
         - ``label`` -- an element of :meth:`~.MutablePolygonalSurface.labels`
 
-        - ``polygon`` -- a Euclidean polygon
+        - ``polygon`` -- a polygon
 
         EXAMPLES::
 
@@ -2069,67 +2102,6 @@ class MutableOrientedSimilaritySurface(
                         break
                     count += 1
                 return 0
-
-    def __eq__(self, other):
-        r"""
-        Return whether this surface is indistinguishable from ``other``.
-
-        See
-        :meth:`~.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface`
-        for details on this notion of equality.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface
-
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: T = MutableOrientedSimilaritySurface(AA)
-
-            sage: S == T
-            False
-
-            sage: S == S
-            True
-
-        """
-        if not isinstance(other, MutableOrientedSimilaritySurface):
-            return False
-
-        if not super().__eq__(other):
-            return False
-
-        if self._gluings != other._gluings:
-            return False
-
-        return True
-
-    def __hash__(self):
-        r"""
-        Return a hash value for this surface that is compatible with
-        :meth:`__eq__`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface
-
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: T = MutableOrientedSimilaritySurface(QQ)
-
-            sage: hash(S) == hash(T)
-            Traceback (most recent call last):
-            ...
-            TypeError: cannot hash a mutable surface
-
-            sage: S.set_immutable()
-            sage: T.set_immutable()
-            sage: hash(S) == hash(T)
-            True
-
-        """
-        if self._mutable:
-            raise TypeError("cannot hash a mutable surface")
-
-        return hash((super().__hash__(), tuple(self.gluings())))
 
 
 class BaseRingChangedSurface(OrientedSimilaritySurface):

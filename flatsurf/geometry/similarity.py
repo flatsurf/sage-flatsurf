@@ -17,8 +17,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
+import operator
+
 from sage.misc.cachefunc import cached_method
 
+from sage.categories.action import Action
 from sage.structure.element import MultiplicativeGroupElement, parent
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -257,6 +260,19 @@ class Similarity(MultiplicativeGroupElement):
         same way as a vector). If a ring is provided, the objects returned will
         be defined over this ring.
 
+        The image of a vector is an immutable vector.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: g = S((1, 2))
+            sage: v = g(vector((1, 1)))
+            sage: v
+            (2, 3)
+            sage: v.is_immutable()
+            True
+
         TESTS::
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
@@ -306,14 +322,16 @@ class Similarity(MultiplicativeGroupElement):
                     [
                         self._a * w[0] - self._b * w[1] + self._s,
                         self._b * w[0] + self._a * w[1] + self._t,
-                    ]
+                    ],
+                    immutable=True,
                 )
             else:
                 return vector(
                     [
                         self._a * w[0] + self._b * w[1] + self._s,
                         self._b * w[0] - self._a * w[1] + self._t,
-                    ]
+                    ],
+                    immutable=True,
                 )
         else:
             if self._sign.is_one():
@@ -323,6 +341,7 @@ class Similarity(MultiplicativeGroupElement):
                         self._a * w[0] - self._b * w[1] + self._s,
                         self._b * w[0] + self._a * w[1] + self._t,
                     ],
+                    immutable=True,
                 )
             else:
                 return vector(
@@ -331,6 +350,7 @@ class Similarity(MultiplicativeGroupElement):
                         self._a * w[0] + self._b * w[1] + self._s,
                         self._b * w[0] - self._a * w[1] + self._t,
                     ],
+                    immutable=True,
                 )
 
     def _repr_(self):
@@ -436,6 +456,78 @@ class Similarity(MultiplicativeGroupElement):
         return M([self._a, -self._sign * self._b, self._b, self._sign * self._a])
 
 
+class SimilarityAction(Action):
+    r"""
+    The action of a :class:`SimilarityGroup` on the vectors of the plane by
+    multiplication from the left.
+
+    The image of a vector lives in the free module of rank two over the
+    pushout of the base ring of the group and the base ring of the vector.
+
+    INPUT:
+
+    - ``G`` -- a :class:`SimilarityGroup`
+
+    - ``M`` -- a free module of rank two
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.similarity import SimilarityGroup
+        sage: G = SimilarityGroup(QQ)
+        sage: g = G((0, 1, 1, 0))
+        sage: g * vector((1, 0))
+        (1, 1)
+
+        sage: from flatsurf.geometry.similarity import SimilarityAction
+        sage: A = SimilarityAction(G, ZZ^2)
+        sage: A
+        Left action by Similarity group over Rational Field on Ambient free module of rank 2 over the principal ideal domain Integer Ring
+        sage: A.codomain()
+        Vector space of dimension 2 over Rational Field
+
+    """
+
+    def __init__(self, G, M):
+        from sage.categories.pushout import pushout
+        from sage.modules.free_module import FreeModule
+
+        self._codomain = FreeModule(pushout(G.base_ring(), M.base_ring()), 2)
+        super().__init__(G, M, True, operator.mul)
+
+    def codomain(self):
+        r"""
+        Return the parent of the images of this action.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityAction, SimilarityGroup
+            sage: SimilarityAction(SimilarityGroup(QQ), AA^2).codomain()
+            Vector space of dimension 2 over Algebraic Real Field
+
+        """
+        return self._codomain
+
+    def _act_(self, g, v):
+        r"""
+        Return the image of the vector ``v`` under the similarity ``g``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: G = SimilarityGroup(QQ)
+            sage: g = G((2, 0, 0, 1))
+            sage: w = g * vector(AA, (1, 1))
+            sage: w
+            (2, 3)
+            sage: w.parent()
+            Vector space of dimension 2 over Algebraic Real Field
+            sage: w.is_immutable()
+            True
+
+        """
+        return g(v, ring=self._codomain.base_ring())
+
+
 class SimilarityGroup(UniqueRepresentation, Group):
     r"""
     The group of possibly orientation reversing similarities in the plane.
@@ -473,6 +565,48 @@ class SimilarityGroup(UniqueRepresentation, Group):
         from sage.modules.free_module import VectorSpace
 
         return VectorSpace(self._ring, 2)
+
+    def _get_action_(self, S, op, self_on_left):
+        r"""
+        Return the action of this group on ``S`` with respect to ``op``.
+
+        This group acts by multiplication from the left on free modules of
+        rank two whose base ring has a common parent with the base ring of
+        this group, see :class:`SimilarityAction`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: G = SimilarityGroup(QQ)
+            sage: g = G((1, 2))
+            sage: g * vector((1, 1))
+            (2, 3)
+            sage: g * vector(AA, (sqrt(2), 0))
+            (2.414213562373095?, 2)
+
+        Only multiplication from the left is an action::
+
+            sage: vector((1, 1)) * g
+            Traceback (most recent call last):
+            ...
+            TypeError: unsupported operand parent(s) for *: 'Ambient free module of rank 2 over the principal ideal domain Integer Ring' and 'Similarity group over Rational Field'
+
+        """
+        if self_on_left and op is operator.mul:
+            from sage.modules.free_module import FreeModule_generic
+
+            if isinstance(S, FreeModule_generic) and S.degree() == 2:
+                from sage.categories.pushout import pushout
+                from sage.structure.coerce_exceptions import CoercionException
+
+                try:
+                    pushout(self._ring, S.base_ring())
+                except (CoercionException, TypeError):
+                    return None
+
+                return SimilarityAction(self, S)
+
+        return super()._get_action_(S, op, self_on_left)
 
     def _element_constructor_(self, *args, **kwds):
         r"""
