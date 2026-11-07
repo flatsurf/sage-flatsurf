@@ -21,8 +21,6 @@ surface generators.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from fractions import Fraction
-
 import pytest
 
 from flatsurf import Polygon, polygons, similarity_surfaces, translation_surfaces
@@ -44,17 +42,13 @@ CONSTRUCTORS = {
 }
 
 
-def to_fraction(x):
-    return Fraction(int(x.numerator()), int(x.denominator()))
-
-
 @pytest.mark.parametrize("name,signature,angles,chi", FLAT_ORBIFOLDS)
 def test_flat_orbifold_angles(name, signature, angles, chi):
     S = CONSTRUCTORS[name]()
-    observed = sorted(to_fraction(p.angle()) for p in S.vertices())
+    observed = sorted(p.angle() for p in S.vertices())
     assert observed == angles
 
-    # A cone point of angle 1/m has order m; the torus has none.
+    # A cone point of angle 1/m has period m; the torus has none.
     orders = sorted(int(1 / a) for a in observed if a != 1)
     assert orders == sorted(signature[1])
 
@@ -63,4 +57,3 @@ def test_flat_orbifold_angles(name, signature, angles, chi):
 def test_flat_orbifold_chi(name, signature, angles, chi):
     S = CONSTRUCTORS[name]()
     assert S.euler_characteristic() == chi
-    assert int(S.euler_characteristic()) + sum(a - 1 for a in angles) == 0

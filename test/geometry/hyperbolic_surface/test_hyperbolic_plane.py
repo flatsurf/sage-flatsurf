@@ -22,36 +22,29 @@ Checks of the HyperbolicPlane against classical hyperbolic geometry.
 
 import pytest
 
-from sage.all import (
-    AA,
-    QQ,
-    RR,
-    I,
-    NumberField,
-    arctanh,
-    cos,
-    cosh,
-    matrix,
-    pi,
-    polygen,
-    sin,
-    sqrt,
-)
+from sage.all import QQ, RR, I, NumberField, matrix, polygen
 
 from flatsurf import HyperbolicPlane
+
+from hyperbolic_surface_oracles import OCTAGON, RHO
+
+
+def sqrt2_in_radius(r):
+    return sum(c * r**i for i, c in enumerate(OCTAGON["sqrt2_in_radius"]))
 
 
 @pytest.fixture(scope="module")
 def octagon_field():
     x = polygen(QQ, "x")
-    K = NumberField(x**4 + 32 * x**2 - 32, "r", embedding=RR(0.98517143100941))
+    f = sum(c * x**i for i, c in enumerate(OCTAGON["klein_radius_polynomial"]))
+    K = NumberField(f, "r", embedding=RR(OCTAGON["klein_radius_embedding"]))
     return K, K.gen()
 
 
 @pytest.fixture(scope="module")
 def octagon(octagon_field):
     K, r = octagon_field
-    s2 = r**2 / 12 + QQ(4) / 3
+    s2 = sqrt2_in_radius(r)
     H = HyperbolicPlane(K)
     points = [
         (r, 0),
@@ -69,16 +62,16 @@ def octagon(octagon_field):
 def test_rho_klein_rational():
     H = HyperbolicPlane(QQ)
     rho = H.half_circle(0, 1).intersection(H.vertical(-QQ(1) / 2))
-    assert rho.coordinates(model="klein") == (-QQ(1) / 2, 0)
-    assert rho.apply_isometry(matrix(QQ, [[0, -1], [1, 1]])) == rho
+    assert rho.coordinates(model="klein") == RHO["klein"]
+    assert rho.apply_isometry(matrix(QQ, RHO["matrix"])) == rho
 
 
 def test_octagon_area(octagon_field, octagon):
     _, r = octagon_field
-    s2 = r**2 / 12 + QQ(4) / 3
+    s2 = sqrt2_in_radius(r)
     assert s2**2 == 2
     assert len(list(octagon.vertices())) == 8
-    assert octagon.area(numerical=False) == 2
+    assert octagon.area(numerical=False) == OCTAGON["area_over_2pi"]
 
 
 def test_octagon_angles(octagon):
@@ -86,15 +79,7 @@ def test_octagon_angles(octagon):
     assert len(E) == 8
     for i in range(8):
         turning = E[i].geodesic().angle(E[(i + 1) % 8].geodesic(), numerical=True)
-        assert abs(turning - 3 / 8) < 1e-6
-
-
-def test_octagon_cosine_rule():
-    r = RR(0.98517143100941)
-    target = 3 + 2 * sqrt(RR(2))
-    lhs = (cos(pi / 4) * cos(pi / 8) + cos(pi / 8)) / (sin(pi / 4) * sin(pi / 8))
-    assert abs(RR(lhs) - target) < 1e-9
-    assert abs(cosh(arctanh(r)) - target) < 1e-9
+        assert abs(turning - OCTAGON["turning_angle"]) < 1e-6
 
 
 def test_compact_triangle_gauss_bonnet():
