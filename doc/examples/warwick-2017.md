@@ -422,7 +422,7 @@ jupyter:
   outputs_hidden: true
 ---
 from flatsurf.geometry.surface import OrientedSimilaritySurface
-from flatsurf.geometry.categories import ConeSurfaces
+from flatsurf.geometry.categories import FlatConeSurfaces
 from flatsurf.geometry.polygon import Polygon
 
 
@@ -433,7 +433,7 @@ class CubeSurf(OrientedSimilaritySurface):
         self._faceC = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], base_ring=F)
         super().__init__(
             F,
-            category=ConeSurfaces()
+            category=FlatConeSurfaces()
             .Rational()
             .InfiniteType()
             .WithoutBoundary()

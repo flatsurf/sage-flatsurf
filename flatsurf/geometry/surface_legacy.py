@@ -2393,17 +2393,17 @@ def ConeSurface(surface, *args, **kwargs):
         UserWarning: ConeSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore.
         Calling set_immutable() on this surface should determine the category of this surface automatically so calling ConeSurface() should not be necessary in this case.
         You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended.
-        We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented cone surfaces.
+        We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented flat cone surfaces.
         sage: S.category()
-        Category of connected without boundary finite type oriented cone surfaces
+        Category of connected without boundary finite type oriented flat cone surfaces
         sage: S.set_immutable()
         sage: S.category()
         Category of connected without boundary finite type translation surfaces
 
     """
-    from flatsurf.geometry.categories import ConeSurfaces
+    from flatsurf.geometry.categories import FlatConeSurfaces
 
-    return SurfaceClass(surface, "ConeSurface()", ConeSurfaces(), *args, **kwargs)
+    return SurfaceClass(surface, "ConeSurface()", FlatConeSurfaces(), *args, **kwargs)
 
 
 def RationalConeSurface(surface, *args, **kwargs):
@@ -2426,18 +2426,18 @@ def RationalConeSurface(surface, *args, **kwargs):
         UserWarning: RationalConeSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore.
         Calling set_immutable() on this surface should determine the category of this surface automatically so calling RationalConeSurface() should not be necessary in this case.
         You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended.
-        We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented rational cone surfaces.
+        We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented rational flat cone surfaces.
         sage: S.category()
-        Category of connected without boundary finite type oriented rational cone surfaces
+        Category of connected without boundary finite type oriented rational flat cone surfaces
         sage: S.set_immutable()
         sage: S.category()
         Category of connected without boundary finite type translation surfaces
 
     """
-    from flatsurf.geometry.categories import ConeSurfaces
+    from flatsurf.geometry.categories import FlatConeSurfaces
 
     return SurfaceClass(
-        surface, "RationalConeSurface()", ConeSurfaces().Rational(), *args, **kwargs
+        surface, "RationalConeSurface()", FlatConeSurfaces().Rational(), *args, **kwargs
     )
 
 

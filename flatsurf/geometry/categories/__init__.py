@@ -140,8 +140,8 @@ available::
 While this works, this approach is quite brittle and might sometimes need a mix
 with the above to work::
 
-    sage: from flatsurf.geometry.categories import ConeSurfaces
-    sage: S._refine_category_(ConeSurfaces().WithoutBoundary())
+    sage: from flatsurf.geometry.categories import FlatConeSurfaces
+    sage: S._refine_category_(FlatConeSurfaces().WithoutBoundary())
     sage: TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum(S)
     H_1(0)
 
@@ -172,7 +172,10 @@ from flatsurf.geometry.categories.euclidean_polygonal_surfaces import (
     EuclideanPolygonalSurfaces,
 )
 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
-from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+from flatsurf.geometry.categories.cone_surfaces import (
+    ConeSurfaces,
+    FlatConeSurfaces,
+)
 from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
 from flatsurf.geometry.categories.half_translation_surfaces import (
     HalfTranslationSurfaces,

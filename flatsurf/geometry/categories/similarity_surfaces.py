@@ -209,9 +209,11 @@ class SimilaritySurfaces(SurfaceCategory):
             category = PolygonalSurfaces.ParentMethods.refined_category(self)
 
             if self.is_cone_surface():
-                from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+                from flatsurf.geometry.categories.cone_surfaces import (
+                    FlatConeSurfaces,
+                )
 
-                category &= ConeSurfaces()
+                category &= FlatConeSurfaces()
 
             if self.is_dilation_surface():
                 from flatsurf.geometry.categories.dilation_surfaces import (
@@ -256,7 +258,7 @@ class SimilaritySurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used to determine whether this surface is in the
-                category of :class:`~.cone_surfaces.ConeSurfaces`. Surfaces can
+                category of :class:`~.cone_surfaces.FlatConeSurfaces`. Surfaces can
                 override this method to perform specialized logic, see the note
                 in :mod:`flatsurf.geometry.categories` for performance
                 considerations.
@@ -273,9 +275,9 @@ class SimilaritySurfaces(SurfaceCategory):
             if self.is_translation_surface():
                 return True
 
-            from flatsurf.geometry.categories import ConeSurfaces
+            from flatsurf.geometry.categories import FlatConeSurfaces
 
-            return ConeSurfaces.ParentMethods._is_cone_surface(self)
+            return FlatConeSurfaces.ParentMethods._is_cone_surface(self)
 
         def is_dilation_surface(self, positive=False):
             r"""

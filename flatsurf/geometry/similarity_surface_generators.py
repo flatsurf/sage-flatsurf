@@ -738,8 +738,8 @@ class SimilaritySurfaceGenerators:
             UserWarning: the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore
             sage: Q
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: Q in ConeSurfaces().Rational()
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: Q in FlatConeSurfaces().Rational()
             True
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
@@ -784,8 +784,8 @@ class SimilaritySurfaceGenerators:
             sage: S = similarity_surfaces.billiard(P); S # optional: pyexactreal
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: TestSuite(S).run() # long time (6s), optional: pyexactreal
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: S in ConeSurfaces()
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: S in FlatConeSurfaces()
             True
 
         """
@@ -799,9 +799,9 @@ class SimilaritySurfaceGenerators:
                 "the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore"
             )
 
-        from flatsurf.geometry.categories import ConeSurfaces
+        from flatsurf.geometry.categories import FlatConeSurfaces
 
-        category = ConeSurfaces()
+        category = FlatConeSurfaces()
         if P.is_rational():
             category = category.Rational()
 
@@ -949,8 +949,8 @@ class SimilaritySurfaceGenerators:
             sage: R = similarity_surfaces.right_angle_triangle(2, 3)
             sage: R
             Genus 0 Cone Surface built from 2 right triangles
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: R in ConeSurfaces()
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: R in FlatConeSurfaces()
             True
             sage: TestSuite(R).run()
         """

@@ -1,15 +1,23 @@
 r"""
-The category of cone surfaces.
+The categories of cone surfaces and of flat cone surfaces.
 
-A cone surface is a surface that can be built by gluing Euclidean polygons
+A cone surface is a surface with a metric of constant curvature that has cone
+points, in any of the geometries (Euclidean or hyperbolic). The category
+:class:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces` is what flat
+and hyperbolic cone surfaces have in common, e.g., that a surface built from
+finitely many polygons has an area.
+
+A flat cone surface is a surface that can be built by gluing Euclidean polygons
 along their edges such that the matrix describing `monodromy
 <https://en.wikipedia.org/wiki/(G,X)-manifold#Monodromy>`_ along a closed path
 is an isometry; that matrix is given by multiplying the individual matrices
 that describe how to transition between pairs of glued edges, see
 :meth:`~.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix`.
 
-In sage-flatsurf, we restrict cone surfaces slightly by requiring that a cone
-surface is given by polygons such that each edge matrix is an isometry.
+In sage-flatsurf, we restrict flat cone surfaces slightly by requiring that a
+flat cone surface is given by polygons such that each edge matrix is an
+isometry. This is the category
+:class:`~flatsurf.geometry.categories.cone_surfaces.FlatConeSurfaces`.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -20,7 +28,7 @@ category is automatically determined for immutable surfaces.
 EXAMPLES:
 
 We glue the sides of a square with a rotation of π/2. Since each gluing is just
-a rotation, this is a cone surface::
+a rotation, this is a flat cone surface::
 
     sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
     sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
@@ -33,8 +41,8 @@ a rotation, this is a cone surface::
 
     sage: C = S.category()
 
-    sage: from flatsurf.geometry.categories import ConeSurfaces
-    sage: C.is_subcategory(ConeSurfaces())
+    sage: from flatsurf.geometry.categories import FlatConeSurfaces
+    sage: C.is_subcategory(FlatConeSurfaces())
     True
 
 """
@@ -68,6 +76,86 @@ from flatsurf.geometry.categories.surface_category import (
 
 class ConeSurfaces(SurfaceCategory):
     r"""
+    The category of surfaces with a metric of constant curvature that has cone
+    points, in any geometry.
+
+    This is the category that flat and hyperbolic cone surfaces have in common.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories import ConeSurfaces
+        sage: ConeSurfaces()
+        Category of cone surfaces
+        sage: ConeSurfaces().super_categories()
+        [Category of polygonal surfaces]
+
+    The category of flat cone surfaces is a subcategory::
+
+        sage: from flatsurf.geometry.categories import FlatConeSurfaces
+        sage: FlatConeSurfaces().is_subcategory(ConeSurfaces())
+        True
+
+    """
+
+    def super_categories(self):
+        r"""
+        Return the categories that a cone surface is also always a member of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import ConeSurfaces
+            sage: ConeSurfaces().super_categories()
+            [Category of polygonal surfaces]
+
+        """
+        from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+
+        return [PolygonalSurfaces()]
+
+    class FiniteType(SurfaceCategoryWithAxiom):
+        r"""
+        The category of cone surfaces built from finitely many polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import ConeSurfaces
+            sage: ConeSurfaces().FiniteType()
+            Category of finite type cone surfaces
+
+        """
+
+        class ParentMethods:
+            r"""
+            Provides methods available to all cone surfaces built from finitely
+            many polygons.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
+            def area(self):
+                r"""
+                Return the area of this surface.
+
+                The unit depends on the geometry: for flat polygons this is an
+                element of the base ring; for hyperbolic polygons, the area is
+                measured in units of 2π, so that for a hyperbolic surface it
+                is `-\chi(S, \beta)`.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.area()
+                    3
+
+                """
+                return sum(p.area() for p in self.polygons())
+
+
+class FlatConeSurfaces(SurfaceCategory):
+    r"""
     The category of surfaces built by gluing (Euclidean) polygons with
     isometries on the edges.
 
@@ -77,26 +165,27 @@ class ConeSurfaces(SurfaceCategory):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories import ConeSurfaces
-        sage: ConeSurfaces()
-        Category of cone surfaces
+        sage: from flatsurf.geometry.categories import FlatConeSurfaces
+        sage: FlatConeSurfaces()
+        Category of flat cone surfaces
 
     """
 
     def super_categories(self):
         r"""
-        Return the categories that a cone surfaces is also always a member of.
+        Return the categories that a flat cone surface is also always a member
+        of.
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: ConeSurfaces().super_categories()
-            [Category of similarity surfaces]
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: FlatConeSurfaces().super_categories()
+            [Category of similarity surfaces, Category of cone surfaces]
 
         """
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 
-        return [SimilaritySurfaces()]
+        return [SimilaritySurfaces(), ConeSurfaces()]
 
     class ParentMethods:
         r"""
@@ -148,13 +237,13 @@ class ConeSurfaces(SurfaceCategory):
                 sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
                 sage: S = translation_surfaces.infinite_staircase()
 
-                sage: from flatsurf.geometry.categories import ConeSurfaces
-                sage: ConeSurfaces.ParentMethods._is_cone_surface(S, limit=8)
+                sage: from flatsurf.geometry.categories import FlatConeSurfaces
+                sage: FlatConeSurfaces.ParentMethods._is_cone_surface(S, limit=8)
                 doctest:warning
                 ...
                 UserWarning: limit has been deprecated as a keyword argument for _is_cone_surface() and will be removed from a future version of sage-flatsurf; ...
                 True
-                sage: ConeSurfaces.ParentMethods._is_cone_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
+                sage: FlatConeSurfaces.ParentMethods._is_cone_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
 
             ::
@@ -163,7 +252,7 @@ class ConeSurfaces(SurfaceCategory):
                 sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
-                sage: ConeSurfaces.ParentMethods._is_cone_surface(S)
+                sage: FlatConeSurfaces.ParentMethods._is_cone_surface(S)
                 True
 
             """
@@ -226,35 +315,11 @@ class ConeSurfaces(SurfaceCategory):
             sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
 
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: S in ConeSurfaces().FiniteType()
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: S in FlatConeSurfaces().FiniteType()
             True
 
         """
-
-        class ParentMethods:
-            r"""
-            Provides methods available to all cone surfaces built from finitely
-            many polygons.
-
-            If you want to add functionality for such surfaces you most likely
-            want to put it here.
-            """
-
-            def area(self):
-                r"""
-                Return the area of this surface.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.area()
-                    3
-
-                """
-                return sum(p.area() for p in self.polygons())
 
         class Oriented(SurfaceCategoryWithAxiom):
             r"""
@@ -268,8 +333,8 @@ class ConeSurfaces(SurfaceCategory):
                 sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
-                sage: from flatsurf.geometry.categories import ConeSurfaces
-                sage: S in ConeSurfaces().Oriented()
+                sage: from flatsurf.geometry.categories import FlatConeSurfaces
+                sage: S in FlatConeSurfaces().Oriented()
                 True
 
             """
@@ -302,7 +367,9 @@ class ConeSurfaces(SurfaceCategory):
                         limit = 32
 
                     tester.assertTrue(
-                        ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit)
+                        FlatConeSurfaces.ParentMethods._is_cone_surface(
+                            self, limit=limit
+                        )
                     )
 
             class WithoutBoundary(SurfaceCategoryWithAxiom):
@@ -315,8 +382,8 @@ class ConeSurfaces(SurfaceCategory):
                     sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
 
-                    sage: from flatsurf.geometry.categories import ConeSurfaces
-                    sage: S in ConeSurfaces().Oriented().WithoutBoundary()
+                    sage: from flatsurf.geometry.categories import FlatConeSurfaces
+                    sage: S in FlatConeSurfaces().Oriented().WithoutBoundary()
                     True
 
                 """
@@ -331,8 +398,8 @@ class ConeSurfaces(SurfaceCategory):
                         sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                         sage: S = similarity_surfaces.self_glued_polygon(P)
 
-                        sage: from flatsurf.geometry.categories import ConeSurfaces
-                        sage: S in ConeSurfaces().Oriented().Connected()
+                        sage: from flatsurf.geometry.categories import FlatConeSurfaces
+                        sage: S in FlatConeSurfaces().Oriented().Connected()
                         True
 
                     """

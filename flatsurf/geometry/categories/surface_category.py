@@ -43,9 +43,11 @@ flags = {
         [
             "TopologicalSurfaces",
             "PolygonalSurfaces",
+            "ConeSurfaces",
             "EuclideanPolygonalSurfaces",
             "SimilaritySurfaces",
-            "ConeSurfaces",
+            "FlatConeSurfaces",
+            "HyperbolicConeSurfaces",
             "DilationSurfaces",
             "HalfTranslationSurfaces",
             "TranslationSurfaces",

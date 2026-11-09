@@ -80,13 +80,13 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
             sage: HalfTranslationSurfaces().super_categories()
-            [Category of dilation surfaces, Category of rational cone surfaces]
+            [Category of dilation surfaces, Category of rational flat cone surfaces]
 
         """
         from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
-        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+        from flatsurf.geometry.categories.cone_surfaces import FlatConeSurfaces
 
-        return [DilationSurfaces(), ConeSurfaces().Rational()]
+        return [DilationSurfaces(), FlatConeSurfaces().Rational()]
 
     # Declare that the "positive" half-translation surfaces are called
     # "translation surfaces".
