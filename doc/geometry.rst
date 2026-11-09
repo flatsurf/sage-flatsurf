@@ -16,6 +16,7 @@ The flatsurf.geometry Package
    geometry/gl2r_orbit_closure
    geometry/homology
    geometry/hyperbolic
+   geometry/hyperbolic_polygon
    geometry/interval_exchange_transformation
    geometry/l_infinity_delaunay_cells
    geometry/lazy

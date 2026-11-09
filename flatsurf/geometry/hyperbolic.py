@@ -1722,14 +1722,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def polygon(
         self,
-        half_spaces,
+        half_spaces=None,
         check=True,
         assume_sorted=False,
         assume_minimal=False,
         marked_vertices=(),
+        vertices=None,
+        model="klein",
+        polygon=None,
     ):
         r"""
-        Return the convex polygon obtained by intersecting ``half_spaces``.
+        Return the convex polygon obtained by intersecting ``half_spaces``,
+        or the compact polygon with the given ``vertices``.
+
+        Exactly one of ``half_spaces``, ``vertices`` and ``polygon`` must be
+        given.
 
         INPUT:
 
@@ -1755,6 +1762,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
           tuple), the vertices are included in the
           :meth:`HyperbolicConvexPolygon.vertices` even if they are not in the set of
           minimal vertices describing this polygon.
+
+        - ``vertices`` -- an iterable of finite :class:`HyperbolicPoint`\ s or
+          of pairs of coordinates in ``model``, in counterclockwise order
+          (default: ``None``); the vertices of a possibly non-convex
+          :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`.
+
+        - ``model`` -- ``"klein"`` or ``"half_plane"`` (default:
+          ``"klein"``), the model in which pairs of coordinates in
+          ``vertices`` are given.
+
+        - ``polygon`` -- a :class:`HyperbolicConvexPolygon` with finite
+          vertices (default: ``None``); returned as a
+          :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
+          with the same vertices, marked vertices included.
 
         ALGORITHM:
 
@@ -1915,6 +1936,41 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.polygon(H.infinity().half_spaces(), assume_sorted=True)
             ∞
 
+        A compact polygon, possibly non-convex, is given by its finite
+        vertices, in the Klein model or in the upper half plane::
+
+            sage: H.polygon(vertices=[(0, -1/2), (1/2, 1/2), (0, 0), (-1/2, 1/2)])
+            Hyperbolic polygon with vertices [(0, -1/2), (1/2, 1/2), I, (-1/2, 1/2)]
+            sage: H.polygon(vertices=[I, 1 + I, 2*I], model="half_plane")
+            Hyperbolic polygon with vertices [I, 1 + I, 2*I]
+            sage: H.polygon(vertices=[H(I), H(1 + I), H(2*I)])
+            Hyperbolic polygon with vertices [I, 1 + I, 2*I]
+
+        A convex polygon with finite vertices converts to such a polygon::
+
+            sage: P = H.convex_hull(H(I), H(2*I), H(1 + I))
+            sage: H.polygon(polygon=P)
+            Hyperbolic polygon with vertices [I, 1 + I, 2*I]
+
+        The vertices must be finite points::
+
+            sage: H.polygon(vertices=[H(0), H(I), H(1 + I)])
+            Traceback (most recent call last):
+            ...
+            ValueError: vertex 0 is not a finite point of the hyperbolic plane
+            sage: H.polygon(polygon=H.convex_hull(H(0), H(I), H(1 + I)))
+            Traceback (most recent call last):
+            ...
+            ValueError: vertex 0 is not a finite point of the hyperbolic plane
+
+        Exactly one of ``half_spaces``, ``vertices`` and ``polygon`` must be
+        given::
+
+            sage: H.polygon()
+            Traceback (most recent call last):
+            ...
+            ValueError: exactly one of half_spaces, vertices, and polygon must be given
+
         .. SEEALSO::
 
             :meth:`intersection` to intersect arbitrary convex sets
@@ -1922,6 +1978,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             of a union of convex sets
 
         """
+        if (half_spaces is None) + (vertices is None) + (polygon is None) != 2:
+            raise ValueError(
+                "exactly one of half_spaces, vertices, and polygon must be given"
+            )
+
+        if half_spaces is None:
+            from flatsurf.geometry.hyperbolic_polygon import hyperbolic_polygon
+
+            if polygon is not None:
+                if not isinstance(polygon, HyperbolicConvexPolygon):
+                    raise TypeError("polygon must be a HyperbolicConvexPolygon")
+                vertices = polygon.vertices()
+
+            return hyperbolic_polygon(self, vertices, model=model, check=check)
+
         if not marked_vertices:
             marked_vertices = []
 

@@ -314,6 +314,214 @@ class Polygons(Category_over_base_ring):
 
             """
 
+        @abstract_method
+        def vertices(self, marked_vertices=True):
+            r"""
+            Return the vertices of this polygon in counterclockwise order.
+
+            INPUT:
+
+            - ``marked_vertices`` -- a boolean (default: ``True``); whether to
+              include the vertices with an angle π
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().vertices()
+                ((0, 0), (1, 0), (1, 1), (0, 1))
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]).vertices()
+                (I, (1/2, 0), (0, 1/2))
+
+            """
+
+        @abstract_method
+        def area(self):
+            r"""
+            Return the area of this polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().area()
+                1
+
+            The area of a hyperbolic polygon is divided by `2\pi`::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.polygon(vertices=[(0, -1/2), (1/2, 1/2), (0, 0), (-1/2, 1/2)])
+                sage: P.area(numerical=True)  # abs tol 1e-12
+                0.0462449974740256
+
+            """
+
+        @abstract_method(optional=True)
+        def vertex(self, i):
+            r"""
+            Return the ``i``-th vertex of this polygon, with ``i`` taken
+            modulo the number of vertices.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().vertex(-1)
+                (0, 1)
+
+            """
+
+        @abstract_method(optional=True)
+        def angle(self, i, numerical=None):
+            r"""
+            Return the interior angle at the vertex ``i`` of this polygon, as a
+            multiple of `2\pi`.
+
+            INPUT:
+
+            - ``i`` -- an integer, taken modulo the number of vertices
+
+            - ``numerical`` -- a boolean or ``None`` (default: ``None``);
+              whether to return a floating point approximation; when
+              ``None``, the angle is exact for a rational polygon
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().angle(0)
+                1/4
+
+            """
+
+        @abstract_method(optional=True)
+        def angles(self, numerical=None):
+            r"""
+            Return the interior angles of this polygon, as multiples of
+            `2\pi`, in the order of the vertices.
+
+            INPUT:
+
+            - ``numerical`` -- a boolean or ``None`` (default: ``None``); as
+              in :meth:`angle`
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().angles()
+                (1/4, 1/4, 1/4, 1/4)
+
+            """
+
+        @abstract_method(optional=True)
+        def edge_segment(self, i):
+            r"""
+            Return the oriented segment from the vertex ``i`` to the vertex
+            ``i + 1``, with ``i`` taken modulo the number of vertices.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().edge_segment(0)
+                (0, 0) → (1, 0)
+
+            """
+
+        @abstract_method(optional=True)
+        def edge_segments(self):
+            r"""
+            Return the oriented segments joining consecutive vertices of this
+            polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().edge_segments()
+                [(0, 0) → (1, 0), (1, 0) → (1, 1), (1, 1) → (0, 1), (0, 1) → (0, 0)]
+
+            """
+
+        @abstract_method(optional=True)
+        def get_point_position(self, point):
+            r"""
+            Return the combinatorial position of ``point`` with respect to
+            this polygon, as a
+            :class:`~flatsurf.geometry.polygon.PolygonPosition`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().get_point_position((1/2, 1/2))
+                point positioned in interior of polygon
+
+            """
+
+        @abstract_method(optional=True)
+        def is_equilateral(self):
+            r"""
+            Return whether all the sides of this polygon have the same length.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().is_equilateral()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def is_equiangular(self):
+            r"""
+            Return whether all the interior angles of this polygon are equal.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().is_equiangular()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def is_right_triangle(self):
+            r"""
+            Return whether this polygon is a triangle with a right angle.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)]).is_right_triangle()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def is_isosceles_triangle(self):
+            r"""
+            Return whether this polygon is a triangle with two sides of the
+            same length.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)]).is_isosceles_triangle()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def erase_marked_vertices(self):
+            r"""
+            Return a copy of this polygon without its vertices of angle π.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: Polygon(vertices=[(0, 0), (1, 0), (2, 0), (0, 1)]).erase_marked_vertices()
+                Polygon(vertices=[(0, 0), (2, 0), (0, 1)])
+
+            """
+
         def base_ring(self):
             r"""
             Return the ring over which this polygon is defined.
