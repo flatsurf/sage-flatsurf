@@ -814,8 +814,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 .. SEEALSO::
 
-                    :meth:`angle` for the possibly non-integral number of
-                    turns at this point.
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.ElementMethods.angle`
+                    for the possibly non-integral number of turns at this
+                    point.
 
                 """
                 if not self.is_vertex():

@@ -1569,7 +1569,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 .. SEEALSO::
 
-                    :meth:`turns` for the number of full 2π turns at a point.
+                    :meth:`~flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.turns`
+                    for the number of full 2π turns at a point.
 
                 """
                 if self.is_vertex():
