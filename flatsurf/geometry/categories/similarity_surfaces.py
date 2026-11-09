@@ -3868,17 +3868,6 @@ class SimilaritySurfaces(SurfaceCategory):
                     S.set_immutable()
                     return S
 
-                def fundamental_group(self, base_label=None):
-                    r"""
-                    Return the fundamental group of this surface.
-                    """
-                    if base_label is None:
-                        base_label = self.root()
-
-                    from flatsurf.geometry.fundamental_group import FundamentalGroup
-
-                    return FundamentalGroup(self, base_label)
-
     class SubcategoryMethods:
         def Rational(self):
             r"""

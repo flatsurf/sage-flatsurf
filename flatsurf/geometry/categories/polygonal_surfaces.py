@@ -1334,6 +1334,55 @@ class PolygonalSurfaces(SurfaceCategory):
 
                     return ZZ(V - E + F)
 
+                def fundamental_group(self, base_label=None, punctured_vertices=False):
+                    r"""
+                    Return the fundamental group of this surface, punctured at
+                    some of its vertices.
+
+                    The elements are closed walks crossing the edges from
+                    polygon to polygon, see
+                    :class:`~flatsurf.geometry.fundamental_group.FundamentalGroup`.
+
+                    INPUT:
+
+                    - ``base_label`` -- a polygon label or ``None`` (default:
+                      ``None``); the polygon at which the walks start and end,
+                      the root of the surface if ``None``
+
+                    - ``punctured_vertices`` -- a boolean or a list of vertices
+                      of this surface (default: ``False``); the vertices at
+                      which the surface is punctured, ``True`` standing for all
+                      of them
+
+                    OUTPUT:
+
+                    A :class:`~flatsurf.geometry.fundamental_group.FundamentalGroup`.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.square_torus()
+                        sage: S.fundamental_group()
+                        Fundamental group of Translation Surface in H_1(0) built from a square based at polygon 0
+
+                    With every vertex punctured, the group is free on its
+                    generators and the equality of elements is decided::
+
+                        sage: F = S.fundamental_group(punctured_vertices=True)
+                        sage: F
+                        Fundamental group of Translation Surface in H_1(0) built from a square punctured at all of its vertices based at polygon 0
+                        sage: a, b = F.gens()
+                        sage: a * b == b * a
+                        False
+
+                    """
+                    if base_label is None:
+                        base_label = self.root()
+
+                    from flatsurf.geometry.fundamental_group import FundamentalGroup
+
+                    return FundamentalGroup(self, base_label, punctured_vertices)
+
         class ParentMethods:
             r"""
             Provides methods available to all surfaces built from finitely many polygons.
