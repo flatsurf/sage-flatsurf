@@ -1155,6 +1155,16 @@ def convex_hull(*points, marked_vertices=False):
         sage: Polygon(vertices=convex_hull(*points))
         Polygon(vertices=[(0, 0), (sqrt2, 0), (sqrt2 + 1/3, 1/2), (sqrt2, 1), (0, 1)])
 
+    TESTS:
+
+    Python integers are accepted::
+
+        sage: hull = convex_hull((int(0), int(0)), (int(1), int(0)), (int(0), int(1)))
+        sage: hull
+        ((0, 0), (1, 0), (0, 1))
+        sage: hull[0].base_ring()
+        Rational Field
+
     """
     from sage.all import QQ, ZZ, vector
     from sage.structure.sequence import Sequence
@@ -1162,7 +1172,8 @@ def convex_hull(*points, marked_vertices=False):
     if not points:
         raise ValueError("convex hull of no points is not defined")
 
-    R = Sequence([c for p in points for c in p]).universe()
+    # Without use_sage_types, the universe of Python integers is int, not ZZ.
+    R = Sequence([c for p in points for c in p], use_sage_types=True).universe()
     if R is ZZ:
         R = QQ
 
