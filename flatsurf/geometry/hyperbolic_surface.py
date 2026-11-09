@@ -183,8 +183,8 @@ class MutableOrientedHyperbolicSurface(
 
     INPUT:
 
-    - ``base`` -- an ordered field, the base ring of the hyperbolic plane of
-      the polygons
+    - ``base`` -- a ring, the base ring of the hyperbolic plane of the
+      polygons
 
     - ``category`` -- a category or ``None`` (default: ``None``); refined to
       a subcategory of finite type oriented hyperbolic cone surfaces

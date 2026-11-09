@@ -9,8 +9,9 @@ total angle.
 Two geodesic segments of the hyperbolic plane are related by an isometry only
 when they have the same length, so there is no hyperbolic counterpart of the
 gluings of edges of different lengths by similarities: the edges glued to each
-other have the same length and the gluing is the unique orientation preserving
-isometry that sends one edge onto the other one with reverse orientation.
+other have the same length. On an oriented surface, the gluing is the unique
+orientation preserving isometry that sends one edge onto the other one with
+reverse orientation.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -562,6 +563,16 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 of the polygon ``label`` to the edge it is glued to.
 
                 See :meth:`edge_transformation` for the isometry itself.
+
+                INPUT:
+
+                - ``label`` -- a polygon label
+
+                - ``edge`` -- an edge index of that polygon
+
+                OUTPUT:
+
+                A `3 \times 3` matrix over the base ring of this surface.
 
                 EXAMPLES::
 
