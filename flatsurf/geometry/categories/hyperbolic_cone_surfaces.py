@@ -617,11 +617,36 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                     ...
                     ValueError: angle is not a rational multiple of 2π; set numerical=True to get a numerical approximation
 
+                When the corners have irrational angles, the exact total of
+                an interior vertex is read from the trace of the holonomy of
+                its loop::
+
+                    sage: T = MutableOrientedHyperbolicSurface(QQ)
+                    sage: T.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                    0
+                    sage: T.add_polygon(H.polygon(vertices=[(1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    1
+                    sage: T.glue((0, 1), (1, 2)); T.glue((0, 0), (0, 2)); T.glue((1, 0), (1, 1))
+                    sage: T.set_immutable()
+                    sage: T(1, 0).angle()
+                    1/2
+                    sage: T(1, 1).angle()
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: angle is not a rational multiple of 2π; set numerical=True to get a numerical approximation
+
                 """
                 total = 0
                 for label, point in vertex.representatives():
                     polygon = self.polygon(label)
                     corner = polygon.get_point_position(point).get_vertex()
-                    total += polygon.angle(corner, numerical=numerical)
+                    try:
+                        total += polygon.angle(corner, numerical=numerical)
+                    except ValueError:
+                        if numerical:
+                            raise
+                        from flatsurf.geometry.holonomy import _holonomy_angle
+
+                        return _holonomy_angle(self, vertex)
 
                 return total

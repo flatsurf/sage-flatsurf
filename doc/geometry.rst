@@ -14,6 +14,7 @@ The flatsurf.geometry Package
    geometry/finitely_generated_matrix_group
    geometry/fundamental_group
    geometry/gl2r_orbit_closure
+   geometry/holonomy
    geometry/homology
    geometry/hyperbolic
    geometry/hyperbolic_isometry

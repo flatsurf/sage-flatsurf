@@ -153,6 +153,122 @@ class ConeSurfaces(SurfaceCategory):
                 """
                 return sum(p.area() for p in self.polygons())
 
+        class Oriented(SurfaceCategoryWithAxiom):
+            r"""
+            The category of oriented cone surfaces built from finitely many
+            polygons.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: from flatsurf.geometry.categories import ConeSurfaces
+                sage: translation_surfaces.square_torus() in ConeSurfaces().FiniteType().Oriented()
+                True
+
+            """
+
+            class ParentMethods:
+                r"""
+                Provides methods available to all oriented cone surfaces built
+                from finitely many polygons.
+
+                If you want to add functionality for such surfaces you most
+                likely want to put it here.
+                """
+
+                def holonomy_representation(
+                    self, base_label=None, punctured_vertices=True
+                ):
+                    r"""
+                    Return the holonomy representation of this surface.
+
+                    It sends a closed walk crossing the edges from polygon to
+                    polygon to the isometry obtained by developing the
+                    polygons along the walk, see
+                    :mod:`~flatsurf.geometry.holonomy`.
+
+                    INPUT:
+
+                    - ``base_label`` -- a polygon label or ``None`` (default:
+                      ``None``); the polygon at which the walks start and
+                      end, the root of the surface if ``None``
+
+                    - ``punctured_vertices`` -- a boolean or a list of
+                      vertices of this surface (default: ``True``); the
+                      vertices at which the surface is punctured, ``True``
+                      standing for all of them. Every other interior vertex
+                      must have an angle that is an integer multiple of `2\pi`
+
+                    OUTPUT:
+
+                    A :class:`~flatsurf.geometry.holonomy.HolonomyRepresentation`
+                    from
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods.fundamental_group`
+                    to the group of the ``edge_transformation`` of this
+                    surface: similarities for a flat surface, isometries of
+                    the hyperbolic plane for a hyperbolic one.
+
+                    EXAMPLES:
+
+                    On a translation surface, the holonomy consists of
+                    translations::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.square_torus()
+                        sage: phi = S.holonomy_representation()
+                        sage: [phi(g) for g in phi.domain().gens()]
+                        [(x, y) |-> (x, y - 1), (x, y) |-> (x + 1, y)]
+
+                    The vertex of the torus is regular, so it can be filled::
+
+                        sage: S.holonomy_representation(punctured_vertices=False)
+                        Holonomy morphism:
+                          From: Fundamental group of Translation Surface in H_1(0) built from a square based at polygon 0
+                          To:   Similarity group over Rational Field
+
+                    On a hyperbolic surface, the holonomy is a group of
+                    isometries of the hyperbolic plane::
+
+                        sage: from flatsurf import HyperbolicPlane
+                        sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                        sage: H = HyperbolicPlane(QQ)
+                        sage: S = MutableOrientedHyperbolicSurface(QQ)
+                        sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                        0
+                        sage: S.glue((0, 0), (0, 3))
+                        sage: S.glue((0, 1), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.holonomy_representation().image()
+                        Matrix group over Rational Field with 2 generators (
+                        [ 0  1  0]  [   0 -5/3  4/3]
+                        [-1  0  0]  [   1    0    0]
+                        [ 0  0  1], [   0 -4/3  5/3]
+                        )
+
+                    A vertex whose angle is not an integer multiple of `2\pi`
+                    cannot be filled::
+
+                        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        0
+                        sage: S.glue((0, 0), (0, 1))
+                        sage: S.glue((0, 2), (0, 3))
+                        sage: S.set_immutable()
+                        sage: S.holonomy_representation(punctured_vertices=False)
+                        Traceback (most recent call last):
+                        ...
+                        ValueError: cannot fill the vertex Vertex 0 of polygon 0 whose angle 1/2 is not an integer multiple of 2π
+
+                    """
+                    from flatsurf.geometry.holonomy import holonomy_representation
+
+                    return holonomy_representation(
+                        self,
+                        base_label=base_label,
+                        punctured_vertices=punctured_vertices,
+                    )
+
 
 class FlatConeSurfaces(SurfaceCategory):
     r"""
