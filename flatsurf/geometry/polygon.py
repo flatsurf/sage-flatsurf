@@ -601,11 +601,9 @@ class EuclideanPolygon(Parent):
             return self.translate(translation).vertices(marked_vertices=marked_vertices)
 
         if not marked_vertices:
-            return tuple(
-                vertex
-                for (vertex, slope) in zip(self._v, self.slopes(relative=True))
-                if slope[1] != 0
-            )
+            from flatsurf.geometry.euclidean import polygon_corners
+
+            return polygon_corners(self._v)
 
         return self._v
 

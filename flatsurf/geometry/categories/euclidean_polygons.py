@@ -261,21 +261,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            n = len(self.vertices())
-            for i in range(n):
-                ei = (self.vertex(i), self.vertex(i + 1))
-                for j in range(i + 2, n + 1):
-                    if (i - j) % n in [-1, 0, 1]:
-                        continue
+            from flatsurf.geometry.euclidean import is_simple_polygon
 
-                    ej = (self.vertex(j), self.vertex(j + 1))
-
-                    from flatsurf.geometry.euclidean import is_segment_intersecting
-
-                    if is_segment_intersecting(ei, ej):
-                        return False
-
-            return True
+            return is_simple_polygon(self.vertices())
 
         @abstract_method
         def vertices(self, marked_vertices=True):
@@ -388,18 +376,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            from flatsurf.geometry.euclidean import ccw
+            from flatsurf.geometry.euclidean import is_convex_polygon
 
-            for i in range(len(self.vertices())):
-                consecutive_ccw = ccw(self.edge(i), self.edge(i + 1))
-                if strict:
-                    if consecutive_ccw <= 0:
-                        return False
-                else:
-                    if consecutive_ccw < 0:
-                        return False
-
-            return True
+            return is_convex_polygon(self.vertices(), strict=strict)
 
         def _test_marked_vertices(self, **options):
             r"""
@@ -891,35 +870,9 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 return self.get_point_position(point - vector(translation))
 
-            from flatsurf.geometry.euclidean import ccw
-            from flatsurf.geometry.polygon import PolygonPosition
+            from flatsurf.geometry.euclidean import polygon_point_position
 
-            # Determine whether the point is a vertex of the polygon.
-            for i, v in enumerate(self.vertices()):
-                if point == v:
-                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
-
-            # Determine whether the point is on an edge of the polygon.
-            for i, (v, e) in enumerate(zip(self.vertices(), self.edges())):
-                if ccw(e, point - v) == 0:
-                    # The point lies on the line through this edge.
-                    if 0 < e.dot_product(point - v) < e.dot_product(e):
-                        return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
-
-            # Determine whether the point is inside or outside by computing the
-            # winding number of the polygon.
-            winding_number = 0
-
-            for v, w in zip(self.vertices(), self.vertices()[1:] + self.vertices()[:1]):
-                if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point - v) > 0:
-                    winding_number += 1
-                if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point - v) < 0:
-                    winding_number -= 1
-
-            if winding_number % 2:
-                return PolygonPosition(PolygonPosition.INTERIOR)
-
-            return PolygonPosition(PolygonPosition.OUTSIDE)
+            return polygon_point_position(self.vertices(), point)
 
         def join(self, other, edge, other_edge):
             r"""

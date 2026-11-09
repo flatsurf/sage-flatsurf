@@ -953,8 +953,8 @@ class PolygonalSurfaces(SurfaceCategory):
             label, coordinates = self.representative()
             return (
                 self.parent()
-                .polygon(label)(coordinates)
-                .position()
+                .polygon(label)
+                .get_point_position(coordinates)
                 .is_in_edge_interior()
             )
 
@@ -987,7 +987,12 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             label, coordinates = self.representative()
-            return self.parent().polygon(label)(coordinates).position().is_in_interior()
+            return (
+                self.parent()
+                .polygon(label)
+                .get_point_position(coordinates)
+                .is_in_interior()
+            )
 
         def edges(self):
             r"""

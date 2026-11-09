@@ -846,3 +846,355 @@ def ray_segment_intersection(p, direction, segment):
         return None
 
     return intersection
+
+
+def is_convex_polygon(vertices, strict=False):
+    r"""
+    Return whether the polygon with the given ``vertices`` is convex.
+
+    INPUT:
+
+    - ``vertices`` -- a sequence of vectors in the plane, the vertices of a
+      polygon in counterclockwise order
+
+    - ``strict`` -- a boolean (default: ``False``); whether to check for strict
+      convexity, i.e., a polygon with a π angle is not considered convex.
+
+    OUTPUT:
+
+    A boolean.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import is_convex_polygon
+        sage: V = QQ**2
+        sage: square = [V((0, 0)), V((1, 0)), V((1, 1)), V((0, 1))]
+        sage: is_convex_polygon(square)
+        True
+        sage: marked = [V((0, 0)), V((1/2, 0)), V((1, 0)), V((1, 1)), V((0, 1))]
+        sage: is_convex_polygon(marked)
+        True
+        sage: is_convex_polygon(marked, strict=True)
+        False
+
+    Over a number field::
+
+        sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: V = K**2
+        sage: P = [V((0, 0)), V((sqrt2, 0)), V((sqrt2, 1)), V((sqrt2/2, 1/2)), V((0, 1))]
+        sage: is_convex_polygon(P)
+        False
+
+    """
+    vertices = tuple(vertices)
+    n = len(vertices)
+
+    for i in range(n):
+        consecutive_ccw = ccw(
+            vertices[(i + 1) % n] - vertices[i],
+            vertices[(i + 2) % n] - vertices[(i + 1) % n],
+        )
+        if strict:
+            if consecutive_ccw <= 0:
+                return False
+        else:
+            if consecutive_ccw < 0:
+                return False
+
+    return True
+
+
+def is_simple_polygon(vertices):
+    r"""
+    Return whether the polygon with the given ``vertices`` is simple, i.e.,
+    without self-intersection.
+
+    INPUT:
+
+    - ``vertices`` -- a sequence of vectors in the plane, the vertices of a
+      polygon in counterclockwise order
+
+    OUTPUT:
+
+    A boolean.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import is_simple_polygon
+        sage: V = QQ**2
+        sage: is_simple_polygon([V((0, 0)), V((1, 0)), V((1, 1)), V((0, 1))])
+        True
+        sage: is_simple_polygon([V((0, 0)), V((1, 1)), V((1, 0)), V((0, 1))])
+        False
+
+    Over a number field::
+
+        sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: V = K**2
+        sage: P = [V((0, 0)), V((sqrt2, 0)), V((sqrt2, 1)), V((sqrt2/2, 1/2)), V((0, 1))]
+        sage: is_simple_polygon(P)
+        True
+
+    """
+    vertices = tuple(vertices)
+    n = len(vertices)
+
+    for i in range(n):
+        ei = (vertices[i % n], vertices[(i + 1) % n])
+        for j in range(i + 2, n + 1):
+            if (i - j) % n in [-1, 0, 1]:
+                continue
+
+            ej = (vertices[j % n], vertices[(j + 1) % n])
+
+            if is_segment_intersecting(ei, ej):
+                return False
+
+    return True
+
+
+def polygon_point_position(vertices, point):
+    r"""
+    Return the combinatorial classification of ``point`` with respect to the
+    polygon with the given ``vertices``.
+
+    INPUT:
+
+    - ``vertices`` -- a sequence of vectors in the plane, the vertices of a
+      polygon in counterclockwise order
+
+    - ``point`` -- a point in the plane as a SageMath vector or pair of
+      numbers
+
+    OUTPUT:
+
+    A :class:`flatsurf.geometry.polygon.PolygonPosition` object.
+
+    ALGORITHM:
+
+    We use a winding number algorithm, see
+    https://en.wikipedia.org/wiki/Point_in_polygon#Winding_number_algorithm
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import polygon_point_position
+        sage: V = QQ**2
+        sage: square = [V((0, 0)), V((1, 0)), V((1, 1)), V((0, 1))]
+        sage: polygon_point_position(square, (1/2, 1/2))
+        point positioned in interior of polygon
+        sage: polygon_point_position(square, (1, 0))
+        point positioned on vertex 1 of polygon
+        sage: polygon_point_position(square, (1, 1/2))
+        point positioned on interior of edge 1 of polygon
+        sage: polygon_point_position(square, (1, 3/2))
+        point positioned outside polygon
+
+    Over a number field::
+
+        sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: V = K**2
+        sage: P = [V((0, 0)), V((sqrt2, 0)), V((sqrt2, 1)), V((sqrt2/2, 1/2)), V((0, 1))]
+        sage: polygon_point_position(P, (sqrt2/2, 1/4))
+        point positioned in interior of polygon
+        sage: polygon_point_position(P, (sqrt2/2, 1/2))
+        point positioned on vertex 3 of polygon
+        sage: polygon_point_position(P, (sqrt2/2, 3/4))
+        point positioned outside polygon
+
+    """
+    from sage.all import vector
+
+    from flatsurf.geometry.polygon import PolygonPosition
+
+    point = vector(point)
+    vertices = tuple(vertices)
+    n = len(vertices)
+    edges = tuple(vertices[(i + 1) % n] - vertices[i] for i in range(n))
+
+    # Determine whether the point is a vertex of the polygon.
+    for i, v in enumerate(vertices):
+        if point == v:
+            return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
+
+    # Determine whether the point is on an edge of the polygon.
+    for i, (v, e) in enumerate(zip(vertices, edges)):
+        if ccw(e, point - v) == 0:
+            # The point lies on the line through this edge.
+            if 0 < e.dot_product(point - v) < e.dot_product(e):
+                return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+
+    # Determine whether the point is inside or outside by computing the
+    # winding number of the polygon.
+    winding_number = 0
+
+    for v, w in zip(vertices, vertices[1:] + vertices[:1]):
+        if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point - v) > 0:
+            winding_number += 1
+        if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point - v) < 0:
+            winding_number -= 1
+
+    if winding_number % 2:
+        return PolygonPosition(PolygonPosition.INTERIOR)
+
+    return PolygonPosition(PolygonPosition.OUTSIDE)
+
+
+def polygon_corners(vertices):
+    r"""
+    Return the vertices of the polygon with the given ``vertices`` that are
+    not marked, i.e., those where the boundary does not continue straight.
+
+    INPUT:
+
+    - ``vertices`` -- a sequence of vectors in the plane, the vertices of a
+      polygon in counterclockwise order
+
+    OUTPUT:
+
+    A tuple of vectors.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import polygon_corners
+        sage: V = QQ**2
+        sage: polygon_corners([V((0, 0)), V((1/2, 0)), V((1, 0)), V((1, 1)), V((0, 1))])
+        ((0, 0), (1, 0), (1, 1), (0, 1))
+
+    Over a number field::
+
+        sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: V = K**2
+        sage: polygon_corners([V((0, 0)), V((sqrt2/2, 0)), V((sqrt2, 0)), V((sqrt2, 1)), V((0, 1))])
+        ((0, 0), (sqrt2, 0), (sqrt2, 1), (0, 1))
+
+    """
+    vertices = tuple(vertices)
+    n = len(vertices)
+
+    return tuple(
+        vertices[i]
+        for i in range(n)
+        if ccw(vertices[i] - vertices[i - 1], vertices[(i + 1) % n] - vertices[i]) != 0
+    )
+
+
+def convex_hull(*points, marked_vertices=False):
+    r"""
+    Return the vertices of the convex hull of ``points``.
+
+    INPUT:
+
+    - ``points`` -- pairs of numbers or vectors in the plane
+
+    - ``marked_vertices`` -- a boolean (default: ``False``); whether to also
+      return the points that lie on the boundary of the hull between two of
+      its vertices
+
+    OUTPUT:
+
+    A tuple of immutable vectors over the common parent of the coordinates,
+    the vertices of the hull in counterclockwise order, starting from the
+    lexicographically smallest one. Equal points count once. A single point
+    gives a 1-tuple; points on a line give the two extreme points (or all the
+    points in order if ``marked_vertices`` is set.)
+
+    ALGORITHM:
+
+    Andrew's monotone chain. It only compares coordinates and tests the
+    orientation of triples of points with :func:`ccw`, so it is exact over any
+    ordered exact field.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import convex_hull
+        sage: points = [(0, 0), (1, 0), (1, 1), (0, 1), (1/2, 1/2), (1/2, 0), (2, 1/2)]
+        sage: convex_hull(*points)
+        ((0, 0), (1, 0), (2, 1/2), (1, 1), (0, 1))
+        sage: convex_hull(*points, marked_vertices=True)
+        ((0, 0), (1/2, 0), (1, 0), (2, 1/2), (1, 1), (0, 1))
+
+    The hull is computed exactly over a number field::
+
+        sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: points = [(0, 0), (sqrt2, 0), (sqrt2, 1), (0, 1), (sqrt2/2, 0), (sqrt2/2, 1/2), (sqrt2 + 1/3, 1/2), (sqrt2 - 1, 1)]
+        sage: convex_hull(*points)
+        ((0, 0), (sqrt2, 0), (sqrt2 + 1/3, 1/2), (sqrt2, 1), (0, 1))
+        sage: convex_hull(*points, marked_vertices=True)
+        ((0, 0),
+         (1/2*sqrt2, 0),
+         (sqrt2, 0),
+         (sqrt2 + 1/3, 1/2),
+         (sqrt2, 1),
+         (sqrt2 - 1, 1),
+         (0, 1))
+        sage: convex_hull((0, 0), (sqrt2, 0), (0, 1))[1].base_ring()
+        Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
+
+    The vertices are immutable::
+
+        sage: convex_hull((0, 0), (1, 0), (0, 1))[0].is_immutable()
+        True
+
+    Equal points count once::
+
+        sage: convex_hull((0, 0), (0, 0), (1, 0), (1, 0), (0, 1))
+        ((0, 0), (1, 0), (0, 1))
+
+    Degenerate hulls::
+
+        sage: convex_hull((1, 2))
+        ((1, 2),)
+        sage: convex_hull((0, 0), (1, 1), (2, 2), (1, 1))
+        ((0, 0), (2, 2))
+        sage: convex_hull((0, 0), (1, 1), (2, 2), (1, 1), marked_vertices=True)
+        ((0, 0), (1, 1), (2, 2))
+
+    The hull of dimension two is the vertex set of a polygon::
+
+        sage: from flatsurf import Polygon
+        sage: Polygon(vertices=convex_hull(*points))
+        Polygon(vertices=[(0, 0), (sqrt2, 0), (sqrt2 + 1/3, 1/2), (sqrt2, 1), (0, 1)])
+
+    """
+    from sage.all import QQ, ZZ, vector
+    from sage.structure.sequence import Sequence
+
+    if not points:
+        raise ValueError("convex hull of no points is not defined")
+
+    R = Sequence([c for p in points for c in p]).universe()
+    if R is ZZ:
+        R = QQ
+
+    # Sorting compares lexicographically, i.e., through < and == on elements
+    # of R.
+    points = sorted({tuple(R(c) for c in p) for p in points})
+    points = [vector(R, p) for p in points]
+
+    def chain(points):
+        # Keep the points that turn left; collinear points are dropped unless
+        # they are to be marked.
+        chain = []
+        for p in points:
+            while len(chain) >= 2:
+                turn = ccw(chain[-1] - chain[-2], p - chain[-1])
+                if turn < 0 or (turn == 0 and not marked_vertices):
+                    chain.pop()
+                else:
+                    break
+            chain.append(p)
+        return chain
+
+    if len(points) == 1:
+        hull = points
+    elif all(ccw(points[1] - points[0], p - points[0]) == 0 for p in points):
+        hull = points if marked_vertices else [points[0], points[-1]]
+    else:
+        lower = chain(points)
+        upper = chain(points[::-1])
+        hull = lower[:-1] + upper[:-1]
+
+    for v in hull:
+        v.set_immutable()
+
+    return tuple(hull)

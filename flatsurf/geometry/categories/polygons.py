@@ -104,6 +104,22 @@ class Polygons(Category_over_base_ring):
             sage: Polygons._describe_polygon(64, equiangular=False, equilateral=False)
             ('a', '64-gon', '64-gons')
 
+        The Euclidean names of quadrilaterals can be disabled::
+
+            sage: Polygons._describe_polygon(4, equilateral=True, equiangular=True, euclidean=False)
+            ('a', 'regular quadrilateral', 'regular quadrilaterals')
+            sage: Polygons._describe_polygon(4, equiangular=True, euclidean=False)
+            ('an', 'equiangular quadrilateral', 'equiangular quadrilaterals')
+            sage: Polygons._describe_polygon(4, equilateral=True, euclidean=False)
+            ('an', 'equilateral quadrilateral', 'equilateral quadrilaterals')
+
+        Polygons with only right angles::
+
+            sage: Polygons._describe_polygon(6, right_angled=True, euclidean=False)
+            ('a', 'right-angled hexagon', 'right-angled hexagons')
+            sage: Polygons._describe_polygon(6, right_angled=True, equilateral=True, equiangular=True, euclidean=False)
+            ('a', 'regular right-angled hexagon', 'regular right-angled hexagons')
+
         """
         from sage.all import infinity
 
@@ -177,14 +193,27 @@ class Polygons(Category_over_base_ring):
             return description
 
         if num_edges == 4:
-            if kwargs.get("equilateral", False) and kwargs.get("equiangular", False):
-                return "a", "square", "squares"
+            if kwargs.get("euclidean", True):
+                if kwargs.get("equilateral", False) and kwargs.get(
+                    "equiangular", False
+                ):
+                    return "a", "square", "squares"
 
-            if kwargs.get("equiangular", False):
-                return "a", "rectangle", "rectangles"
+                if kwargs.get("equiangular", False):
+                    return "a", "rectangle", "rectangles"
 
-            if kwargs.get("equilateral", False):
-                return "a", "rhombus", "rhombi"
+                if kwargs.get("equilateral", False):
+                    return "a", "rhombus", "rhombi"
+            elif not (
+                kwargs.get("equilateral", False) and kwargs.get("equiangular", False)
+            ):
+                if augment_if("an", "equiangular"):
+                    return description
+
+                if augment_if("an", "equilateral"):
+                    return description
+
+        augment_if("a", "right-angled", "right_angled")
 
         augment_if("a", "regular", "equilateral", "equiangular")
 
