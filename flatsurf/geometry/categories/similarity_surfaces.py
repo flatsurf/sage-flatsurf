@@ -1059,7 +1059,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     start_edge = label, position.get_edge()
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                    start_holonomy = S.polygon(start_edge[0]).edge_vector(start_edge[1])
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
@@ -1113,14 +1113,14 @@ class SimilaritySurfaces(SurfaceCategory):
                             break
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                    start_holonomy = S.polygon(start_edge[0]).edge_vector(start_edge[1])
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
                 similarity = similarity_from_vectors(
-                    S.polygon(start_edge[0]).edge(start_edge[1]), start_holonomy
+                    S.polygon(start_edge[0]).edge_vector(start_edge[1]), start_holonomy
                 )
 
                 edges = [(start_edge, start_holonomy)]
@@ -1131,7 +1131,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         (edges[-1][0][1] - 1)
                         % len(S.polygon(edges[-1][0][0]).vertices()),
                     )
-                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge(
+                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge_vector(
                         exit_edge[1]
                     )
                     edges.append((exit_edge, exit_holonomy))
@@ -1149,7 +1149,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     if enter_edge == start_edge:
                         break
 
-                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge(
+                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge_vector(
                         enter_edge[1]
                     )
                     edges.append((enter_edge, enter_holonomy))
@@ -1190,7 +1190,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     else:
                         point = self(  # pylint: disable=not-callable
-                            label, polygon.vertex(0) + polygon.edge(0) / 2
+                            label, polygon.vertex(0) + polygon.edge_vector(0) / 2
                         )
 
                     yield point
@@ -1395,9 +1395,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     )
                     p, e = p
 
-                u = self.polygon(p).edge(e)
+                u = self.polygon(p).edge_vector(e)
                 pp, ee = self.opposite_edge(p, e)
-                v = self.polygon(pp).edge(ee)
+                v = self.polygon(pp).edge_vector(ee)
 
                 # note the orientation, it is -v and not v
                 from flatsurf.geometry.similarity import similarity_from_vectors
@@ -1735,7 +1735,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     coordinates_AA = []
                     for label, p in zip(self.labels(), self.polygons()):
-                        for e in p.edges():
+                        for e in p.edge_vectors():
                             coordinates_AA.append(AA(e[0]))
                             coordinates_AA.append(AA(e[1]))
                     from sage.rings.qqbar import number_field_elements_from_algebraics
@@ -2186,13 +2186,13 @@ class SimilaritySurfaces(SurfaceCategory):
                 dt = t.derivative()
                 es = []
                 for i in range(e1):
-                    es.append(poly1.edge(i))
+                    es.append(poly1.edge_vector(i))
                 ne = len(poly2.vertices())
                 for i in range(1, ne):
                     ee = (e2 + i) % ne
-                    es.append(dt * poly2.edge(ee))
+                    es.append(dt * poly2.edge_vector(ee))
                 for i in range(e1 + 1, len(poly1.vertices())):
-                    es.append(poly1.edge(i))
+                    es.append(poly1.edge_vector(i))
 
                 try:
                     from flatsurf import Polygon
@@ -2608,8 +2608,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     raise ValueError("Edge must be adjacent to two triangles.")
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
-                sim1 = similarity_from_vectors(poly1.edge(e1 + 2), -poly1.edge(e1 + 1))
-                sim2 = similarity_from_vectors(poly2.edge(e2 + 2), -poly2.edge(e2 + 1))
+                sim1 = similarity_from_vectors(
+                    poly1.edge_vector(e1 + 2), -poly1.edge_vector(e1 + 1)
+                )
+                sim2 = similarity_from_vectors(
+                    poly2.edge_vector(e2 + 2), -poly2.edge_vector(e2 + 1)
+                )
                 sim = sim1 * sim2
                 return sim[1][0] < 0
 
@@ -2625,10 +2629,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
                 sim1 = similarity_from_vectors(
-                    poly1.vertex(e1) - poly1.vertex(e1 + 2), -poly1.edge(e1 + 1)
+                    poly1.vertex(e1) - poly1.vertex(e1 + 2), -poly1.edge_vector(e1 + 1)
                 )
                 sim2 = similarity_from_vectors(
-                    poly2.vertex(e2) - poly2.vertex(e2 + 2), -poly2.edge(e2 + 1)
+                    poly2.vertex(e2) - poly2.vertex(e2 + 2), -poly2.edge_vector(e2 + 1)
                 )
                 sim = sim1 * sim2
 
@@ -3215,7 +3219,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 last_sim = SG(-v[0], -v[1])
 
                 # First check the edge eminating rightward from the start_vertex.
-                e = p.edge(initial_vertex)
+                e = p.edge_vector(initial_vertex)
                 if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
                     from flatsurf.geometry.surface_objects import SaddleConnection
 

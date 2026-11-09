@@ -98,7 +98,7 @@ class SimilaritySurfaceTangentVector:
             self._position = pos
         elif pos.is_in_edge_interior():
             e = pos.get_edge()
-            edge_v = p.edge(e)
+            edge_v = p.edge_vector(e)
 
             if ccw(edge_v, vector) < 0 or is_anti_parallel(edge_v, vector):
                 # Need to move point and vector to opposite edge.
@@ -123,11 +123,11 @@ class SimilaritySurfaceTangentVector:
 
             from flatsurf.geometry.euclidean import is_between
 
-            if is_between(-p.edge(v - 1), p.edge(v), vector):
+            if is_between(-p.edge_vector(v - 1), p.edge_vector(v), vector):
                 raise ValueError(
                     "Singular point with vector pointing away from polygon"
                 )
-            if is_anti_parallel(p.edge(v - 1), vector):
+            if is_anti_parallel(p.edge_vector(v - 1), vector):
                 # vector points backward along previous edge
                 label2, e2 = self.surface().opposite_edge(
                     polygon_label, (v - 1) % len(p.vertices())
@@ -274,7 +274,7 @@ class SimilaritySurfaceTangentVector:
         a vertex and represents the vector joining this edge to the next vertex."""
         if self.is_based_at_singularity():
             e = self.vertex()
-            if self.vector() == self.polygon().edge(e):
+            if self.vector() == self.polygon().edge_vector(e):
                 return (self.polygon_label(), e)
         return None
 
@@ -410,7 +410,7 @@ class SimilaritySurfaceTangentVector:
             v1 = self.vector()
             label = self.polygon_label()
             vertex = self.vertex()
-            v2 = s.polygon(label).edge(vertex)
+            v2 = s.polygon(label).edge_vector(vertex)
             from sage.matrix.constructor import Matrix
 
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
@@ -427,10 +427,10 @@ class SimilaritySurfaceTangentVector:
                     codes.append(vertex)
                 label2, edge2 = s.opposite_edge(label, vertex)
                 der = der * s.edge_matrix(label2, edge2)
-                v1 = der * (-s.polygon(label2).edge(edge2))
+                v1 = der * (-s.polygon(label2).edge_vector(edge2))
                 label = label2
                 vertex = (edge2 + 1) % len(s.polygon(label2).vertices())
-                v2 = der * (s.polygon(label2).edge(vertex))
+                v2 = der * (s.polygon(label2).edge_vector(vertex))
             assert count < rotate_limit, "Reached limit!"
             if code:
                 return (
@@ -492,7 +492,7 @@ class SimilaritySurfaceTangentVector:
             previous_vertex = (vertex - 1 + len(s.polygon(label).vertices())) % len(
                 s.polygon(label).vertices()
             )
-            v2 = -s.polygon(label).edge(previous_vertex)
+            v2 = -s.polygon(label).edge_vector(previous_vertex)
             from sage.matrix.constructor import Matrix
 
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
@@ -512,8 +512,8 @@ class SimilaritySurfaceTangentVector:
                     previous_vertex = (
                         vertex - 1 + len(s.polygon(label).vertices())
                     ) % len(s.polygon(label).vertices())
-                    v1 = der * (s.polygon(label).edge(vertex))
-                    v2 = der * (-s.polygon(label).edge(previous_vertex))
+                    v1 = der * (s.polygon(label).edge_vector(vertex))
+                    v2 = der * (-s.polygon(label).edge_vector(previous_vertex))
                     if ccw(v1, w) >= 0 and ccw(w, v2) > 0:
                         # We've found it!
                         break
@@ -667,7 +667,7 @@ class SimilaritySurfaceTangentBundle:
         """
         polygon = self.surface().polygon(polygon_label)
         point = polygon.vertex(edge_index)
-        vector = polygon.edge(edge_index)
+        vector = polygon.edge_vector(edge_index)
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)
 
     def clockwise_edge(self, polygon_label, edge_index):
@@ -693,5 +693,5 @@ class SimilaritySurfaceTangentBundle:
         """
         polygon = self.surface().polygon(polygon_label)
         point = polygon.vertex(edge_index + 1)
-        vector = -polygon.edge(edge_index)
+        vector = -polygon.edge_vector(edge_index)
         return SimilaritySurfaceTangentVector(self, polygon_label, point, vector)

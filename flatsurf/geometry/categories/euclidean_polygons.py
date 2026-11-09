@@ -233,8 +233,8 @@ class EuclideanPolygons(Category_over_base_ring):
 
             """
             for e in range(len(self.vertices())):
-                u = self.edge(e)
-                v = -self.edge((e - 1) % len(self.vertices()))
+                u = self.edge_vector(e)
+                v = -self.edge_vector((e - 1) % len(self.vertices()))
 
                 cos = u.dot_product(v)
                 sin = u[0] * v[1] - u[1] * v[0]
@@ -314,7 +314,7 @@ class EuclideanPolygons(Category_over_base_ring):
             vertices = self.vertices()
             return vertices[i % len(vertices)]
 
-        def edges(self):
+        def edge_vectors(self):
             r"""
             Return the edges of this polygon as vectors in the plane going from
             one vertex to the next one.
@@ -323,13 +323,13 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 sage: from flatsurf import polygons
                 sage: s = polygons.square()
-                sage: s.edges()
+                sage: s.edge_vectors()
                 [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
             """
-            return [self.edge(i) for i in range(len(self.vertices()))]
+            return [self.edge_vector(i) for i in range(len(self.vertices()))]
 
-        def edge(self, i):
+        def edge_vector(self, i):
             r"""
             Return the vector going from vertex ``i`` to the following vertex
             in counter-clockwise order.
@@ -341,21 +341,108 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 sage: from flatsurf import polygons
                 sage: s = polygons.square()
-                sage: s.edge(-1)
+                sage: s.edge_vector(-1)
                 (0, -1)
-                sage: s.edge(0)
+                sage: s.edge_vector(0)
                 (1, 0)
-                sage: s.edge(1)
+                sage: s.edge_vector(1)
                 (0, 1)
-                sage: s.edge(2)
+                sage: s.edge_vector(2)
                 (-1, 0)
-                sage: s.edge(3)
+                sage: s.edge_vector(3)
                 (0, -1)
-                sage: s.edge(4)
+                sage: s.edge_vector(4)
                 (1, 0)
 
             """
             return self.vertex(i + 1) - self.vertex(i)
+
+        def edge_segments(self):
+            r"""
+            Return the edges of this polygon as oriented segments going from
+            one vertex to the next one.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.edge_segments()
+                [(0, 0) → (1, 0), (1, 0) → (1, 1), (1, 1) → (0, 1), (0, 1) → (0, 0)]
+
+            """
+            return [self.edge_segment(i) for i in range(len(self.vertices()))]
+
+        def edge_segment(self, i):
+            r"""
+            Return the oriented segment going from vertex ``i`` to the
+            following vertex in counter-clockwise order.
+
+            EXAMPLES:
+
+            Note that this wraps around if ``i`` is negative or exceeds the
+            number of vertices::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.edge_segment(-1)
+                (0, 1) → (0, 0)
+                sage: s.edge_segment(0)
+                (0, 0) → (1, 0)
+                sage: s.edge_segment(4)
+                (0, 0) → (1, 0)
+
+            """
+            from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+
+            return EuclideanOrientedSegment(self.vertex(i), self.vertex(i + 1))
+
+        def edges(self):
+            r"""
+            Return the edges of this polygon as vectors; deprecated, use
+            :meth:`edge_vectors` instead.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.edges()
+                doctest:warning
+                ...
+                UserWarning: edges() has been deprecated and will be removed in a future version of sage-flatsurf; use edge_vectors() instead
+                [(1, 0), (0, 1), (-1, 0), (0, -1)]
+
+            """
+            import warnings
+
+            warnings.warn(
+                "edges() has been deprecated and will be removed in a future version of sage-flatsurf; use edge_vectors() instead"
+            )
+
+            return self.edge_vectors()
+
+        def edge(self, i):
+            r"""
+            Return the vector going from vertex ``i`` to the following vertex;
+            deprecated, use :meth:`edge_vector` instead.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.edge(0)
+                doctest:warning
+                ...
+                UserWarning: edge() has been deprecated and will be removed in a future version of sage-flatsurf; use edge_vector() instead
+                (1, 0)
+
+            """
+            import warnings
+
+            warnings.warn(
+                "edge() has been deprecated and will be removed in a future version of sage-flatsurf; use edge_vector() instead"
+            )
+
+            return self.edge_vector(i)
 
         def is_convex(self, strict=False):
             r"""
@@ -463,10 +550,10 @@ class EuclideanPolygons(Category_over_base_ring):
 
             """
             if not relative:
-                return self.edges()
+                return self.edge_vectors()
 
             edges = [
-                (self.edge((e - 1) % len(self.vertices())), self.edge(e))
+                (self.edge_vector((e - 1) % len(self.vertices())), self.edge_vector(e))
                 for e in range(len(self.vertices()))
             ]
 
@@ -573,7 +660,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            return len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edges()}) == 1
+            return (
+                len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edge_vectors()}) == 1
+            )
 
         def is_equiangular(self):
             r"""
@@ -718,8 +807,8 @@ class EuclideanPolygons(Category_over_base_ring):
             from flatsurf.geometry.euclidean import angle
 
             return angle(
-                self.edge(e),
-                -self.edge((e - 1) % len(self.vertices())),
+                self.edge_vector(e),
+                -self.edge_vector((e - 1) % len(self.vertices())),
                 numerical=numerical,
             )
 
@@ -747,7 +836,9 @@ class EuclideanPolygons(Category_over_base_ring):
             # http://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
             total = self.base_ring().zero()
             for i in range(len(self.vertices())):
-                total += (self.vertex(i)[0] + self.vertex(i + 1)[0]) * self.edge(i)[1]
+                total += (self.vertex(i)[0] + self.vertex(i + 1)[0]) * self.edge_vector(
+                    i
+                )[1]
 
             from sage.all import ZZ
 
@@ -1079,7 +1170,7 @@ class EuclideanPolygons(Category_over_base_ring):
             Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: D(vertices=p.vertices())
             Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-            sage: D(edges=p.edges())
+            sage: D(edges=p.edge_vectors())
             Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
         """
         # We cannot have a __call__() in SubcategoryMethods so there is no good
@@ -1783,7 +1874,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
                     sage: D(vertices=p.vertices())
                     Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
-                    sage: D(edges=p.edges())
+                    sage: D(edges=p.edge_vectors())
                     Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
 
                 """
@@ -1890,13 +1981,13 @@ class EuclideanPolygons(Category_over_base_ring):
                     n = len(self.vertices())
                     for i in range(len(self.vertices())):
                         if (
-                            ccw(self.edge(v), direction) >= 0
-                            and ccw(self.edge(v + n - 1), direction) > 0
+                            ccw(self.edge_vector(v), direction) >= 0
+                            and ccw(self.edge_vector(v + n - 1), direction) > 0
                         ):
                             return v, True
                         if (
-                            ccw(self.edge(v), direction) <= 0
-                            and ccw(self.edge(v + n - 1), direction) < 0
+                            ccw(self.edge_vector(v), direction) <= 0
+                            and ccw(self.edge_vector(v + n - 1), direction) < 0
                         ):
                             return v, False
                         v = v + 1 % n
@@ -1965,7 +2056,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     # first compute the transversal length of each edge
                     t = P([direction[1], -direction[0]])
-                    lengths = [t.dot_product(e) for e in self.edges()]
+                    lengths = [t.dot_product(e) for e in self.edge_vectors()]
                     n = len(lengths)
                     for i in range(n):
                         j = (i + 1) % len(lengths)
@@ -2057,7 +2148,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     else:
                         v0 = self.vertex(0) + translation
                     for i in range(len(self.vertices())):
-                        e = self.edge(i)
+                        e = self.edge_vector(i)
                         from sage.all import matrix
 
                         m = matrix([[e[0], -holonomy[0]], [e[1], -holonomy[1]]])
@@ -2235,7 +2326,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     if parts < 1:
                         raise ValueError("parts must be a positive integer")
 
-                    steps = [e / parts for e in self.edges()]
+                    steps = [e / parts for e in self.edge_vectors()]
                     from flatsurf import Polygon
 
                     return Polygon(edges=[e for e in steps for p in range(parts)])
@@ -2435,7 +2526,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: isometric, cert = S.is_isometric(T, certificate=True)
                         sage: assert isometric
                         sage: shift, rot = cert
-                        sage: Polygon(edges=[rot * S.edge((k + shift) % 4) for k in range(4)]).translate(T.vertex(0)) == T
+                        sage: Polygon(edges=[rot * S.edge_vector((k + shift) % 4) for k in range(4)]).translate(T.vertex(0)) == T
                         True
 
 
@@ -2443,7 +2534,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: isometric, cert = S.is_isometric(T, certificate=True)
                         sage: assert isometric
                         sage: shift, rot = cert
-                        sage: Polygon(edges=[rot * S.edge(k + shift) for k in range(4)]).translate(T.vertex(0)) == T
+                        sage: Polygon(edges=[rot * S.edge_vector(k + shift) for k in range(4)]).translate(T.vertex(0)) == T
                         True
                     """
                     from flatsurf.geometry.polygon import EuclideanPolygon
@@ -2457,8 +2548,8 @@ class EuclideanPolygons(Category_over_base_ring):
                     n = len(self.vertices())
                     if len(other.vertices()) != n:
                         return False
-                    sedges = self.edges()
-                    oedges = other.edges()
+                    sedges = self.edge_vectors()
+                    oedges = other.edge_vectors()
 
                     slengths = [x**2 + y**2 for x, y in sedges]
                     olengths = [x**2 + y**2 for x, y in oedges]
@@ -2515,8 +2606,8 @@ class EuclideanPolygons(Category_over_base_ring):
                     n = len(self.vertices())
                     if len(other.vertices()) != n:
                         return False
-                    sedges = self.edges()
-                    oedges = other.edges()
+                    sedges = self.edge_vectors()
+                    oedges = other.edge_vectors()
                     for i in range(n):
                         if sedges == oedges:
                             return (True, (i, 1)) if certificate else True
@@ -2548,7 +2639,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: half_translate, cert = S.is_half_translate(T2, certificate=True)
                         sage: assert half_translate
                         sage: shift, rot = cert
-                        sage: Polygon(edges=[rot * S.edge(k + shift) for k in range(3)]).translate(T2.vertex(0)) == T2
+                        sage: Polygon(edges=[rot * S.edge_vector(k + shift) for k in range(3)]).translate(T2.vertex(0)) == T2
                         True
                         sage: S.is_half_translate(T3, certificate=True)
                         (False, None)
@@ -2560,14 +2651,14 @@ class EuclideanPolygons(Category_over_base_ring):
                     if len(other.vertices()) != n:
                         return False
 
-                    sedges = self.edges()
-                    oedges = other.edges()
+                    sedges = self.edge_vectors()
+                    oedges = other.edge_vectors()
                     for i in range(n):
                         if sedges == oedges:
                             return (True, (i, 1)) if certificate else True
                         oedges.append(oedges.pop(0))
 
-                    assert oedges == other.edges()
+                    assert oedges == other.edge_vectors()
                     oedges = [-e for e in oedges]
                     for i in range(n):
                         if sedges == oedges:

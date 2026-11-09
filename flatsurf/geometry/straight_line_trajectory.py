@@ -172,7 +172,7 @@ class SegmentInPolygon:
             return False
         vv = self.start().vector()
         vertex = self.start().vertex()
-        ww = self.start().polygon().edge(vertex)
+        ww = self.start().polygon().edge_vector(vertex)
         from flatsurf.geometry.euclidean import is_parallel
 
         return is_parallel(vv, ww)
@@ -841,8 +841,8 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         l0 = iet.length_bot(e0)
         l1 = iet.length_top(e1)
 
-        point0 = poly.vertex(e0) + poly.edge(e0) * x0 / l0
-        point1 = poly.vertex(e1) + poly.edge(e1) * (l1 - x1) / l1
+        point0 = poly.vertex(e0) + poly.edge_vector(e0) * x0 / l0
+        point1 = poly.vertex(e1) + poly.edge_vector(e1) * (l1 - x1) / l1
         v0 = self._s.tangent_vector(
             lab, point0, self._vector, ring=self._vector.base_ring()
         )

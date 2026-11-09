@@ -860,7 +860,7 @@ class SimilaritySurfaceGenerators:
             surface.add_polygon(p)
         for p in P:
             surface.add_polygon(
-                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edges())])
+                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edge_vectors())])
             )
         for p1, e1, p2, e2 in internal_edges:
             surface.glue((p1, e1), (p2, e2))
@@ -930,7 +930,7 @@ class SimilaritySurfaceGenerators:
 
         n = len(P.vertices())
         r = matrix(2, [-1, 0, 0, 1])
-        Q = Polygon(edges=[r * v for v in reversed(P.edges())])
+        Q = Polygon(edges=[r * v for v in reversed(P.edge_vectors())])
 
         surface = MutableOrientedSimilaritySurface(P.base_ring())
         surface.add_polygon(P, label=0)
@@ -1801,8 +1801,8 @@ class TranslationSurfaceGenerators:
         if n < 3:
             raise ValueError
         o = ZZ_2 * polygons.regular_ngon(2 * n)
-        p1 = Polygon(edges=[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
-        p2 = Polygon(edges=[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
+        p1 = Polygon(edges=[o.edge_vector((2 * i + n) % (2 * n)) for i in range(n)])
+        p2 = Polygon(edges=[o.edge_vector((2 * i + n + 1) % (2 * n)) for i in range(n)])
         s = MutableOrientedSimilaritySurface(o.base_ring())
         s.add_polygon(o)
         s.add_polygon(p1)

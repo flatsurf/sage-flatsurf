@@ -844,8 +844,8 @@ class PolygonsConstructor:
             sage: P = polygons(angles=[1,1,3,3], lengths=[3,1])
             sage: P.angles()
             (1/8, 1/8, 3/8, 3/8)
-            sage: e0 = P.edge(0); assert e0[0]**2 + e0[1]**2 == 3**2
-            sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
+            sage: e0 = P.edge_vector(0); assert e0[0]**2 + e0[1]**2 == 3**2
+            sage: e1 = P.edge_vector(1); assert e1[0]**2 + e1[1]**2 == 1
 
             sage: polygons(angles=[1, 1, 1, 2])
             Polygon(vertices=[(0, 0), (1/10*c^3 + c^2 - 1/5*c - 3, 0), (1/20*c^3 + 1/2*c^2 - 1/20*c - 3/2, 1/20*c^2 + 1/2*c), (1/2*c^2 - 3/2, 1/2*c)])
@@ -1438,13 +1438,13 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
     if area == 0:
         raise ValueError("polygon has zero area")
 
-    if any(edge == 0 for edge in p.edges()):
+    if any(edge == 0 for edge in p.edge_vectors()):
         raise ValueError("polygon has zero edge")
 
     for i in range(len(p.vertices())):
         from flatsurf.geometry.euclidean import is_anti_parallel
 
-        if is_anti_parallel(p.edge(i), p.edge(i + 1)):
+        if is_anti_parallel(p.edge_vector(i), p.edge_vector(i + 1)):
             raise ValueError("polygon has anti-parallel edges")
 
     from flatsurf.geometry.categories import EuclideanPolygons
@@ -1480,7 +1480,7 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
             raise ValueError("polygon does not have the prescribed angles")
 
     if lengths:
-        for edge, length in zip(p.edges(), lengths):
+        for edge, length in zip(p.edge_vectors(), lengths):
             if edge.norm() != length:
                 raise ValueError("polygon does not have the prescribed lengths")
 

@@ -27,6 +27,8 @@ A loose collection of tools for Euclidean geometry in the plane.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
+from sage.structure.sage_object import SageObject
+
 
 def is_cosine_sine_of_rational(cos, sin, scaled=False):
     r"""
@@ -1209,3 +1211,165 @@ def convex_hull(*points, marked_vertices=False):
         v.set_immutable()
 
     return tuple(hull)
+
+
+class EuclideanOrientedSegment(SageObject):
+    r"""
+    An oriented segment in the Euclidean plane, from ``start`` to ``end``.
+
+    INPUT:
+
+    - ``start`` -- a vector of `K^2`; the point where the segment starts
+
+    - ``end`` -- a vector of `K^2`; the point where the segment ends
+
+    Here, ``start()`` and ``end()`` are vectors. They may become points of a
+    Euclidean plane later, while ``vector()`` keeps its value.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+        sage: s = EuclideanOrientedSegment(vector((0, 0)), vector((1, 0)))
+        sage: s
+        (0, 0) → (1, 0)
+        sage: s.start()
+        (0, 0)
+        sage: s.end()
+        (1, 0)
+        sage: s.vector()
+        (1, 0)
+
+    The endpoints are immutable, a mutable input is copied::
+
+        sage: v = vector((0, 0))
+        sage: s = EuclideanOrientedSegment(v, vector((1, 0)))
+        sage: s.start().is_immutable()
+        True
+        sage: v.is_immutable()
+        False
+
+    """
+
+    def __init__(self, start, end):
+        def immutable(v):
+            if not v.is_immutable():
+                v = v.__copy__()
+                v.set_immutable()
+            return v
+
+        self._start = immutable(start)
+        self._end = immutable(end)
+
+    def start(self):
+        r"""
+        Return the vector where this segment starts.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: EuclideanOrientedSegment(vector((0, 1)), vector((2, 3))).start()
+            (0, 1)
+
+        """
+        return self._start
+
+    def end(self):
+        r"""
+        Return the vector where this segment ends.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: EuclideanOrientedSegment(vector((0, 1)), vector((2, 3))).end()
+            (2, 3)
+
+        """
+        return self._end
+
+    def vector(self):
+        r"""
+        Return the vector going from the start to the end of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: EuclideanOrientedSegment(vector((0, 1)), vector((2, 3))).vector()
+            (2, 2)
+
+        """
+        return self._end - self._start
+
+    def __neg__(self):
+        r"""
+        Return this segment with the opposite orientation.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: -EuclideanOrientedSegment(vector((0, 0)), vector((1, 0)))
+            (1, 0) → (0, 0)
+
+        """
+        return EuclideanOrientedSegment(self._end, self._start)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this segment is equal to ``other``, i.e., has the same
+        start and end.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: s = EuclideanOrientedSegment(vector((0, 0)), vector((1, 0)))
+            sage: s == EuclideanOrientedSegment(vector((0, 0)), vector((1, 0)))
+            True
+            sage: s == -s
+            False
+
+        """
+        if not isinstance(other, EuclideanOrientedSegment):
+            return False
+        return self._start == other._start and self._end == other._end
+
+    def __ne__(self, other):
+        r"""
+        Return whether this segment is different from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: s = EuclideanOrientedSegment(vector((0, 0)), vector((1, 0)))
+            sage: s != -s
+            True
+            sage: s != s
+            False
+
+        """
+        return not (self == other)
+
+    def __hash__(self):
+        r"""
+        Return a hash value of this segment compatible with equality.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: s = EuclideanOrientedSegment(vector((0, 0)), vector((1, 0)))
+            sage: hash(s) == hash(EuclideanOrientedSegment(vector((0, 0)), vector((1, 0))))
+            True
+
+        """
+        return hash((self._start, self._end))
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+            sage: EuclideanOrientedSegment(vector((0, 0)), vector((1, 0)))
+            (0, 0) → (1, 0)
+
+        """
+        return f"{self._start} → {self._end}"

@@ -746,7 +746,7 @@ class Surface(OrientedSimilaritySurface):
         else:
             # Sometimes, this is not implemented because it requires the edge
             # transformation to be known, so we prefer the centroid.
-            coordinates = polygon.edge(0) / 2
+            coordinates = polygon.edge_vector(0) / 2
         return self.point(label, coordinates)
 
     def set_default_graphical_surface(self, graphical_surface):

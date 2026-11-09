@@ -835,9 +835,9 @@ class SaddleConnection(SageObject):
                 from flatsurf.geometry.euclidean import ccw
 
                 if (
-                    ccw(p.edge(end_data[1]), self._direction) >= 0
+                    ccw(p.edge_vector(end_data[1]), self._direction) >= 0
                     and ccw(
-                        p.edge(
+                        p.edge_vector(
                             (len(p.vertices()) + end_data[1] - 1) % len(p.vertices())
                         ),
                         self._direction,
@@ -907,12 +907,12 @@ class SaddleConnection(SageObject):
 
             if traj.segments()[0].is_edge():
                 # Special case (the method below fails if the trajectory is just an edge).
-                self._holonomy = self._surface.polygon(start_data[0]).edge(
+                self._holonomy = self._surface.polygon(start_data[0]).edge_vector(
                     start_data[1]
                 )
-                self._end_holonomy = self._surface.polygon(self._end_data[0]).edge(
-                    self._end_data[1]
-                )
+                self._end_holonomy = self._surface.polygon(
+                    self._end_data[0]
+                ).edge_vector(self._end_data[1])
             else:
                 from .similarity import SimilarityGroup
 
@@ -1203,7 +1203,7 @@ class SaddleConnection(SageObject):
             sage: from flatsurf import *
             sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: H = S.homology()
-            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x._chain).items())
+            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge_vector(e) for (label, e), coeff in dict(x._chain).items())
             sage: for sc in S.saddle_connections(5):
             ....:     h = H(sc)
             ....:     hol1 = holonomy(h)

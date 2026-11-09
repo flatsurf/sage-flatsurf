@@ -173,15 +173,15 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         edge_map = {}  # Store the pairs for the old edges.
         for i in range(e1):
             edge_map[len(vs)] = (p1, i)
-            vs.append(poly1.edge(i))
+            vs.append(poly1.edge_vector(i))
         ne = len(poly2.vertices())
         for i in range(1, ne):
             ee = (e2 + i) % ne
             edge_map[len(vs)] = (p2, ee)
-            vs.append(dt * poly2.edge(ee))
+            vs.append(dt * poly2.edge_vector(ee))
         for i in range(e1 + 1, len(poly1.vertices())):
             edge_map[len(vs)] = (p1, i)
-            vs.append(poly1.edge(i))
+            vs.append(poly1.edge_vector(i))
 
         inv_edge_map = {}
         for key, value in edge_map.items():
@@ -257,7 +257,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         if tangent_vector.polygon_label() == self._saved_label:
             p = tangent_vector.point()
             v = self._domain.polygon(self._saved_label).vertex(self._glued_edge)
-            e = self._domain.polygon(self._saved_label).edge(self._glued_edge)
+            e = self._domain.polygon(self._saved_label).edge_vector(self._glued_edge)
             from flatsurf.geometry.euclidean import ccw
 
             wp = ccw(p - v, e)
@@ -346,7 +346,7 @@ class SplitPolygonsMapping(SurfaceMapping):
 
         newedges1 = [poly.vertex(v2) - poly.vertex(v1)]
         for i in range(v2, v1 + ne):
-            newedges1.append(poly.edge(i))
+            newedges1.append(poly.edge_vector(i))
 
         from flatsurf import Polygon
 
@@ -354,7 +354,7 @@ class SplitPolygonsMapping(SurfaceMapping):
 
         newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
         for i in range(v1, v2):
-            newedges2.append(poly.edge(i))
+            newedges2.append(poly.edge_vector(i))
         newpoly2 = Polygon(edges=newedges2, base_ring=s.base_ring())
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -494,8 +494,8 @@ def subdivide_a_polygon(s):
         n = len(poly.vertices())
         if n > 3:
             for i in range(n):
-                e1 = poly.edge(i)
-                e2 = poly.edge((i + 1) % n)
+                e1 = poly.edge_vector(i)
+                e2 = poly.edge_vector((i + 1) % n)
                 if ccw(e1, e2) != 0:
                     return SplitPolygonsMapping(s, label, i, (i + 2) % n)
             raise ValueError(
@@ -616,7 +616,9 @@ def delaunay_decomposition_mapping(s):
                 continue
             if s1._delaunay_edge_needs_join(p, e):
                 joins.add((p, e))
-                edge_vectors.append(s1.tangent_vector(p, poly.vertex(e), poly.edge(e)))
+                edge_vectors.append(
+                    s1.tangent_vector(p, poly.vertex(e), poly.edge_vector(e))
+                )
 
     if len(edge_vectors) > 0:
         ev = edge_vectors.pop()
@@ -680,7 +682,9 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
             cv[label] = cvcur = canonical_first_vertex(polygon)
             newedges = []
             for i in range(len(polygon.vertices())):
-                newedges.append(polygon.edge((i + cvcur) % len(polygon.vertices())))
+                newedges.append(
+                    polygon.edge_vector((i + cvcur) % len(polygon.vertices()))
+                )
 
             from flatsurf import Polygon
 
@@ -821,7 +825,7 @@ def polygon_compare(poly1, poly2):
         return res
     ne = len(poly1.vertices())
     for i in range(0, ne - 1):
-        edge_diff = poly1.edge(i) - poly2.edge(i)
+        edge_diff = poly1.edge_vector(i) - poly2.edge_vector(i)
         res = my_sgn(edge_diff[0])
         if res != 0:
             return res

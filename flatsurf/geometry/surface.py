@@ -1632,7 +1632,8 @@ class MutableOrientedSimilaritySurface(
         from flatsurf import Polygon
 
         pp = Polygon(
-            edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring()
+            edges=[p.edge_vector((i + v) % n) for i in range(n)],
+            base_ring=us.base_ring(),
         )
 
         for i in range(n):
@@ -1721,15 +1722,15 @@ class MutableOrientedSimilaritySurface(
         edge_map = {}  # Store the pairs for the old edges.
         for i in range(e1):
             edge_map[len(es)] = (p1, i)
-            es.append(poly1.edge(i))
+            es.append(poly1.edge_vector(i))
         ne = len(poly2.vertices())
         for i in range(1, ne):
             ee = (e2 + i) % ne
             edge_map[len(es)] = (p2, ee)
-            es.append(dt * poly2.edge(ee))
+            es.append(dt * poly2.edge_vector(ee))
         for i in range(e1 + 1, len(poly1.vertices())):
             edge_map[len(es)] = (p1, i)
-            es.append(poly1.edge(i))
+            es.append(poly1.edge_vector(i))
 
         from flatsurf import Polygon
 
@@ -1787,7 +1788,7 @@ class MutableOrientedSimilaritySurface(
 
         newedges1 = [poly.vertex(v2) - poly.vertex(v1)]
         for i in range(v2, v1 + ne):
-            newedges1.append(poly.edge(i))
+            newedges1.append(poly.edge_vector(i))
 
         from flatsurf import Polygon
 
@@ -1795,7 +1796,7 @@ class MutableOrientedSimilaritySurface(
 
         newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
         for i in range(v1, v2):
-            newedges2.append(poly.edge(i))
+            newedges2.append(poly.edge_vector(i))
         newpoly2 = Polygon(edges=newedges2, base_ring=self.base_ring())
 
         # Store the old gluings
@@ -1907,7 +1908,7 @@ class MutableOrientedSimilaritySurface(
 
             sage: from collections import defaultdict
             sage: d = defaultdict(list)
-            sage: for i, e in enumerate(p.edges()):
+            sage: for i, e in enumerate(p.edge_vectors()):
             ....:     e.set_immutable()
             ....:     d[e].append(i)
 

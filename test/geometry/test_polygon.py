@@ -68,3 +68,51 @@ def test_get_point_position(n):
         q_position = P.get_point_position(q)
 
         assert str(p_position) == str(q_position)
+
+
+def _edge_polygons():
+    from flatsurf import Polygon, polygons
+
+    return [
+        polygons.square(),
+        Polygon(vertices=[(0, 0), (2, 0), (1, 1), (0, 2)]),
+    ]
+
+
+@pytest.mark.parametrize("P", _edge_polygons())
+def test_edge_segment(P):
+    n = len(P.vertices())
+
+    for i in [-1] + list(range(n)):
+        segment = P.edge_segment(i)
+        assert segment.vector() == P.edge_vector(i)
+        assert segment.start() == P.vertex(i)
+        assert segment.end() == P.vertex(i + 1)
+
+        reverse = -segment
+        assert reverse.start() == P.vertex(i + 1)
+        assert reverse.end() == P.vertex(i)
+
+    assert P.edge_segments() == [P.edge_segment(i) for i in range(n)]
+    assert [s.vector() for s in P.edge_segments()] == P.edge_vectors()
+
+
+def test_edge_vectors():
+    from flatsurf import Polygon
+
+    P = Polygon(vertices=[(0, 0), (2, 0), (1, 1), (0, 2)])
+    assert [tuple(v) for v in P.edge_vectors()] == [
+        (2, 0),
+        (-1, 1),
+        (-1, 1),
+        (0, -2),
+    ]
+
+
+@pytest.mark.parametrize("P", _edge_polygons())
+def test_edge_deprecated(P):
+    with pytest.warns(UserWarning, match="edge_vector"):
+        assert P.edge(0) == P.edge_vector(0)
+
+    with pytest.warns(UserWarning, match="edge_vector"):
+        assert P.edges() == P.edge_vectors()
