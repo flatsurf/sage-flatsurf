@@ -84,6 +84,8 @@ class Surface_base(Parent):
 
     """
 
+    Element = SurfacePoint
+
     def _refine_category_(self, category):
         r"""
         Refine the category of this surface to a subcategory ``category``.
@@ -1158,8 +1160,6 @@ class OrientedSimilaritySurface(Surface_base):
         True
 
     """
-
-    Element = SurfacePoint
 
     def __init__(self, base, category=None):
         from sage.categories.all import Rings

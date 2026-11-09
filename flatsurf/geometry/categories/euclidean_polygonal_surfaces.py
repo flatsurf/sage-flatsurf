@@ -300,3 +300,60 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                         el = edge_labels[e]
                     plt += gp.plot_edge_label(e, el, **o)
             return plt
+
+    class ElementMethods:
+        r"""
+        Provides methods available to all points of surfaces that are built
+        from polygons in the real plane.
+
+        If you want to add functionality for such points you most likely want
+        to put it here.
+        """
+
+        def graphical_surface_point(self, graphical_surface=None):
+            r"""
+            Return a
+            :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to
+            represent this point graphically.
+
+            EXAMPLES::
+
+                sage: from flatsurf import half_translation_surfaces
+                sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+                sage: p = S.point(0, (1/2, 1/2))
+                sage: G = p.graphical_surface_point()
+
+            """
+            from flatsurf.graphical.surface_point import GraphicalSurfacePoint
+
+            return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
+
+        def plot(self, *args, **kwargs):
+            r"""
+            Return a plot of this point.
+
+            EXAMPLES:
+
+            .. jupyter-execute::
+
+                sage: from flatsurf import half_translation_surfaces
+                sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+                sage: p = S.point(0, (0, 0))
+                sage: p.plot()
+                ...Graphics object consisting of 1 graphics primitive
+
+            .. jupyter-execute::
+
+                sage: p = S.point(0, (0, 25/12))
+                sage: p.plot()
+                ...Graphics object consisting of 1 graphics primitive
+
+            """
+            graphical_surface = None
+            if args:
+                graphical_surface = args[0]
+                args = args[1:]
+
+            return self.graphical_surface_point(
+                graphical_surface=graphical_surface
+            ).plot(*args, **kwargs)

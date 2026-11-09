@@ -660,6 +660,62 @@ class PolygonalSurfaces(SurfaceCategory):
             return zip(self.labels(), self.polygons())
 
         @abstract_method
+        def _polygon_coordinates(self, label, point, ring=None):
+            r"""
+            Return ``point`` in the coordinates of the polygon ``label``.
+
+            The result is an immutable vector of ``ring²`` that the method
+            ``get_point_position`` of that polygon accepts.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``point`` -- coordinates of a point in the plane of that
+              polygon, e.g., a tuple or a vector
+
+            - ``ring`` -- a ring or ``None`` (default: ``None``); the ring
+              of the coordinates, the base ring of this surface if ``None``
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: p = S._polygon_coordinates(0, (1/2, 0))
+                sage: p
+                (1/2, 0)
+                sage: p.is_immutable()
+                True
+
+            """
+
+        def _polygon_point(self, label, coordinates):
+            r"""
+            Return the point with the internal ``coordinates`` in the polygon
+            ``label`` as the public interface of points presents it.
+
+            This is the inverse of :meth:`_polygon_coordinates`. Here, the
+            coordinates are returned unchanged; surfaces of other geometries
+            override this method.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``coordinates`` -- an immutable vector as returned by
+              :meth:`_polygon_coordinates`
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S._polygon_point(0, vector((1/2, 0)))
+                (1/2, 0)
+
+            """
+            return coordinates
+
+        @abstract_method
         def polygon(self, label):
             r"""
             Return the polygon with ``label``.
@@ -1206,6 +1262,27 @@ class PolygonalSurfaces(SurfaceCategory):
                 to put it here.
                 """
 
+                def angles(self, numerical=False):
+                    r"""
+                    Return the total angles at the vertices of this surface as
+                    multiples of 2π.
+
+                    INPUT:
+
+                    - ``numerical`` -- a boolean (default: ``False``); whether
+                      to return floating point approximations of the angles or
+                      their exact values.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.regular_octagon()
+                        sage: S.angles()
+                        [3]
+
+                    """
+                    return [p.angle(numerical=numerical) for p in self.vertices()]
+
                 def euler_characteristic(self):
                     r"""
                     Return the Euler characteristic of this surface.
@@ -1440,6 +1517,83 @@ class PolygonalSurfaces(SurfaceCategory):
             )
 
             return (TopologicalSurfaces().Orientable(),)
+
+        class ElementMethods:
+            r"""
+            Provides methods available to all points of oriented surfaces built
+            from polygons.
+
+            If you want to add functionality for such points, you most likely
+            want to put it here.
+            """
+
+            def angle(self, numerical=False):
+                r"""
+                Return the total angle at this point as a multiple of 2π.
+
+                INPUT:
+
+                - ``numerical`` -- a boolean (default: ``False``); whether to
+                  return a floating point approximation of the angle or its exact
+                  value.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S(0, 0).angle()
+                    1
+                    sage: S(0, (1, 0)).angle()
+                    1/2
+                    sage: S(0, (1, 0)).angle(numerical=True)
+                    0.500000000000000
+
+                TESTS:
+
+                For mutable surfaces, the angles are not cached::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+                    sage: T._refine_category_(S.category())  # make angle() available
+                    sage: T(0, 0).angle()
+                    1
+                    sage: T(0, 0).angle() is T(0, 0).angle()
+                    False
+
+                ::
+
+                    sage: T.glue((0, 0), (0, 2))
+                    sage: T(0, 0).angle()
+                    3/8
+
+                .. SEEALSO::
+
+                    :meth:`turns` for the number of full 2π turns at a point.
+
+                """
+                if self.is_vertex():
+                    return self.parent()._angle_vertex(self, numerical=numerical)
+
+                from sage.all import QQ, RR
+
+                ring = RR if numerical else QQ
+
+                if self.is_in_edge_interior():
+                    label, coordinates = self.representative()
+                    edge = (
+                        self.parent()
+                        .polygon(label)
+                        .get_point_position(coordinates)
+                        .get_edge()
+                    )
+
+                    opposite_edge = self.parent().opposite_edge(label, edge)
+                    if opposite_edge is None or opposite_edge == (label, edge):
+                        # The total angle at a self-glued or unglued edge is π.
+                        return ring(0.5)
+
+                return ring.one()
 
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""

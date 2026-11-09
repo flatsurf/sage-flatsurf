@@ -82,7 +82,7 @@ class SurfacePoint(Element):
 
     INPUT:
 
-    - ``surface`` -- a similarity surface
+    - ``surface`` -- a surface built from polygons
 
     - ``label`` -- a polygon label for the polygon with respect to which the
       ``point`` coordinates can be made sense of
@@ -249,7 +249,12 @@ class SurfacePoint(Element):
             collect_representatives(label, source_edge, -1, limit)
 
             self._representatives = {
-                (label, surface.polygon(label).vertex(vertex))
+                (
+                    label,
+                    surface._polygon_coordinates(
+                        label, surface.polygon(label).vertex(vertex)
+                    ),
+                )
                 for (label, vertex) in self._representatives
             }
         else:
@@ -292,7 +297,7 @@ class SurfacePoint(Element):
             True
 
         """
-        label, coordinates = self.representative()
+        label, coordinates = next(iter(self._representatives))
         position = self.surface().polygon(label).get_point_position(coordinates)
         return position.is_vertex()
 
@@ -319,7 +324,7 @@ class SurfacePoint(Element):
         warnings.warn(
             "one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead"
         )
-        label, coordinates = self.representative()
+        label, coordinates = next(iter(self._representatives))
         vertex = (
             self.surface().polygon(label).get_point_position(coordinates).get_vertex()
         )
@@ -341,7 +346,10 @@ class SurfacePoint(Element):
             frozenset({(1, (0, 0)), (1, (1, 1)), (2, (0, 1)), (2, (1, 0))})
 
         """
-        return self._representatives
+        return frozenset(
+            (label, self.surface()._polygon_point(label, coordinates))
+            for (label, coordinates) in self._representatives
+        )
 
     def representative(self, label=None):
         r"""
@@ -393,9 +401,12 @@ class SurfacePoint(Element):
         if label is None:
             return next(iter(self.representatives()))
 
-        for representative in self.representatives():
-            if representative[0] == label:
-                return representative
+        for representative_label, coordinates in self._representatives:
+            if representative_label == label:
+                return (
+                    representative_label,
+                    self.surface()._polygon_point(label, coordinates),
+                )
 
         raise ValueError(f"point has no representative in polygon {label}")
 
@@ -431,7 +442,7 @@ class SurfacePoint(Element):
                 .get_point_position(coordinates)
                 .get_vertex(),
             )
-            for label, coordinates in self.representatives()
+            for label, coordinates in self._representatives
         ]
 
     def contains_vertex(self, label, v=None):
@@ -542,60 +553,15 @@ class SurfacePoint(Element):
 
         """
         return tuple(
-            coordinates for (l, coordinates) in self._representatives if l == label
-        )
-
-    def graphical_surface_point(self, graphical_surface=None):
-        r"""
-        Return a
-        :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to
-        represent this point graphically.
-
-        EXAMPLES::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: p = S.point(0, (1/2, 1/2))
-            sage: G = p.graphical_surface_point()
-
-        """
-        from flatsurf.graphical.surface_point import GraphicalSurfacePoint
-
-        return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
-
-    def plot(self, *args, **kwargs):
-        r"""
-        Return a plot of this point.
-
-        EXAMPLES:
-
-        .. jupyter-execute::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: p = S.point(0, (0, 0))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
-
-        .. jupyter-execute::
-
-            sage: p = S.point(0, (0, 25/12))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
-
-        """
-        graphical_surface = None
-        if args:
-            graphical_surface = args[0]
-            args = args[1:]
-
-        return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
-            *args, **kwargs
+            self.surface()._polygon_point(label, coordinates)
+            for (l, coordinates) in self._representatives
+            if l == label
         )
 
     def __repr__(self):
         r"""
-        Return a printable representation of this point.
+        Return a printable representation of this point; this prints the
+        internal coordinates of the chosen representative.
 
         TESTS::
 
@@ -620,8 +586,7 @@ class SurfacePoint(Element):
 
         # We pick a specific representative to make our lives easier when doctesting
         return min(
-            render(label, coordinates)
-            for (label, coordinates) in self.representatives()
+            render(label, coordinates) for (label, coordinates) in self._representatives
         )
 
     def __eq__(self, other):
