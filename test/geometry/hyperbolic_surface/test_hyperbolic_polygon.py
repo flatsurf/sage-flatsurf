@@ -23,7 +23,7 @@ hard-coded values of classical hyperbolic geometry.
 
 import pytest
 
-from sage.all import QQ, RR, I, NumberField, polygen
+from sage.all import AA, QQ, RR, I, NumberField, polygen
 
 from flatsurf import HyperbolicPlane
 
@@ -147,3 +147,26 @@ def test_inputs(H):
         H.polygon(hull.half_spaces(), polygon=hull)
     with pytest.raises(ValueError):
         H.polygon(vertices=QUADRILATERAL, polygon=hull)
+
+
+def test_arguments_of_other_paths(H):
+    hull = H.convex_hull(H(I), H(2 * I), H(1 + I))
+    with pytest.raises(ValueError):
+        H.polygon(vertices=QUADRILATERAL, marked_vertices=[H(I)])
+    with pytest.raises(ValueError):
+        H.polygon(vertices=QUADRILATERAL, assume_sorted=True)
+    with pytest.raises(ValueError):
+        H.polygon(polygon=hull, assume_minimal=True)
+    with pytest.raises(ValueError):
+        H.polygon(polygon=hull, model="half_plane")
+    with pytest.raises(ValueError):
+        H.polygon(hull.half_spaces(), model="half_plane")
+
+
+def test_from_hyperbolic_polygon(H):
+    P = H.polygon(vertices=ARROW)
+    assert H.polygon(polygon=P) == P
+    Q = HyperbolicPlane(AA).polygon(vertices=QUADRILATERAL)
+    R = H.polygon(polygon=Q)
+    assert R.base_ring() == QQ
+    assert R == H.polygon(vertices=QUADRILATERAL)

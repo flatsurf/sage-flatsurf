@@ -1773,9 +1773,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
           ``vertices`` are given.
 
         - ``polygon`` -- a :class:`HyperbolicConvexPolygon` with finite
-          vertices (default: ``None``); returned as a
+          vertices or a
           :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
-          with the same vertices, marked vertices included.
+          (default: ``None``); returned as a
+          :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
+          of this hyperbolic plane with the same vertices, marked vertices
+          included.
+
+        The arguments ``assume_sorted``, ``assume_minimal`` and
+        ``marked_vertices`` only apply to ``half_spaces``, and ``model`` only
+        to ``vertices``.
 
         ALGORITHM:
 
@@ -1952,6 +1959,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: H.polygon(polygon=P)
             Hyperbolic polygon with vertices [I, 1 + I, 2*I]
 
+        So does a compact polygon, possibly of another hyperbolic plane::
+
+            sage: Q = HyperbolicPlane(AA).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: H.polygon(polygon=Q)
+            Hyperbolic polygon with vertices [I, (1/2, 0), (0, 1/2)]
+            sage: H.polygon(polygon=Q).base_ring()
+            Rational Field
+
         The vertices must be finite points::
 
             sage: H.polygon(vertices=[H(0), H(I), H(1 + I)])
@@ -1971,6 +1986,26 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: exactly one of half_spaces, vertices, and polygon must be given
 
+        Arguments that do not apply to the given description of the polygon
+        are rejected::
+
+            sage: H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)], marked_vertices=[I])
+            Traceback (most recent call last):
+            ...
+            ValueError: marked_vertices, assume_sorted, and assume_minimal can only be used with half_spaces
+            sage: H.polygon(polygon=P, assume_minimal=True)
+            Traceback (most recent call last):
+            ...
+            ValueError: marked_vertices, assume_sorted, and assume_minimal can only be used with half_spaces
+            sage: H.polygon(polygon=P, model="half_plane")
+            Traceback (most recent call last):
+            ...
+            ValueError: model can only be used with vertices
+            sage: H.polygon(P.half_spaces(), model="half_plane")
+            Traceback (most recent call last):
+            ...
+            ValueError: model can only be used with vertices
+
         .. SEEALSO::
 
             :meth:`intersection` to intersect arbitrary convex sets
@@ -1984,14 +2019,31 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             )
 
         if half_spaces is None:
-            from flatsurf.geometry.hyperbolic_polygon import hyperbolic_polygon
+            from flatsurf.geometry.hyperbolic_polygon import (
+                HyperbolicPolygon,
+                hyperbolic_polygon,
+            )
+
+            if marked_vertices or assume_sorted or assume_minimal:
+                raise ValueError(
+                    "marked_vertices, assume_sorted, and assume_minimal can only be used with half_spaces"
+                )
 
             if polygon is not None:
-                if not isinstance(polygon, HyperbolicConvexPolygon):
-                    raise TypeError("polygon must be a HyperbolicConvexPolygon")
+                if model != "klein":
+                    raise ValueError("model can only be used with vertices")
+                if not isinstance(
+                    polygon, (HyperbolicConvexPolygon, HyperbolicPolygon)
+                ):
+                    raise TypeError(
+                        "polygon must be a HyperbolicConvexPolygon or a HyperbolicPolygon"
+                    )
                 vertices = polygon.vertices()
 
             return hyperbolic_polygon(self, vertices, model=model, check=check)
+
+        if model != "klein":
+            raise ValueError("model can only be used with vertices")
 
         if not marked_vertices:
             marked_vertices = []

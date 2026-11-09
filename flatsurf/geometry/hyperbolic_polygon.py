@@ -119,11 +119,22 @@ def _rational_arccos(sign, cos2):
     If the angle is `k/m` with `k` and `m` coprime and `m \ge 3`, then its
     cosine has degree `\varphi(m)/2` over `\QQ`. That degree is at most
     twice the degree `d` of ``cos2``, so `\varphi(m) \le 4d`, and
-    `\varphi(m) \ge \sqrt{m/2}` gives `m \le 32 d^2`. The best rational
-    approximation with that bound on the denominator, from a numerical value
-    precise enough to separate such rationals, is the only candidate; it is
-    then checked exactly against the cosine of `2\pi k/m` in the real
-    algebraic numbers.
+    `\varphi(m) \ge \sqrt{m/2}` gives `m \le 32 d^2 = B`. Two distinct
+    rationals with denominators at most `B` are at least `1/B^2` apart, so
+    an approximation of the angle within `1/(2B^2)` of `k/m` has `k/m` as
+    its best rational approximation with denominator at most `B`. That
+    rational is the only candidate; it is then checked exactly against the
+    cosine of `2\pi k/m` in the real algebraic numbers, so that the
+    precision only matters for not missing a rational angle.
+
+    The cosine is computed with `p = 64 + 4 b` bits, `b` the number of bits
+    of `B`, so that its error is `\varepsilon \le 4 \cdot 2^{-p}`. The
+    arccosine is ill-conditioned near `\pm 1`, but `|\arccos u - \arccos v|
+    \le \pi \sqrt{|u - v|/2}` (the worst case is at an endpoint, where
+    `\arccos(1 - \delta) = 2 \arcsin\sqrt{\delta/2}`). The error on the angle
+    as a multiple of `2\pi` is thus at most `\sqrt{\varepsilon/8} \le
+    2^{-(p + 1)/2} \le 2^{-32} B^{-2}`, well within `1/(2B^2)` even with
+    the rounding of the arccosine and of the division.
 
     EXAMPLES::
 
@@ -843,6 +854,117 @@ class HyperbolicPolygon(Parent):
         from flatsurf.geometry.euclidean import polygon_corners
 
         return HyperbolicPolygon(self.parent(), polygon_corners(self._v))
+
+    def apply_isometry(self, isometry, model="klein"):
+        r"""
+        Return the image of this polygon under the orientation preserving
+        ``isometry``.
+
+        INPUT:
+
+        - ``isometry`` -- a
+          :class:`~flatsurf.geometry.hyperbolic_isometry.HyperbolicIsometry`,
+          or a matrix as in
+          :meth:`~flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry`:
+          a 2×2 matrix of positive determinant if ``model`` is
+          ``"half_plane"``, a 3×3 matrix preserving the Minkowski form up to a
+          positive factor if ``model`` is ``"klein"``
+
+        - ``model`` -- ``"klein"`` or ``"half_plane"`` (default:
+          ``"klein"``); the model in which a matrix ``isometry`` acts, ignored
+          for a :class:`~flatsurf.geometry.hyperbolic_isometry.HyperbolicIsometry`
+
+        OUTPUT:
+
+        The polygon of this hyperbolic plane whose vertices are the images of
+        the vertices of this polygon, in the same order.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: P.apply_isometry(matrix([[0, -1, 0], [1, 0, 0], [0, 0, 1]]))
+            Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+            sage: P.apply_isometry(matrix([[2, 0], [0, 1]]), model="half_plane")
+            Hyperbolic polygon with vertices [2*I, (2/5, 3/5), (0, 11/13)]
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: g = HyperbolicIsometryGroup(QQ)(matrix([[2, 0], [0, 1]]))
+            sage: P.apply_isometry(g) == g(P) == P.apply_isometry(matrix([[2, 0], [0, 1]]), model="half_plane")
+            True
+
+        The isometry must preserve the orientation::
+
+            sage: P.apply_isometry(matrix([[1, 0, 0], [0, -1, 0], [0, 0, 1]]))
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry must preserve the orientation
+            sage: P.apply_isometry(matrix([[1, 0], [0, -1]]), model="half_plane")
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry must preserve the orientation
+            sage: P.apply_isometry(matrix([[1, 2, 0], [0, 1, 0], [0, 0, 1]]))
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix does not define an isometry
+            sage: P.apply_isometry(matrix([[1, 0], [0, 0]]), model="half_plane")
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix does not define an isometry
+            sage: P.apply_isometry(matrix([[1, 0], [0, 1]]))
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry in Klein model must be given as a 3×3 matrix
+
+        """
+        from sage.matrix.constructor import diagonal_matrix
+
+        from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometry
+
+        H = self.parent()
+        K = H.base_ring()
+
+        if isinstance(isometry, HyperbolicIsometry):
+            M = isometry.matrix()
+        elif model == "half_plane":
+            if isometry.dimensions() != (2, 2):
+                raise ValueError(
+                    "isometry in half plane model must be given as a 2×2 matrix"
+                )
+            if isometry.determinant() == 0:
+                raise ValueError("matrix does not define an isometry")
+            M = H._isometry_gl2_to_sim12(isometry)
+        elif model == "klein":
+            if isometry.dimensions() != (3, 3):
+                raise ValueError(
+                    "isometry in Klein model must be given as a 3×3 matrix"
+                )
+            M = isometry
+        else:
+            raise NotImplementedError(f"unsupported model {model!r}")
+
+        M = M.change_ring(K)
+        J = diagonal_matrix(K, [1, 1, -1])
+        D = M.transpose() * J * M
+        if not D[0, 0] > 0 or D != D[0, 0] * J:
+            raise ValueError("matrix does not define an isometry")
+
+        images = []
+        for x, y in self._v:
+            X = M[0, 0] * x + M[0, 1] * y + M[0, 2]
+            Y = M[1, 0] * x + M[1, 1] * y + M[1, 2]
+            Z = M[2, 0] * x + M[2, 1] * y + M[2, 2]
+            images.append((X / Z, Y / Z))
+
+        polygon = HyperbolicPolygon(H, images)
+
+        # An isometry is a diffeomorphism of the Klein disk, so it reverses
+        # the orientation of every polygon or of none.
+        if polygon._klein_area() < 0:
+            raise ValueError("isometry must preserve the orientation")
+
+        return polygon
 
     def _cosh2_sides(self):
         r"""
