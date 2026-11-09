@@ -1094,10 +1094,42 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S(0, 0).edges()
                 {(0, 0), (0, 1), (0, 2), (0, 3)}
 
+            For a hyperbolic surface::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S.glue((0, 0), (0, 3))
+                sage: S.glue((0, 1), (0, 2))
+                sage: S.set_immutable()
+
+                sage: S(0, (1/4, 1/4)).edges()
+                set()
+                sage: sorted(S(0, (1/4, 0)).edges())
+                [(0, 0), (0, 3)]
+                sage: sorted(S(0, 1).edges())
+                [(0, 0), (0, 1), (0, 2), (0, 3)]
+
             """
-            raise NotImplementedError(
-                "points on this surface cannot determine which edges they are contained in yet"
-            )
+            surface = self.parent()
+
+            edges = set()
+            for label, coordinates in self.representatives():
+                polygon = surface.polygon(label)
+                position = polygon.get_point_position(coordinates)
+
+                if position.is_in_edge_interior():
+                    edges.add((label, position.get_edge()))
+                elif position.is_vertex():
+                    vertex = position.get_vertex()
+                    n = len(polygon.vertices())
+                    edges.add((label, vertex))
+                    edges.add((label, (vertex - 1) % n))
+
+            return edges
 
         def _test_edges(self, **options):
             r"""
@@ -1109,6 +1141,21 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S = translation_surfaces.square_torus()
                 sage: S(0, 0)._test_edges()
 
+            A point inside a self-glued edge::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                sage: S(0, (1, 0))._test_edges()
+
+            A point inside an unglued edge::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: T = MutableOrientedSimilaritySurface(QQ)
+                sage: T.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                0
+                sage: T.set_immutable()
+                sage: T(0, (1/2, 0))._test_edges()
+
             """
             tester = self._tester(**options)
 
@@ -1118,8 +1165,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 tester.assertTrue(self.is_in_polygon_interior())
 
             if len(edges) == 1:
-                opposite = self.parent().opposite_edge(*edges[0])
-                tester.assertTrue(opposite is None or opposite == edges[0])
+                edge = next(iter(edges))
+                opposite = self.parent().opposite_edge(*edge)
+                tester.assertTrue(opposite is None or opposite == edge)
 
             if self.is_vertex():
                 tester.assertGreaterEqual(len(edges), 2)

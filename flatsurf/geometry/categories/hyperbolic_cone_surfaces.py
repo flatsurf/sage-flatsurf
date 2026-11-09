@@ -56,6 +56,7 @@ A sphere with three cone points, glued from a Lambert quadrilateral::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
+from flatsurf.cache import cached_surface_method
 from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
@@ -201,7 +202,9 @@ class HyperbolicConeSurfaces(SurfaceCategory):
         def some_elements(self):
             r"""
             Return some typical points of this surface (for testing): a point
-            in the interior of each of the first polygons, then the vertices.
+            in the interior of each of the first polygons, a point in the
+            interior of each self-glued or unglued edge of these polygons,
+            then the vertices.
 
             EXAMPLES::
 
@@ -220,6 +223,21 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 sage: len(points)
                 4
 
+            The unglued edges contribute a point each::
+
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S.glue((0, 0), (0, 3))
+                sage: S.set_immutable()
+                sage: list(S.some_elements())
+                [Point (1/4, 1/4) of polygon 0,
+                 Point (1/2, 1/4) of polygon 0,
+                 Point (1/4, 1/2) of polygon 0,
+                 Vertex 0 of polygon 0,
+                 Vertex 1 of polygon 0,
+                 Vertex 2 of polygon 0]
+
             For a non-convex polygon, the point is taken near a convex
             corner::
 
@@ -234,7 +252,9 @@ class HyperbolicConeSurfaces(SurfaceCategory):
 
             from sage.modules.free_module_element import vector
 
-            for label in islice(self.labels(), 32):
+            labels = list(islice(self.labels(), 32))
+
+            for label in labels:
                 polygon = self.polygon(label)
                 vertices = [
                     vector(v.coordinates(model="klein")) for v in polygon.vertices()
@@ -262,6 +282,21 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                         t /= 2
 
                 yield self(label, point)  # pylint: disable=not-callable
+
+            for label in labels:
+                polygon = self.polygon(label)
+                vertices = [
+                    vector(v.coordinates(model="klein")) for v in polygon.vertices()
+                ]
+                n = len(vertices)
+
+                for e in range(n):
+                    opposite = self.opposite_edge(label, e)
+                    if opposite is None or opposite == (label, e):
+                        # Geodesics are Euclidean segments in the Klein model.
+                        yield self(  # pylint: disable=not-callable
+                            label, (vertices[e] + vertices[(e + 1) % n]) / 2
+                        )
 
             if self.is_finite_type():
                 yield from self.vertices()
@@ -393,59 +428,6 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             tester = self._tester(**options)
 
             tester.assertIsNone(self._mismatched_gluing())
-
-    class ElementMethods:
-        r"""
-        Provides methods available to all points of hyperbolic cone surfaces.
-
-        If you want to add functionality for such points, you most likely
-        want to put it here.
-        """
-
-        def edges(self):
-            r"""
-            Return the edges of the polygons that contain this point.
-
-            Implements
-            :meth:`.polygonal_surfaces.PolygonalSurfaces.ElementMethods.edges`
-            for hyperbolic cone surfaces.
-
-            EXAMPLES::
-
-                sage: from flatsurf import HyperbolicPlane
-                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
-                sage: H = HyperbolicPlane(QQ)
-                sage: S = MutableOrientedHyperbolicSurface(QQ)
-                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
-                0
-                sage: S.glue((0, 0), (0, 3))
-                sage: S.glue((0, 1), (0, 2))
-                sage: S.set_immutable()
-
-                sage: S(0, (1/4, 1/4)).edges()
-                set()
-                sage: sorted(S(0, (1/4, 0)).edges())
-                [(0, 0), (0, 3)]
-                sage: sorted(S(0, 1).edges())
-                [(0, 0), (0, 1), (0, 2), (0, 3)]
-
-            """
-            surface = self.parent()
-
-            edges = set()
-            for label, coordinates in self.representatives():
-                polygon = surface.polygon(label)
-                position = polygon.get_point_position(coordinates)
-
-                if position.is_in_edge_interior():
-                    edges.add((label, position.get_edge()))
-                elif position.is_vertex():
-                    vertex = position.get_vertex()
-                    n = len(polygon.vertices())
-                    edges.add((label, vertex))
-                    edges.add((label, (vertex - 1) % n))
-
-            return edges
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
@@ -594,6 +576,7 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 """
                 return self.edge_transformation(label, edge).matrix()
 
+            @cached_surface_method
             def _angle_vertex(self, vertex, numerical):
                 r"""
                 Return the total angle at ``vertex`` as a multiple of 2π.

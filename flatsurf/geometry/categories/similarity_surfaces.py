@@ -953,10 +953,31 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S = translation_surfaces.square_torus()
                     sage: S(0, 0)._test_edges_ccw()
 
+                A point inside a self-glued edge::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                    sage: S(0, (1, 0))._test_edges_ccw()
+
+                A point inside an unglued edge::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+                    sage: T = MutableOrientedSimilaritySurface(QQ)
+                    sage: T.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                    0
+                    sage: T.set_immutable()
+                    sage: T(0, (1/2, 0))._test_edges_ccw()
+
                 """
                 tester = self._tester(**options)
 
                 edges = self.edges_ccw()
+
+                # Walking around a point inside a self-glued or unglued edge
+                # crosses that single edge once, so the entries do not come in
+                # pairs.
+                if len(self.edges()) == 1:
+                    return
 
                 tester.assertTrue(len(edges) % 2 == 0)
 
@@ -1100,7 +1121,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def some_elements(self):
                 r"""
-                Return some typical points of this surface (for testing).
+                Return some typical points of this surface (for testing): a
+                point in the interior of each of the first polygons, a point
+                in the interior of each self-glued or unglued edge of these
+                polygons, then the vertices.
 
                 EXAMPLES::
 
@@ -1109,10 +1133,19 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: list(S.some_elements())
                     [Point (1/2, 1/2) of polygon 0, Vertex 0 of polygon 0]
 
+                A self-glued edge contributes a point::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                    sage: list(S.some_elements())[:6]
+                    [Point (29/39, 77/39) of polygon 0, Point (1, 0) of polygon 0, Point (3/2, 2) of polygon 0, Point (1/2, 9/2) of polygon 0, Point (0, 5/2) of polygon 0, Vertex 0 of polygon 0]
+
                 """
                 from itertools import islice
 
-                for label in islice(self.labels(), 32):
+                labels = list(islice(self.labels(), 32))
+
+                for label in labels:
                     polygon = self.polygon(label)
 
                     from sage.categories.all import Fields
@@ -1127,6 +1160,16 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
 
                     yield point
+
+                for label in labels:
+                    polygon = self.polygon(label)
+
+                    for e in range(len(polygon.vertices())):
+                        opposite = self.opposite_edge(label, e)
+                        if opposite is None or opposite == (label, e):
+                            yield self(  # pylint: disable=not-callable
+                                label, polygon.vertex(e) + polygon.edge_vector(e) / 2
+                            )
 
                 if self.is_finite_type():
                     yield from self.vertices()
