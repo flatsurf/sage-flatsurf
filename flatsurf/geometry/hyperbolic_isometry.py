@@ -490,6 +490,10 @@ def segment_isometry(source, target, ring=None):
         Traceback (most recent call last):
         ...
         ValueError: direction must be nonzero
+        sage: segment_isometry(((1, 0), (0, 0)), ((1, 0), (0, 0)))
+        Traceback (most recent call last):
+        ...
+        ValueError: (1, 0) is not a finite point of the hyperbolic plane
 
     """
     a, b = (_klein_vector(point) for point in _segment_endpoints(source))
@@ -497,6 +501,12 @@ def segment_isometry(source, target, ring=None):
 
     ring = _common_ring([a, b, c, d], ring)
     a, b, c, d = (w.change_ring(ring) for w in (a, b, c, d))
+
+    # The Minkowski norm of the lift of a point of the boundary vanishes, so
+    # the lengths can only be compared for points inside the disk.
+    for point in (a, b, c, d):
+        if not point[0] ** 2 + point[1] ** 2 < 1:
+            raise ValueError(f"{point} is not a finite point of the hyperbolic plane")
 
     if _cosh2(a, b) != _cosh2(c, d):
         raise ValueError("segments do not have the same length")
@@ -833,6 +843,15 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             sage: H._isometry_gl2_to_sim12(A) == g.matrix()
             True
 
+        The products of the entries may not be in ``ring`` at all::
+
+            sage: L.<r> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+            sage: g = HyperbolicIsometryGroup(L)(matrix([[2, 0, r], [0, 1, 0], [r, 0, 2]]))
+            sage: g.psl2_matrix(QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry is not defined over Rational Field
+
         """
         from sage.matrix.constructor import matrix
 
@@ -851,11 +870,17 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             square = (m12 + m22 - m11 - m21) / two
             entries = [K.zero(), square, (m00 - 1) / two, (m02 - m01) / two]
 
-        root = _positive_sqrt(ring(square))
+        try:
+            square_ = ring(square)
+            entries = [ring(entry) for entry in entries]
+        except (TypeError, ValueError):
+            raise ValueError(f"isometry is not defined over {ring}") from None
+
+        root = _positive_sqrt(square_)
         if root is None:
             raise _not_defined_over(ring, square)
 
-        A = matrix(ring, 2, [ring(entry) / root for entry in entries])
+        A = matrix(ring, 2, [entry / root for entry in entries])
         A.set_immutable()
         return A
 
@@ -927,6 +952,16 @@ class HyperbolicIsometryAction(Action):
             sage: w.is_immutable()
             True
 
+        TESTS:
+
+        A point outside the disk may be sent to infinity in the Klein chart::
+
+            sage: g = G(matrix([[5/4, 0, 3/4], [0, 1, 0], [3/4, 0, 5/4]]))
+            sage: g * vector((-5/3, 0))
+            Traceback (most recent call last):
+            ...
+            ValueError: (-5/3, 0) is sent outside of the Klein chart
+
         """
         from sage.modules.free_module_element import vector
 
@@ -936,6 +971,8 @@ class HyperbolicIsometryAction(Action):
         X = M[0, 0] * x + M[0, 1] * y + M[0, 2]
         Y = M[1, 0] * x + M[1, 1] * y + M[1, 2]
         Z = M[2, 0] * x + M[2, 1] * y + M[2, 2]
+        if not Z:
+            raise ValueError(f"{v} is sent outside of the Klein chart")
         return vector(R, [X / Z, Y / Z], immutable=True)
 
 
