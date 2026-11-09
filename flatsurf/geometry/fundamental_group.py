@@ -109,6 +109,14 @@ class Path(MultiplicativeGroupElement):
         Traceback (most recent call last):
         ...
         ValueError: the walk does not start at the base polygon 0
+
+    A letter that is not a pair is refused::
+
+        sage: from flatsurf.geometry.fundamental_group import Path
+        sage: Path(F, [(1, 0), None])
+        Traceback (most recent call last):
+        ...
+        ValueError: the letter None is not a pair (label, edge)
     """
 
     # activating the following somehow break the discovery of the Python _mul_
@@ -117,7 +125,17 @@ class Path(MultiplicativeGroupElement):
 
     def __init__(self, parent, walk, check=True, reduced=False):
         self._base_label = parent._b
-        self._walk = tuple(tuple(letter) for letter in walk)
+        letters = []
+        for letter in walk:
+            try:
+                letters.append(tuple(letter))
+            except TypeError:
+                if not check:
+                    raise
+                raise ValueError(
+                    "the letter {} is not a pair (label, edge)".format(letter)
+                ) from None
+        self._walk = tuple(letters)
         MultiplicativeGroupElement.__init__(self, parent)
 
         if check:
@@ -199,7 +217,26 @@ class Path(MultiplicativeGroupElement):
         return tuple(edge for _, edge in self._walk)
 
     def _poly_cross_dict(self):
+        r"""
+        Return, for each polygon, the pairs ``(entry, exit)`` of the edges
+        through which this walk enters and leaves it.
+
+        The empty walk of the identity crosses no polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: t = translation_surfaces.square_torus()
+            sage: F = t.fundamental_group(punctured_vertices=True)
+            sage: a, b = F.gens()
+            sage: a._poly_cross_dict()
+            {0: [(2, 0)]}
+            sage: F.one()._poly_cross_dict()
+            {0: []}
+        """
         d = {p: [] for p in self.parent()._s.labels()}
+        if not self._walk:
+            return d
         d[self._polys[0]].append((self._edges_rev[-1], self._edges[0]))
         for i in range(1, len(self._polys) - 1):
             p = self._polys[i]
@@ -435,6 +472,12 @@ class Path(MultiplicativeGroupElement):
             sage: b.intersection(a)
             -1
 
+        The identity intersects every element zero times::
+
+            sage: F = a.parent()
+            sage: F.one().intersection(a), a.intersection(F.one())
+            (0, 0)
+
         This is an Abelian invariant::
 
             sage: x1 = a*b*b*~a*~a*b*b*a*~b*~b
@@ -541,12 +584,22 @@ class FundamentalGroup(UniqueRepresentation, Group):
         sage: TestSuite(F).run()
 
     Without punctures, the equality of elements is only partially decided.
-    The test suite compares only equal elements and passes as is::
+    The default test suite passes because ``some_elements()`` is a single
+    element here, which is only compared with itself::
 
         sage: F = t.fundamental_group()
         sage: F
         Fundamental group of Translation Surface in H_1(0) built from a square based at polygon 0
+        sage: list(F.some_elements())
+        [0 --0-- 0 --1-- 0]
         sage: TestSuite(F).run()
+
+    On the generators, the three hooks below compare distinct reduced walks,
+    whose equality raises a ``NotImplementedError``, and are skipped::
+
+        sage: TestSuite(F).run(elements=list(F.gens()),
+        ....:     skip=['_test_elements_eq_symmetric', '_test_elements_eq_transitive',
+        ....:           '_test_elements_neq'])
 
     TESTS::
 
@@ -559,6 +612,10 @@ class FundamentalGroup(UniqueRepresentation, Group):
         Traceback (most recent call last):
         ...
         ValueError: 0 is not a vertex of the surface
+        sage: t.fundamental_group(base_label=5)
+        Traceback (most recent call last):
+        ...
+        ValueError: 5 is not a label of a polygon of the surface
     """
 
     Element = Path
@@ -578,6 +635,10 @@ class FundamentalGroup(UniqueRepresentation, Group):
         """
         if not surface.is_finite_type():
             raise ValueError("the method only work for finite surfaces")
+        if base not in surface.labels():
+            raise ValueError(
+                "{} is not a label of a polygon of the surface".format(base)
+            )
         vertices = surface.vertices()
         if punctured_vertices is True:
             punctured_vertices = frozenset(vertices)
@@ -625,7 +686,24 @@ class FundamentalGroup(UniqueRepresentation, Group):
             Traceback (most recent call last):
             ...
             ValueError: the walk does not end at the base polygon 1
+
+        An element of another fundamental group is not converted, and a
+        step that is neither an edge index nor a pair is refused::
+
+            sage: G = o.fundamental_group(base_label=2, punctured_vertices=True)
+            sage: F(G.gens()[0])
+            Traceback (most recent call last):
+            ...
+            ValueError: the element 2 --3-- 1 --0-- 1 --1-- 2 belongs to another fundamental group
+            sage: F([(2, 3), None])
+            Traceback (most recent call last):
+            ...
+            ValueError: the letter None is not a pair (label, edge)
         """
+        if len(args) == 1 and isinstance(args[0], Path):
+            raise ValueError(
+                "the element {} belongs to another fundamental group".format(args[0])
+            )
         if len(args) == 1 and isinstance(args[0], (tuple, list)):
             args = args[0]
         s = self._s
@@ -635,7 +713,13 @@ class FundamentalGroup(UniqueRepresentation, Group):
             if isinstance(step, (tuple, list)):
                 letter = tuple(step)
             else:
-                step = int(step) % len(s.polygon(current).vertices())
+                try:
+                    step = int(step)
+                except (TypeError, ValueError):
+                    raise ValueError(
+                        "the letter {} is not a pair (label, edge)".format(step)
+                    ) from None
+                step = step % len(s.polygon(current).vertices())
                 letter = s.opposite_edge(current, step)
                 if letter is None:
                     raise ValueError("the edge {} is not glued".format((current, step)))
