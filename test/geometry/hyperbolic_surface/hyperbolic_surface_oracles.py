@@ -129,6 +129,22 @@ OCTAGON = {
     "interior_angle": QQ(1) / 8,
 }
 
+# Side pairings of the octagon above (sides numbered from the vertex of Klein
+# coordinates (r, 0), counterclockwise), each giving a closed surface of genus
+# 2 whose 8 vertices form one regular point. Rows: pairs of glued sides and the
+# trace of the matrix in SO(2, 1)+ of each pairing, the same for all of them,
+# as a polynomial in r (coefficient list, constant term first). The sides all
+# have cosh^2 of their length equal to OCTAGON_SIDE_COSH2.
+# Source: Katok section 4.3 Example C, pp. 95-98 (the gluing "katok", whose
+# generators satisfy [A_1, B_1][A_2, B_2] = Id); the traces and the side
+# length are exact values in Q(r), computed with sage-flatsurf (isometries
+# sending a side onto the other one).
+OCTAGON_SIDE_COSH2 = [QQ(331) / 3, 0, QQ(10) / 3, 0]
+OCTAGON_GLUINGS = {
+    "opposite": ([(0, 4), (1, 5), (2, 6), (3, 7)], [QQ(65) / 3, 0, QQ(2) / 3, 0]),
+    "katok": ([(0, 2), (1, 3), (4, 6), (5, 7)], [QQ(31) / 3, 0, QQ(1) / 3, 0]),
+}
+
 # Order 3 point of the modular group, fixed by z -> -1/(z + 1), i.e. the
 # matrix [[0, -1], [1, 1]].
 # Source: Katok section 3.5 Example A, p. 71.

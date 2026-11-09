@@ -176,6 +176,9 @@ from flatsurf.geometry.categories.cone_surfaces import (
     ConeSurfaces,
     FlatConeSurfaces,
 )
+from flatsurf.geometry.categories.hyperbolic_cone_surfaces import (
+    HyperbolicConeSurfaces,
+)
 from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
 from flatsurf.geometry.categories.half_translation_surfaces import (
     HalfTranslationSurfaces,

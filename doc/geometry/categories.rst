@@ -12,6 +12,7 @@ The flatsurf.geometry.categories Package
    categories/euclidean_polygons
    categories/euclidean_polygons_with_angles
    categories/half_translation_surfaces
+   categories/hyperbolic_cone_surfaces
    categories/hyperbolic_polygons
    categories/polygonal_surfaces
    categories/polygons
