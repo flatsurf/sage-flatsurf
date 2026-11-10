@@ -535,10 +535,15 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                     sage: L.glue((0, 1), (0, 2))
                     sage: L.change_ring(QQ).polygon(0)
                     Hyperbolic polygon with vertices [I, (1/2, 0), (1/2, 1/2), (0, 1/2)]
-                    sage: M = MutableOrientedHyperbolicSurface(AA)
-                    sage: M.add_polygon(Q)
+                    sage: L.<s> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+                    sage: M = MutableOrientedHyperbolicSurface(L)
+                    sage: M.add_polygon(Q.change_ring(L))
                     0
                     sage: M.glue((0, 0), (0, 0))
+                    sage: M.edge_transformation(0, 0)
+                    [-2/3*s      0  1/3*s]
+                    [     0     -1      0]
+                    [-1/3*s      0  2/3*s]
                     sage: M.change_ring(QQ)
                     Traceback (most recent call last):
                     ...
