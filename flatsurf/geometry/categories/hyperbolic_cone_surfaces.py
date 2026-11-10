@@ -406,11 +406,10 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             Verify that the edges glued to each other have the same length.
 
             The test is skipped for mutable surfaces, which may go through
-            states with mismatched gluings while they are built, except for
-            a
-            :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`:
-            its ``glue()`` refuses such gluings, so the property holds in
-            every state.
+            states with mismatched gluings while they are built. A mutable
+            :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
+            is tested anyway: its ``glue()`` refuses such gluings, so the
+            property holds in every state.
 
             EXAMPLES::
 

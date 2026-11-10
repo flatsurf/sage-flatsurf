@@ -473,8 +473,9 @@ class MutableOrientedHyperbolicSurface(
             return super().replace_polygon(label, polygon)
 
         # The side pairings are computed from the polygons of the surface:
-        # put the new polygon in place and restore the old one if one of its
-        # gluings does not exist.
+        # put the new polygon in place for the checks and restore the old one
+        # whatever their outcome, so that any exception leaves the surface
+        # unchanged.
         old = self._polygons[label]
         self._polygons[label] = polygon
         try:
@@ -488,11 +489,9 @@ class MutableOrientedHyperbolicSurface(
                     raise ValueError(
                         f"cannot replace polygon {label}: {error}"
                     ) from error
-        except ValueError:
+        finally:
             self._polygons[label] = old
-            raise
 
-        self._polygons[label] = old
         super().replace_polygon(label, polygon)
 
     def _check_polygon(self, polygon):
