@@ -123,20 +123,63 @@ def test_sphere_pairings(sphere):
 
 
 def test_mismatched_lengths(H):
-    S = quadrilateral_surface(H, [(0, 1)])
-    with pytest.raises(ValueError):
-        S.set_immutable()
-    assert S.is_mutable()
-    S.glue((0, 0), (0, 3))
-    S.glue((0, 1), (0, 2))
+    with pytest.raises(ValueError, match="do not have the same length"):
+        quadrilateral_surface(H, [(0, 1)])
+    S = quadrilateral_surface(H, [(0, 3), (1, 2)])
     S.set_immutable()
     assert not S.is_mutable()
 
 
 def test_self_glued_edge(H):
-    S = quadrilateral_surface(H, [(0, 0)])
+    with pytest.raises(ValueError, match="adjoin a square root of 4/3"):
+        quadrilateral_surface(H, [(0, 0)])
+
+
+def test_refused_glue_keeps_gluings(H):
+    S = quadrilateral_surface(H, [(0, 3)])
     with pytest.raises(ValueError):
-        S.edge_transformation(0, 0)
+        S.glue((0, 0), (0, 1))
+    assert S.opposite_edge(0, 0) == (0, 3)
+    assert S.opposite_edge(0, 3) == (0, 0)
+    assert S.opposite_edge(0, 1) is None
+
+
+def test_glue_unknown_edge(H):
+    S = quadrilateral_surface(H, [])
+    with pytest.raises(ValueError, match="there is no polygon 1"):
+        S.glue((0, 0), (1, 0))
+    with pytest.raises(ValueError, match="polygon 0 has no edge 7"):
+        S.glue((0, 7), (0, 0))
+
+
+def test_replace_polygon_refused(H):
+    S = quadrilateral_surface(H, [(0, 3), (1, 2)])
+    P = S.polygon(0)
+    wider = H.polygon(
+        vertices=[(0, 0), (QQ(1) / 3, 0), (QQ(1) / 2, QQ(1) / 2), (0, QQ(1) / 2)]
+    )
+    with pytest.raises(ValueError, match="cannot replace polygon 0"):
+        S.replace_polygon(0, wider)
+    assert S.polygon(0) == P
+
+    smaller = H.polygon(
+        vertices=[(0, 0), (QQ(1) / 3, 0), (QQ(1) / 3, QQ(1) / 3), (0, QQ(1) / 3)]
+    )
+    S.replace_polygon(0, smaller)
+    assert S.polygon(0) == smaller
+
+    S.set_immutable()
+    with pytest.raises(Exception, match="immutable"):
+        S.replace_polygon(0, P)
+
+
+def test_polygon_over_larger_ring(H):
+    from sage.all import AA
+
+    S = MutableOrientedHyperbolicSurface(QQ)
+    P = HyperbolicPlane(AA).polygon(vertices=[(0, 0), (QQ(1) / 2, 0), (0, QQ(1) / 2)])
+    with pytest.raises(ValueError, match="does not coerce into Rational Field"):
+        S.add_polygon(P)
 
 
 def test_euclidean_polygon():

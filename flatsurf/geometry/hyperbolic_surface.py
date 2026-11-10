@@ -6,7 +6,8 @@ The polygons are
 vertices are finite points of the hyperbolic plane. Two edges are glued by the
 orientation preserving isometry that sends one onto the other one with reverse
 orientation, which requires the two edges to have the same length; this is
-checked when the surface is made immutable.
+checked by ``glue()``, which also checks that the isometry exists over the base
+ring of the surface.
 
 Points of the surface are given by a polygon label and a point of the
 hyperbolic plane, or its coordinates in the Klein model.
@@ -87,19 +88,17 @@ Glued edges must have the same length::
     sage: T.add_polygon(P)
     0
     sage: T.glue((0, 0), (0, 1))
-    sage: T.set_immutable()
     Traceback (most recent call last):
     ...
-    ValueError: edge 0 of polygon 0 and edge 1 of polygon 0 are glued but do not have the same length
+    ValueError: cannot glue edge 0 of polygon 0 to edge 1 of polygon 0: segments do not have the same length
 
 An edge glued to itself is folded at its midpoint by a half turn, which is
 not always defined over the base ring::
 
     sage: T.glue((0, 0), (0, 0))
-    sage: T.edge_transformation(0, 0)
     Traceback (most recent call last):
     ...
-    ValueError: isometry is not defined over Rational Field; adjoin a square root of 4/3
+    ValueError: cannot glue edge 0 of polygon 0 to edge 0 of polygon 0: isometry is not defined over Rational Field; adjoin a square root of 4/3
 
 TESTS::
 
@@ -296,10 +295,113 @@ class MutableOrientedHyperbolicSurface(
 
         return super().add_polygon(polygon, label=label)
 
+    def glue(self, x, y):
+        r"""
+        Glue the edge ``x`` to the edge ``y``, after checking that the
+        isometry that sends one onto the other exists over the base ring.
+
+        Gluings of ``x`` and ``y`` that already exist are removed, unless the
+        new gluing is refused, in which case the surface is unchanged.
+
+        INPUT:
+
+        - ``x`` -- a pair (polygon label, edge index)
+
+        - ``y`` -- a pair (polygon label, edge index)
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: H = HyperbolicPlane(QQ)
+            sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+            sage: S = MutableOrientedHyperbolicSurface(QQ)
+            sage: S.add_polygon(P)
+            0
+            sage: S.glue((0, 0), (0, 3))
+
+        Glued edges must have the same length::
+
+            sage: S.glue((0, 0), (0, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot glue edge 0 of polygon 0 to edge 1 of polygon 0: segments do not have the same length
+            sage: S.opposite_edge(0, 0)
+            (0, 3)
+
+        An edge glued to itself is folded at its midpoint by a half turn,
+        which is not always defined over the base ring::
+
+            sage: S.glue((0, 0), (0, 0))
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot glue edge 0 of polygon 0 to edge 0 of polygon 0: isometry is not defined over Rational Field; adjoin a square root of 4/3
+
+        TESTS::
+
+            sage: S.glue((0, 0), (1, 0))
+            Traceback (most recent call last):
+            ...
+            ValueError: there is no polygon 1 in this surface
+            sage: S.glue((0, 7), (0, 0))
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon 0 has no edge 7
+
+        """
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a mutable copy first"
+            )
+
+        for label, edge in (x, y):
+            if label not in self._polygons:
+                raise ValueError(f"there is no polygon {label} in this surface")
+            if not 0 <= edge < len(self._polygons[label].vertices()):
+                raise ValueError(f"polygon {label} has no edge {edge}")
+
+        self._check_side_pairing(x, y)
+
+        super().glue(x, y)
+
+    def _check_side_pairing(self, x, y):
+        r"""
+        Raise a ``ValueError`` if the edges ``x`` and ``y`` cannot be glued
+        over the base ring.
+
+        INPUT:
+
+        - ``x``, ``y`` -- pairs (polygon label, edge index)
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: S = MutableOrientedHyperbolicSurface(QQ)
+            sage: S.add_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+            0
+            sage: S._check_side_pairing((0, 0), (0, 3))
+            sage: S._check_side_pairing((0, 0), (0, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot glue edge 0 of polygon 0 to edge 1 of polygon 0: segments do not have the same length
+
+        """
+        try:
+            self._side_pairing_matrix(*x, *y)
+        except ValueError as error:
+            raise ValueError(
+                f"cannot glue edge {x[1]} of polygon {x[0]} to edge {y[1]} of polygon {y[0]}: {error}"
+            ) from error
+
     def replace_polygon(self, label, polygon):
         r"""
         Replace the polygon ``label`` with ``polygon`` while keeping its
         gluings intact.
+
+        The replacement is refused, and the surface left unchanged, if one of
+        the gluings of the polygon is not defined over the base ring for
+        ``polygon``.
 
         INPUT:
 
@@ -332,26 +434,89 @@ class MutableOrientedHyperbolicSurface(
             ...
             TypeError: polygon must be a hyperbolic polygon given by its vertices
 
+        A replacement for which a gluing does not exist is refused, and the
+        surface is left unchanged::
+
+            sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+            sage: T = MutableOrientedHyperbolicSurface(QQ)
+            sage: T.add_polygon(P)
+            0
+            sage: T.glue((0, 0), (0, 3))
+            sage: T.glue((0, 1), (0, 2))
+            sage: T.replace_polygon(0, H.polygon(vertices=[(0, 0), (1/3, 0), (1/2, 1/2), (0, 1/2)]))
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot replace polygon 0: cannot glue edge 0 of polygon 0 to edge 3 of polygon 0: segments do not have the same length
+            sage: T.polygon(0) == P
+            True
+
+        An immutable surface refuses the replacement::
+
+            sage: S.set_immutable()
+            sage: S.replace_polygon(0, H.polygon(vertices=[(0, 0), (1/3, 0), (0, 1/3)]))
+            Traceback (most recent call last):
+            ...
+            Exception: cannot modify immutable surface; create a mutable copy first
+
         """
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a mutable copy first"
+            )
+
         self._check_polygon(polygon)
 
-        return super().replace_polygon(label, polygon.change_ring(self.base_ring()))
+        polygon = polygon.change_ring(self.base_ring())
 
-    @staticmethod
-    def _check_polygon(polygon):
+        if len(polygon.vertices()) != len(self.polygon(label).vertices()):
+            # The shared method refuses the replacement with its message.
+            return super().replace_polygon(label, polygon)
+
+        # The side pairings are computed from the polygons of the surface:
+        # put the new polygon in place and restore the old one if one of its
+        # gluings does not exist.
+        old = self._polygons[label]
+        self._polygons[label] = polygon
+        try:
+            for edge in range(len(polygon.vertices())):
+                cross = self.opposite_edge(label, edge)
+                if cross is None or (cross[0] == label and cross[1] < edge):
+                    continue
+                try:
+                    self._check_side_pairing((label, edge), cross)
+                except ValueError as error:
+                    raise ValueError(
+                        f"cannot replace polygon {label}: {error}"
+                    ) from error
+        except ValueError:
+            self._polygons[label] = old
+            raise
+
+        self._polygons[label] = old
+        super().replace_polygon(label, polygon)
+
+    def _check_polygon(self, polygon):
         r"""
-        Raise a ``TypeError`` if ``polygon`` cannot be a polygon of this
-        surface.
+        Raise an error if ``polygon`` cannot be a polygon of this surface.
+
+        A ``TypeError`` is raised for a polygon that is not hyperbolic, and a
+        ``ValueError`` for a polygon whose base ring does not coerce into the
+        base ring of this surface.
 
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane, polygons
             sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
-            sage: MutableOrientedHyperbolicSurface._check_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
-            sage: MutableOrientedHyperbolicSurface._check_polygon(polygons.square())
+            sage: S = MutableOrientedHyperbolicSurface(QQ)
+            sage: S._check_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+            sage: S._check_polygon(polygons.square())
             Traceback (most recent call last):
             ...
             TypeError: polygon must be a hyperbolic polygon given by its vertices
+            sage: S._check_polygon(HyperbolicPlane(AA).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon is defined over Algebraic Real Field, which does not coerce into Rational Field
 
         """
         from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
@@ -361,44 +526,7 @@ class MutableOrientedHyperbolicSurface(
                 "polygon must be a hyperbolic polygon given by its vertices"
             )
 
-    def set_immutable(self):
-        r"""
-        Make this surface immutable, after checking that the edges glued to
-        each other have the same length.
-
-        Any mutation attempts from now on will be an error.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
-            sage: H = HyperbolicPlane(QQ)
-            sage: S = MutableOrientedHyperbolicSurface(QQ)
-            sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
-            0
-            sage: S.glue((0, 0), (0, 1))
-            sage: S.set_immutable()
-            Traceback (most recent call last):
-            ...
-            ValueError: edge 0 of polygon 0 and edge 1 of polygon 0 are glued but do not have the same length
-            sage: S.is_mutable()
-            True
-
-            sage: S.glue((0, 0), (0, 3))
-            sage: S.glue((0, 1), (0, 2))
-            sage: S.set_immutable()
-            sage: S.is_mutable()
-            False
-            sage: S.category()
-            Category of connected without boundary finite type oriented hyperbolic cone surfaces
-
-        """
-        if self._mutable:
-            mismatch = self._mismatched_gluing()
-            if mismatch is not None:
-                (label, edge), (cross_label, cross_edge) = mismatch
-                raise ValueError(
-                    f"edge {edge} of polygon {label} and edge {cross_edge} of polygon {cross_label} are glued but do not have the same length"
-                )
-
-        super().set_immutable()
+        if not self.base_ring().has_coerce_map_from(polygon.base_ring()):
+            raise ValueError(
+                f"polygon is defined over {polygon.base_ring()}, which does not coerce into {self.base_ring()}"
+            )

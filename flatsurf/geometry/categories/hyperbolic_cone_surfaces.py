@@ -375,7 +375,9 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 sage: S.glue((0, 0), (0, 3))
                 sage: S._mismatched_gluing() is None
                 True
-                sage: S.glue((0, 1), (0, 0))
+
+                sage: from flatsurf.geometry.surface import MutablePolygonalSurface
+                sage: MutablePolygonalSurface.glue(S, (0, 1), (0, 0))
                 sage: S._mismatched_gluing()
                 ((0, 0), (0, 1))
 
@@ -404,7 +406,11 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             Verify that the edges glued to each other have the same length.
 
             The test is skipped for mutable surfaces, which may go through
-            states with mismatched gluings while they are built.
+            states with mismatched gluings while they are built, except for
+            a
+            :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`:
+            its ``glue()`` refuses such gluings, so the property holds in
+            every state.
 
             EXAMPLES::
 
@@ -414,15 +420,28 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 sage: S = MutableOrientedHyperbolicSurface(QQ)
                 sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
                 0
-                sage: S.glue((0, 0), (0, 1))
-                sage: S._test_edge_lengths()
                 sage: S.glue((0, 0), (0, 3))
                 sage: S.glue((0, 1), (0, 2))
-                sage: S.set_immutable()
                 sage: S._test_edge_lengths()
 
+            The test fails on a surface glued with the shared method, which
+            does not check the lengths::
+
+                sage: from flatsurf.geometry.surface import MutablePolygonalSurface
+                sage: MutablePolygonalSurface.glue(S, (0, 1), (0, 0))
+                sage: S._test_edge_lengths()
+                Traceback (most recent call last):
+                ...
+                AssertionError: ((0, 0), (0, 1)) is not None
+
             """
-            if self.is_mutable():
+            from flatsurf.geometry.hyperbolic_surface import (
+                MutableOrientedHyperbolicSurface,
+            )
+
+            if self.is_mutable() and not isinstance(
+                self, MutableOrientedHyperbolicSurface
+            ):
                 return
 
             tester = self._tester(**options)
@@ -491,20 +510,12 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                     sage: g * vector((1/2, 0)), g * vector((1/2, 1/2))
                     ((0, 1/2), (1/2, 1/2))
 
-                The isometry of a self-glued edge is the half turn about its
-                midpoint, which may need a quadratic extension::
+                TESTS::
 
                     sage: S = MutableOrientedHyperbolicSurface(QQ)
                     sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
                     0
-                    sage: S.glue((0, 0), (0, 0))
-                    sage: S.edge_transformation(0, 0)
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: isometry is not defined over Rational Field; adjoin a square root of 4/3
-
-                TESTS::
-
+                    sage: S.glue((0, 0), (0, 3))
                     sage: S.edge_transformation(0, 1)
                     Traceback (most recent call last):
                     ...
@@ -513,30 +524,67 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 """
                 from flatsurf.geometry.hyperbolic_isometry import (
                     HyperbolicIsometryGroup,
-                    segment_isometry,
                 )
 
                 cross = self.opposite_edge(label, edge)
                 if cross is None:
                     raise ValueError(f"edge {edge} of polygon {label} is not glued")
 
-                cross_label, cross_edge = cross
+                matrix = self._side_pairing_matrix(label, edge, *cross)
+
+                return HyperbolicIsometryGroup(self.base_ring())(matrix)
+
+            def _side_pairing_matrix(self, label, edge, cross_label, cross_edge):
+                r"""
+                Return the matrix of the orientation preserving isometry that
+                sends the ``edge`` of the polygon ``label`` onto the edge
+                ``cross_edge`` of ``cross_label`` with reverse orientation,
+                whether or not these edges are glued.
+
+                INPUT:
+
+                - ``label``, ``edge`` -- a polygon label and an edge index
+
+                - ``cross_label``, ``cross_edge`` -- a polygon label and an
+                  edge index
+
+                OUTPUT:
+
+                A matrix over the base ring of this surface. A ``ValueError``
+                is raised if the edges do not have the same length or if the
+                isometry is not defined over the base ring.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: H = HyperbolicPlane(QQ)
+                    sage: S = MutableOrientedHyperbolicSurface(QQ)
+                    sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    0
+                    sage: S._side_pairing_matrix(0, 0, 0, 3)
+                    [ 0 -1  0]
+                    [ 1  0  0]
+                    [ 0  0  1]
+                    sage: S._side_pairing_matrix(0, 0, 0, 1)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: segments do not have the same length
+
+                """
+                from flatsurf.geometry.hyperbolic_isometry import segment_isometry
 
                 polygon = self.polygon(label)
                 cross_polygon = self.polygon(cross_label)
 
-                K = self.base_ring()
-
-                matrix = segment_isometry(
+                return segment_isometry(
                     (polygon.vertex(edge), polygon.vertex(edge + 1)),
                     (
                         cross_polygon.vertex(cross_edge + 1),
                         cross_polygon.vertex(cross_edge),
                     ),
-                    ring=K,
+                    ring=self.base_ring(),
                 )
-
-                return HyperbolicIsometryGroup(K)(matrix)
 
             def edge_matrix(self, label, edge):
                 r"""
