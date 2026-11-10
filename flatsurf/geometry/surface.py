@@ -1086,7 +1086,25 @@ class MutablePolygonalSurface(Surface_base):
             sage: S.add_polygon(Polygon(vertices=[(0, 0), (2, 0), (2, 2)]), label=0)
             0
 
+        TESTS:
+
+        An immutable surface refuses the replacement::
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.set_immutable()
+            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
+            Traceback (most recent call last):
+            ...
+            Exception: cannot modify immutable surface; create a mutable copy first
+
         """
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a mutable copy first"
+            )
+
         old = self.polygon(label)
 
         if len(old.vertices()) != len(polygon.vertices()):
