@@ -23,7 +23,7 @@ values of classical hyperbolic geometry.
 
 import pytest
 
-from sage.all import QQ, RR, NumberField, matrix, polygen, vector
+from sage.all import AA, CC, QQ, RIF, RR, NumberField, matrix, polygen, vector
 
 from flatsurf import HyperbolicPlane, Polygon
 from flatsurf.geometry.categories import ConeSurfaces, HyperbolicConeSurfaces
@@ -248,3 +248,123 @@ def test_octagon_point(octagon):
         S.hyperbolic_plane().point(image[0], image[1], model="klein"),
     }
     assert S(0, (r / 2, 0)).angle() == 1
+
+
+def algebraic_octagon():
+    # The octagon of the `octagon` fixture over a field embedded in AA.
+    x = polygen(QQ, "x")
+    f = sum(c * x**i for i, c in enumerate(OCTAGON["klein_radius_polynomial"]))
+    approximate = OCTAGON["klein_radius_embedding"]
+    root = AA.polynomial_root(f, RIF(approximate - 1e-6, approximate + 1e-6))
+    K = NumberField(f, "r", embedding=root)
+    r = K.gen()
+    s2 = in_radius(r, OCTAGON["sqrt2_in_radius"])
+    points = [
+        (r, 0),
+        (r / s2, r / s2),
+        (0, r),
+        (-r / s2, r / s2),
+        (-r, 0),
+        (-r / s2, -r / s2),
+        (0, -r),
+        (r / s2, -r / s2),
+    ]
+    return HyperbolicPlane(K).polygon(vertices=points)
+
+
+def surface_over(ring, polygon, gluings):
+    S = MutableOrientedHyperbolicSurface(ring)
+    S.add_polygon(polygon)
+    for a, b in gluings:
+        S.glue((0, a), (0, b))
+    return S
+
+
+OPPOSITE = OCTAGON_GLUINGS["opposite"][0]
+
+
+def test_minimal_field_octagon_over_AA():
+    P = algebraic_octagon()
+    S = surface_over(AA, P, OPPOSITE)
+    S.set_immutable(minimal_field=True)
+
+    K = S.base_ring()
+    assert K.degree() == 4
+    assert K.polynomial() == polygen(QQ, "y") ** 4 - 2
+    assert S.polygon(0).base_ring() is K
+    a = K.gen()
+    assert S.edge_transformation(0, 0).trace() == 8 * a**2 + 11
+
+
+def test_minimal_field_octagon_keeps_number_field():
+    P = algebraic_octagon()
+    K = P.base_ring()
+    S = surface_over(K, P, OPPOSITE)
+    S.set_immutable(minimal_field=True)
+
+    assert S.base_ring() is K
+    assert S.polygon(0) == P
+
+
+def test_minimal_field_quadrilateral(H):
+    S = surface_over(AA, H.polygon(vertices=QUADRILATERAL), [(1, 2)])
+    S.set_immutable(minimal_field=True)
+
+    assert S.base_ring() is QQ
+    assert S.polygon(0).base_ring() is QQ
+
+
+def test_minimal_field_self_glued_quadrilateral(H):
+    S = surface_over(AA, H.polygon(vertices=QUADRILATERAL), [(1, 2), (0, 0)])
+    S.set_immutable(minimal_field=True)
+
+    K = S.base_ring()
+    assert K.degree() == 2
+    assert K.polynomial() == polygen(QQ, "y") ** 2 - 3
+    assert S.polygon(0).base_ring() is K
+
+
+def test_minimal_field_refused(H):
+    S = surface_over(AA, H.polygon(vertices=QUADRILATERAL), [(1, 2)])
+    S.set_immutable(minimal_field=True)
+    with pytest.raises(Exception, match="cannot modify immutable surface"):
+        S.set_immutable(minimal_field=True)
+
+    with pytest.raises(NotImplementedError):
+        MutableOrientedHyperbolicSurface(CC).set_immutable(minimal_field=True)
+
+
+def test_change_ring_round_trip():
+    P = algebraic_octagon()
+    K = P.base_ring()
+    S = surface_over(K, P, OPPOSITE)
+    S.set_immutable()
+
+    T = S.change_ring(AA)
+    assert T.polygon(0).base_ring() is AA
+    assert T.edge_transformation(0, 0).trace() == AA(
+        S.edge_transformation(0, 0).trace()
+    )
+
+    U = T.change_ring(K)
+    assert U.polygon(0) == P
+    assert U.edge_transformation(0, 0).trace() == S.edge_transformation(0, 0).trace()
+
+    assert S.change_ring(K) is not S
+
+
+def test_change_ring_refused(H):
+    P = algebraic_octagon()
+    S = surface_over(P.base_ring(), P, OPPOSITE)
+    S.set_immutable()
+    with pytest.raises(ValueError, match="polygon 0 do not lie in Rational Field"):
+        S.change_ring(AA).change_ring(QQ)
+    with pytest.raises(ValueError, match="polygon 0 do not lie in Rational Field"):
+        S.change_ring(QQ)
+
+    S = surface_over(AA, H.polygon(vertices=QUADRILATERAL), [(0, 0)])
+    with pytest.raises(ValueError, match="adjoin a square root of 4/3"):
+        S.change_ring(QQ)
+
+    S = surface_over(AA, H.polygon(vertices=QUADRILATERAL), [(1, 2)])
+    assert S.change_ring(QQ).polygon(0) == H.polygon(vertices=QUADRILATERAL)

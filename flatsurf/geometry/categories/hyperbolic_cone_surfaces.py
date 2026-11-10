@@ -470,6 +470,115 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             want to put it here.
             """
 
+            def change_ring(self, ring):
+                r"""
+                Return an immutable copy of this surface over ``ring``.
+
+                INPUT:
+
+                - ``ring`` -- a ring; the Klein coordinates of the vertices
+                  of the polygons and the side pairings must lie in it
+
+                EXAMPLES:
+
+                A surface over a number field copied to ``AA`` and back::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: K.<r> = NumberField(x^4 + 32*x^2 - 32, embedding=AA(12*AA(2).sqrt() - 16).sqrt())
+                    sage: s2 = r^2/12 + 4/3
+                    sage: cos = [1, s2/2, 0, -s2/2, -1, -s2/2, 0, s2/2]
+                    sage: sin = [0, s2/2, 1, s2/2, 0, -s2/2, -1, -s2/2]
+                    sage: P = HyperbolicPlane(K).polygon(vertices=[(r * c, r * s) for c, s in zip(cos, sin)])
+                    sage: S = MutableOrientedHyperbolicSurface(K)
+                    sage: S.add_polygon(P)
+                    0
+                    sage: for i in range(4):
+                    ....:     S.glue((0, i), (0, i + 4))
+                    sage: S.set_immutable()
+
+                    sage: T = S.change_ring(AA)
+                    sage: T.base_ring()
+                    Algebraic Real Field
+                    sage: T.polygon(0).base_ring()
+                    Algebraic Real Field
+                    sage: T.edge_transformation(0, 0).trace()
+                    22.31370849898476?
+                    sage: U = T.change_ring(K)
+                    sage: U.polygon(0) == P
+                    True
+                    sage: U.edge_transformation(0, 0).trace()
+                    2/3*r^2 + 65/3
+
+                The copy is made even when the ring is the base ring::
+
+                    sage: S.change_ring(S.base_ring()) is S
+                    False
+
+                The coordinates must lie in the ring::
+
+                    sage: T.change_ring(QQ)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: the coordinates of polygon 0 do not lie in Rational Field
+                    sage: S.change_ring(QQ)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: the coordinates of polygon 0 do not lie in Rational Field
+
+                So must the side pairings::
+
+                    sage: Q = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+                    sage: L = MutableOrientedHyperbolicSurface(AA)
+                    sage: L.add_polygon(Q)
+                    0
+                    sage: L.glue((0, 1), (0, 2))
+                    sage: L.change_ring(QQ).polygon(0)
+                    Hyperbolic polygon with vertices [I, (1/2, 0), (1/2, 1/2), (0, 1/2)]
+                    sage: M = MutableOrientedHyperbolicSurface(AA)
+                    sage: M.add_polygon(Q)
+                    0
+                    sage: M.glue((0, 0), (0, 0))
+                    sage: M.change_ring(QQ)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: cannot glue edge 0 of polygon 0 to edge 0 of polygon 0: isometry is not defined over Rational Field; adjoin a square root of 4/3
+
+                """
+                if not self.is_finite_type():
+                    raise NotImplementedError(
+                        "change_ring is only implemented for surfaces of finite type"
+                    )
+
+                from flatsurf.geometry.hyperbolic_surface import (
+                    MutableOrientedHyperbolicSurface,
+                )
+
+                S = MutableOrientedHyperbolicSurface(ring)
+
+                for label in self.labels():
+                    try:
+                        polygon = self.polygon(label).change_ring(ring)
+                    except (TypeError, ValueError) as error:
+                        raise ValueError(
+                            f"the coordinates of polygon {label} do not lie in {ring}"
+                        ) from error
+                    S.add_polygon(polygon, label=label)
+
+                # Each gluing is seen from both of its edges; glue it once.
+                done = set()
+                for label in self.labels():
+                    for edge in range(len(self.polygon(label).vertices())):
+                        cross = self.opposite_edge(label, edge)
+                        if cross is None or (label, edge) in done:
+                            continue
+                        done.add((label, edge))
+                        done.add(cross)
+                        S.glue((label, edge), cross)
+
+                S.set_immutable()
+                return S
+
             def edge_transformation(self, label, edge):
                 r"""
                 Return the orientation preserving isometry that sends the
