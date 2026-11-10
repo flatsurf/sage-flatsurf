@@ -403,8 +403,9 @@ class HolonomyRepresentation(Morphism):
         about the developed vertex by the angle of the vertex.
 
         The rotation part is compared numerically with the sum of the corner
-        angles, and also exactly when the cosine and the sine of the angle
-        are rational. When the angle is a
+        angles, and also exactly, in the algebraic reals, when the base ring
+        coerces into them (in the rationals otherwise, when the cosine and the
+        sine of the angle are rational). When the angle is a
         rational `p/q`, the `q`-th power of the image is checked to be the
         identity.
 
@@ -412,6 +413,28 @@ class HolonomyRepresentation(Morphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5)
+            sage: S.holonomy_representation()._test_vertex_loops()
+
+        A vertex whose cosine is not rational::
+
+            sage: from flatsurf import HyperbolicPlane, similarity_surfaces, Polygon
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: x = polygen(QQ)
+            sage: K = NumberField(x^4 + 32*x^2 - 32, "r", embedding=RR(0.98))
+            sage: r = K.gen(); s2 = r^2/12 + 4/3
+            sage: H = HyperbolicPlane(K)
+            sage: S = MutableOrientedHyperbolicSurface(K)
+            sage: S.add_polygon(H.polygon(vertices=[(0, 0), (r, 0), (r*s2/2, r*s2/2)]))
+            0
+            sage: S.glue((0, 0), (0, 2)); S.set_immutable()
+            sage: phi = S.holonomy_representation()
+            sage: phi(phi.domain().vertex_loops()[S(0, 0)]).trace()
+            1/12*r^2 + 7/3
+            sage: phi._test_vertex_loops()
+
+        The double of a triangle, with irrational sines::
+
+            sage: S = similarity_surfaces.polygon_double(Polygon(angles=(1, 2, 3)))
             sage: S.holonomy_representation()._test_vertex_loops()
         """
         import math
@@ -424,6 +447,7 @@ class HolonomyRepresentation(Morphism):
         loops = F.vertex_loops()
         developed = self._developed_vertices()
         hyperbolic = self._is_hyperbolic()
+        exact = AA.has_coerce_map_from(self.codomain().base_ring())
 
         for vertex, loop in loops.items():
             g = self(loop)
@@ -449,8 +473,11 @@ class HolonomyRepresentation(Morphism):
             # vertex with irrational corners is read from the trace of g, so
             # comparing g with it alone would check nothing.
             if hyperbolic:
-                if cos is not None and cos in QQ:
-                    tester.assertEqual(g.trace(), 1 + 2 * QQ(cos))
+                if cos is not None:
+                    if exact:
+                        tester.assertEqual(AA(g.trace()), 1 + 2 * cos)
+                    elif cos in QQ:
+                        tester.assertEqual(g.trace(), 1 + 2 * QQ(cos))
                 tester.assertAlmostEqual(
                     float(g.trace()),
                     1 + 2 * math.cos(2 * math.pi * numerical),
@@ -458,9 +485,15 @@ class HolonomyRepresentation(Morphism):
                 )
             else:
                 linear = g.matrix().submatrix(0, 0, 2, 2)
-                if cos is not None and cos in QQ and sin in QQ:
-                    c, s = QQ(cos), QQ(sin)
-                    tester.assertEqual(linear, linear.parent()([c, -s, s, c]))
+                if cos is not None:
+                    if exact:
+                        tester.assertEqual(
+                            [AA(entry) for entry in linear.list()],
+                            [cos, -sin, sin, cos],
+                        )
+                    elif cos in QQ and sin in QQ:
+                        c, s = QQ(cos), QQ(sin)
+                        tester.assertEqual(linear, linear.parent()([c, -s, s, c]))
                 c = math.cos(2 * math.pi * numerical)
                 s = math.sin(2 * math.pi * numerical)
                 for entry, expected in zip(linear.list(), [c, -s, s, c]):
@@ -507,6 +540,20 @@ def _holonomy_angle(surface, vertex):
         ...
         ValueError: angle is not a rational multiple of 2π; set numerical=True to get a numerical approximation
 
+    A sector of the regular octagon, whose angle at the origin has a cosine
+    outside the rational numbers::
+
+        sage: x = polygen(QQ)
+        sage: K = NumberField(x^4 + 32*x^2 - 32, "r", embedding=RR(0.98))
+        sage: r = K.gen(); s2 = r^2/12 + 4/3
+        sage: H = HyperbolicPlane(K)
+        sage: S = MutableOrientedHyperbolicSurface(K)
+        sage: S.add_polygon(H.polygon(vertices=[(0, 0), (r, 0), (r*s2/2, r*s2/2)]))
+        0
+        sage: S.glue((0, 0), (0, 2)); S.set_immutable()
+        sage: _holonomy_angle(S, S(0, 0))
+        1/8
+
     """
     from sage.all import QQ
 
@@ -517,13 +564,28 @@ def _holonomy_angle(surface, vertex):
             "angle is not a rational multiple of 2π; set numerical=True to get a numerical approximation"
         )
 
-    phi = surface.holonomy_representation()
-    loops = phi.domain().vertex_loops()
-    if vertex not in loops:
-        raise not_rational()
+    # Walk around the vertex through the corners (q, j), the vertex being the
+    # start of the edge j of q; the edge j - 1 of q ends at the vertex, so its
+    # partner starts there. This is the order of the loops of the fundamental
+    # group, and needs only the gluings around the vertex, finitely many even
+    # on an infinite surface.
+    q0, point = next(iter(vertex.representatives()))
+    j0 = surface.polygon(q0).get_point_position(point).get_vertex()
+    letters = [(q0, j0)]
+    while True:
+        q, j = letters[-1]
+        corner = surface.opposite_edge(q, (j - 1) % len(surface.polygon(q).vertices()))
+        if corner is None or surface.opposite_edge(q0, j0) is None:
+            # A vertex on the boundary has no loop.
+            raise not_rational()
+        if corner == (q0, j0):
+            break
+        letters.append(corner)
 
     try:
-        g = phi(loops[vertex])
+        g = surface.edge_transformation(*letters[0])
+        for letter in letters[1:]:
+            g = g * surface.edge_transformation(*letter)
     except ValueError:
         # The isometry of a self-glued edge may not be defined over the base
         # ring.

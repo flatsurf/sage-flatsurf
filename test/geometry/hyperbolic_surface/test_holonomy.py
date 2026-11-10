@@ -33,6 +33,7 @@ from flatsurf import (
     similarity_surfaces,
     translation_surfaces,
 )
+from flatsurf.geometry.holonomy import _holonomy_angle
 from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
 
 from hyperbolic_surface_oracles import FLAT_ORBIFOLDS, OCTAGON, OCTAGON_GLUINGS
@@ -237,3 +238,18 @@ def test_hyperbolic_angle_from_holonomy(H):
     assert T(0, 0).angle() == QQ(1) / 4
     with pytest.raises(ValueError):
         T(1, 1).angle()
+
+
+def test_hyperbolic_angle_of_octagon_sector():
+    x = polygen(QQ)
+    K = NumberField(x**4 + 32 * x**2 - 32, "r", embedding=RR(0.98))
+    r = K.gen()
+    s2 = r**2 / 12 + QQ(4) / 3
+    S = MutableOrientedHyperbolicSurface(K)
+    S.add_polygon(
+        HyperbolicPlane(K).polygon(vertices=[(0, 0), (r, 0), (r * s2 / 2, r * s2 / 2)])
+    )
+    S.glue((0, 0), (0, 2))
+    S.set_immutable()
+
+    assert _holonomy_angle(S, S(0, 0)) == QQ(1) / 8
