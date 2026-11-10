@@ -269,6 +269,254 @@ class ConeSurfaces(SurfaceCategory):
                         punctured_vertices=punctured_vertices,
                     )
 
+                def orbifold_points(self):
+                    r"""
+                    Return the orbifold points of this surface with their
+                    orders.
+
+                    An orbifold point of order `m \ge 2` is a vertex not on
+                    the boundary whose total angle is `1/m` (in multiples of
+                    `2\pi`), or the midpoint of an edge glued to itself, of
+                    order 2. Every one of them has coordinates over the base
+                    ring: a hyperbolic surface refuses the self-gluing of an
+                    edge whose half-turn, and so whose midpoint, is not over
+                    the base ring.
+
+                    OUTPUT:
+
+                    A list of pairs ``(p, m)``, ``p`` a point of this surface
+                    and ``m`` an integer: first the vertices, in the order of
+                    their first corner in
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edges`,
+                    then the midpoints of the self-glued edges, in the same
+                    order. A vertex whose angle is not a rational multiple of
+                    `2\pi` is no orbifold point.
+
+                    EXAMPLES:
+
+                    The quotient of the square by its quarter turn, glued
+                    from its half, a sphere with two points of order 4 and
+                    one of order 2::
+
+                        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]))
+                        0
+                        sage: S.glue((0, 2), (0, 2))
+                        sage: S.glue((0, 0), (0, 1))
+                        sage: S.set_immutable()
+                        sage: S.orbifold_points()
+                        [(Vertex 0 of polygon 0, 4),
+                         (Vertex 1 of polygon 0, 4),
+                         (Point (1/2, 1/2) of polygon 0, 2)]
+
+                    A vertex on the boundary is no orbifold point::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(1/2, 1/2), (0, 0), (1, 0)]))
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.orbifold_points()
+                        [(Vertex 0 of polygon 0, 4)]
+
+                    A polygon glued to itself along each of its edges::
+
+                        sage: from flatsurf import similarity_surfaces
+                        sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                        sage: S.orbifold_points()
+                        [(Point (1, 0) of polygon 0, 2),
+                         (Point (3/2, 2) of polygon 0, 2),
+                         (Point (1/2, 9/2) of polygon 0, 2),
+                         (Point (0, 5/2) of polygon 0, 2)]
+
+                    The regular octagon has a single vertex, of angle `3`::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: translation_surfaces.regular_octagon().orbifold_points()
+                        []
+
+                    A hyperbolic orbifold of signature `(0; 2, 8, 8)`, the
+                    quotient of the regular octagon of angles `\pi/4` by its
+                    rotation of order 8, its third side glued to itself::
+
+                        sage: from flatsurf import HyperbolicPlane
+                        sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                        sage: K.<r> = NumberField(x^4 + 32*x^2 - 32, embedding=AA(12*AA(2).sqrt() - 16).sqrt())
+                        sage: s2 = r^2/12 + 4/3
+                        sage: P = HyperbolicPlane(K).polygon(vertices=[(0, 0), (r, 0), (r / s2, r / s2)])
+                        sage: S = MutableOrientedHyperbolicSurface(K)
+                        sage: S.add_polygon(P)
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.glue((0, 1), (0, 1))
+                        sage: S.set_immutable()
+                        sage: S.orbifold_points()
+                        [(Vertex 0 of polygon 0, 8),
+                         (Vertex 1 of polygon 0, 8),
+                         (Point (1/48*r^3 + 5/6*r, 1/48*r^3 + 1/3*r) of polygon 0, 2)]
+
+                    A vertex of the Lambert quadrilateral has an angle that is
+                    not a rational multiple of `2\pi`::
+
+                        sage: S = MutableOrientedHyperbolicSurface(QQ)
+                        sage: S.add_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                        0
+                        sage: S.glue((0, 0), (0, 3))
+                        sage: S.glue((0, 1), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.orbifold_points()
+                        [(Vertex 0 of polygon 0, 4), (Vertex 1 of polygon 0, 2)]
+
+                    TESTS:
+
+                    A flat vertex whose angle is not a rational multiple of
+                    `2\pi`::
+
+                        sage: S = similarity_surfaces.polygon_double(Polygon(vertices=[(0, 0), (1, 0), (1/3, 1/2)]))
+                        sage: S.orbifold_points()
+                        []
+
+                    """
+                    from sage.all import ZZ
+
+                    boundary = set()
+                    for label, edge in self.edges():
+                        if self.opposite_edge(label, edge) is None:
+                            n = len(self.polygon(label).vertices())
+                            # pylint: disable-next=not-callable
+                            boundary.add(self(label, edge))
+                            # pylint: disable-next=not-callable
+                            boundary.add(self(label, (edge + 1) % n))
+
+                    points = []
+
+                    seen = set()
+                    for label, corner in self.edges():
+                        vertex = self(label, corner)  # pylint: disable=not-callable
+                        if vertex in seen:
+                            continue
+                        seen.add(vertex)
+                        if vertex in boundary:
+                            continue
+                        order = self._orbifold_order(vertex)
+                        if order is not None and order >= 2:
+                            points.append((vertex, order))
+
+                    for label, edge in self.edges():
+                        if self.opposite_edge(label, edge) == (label, edge):
+                            midpoint = self._edge_midpoint(label, edge)
+                            # pylint: disable-next=not-callable
+                            points.append((self(label, midpoint), ZZ(2)))
+
+                    return points
+
+                def _orbifold_order(self, vertex):
+                    r"""
+                    Return the positive integer `m` such that the angle of
+                    ``vertex`` is `1/m` (in multiples of `2\pi`), or ``None``
+                    if there is none.
+
+                    This is a helper method for :meth:`orbifold_points` and
+                    :meth:`is_orbifold`; a regular vertex has order 1.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import polygons, similarity_surfaces
+                        sage: S = similarity_surfaces.polygon_double(polygons.square())
+                        sage: S._orbifold_order(S(0, 0))
+                        2
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.square_torus()
+                        sage: S._orbifold_order(S(0, 0))
+                        1
+                        sage: S = translation_surfaces.regular_octagon()
+                        sage: S._orbifold_order(S(0, 0)) is None
+                        True
+
+                    """
+                    from sage.all import QQ, ZZ
+
+                    try:
+                        angle = QQ(vertex.angle())
+                    except (ValueError, NotImplementedError):
+                        # The exact angle of a hyperbolic vertex raises a
+                        # ValueError, the one of a flat vertex a
+                        # NotImplementedError, when it is not a rational
+                        # multiple of 2π.
+                        return None
+
+                    if angle.numerator() == 1:
+                        return ZZ(angle.denominator())
+                    return None
+
+                def is_orbifold(self):
+                    r"""
+                    Return whether this surface is an orbifold, i.e., whether
+                    the angle of each of its vertices is `1` or `1/m` (in
+                    multiples of `2\pi`) for an integer `m \ge 2`.
+
+                    The midpoints of the edges glued to themselves are
+                    orbifold points of order 2 and always qualify.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]))
+                        0
+                        sage: S.glue((0, 2), (0, 2))
+                        sage: S.glue((0, 0), (0, 1))
+                        sage: S.set_immutable()
+                        sage: S.is_orbifold()
+                        True
+
+                        sage: from flatsurf import similarity_surfaces
+                        sage: similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])).is_orbifold()
+                        True
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: translation_surfaces.regular_octagon().is_orbifold()
+                        False
+
+                    A hyperbolic sphere with a cone point of angle neither
+                    `1` nor `1/m`::
+
+                        sage: from flatsurf import HyperbolicPlane
+                        sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                        sage: S = MutableOrientedHyperbolicSurface(QQ)
+                        sage: S.add_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                        0
+                        sage: S.glue((0, 0), (0, 3))
+                        sage: S.glue((0, 1), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.is_orbifold()
+                        False
+
+                    Orbifolds with boundary are not supported::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(1/2, 1/2), (0, 0), (1, 0)]))
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.is_orbifold()
+                        Traceback (most recent call last):
+                        ...
+                        NotImplementedError: orbifolds with boundary are not supported yet
+
+                    """
+                    if self.is_with_boundary():
+                        raise NotImplementedError(
+                            "orbifolds with boundary are not supported yet"
+                        )
+
+                    return all(
+                        self._orbifold_order(vertex) is not None
+                        for vertex in self.vertices()
+                    )
+
 
 class FlatConeSurfaces(SurfaceCategory):
     r"""

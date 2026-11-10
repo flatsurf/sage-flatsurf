@@ -199,6 +199,53 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             x, y = coordinates
             return self.hyperbolic_plane().point(x, y, model="klein", check=False)
 
+        def _edge_midpoint(self, label, edge):
+            r"""
+            Return the Klein coordinates of the hyperbolic midpoint of the
+            ``edge`` of the polygon ``label``.
+
+            This is a helper method for
+            :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``edge`` -- an edge index of that polygon
+
+            OUTPUT:
+
+            A vector over the base ring. A :class:`ValueError` is raised if the
+            midpoint is not defined over the base ring, which does not happen
+            for an edge glued to itself.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(11/13, 0), (3/5, 2/5), (1/7, 0)]))
+                0
+                sage: S._edge_midpoint(0, 2)
+                (3/5, 0)
+
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                0
+                sage: S._edge_midpoint(0, 0)
+                Traceback (most recent call last):
+                ...
+                ValueError: isometry is not defined over Rational Field; adjoin a square root of 4/3
+
+            """
+            from flatsurf.geometry.hyperbolic_isometry import segment_midpoint
+
+            polygon = self.polygon(label)
+            return segment_midpoint(
+                polygon.vertex(edge), polygon.vertex(edge + 1), ring=self.base_ring()
+            )
+
         def some_elements(self):
             r"""
             Return some typical points of this surface (for testing): a point

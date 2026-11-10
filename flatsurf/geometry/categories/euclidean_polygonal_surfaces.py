@@ -128,6 +128,31 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
             point.set_immutable()
             return point
 
+        def _edge_midpoint(self, label, edge):
+            r"""
+            Return the coordinates of the midpoint of the ``edge`` of the
+            polygon ``label``.
+
+            This is a helper method for
+            :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``edge`` -- an edge index of that polygon
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S._edge_midpoint(0, 1)
+                (1, 1/2)
+
+            """
+            polygon = self.polygon(label)
+            return (polygon.vertex(edge) + polygon.vertex(edge + 1)) / 2
+
         def graphical_surface(self, *args, **kwargs):
             r"""
             Return a graphical representation of this surface.

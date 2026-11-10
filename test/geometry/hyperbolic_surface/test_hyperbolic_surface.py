@@ -395,3 +395,63 @@ def test_change_ring_refused(H):
 
     S = surface_over(AA, H.polygon(vertices=QUADRILATERAL), [(1, 2)])
     assert S.change_ring(QQ).polygon(0) == H.polygon(vertices=QUADRILATERAL)
+
+
+def test_orbifold_points_288(octagon):
+    # The quotient of the octagon by its rotation of order 8, its edge opposite
+    # to the centre glued to itself: Katok's signature (0; 2, 8, 8).
+    K = octagon.base_ring()
+    r = K.gen()
+    S = surface_over(K, octagon.cyclic_quotient(8), [(0, 2), (1, 1)])
+    S.set_immutable()
+
+    assert not S.is_with_boundary()
+    assert [m for p, m in S.orbifold_points()] == [8, 8, 2]
+    assert S.is_orbifold()
+
+    p, m = S.orbifold_points()[2]
+    # Exact value computed with sage-flatsurf.
+    midpoint = vector(K, (r**3 / 48 + 5 * r / 6, r**3 / 48 + r / 3))
+    assert p == S(0, midpoint)
+    assert S.edge_transformation(0, 1) * midpoint == midpoint
+    assert p.angle() == QQ(1) / 2
+
+
+def test_orbifold_points_sphere(sphere):
+    assert sphere.orbifold_points() == [(sphere(0, 0), 4), (sphere(0, 1), 2)]
+    assert not sphere.is_orbifold()
+
+
+def test_orbifold_points_square_half(H):
+    P = H.polygon(
+        vertices=[
+            (QQ(11) / 13, 0),
+            (QQ(3) / 5, QQ(2) / 5),
+            (QQ(1) / 7, 0),
+            (QQ(3) / 5, -QQ(2) / 5),
+        ]
+    )
+    S = surface_over(QQ, P.cyclic_quotient(2), [(2, 2), (0, 1)])
+    S.set_immutable()
+
+    assert not S.is_with_boundary()
+    # The centre of the square, fixed by the half-turn.
+    assert S.orbifold_points() == [(S(0, (QQ(3) / 5, 0)), 2)]
+    assert not S.is_orbifold()
+
+
+def test_orbifold_points_boundary(H):
+    P = H.polygon(
+        vertices=[
+            (QQ(11) / 13, 0),
+            (QQ(3) / 5, QQ(2) / 5),
+            (QQ(1) / 7, 0),
+            (QQ(3) / 5, -QQ(2) / 5),
+        ]
+    )
+    S = surface_over(QQ, P.cyclic_quotient(4), [(0, 2)])
+    S.set_immutable()
+
+    assert S.orbifold_points() == [(S(0, 0), 4)]
+    with pytest.raises(NotImplementedError, match="with boundary"):
+        S.is_orbifold()

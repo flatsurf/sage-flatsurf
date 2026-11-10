@@ -1,6 +1,6 @@
 r"""
-Cone angles and Euler characteristic of the flat orbifolds built by the
-surface generators.
+Cone angles, orbifold points and Euler characteristic of the flat orbifolds
+built by the surface generators.
 """
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
@@ -51,6 +51,17 @@ def test_flat_orbifold_angles(name, signature, angles, chi):
     # A cone point of angle 1/m has period m; the torus has none.
     orders = sorted(int(1 / a) for a in observed if a != 1)
     assert orders == sorted(signature[1])
+
+
+@pytest.mark.parametrize("name,signature,angles,chi", FLAT_ORBIFOLDS)
+def test_flat_orbifold_points(name, signature, angles, chi):
+    S = CONSTRUCTORS[name]()
+    assert S.is_orbifold()
+    # None of these surfaces has a self-glued edge: every orbifold point is a
+    # vertex.
+    points = S.orbifold_points()
+    assert all(p.is_vertex() for p, m in points)
+    assert sorted(m for p, m in points) == sorted(signature[1])
 
 
 @pytest.mark.parametrize("name,signature,angles,chi", FLAT_ORBIFOLDS)
