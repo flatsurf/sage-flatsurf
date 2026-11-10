@@ -56,6 +56,7 @@ side is a quarter turn about the origin::
 import operator
 
 from sage.categories.action import Action
+from sage.categories.pushout import ConstructionFunctor
 from sage.groups.group import Group
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import Matrix, MultiplicativeGroupElement
@@ -723,7 +724,8 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
         OUTPUT:
 
         For Klein coordinates, an immutable vector as for ``self * x``;
-        otherwise a subset of the same hyperbolic plane.
+        otherwise a subset of the hyperbolic plane over the pushout of the
+        base ring of this isometry and the base ring of ``x``.
 
         EXAMPLES::
 
@@ -741,15 +743,81 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             sage: g(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
             Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
 
+        An isometry over a larger ring moves a set over a smaller ring to the
+        larger ring::
+
+            sage: L = NumberField(x^2 - 3, "s3", embedding=AA(3).sqrt())
+            sage: s3 = L.gen()
+            sage: GL = HyperbolicIsometryGroup(L)
+            sage: g = GL(matrix(L, [[s3/2, -1/2, 0], [1/2, s3/2, 0], [0, 0, 1]]))
+            sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: Q = g(P)
+            sage: Q
+            Hyperbolic polygon with vertices [I, 1/3*s3 + 2/3*s3*I, -1/13*s3 - 4/13 + (8/13*s3 + 6/13)*I]
+            sage: Q.parent().base_ring()
+            Number Field in s3 with defining polynomial x^2 - 3 with s3 = 1.732050807568878?
+            sage: Q == g(P.change_ring(L))
+            True
+            sage: g(H(2*I)).parent().base_ring() is L
+            True
+            sage: GL.one()(P).parent().base_ring() is L
+            True
+
+        Two fields embedded in the algebraic reals meet there::
+
+            sage: M = NumberField(x^2 - 2, "s2", embedding=AA(2).sqrt())
+            sage: s2 = M.gen()
+            sage: PM = HyperbolicPlane(M).polygon(vertices=[(0, 0), (s2/4, 0), (0, s2/4)])
+            sage: R = g(PM)
+            sage: R
+            Hyperbolic polygon with vertices [I, 0.3719357993129545? + 1.136282636010346?*I, -0.2547898295538365? + 1.348221051175973?*I]
+            sage: R.parent().base_ring()
+            Algebraic Real Field
+            sage: R == HyperbolicIsometryGroup(AA)(g)(PM.change_ring(AA))
+            True
+
+        TESTS:
+
+        Fields embedded in the reals of Sage have no common parent::
+
+            sage: L = NumberField(x^2 - 3, "s3", embedding=RR(1.7))
+            sage: M = NumberField(x^2 - 2, "s2", embedding=RR(1.4))
+            sage: s3 = L.gen()
+            sage: g = HyperbolicIsometryGroup(L)(matrix(L, [[s3/2, -1/2, 0], [1/2, s3/2, 0], [0, 0, 1]]))
+            sage: p = HyperbolicPlane(M)(I)
+            sage: g(p)
+            Traceback (most recent call last):
+            ...
+            TypeError: no common base ring for the isometry over Number Field in s3 with defining polynomial x^2 - 3 with s3 = 1.732050807568878? and the set over Number Field in s2 with defining polynomial x^2 - 2 with s2 = 1.414213562373095?
+
         """
         from flatsurf.geometry.hyperbolic import HyperbolicConvexSet
         from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
 
-        if isinstance(x, HyperbolicPolygon):
-            return x.apply_isometry(self)
+        if isinstance(x, (HyperbolicConvexSet, HyperbolicPolygon)):
+            from sage.categories.pushout import pushout
+            from sage.structure.coerce_exceptions import CoercionException
 
-        if isinstance(x, HyperbolicConvexSet):
-            return x.apply_isometry(self._matrix, model="klein")
+            K_g = self._matrix.base_ring()
+            K_x = x.parent().base_ring()
+            try:
+                R = pushout(K_g, K_x)
+            except (CoercionException, TypeError) as error:
+                raise TypeError(
+                    f"no common base ring for the isometry over {K_g} and the set over {K_x}"
+                ) from error
+
+            if R is not K_x and R != K_x:
+                x = x.change_ring(R)
+
+            g = self
+            if R is not K_g and R != K_g:
+                g = HyperbolicIsometryGroup(R)(self)
+
+            if isinstance(x, HyperbolicPolygon):
+                return x.apply_isometry(g)
+
+            return x.apply_isometry(g._matrix, model="klein")
 
         from sage.modules.free_module_element import FreeModuleElement, vector
 
@@ -990,7 +1058,7 @@ class HyperbolicIsometryPlaneAction(Action):
     - ``G`` -- a :class:`HyperbolicIsometryGroup`
 
     - ``H`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane` whose
-      base ring has a coercion from the base ring of ``G``
+      base ring has a pushout with the base ring of ``G``
 
     EXAMPLES::
 
@@ -1004,7 +1072,28 @@ class HyperbolicIsometryPlaneAction(Action):
     """
 
     def __init__(self, G, H):
+        from sage.categories.pushout import pushout
+
+        from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+        self._codomain = HyperbolicPlane(pushout(G.base_ring(), H.base_ring()))
         super().__init__(G, H, True, operator.mul)
+
+    def codomain(self):
+        r"""
+        Return the parent of the images of this action: the hyperbolic plane
+        over the pushout of the base rings of the group and of the plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup, HyperbolicIsometryPlaneAction
+            sage: A = HyperbolicIsometryPlaneAction(HyperbolicIsometryGroup(QQ), HyperbolicPlane(AA))
+            sage: A.codomain()
+            Hyperbolic Plane over Algebraic Real Field
+
+        """
+        return self._codomain
 
     def _act_(self, g, x):
         r"""
@@ -1023,6 +1112,105 @@ class HyperbolicIsometryPlaneAction(Action):
 
         """
         return g(x)
+
+
+class HyperbolicIsometryGroupFunctor(ConstructionFunctor):
+    r"""
+    The construction functor of :class:`HyperbolicIsometryGroup`, from the
+    fields to the groups.
+
+    It lets the coercion system find the pushout of two groups of isometries
+    over different fields, which is the group over the pushout of the fields.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+        sage: F, K = HyperbolicIsometryGroup(QQ).construction()
+        sage: F
+        HyperbolicIsometryGroupFunctor
+        sage: F(AA)
+        Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
+
+    """
+
+    rank = 10
+
+    def __init__(self):
+        from sage.categories.fields import Fields
+        from sage.categories.groups import Groups
+
+        super().__init__(Fields(), Groups())
+
+    def _apply_functor(self, R):
+        r"""
+        Return the group of isometries over ``R``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: F = HyperbolicIsometryGroup(QQ).construction()[0]
+            sage: F(QQ) is HyperbolicIsometryGroup(QQ)
+            True
+
+        """
+        return HyperbolicIsometryGroup(R)
+
+    def __eq__(self, other):
+        r"""
+        Return whether ``other`` is such a functor; all of them are equal.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: F = HyperbolicIsometryGroup(QQ).construction()[0]
+            sage: F == HyperbolicIsometryGroup(AA).construction()[0]
+            True
+            sage: F == 1
+            False
+
+        """
+        return isinstance(other, HyperbolicIsometryGroupFunctor)
+
+    def __ne__(self, other):
+        r"""
+        Return whether ``other`` is not such a functor.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: F = HyperbolicIsometryGroup(QQ).construction()[0]
+            sage: F != HyperbolicIsometryGroup(AA).construction()[0]
+            False
+
+        """
+        return not self == other
+
+    def __hash__(self):
+        r"""
+        Return a hash value compatible with ``==``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: F = HyperbolicIsometryGroup(QQ).construction()[0]
+            sage: hash(F) == hash(HyperbolicIsometryGroup(AA).construction()[0])
+            True
+
+        """
+        return hash(HyperbolicIsometryGroupFunctor)
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this functor.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: HyperbolicIsometryGroup(QQ).construction()[0]
+            HyperbolicIsometryGroupFunctor
+
+        """
+        return "HyperbolicIsometryGroupFunctor"
 
 
 class HyperbolicIsometryGroup(UniqueRepresentation, Group):
@@ -1139,6 +1327,63 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             self([[QQ((5, 4)), 0, QQ((3, 4))], [0, 1, 0], [QQ((3, 4)), 0, QQ((5, 4))]]),
         ]
 
+    def construction(self):
+        r"""
+        Return the construction of this group: the functor that sends a field
+        to its group of isometries, and the base ring.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: G = HyperbolicIsometryGroup(QQ)
+            sage: F, K = G.construction()
+            sage: F, K
+            (HyperbolicIsometryGroupFunctor, Rational Field)
+            sage: F(K) is G
+            True
+
+        The pushout of the groups over two number fields is the group over
+        the algebraic reals, and their elements multiply there::
+
+            sage: from sage.categories.pushout import pushout
+            sage: L = NumberField(x^2 - 3, "s3", embedding=AA(3).sqrt())
+            sage: M = NumberField(x^2 - 2, "s2", embedding=AA(2).sqrt())
+            sage: G_L = HyperbolicIsometryGroup(L)
+            sage: G_M = HyperbolicIsometryGroup(M)
+            sage: pushout(G_L, G_M)
+            Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
+            sage: (G_L.one() * G_M.one()).parent()
+            Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
+
+        """
+        return HyperbolicIsometryGroupFunctor(), self._base_ring
+
+    def _pushout_(self, other):
+        r"""
+        Return the group of isometries over the pushout of the base rings of
+        this group and of ``other``, or ``None`` if ``other`` is not a group
+        of isometries.
+
+        The base rings are joined directly: the generic pushout of the two
+        constructions applies the functors of the fields in an order it
+        cannot decide when neither field coerces into the other.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: HyperbolicIsometryGroup(QQ)._pushout_(HyperbolicIsometryGroup(AA))
+            Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
+            sage: HyperbolicIsometryGroup(QQ)._pushout_(QQ) is None
+            True
+
+        """
+        if not isinstance(other, HyperbolicIsometryGroup):
+            return None
+
+        from sage.categories.pushout import pushout
+
+        return HyperbolicIsometryGroup(pushout(self._base_ring, other.base_ring()))
+
     def _coerce_map_from_(self, other):
         r"""
         Return whether there is a coercion from ``other`` to this group: the
@@ -1250,8 +1495,8 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
         This group acts by multiplication from the left on the free modules
         of rank two whose base ring has a common parent with the base ring of
         this group, see :class:`HyperbolicIsometryAction`, and on the
-        hyperbolic planes over a field into which the base ring coerces, see
-        :class:`HyperbolicIsometryPlaneAction`.
+        hyperbolic planes over a field that has a pushout with the base ring,
+        see :class:`HyperbolicIsometryPlaneAction`.
 
         EXAMPLES::
 
@@ -1271,6 +1516,32 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             ...
             TypeError: unsupported operand parent(s) for *: 'Ambient free module of rank 2 over the principal ideal domain Integer Ring' and 'Group of orientation preserving isometries of the hyperbolic plane over Rational Field'
 
+        A point over a smaller field is moved to the field of the isometry::
+
+            sage: L = NumberField(x^2 - 3, "s3", embedding=AA(3).sqrt())
+            sage: s3 = L.gen()
+            sage: g = HyperbolicIsometryGroup(L)(matrix(L, [[s3/2, -1/2, 0], [1/2, s3/2, 0], [0, 0, 1]]))
+            sage: p = g * HyperbolicPlane(QQ)(2*I)
+            sage: p.parent().base_ring() is L
+            True
+
+        TESTS:
+
+        Fields embedded in the reals of Sage have no common parent::
+
+            sage: L = NumberField(x^2 - 3, "s3", embedding=RR(1.7))
+            sage: M = NumberField(x^2 - 2, "s2", embedding=RR(1.4))
+            sage: s3 = L.gen()
+            sage: g = HyperbolicIsometryGroup(L)(matrix(L, [[s3/2, -1/2, 0], [1/2, s3/2, 0], [0, 0, 1]]))
+            sage: g * HyperbolicPlane(M)(I)
+            Traceback (most recent call last):
+            ...
+            TypeError: ...
+            sage: HyperbolicIsometryGroup(M).one() * g
+            Traceback (most recent call last):
+            ...
+            TypeError: ...
+
         """
         if self_on_left and op is operator.mul:
             from sage.modules.free_module import FreeModule_generic
@@ -1289,8 +1560,18 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
                 return HyperbolicIsometryAction(self, S)
 
             if isinstance(S, HyperbolicPlane):
-                if S.base_ring().has_coerce_map_from(self._base_ring):
-                    return HyperbolicIsometryPlaneAction(self, S)
-                return None
+                from sage.categories.pushout import pushout
+                from sage.structure.coerce_exceptions import CoercionException
+
+                try:
+                    pushout(self._base_ring, S.base_ring())
+                except (CoercionException, TypeError) as error:
+                    # Falling back to the generic action would reach the
+                    # point's own action, which does not accept isometries.
+                    raise TypeError(
+                        f"no common base ring for the isometry over {self._base_ring} and the set over {S.base_ring()}"
+                    ) from error
+
+                return HyperbolicIsometryPlaneAction(self, S)
 
         return super()._get_action_(S, op, self_on_left)

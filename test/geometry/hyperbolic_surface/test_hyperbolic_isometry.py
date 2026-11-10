@@ -175,6 +175,27 @@ def test_group_laws(G):
     assert h * ~h == G.one()
 
 
+def test_mixed_rings():
+    x = polygen(QQ)
+    L = NumberField(x**2 - 3, "s3", embedding=AA(3).sqrt())
+    M = NumberField(x**2 - 2, "s2", embedding=AA(2).sqrt())
+    s3 = L.gen()
+    G_L = HyperbolicIsometryGroup(L)
+    G_M = HyperbolicIsometryGroup(M)
+    g = G_L(matrix(L, [[s3 / 2, -QQ(1) / 2, 0], [QQ(1) / 2, s3 / 2, 0], [0, 0, 1]]))
+    H = HyperbolicPlane(QQ)
+    P = H.polygon(vertices=[(0, 0), (QQ(1) / 2, 0), (0, QQ(1) / 2)])
+    assert g(P) == g(P.change_ring(L))
+    assert g(P).parent().base_ring() is L
+    assert G_L.one()(P).parent().base_ring() is L
+    assert (g * H(2 * I)).parent().base_ring() is L
+    assert (G_L.one() * G_M.one()).parent() is HyperbolicIsometryGroup(AA)
+
+    s2 = M.gen()
+    P_M = HyperbolicPlane(M).polygon(vertices=[(0, 0), (s2 / 4, 0), (0, s2 / 4)])
+    assert g(P_M) == HyperbolicIsometryGroup(AA)(g)(P_M.change_ring(AA))
+
+
 def test_constructor_errors(G):
     with pytest.raises(ValueError):
         G([[1, 0, 0], [0, 1, 0], [0, 0, -1]])
