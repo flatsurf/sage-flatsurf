@@ -68,3 +68,11 @@ def test_flat_orbifold_points(name, signature, angles, chi):
 def test_flat_orbifold_chi(name, signature, angles, chi):
     S = CONSTRUCTORS[name]()
     assert S.euler_characteristic() == chi
+
+
+@pytest.mark.parametrize("name,signature,angles,chi", FLAT_ORBIFOLDS)
+def test_flat_orbifold_signature(name, signature, angles, chi):
+    S = CONSTRUCTORS[name]()
+    g, periods = signature
+    assert S.signature().katok() == (g, tuple(sorted(periods)), 0)
+    assert S.signature().euler_characteristic() == 0

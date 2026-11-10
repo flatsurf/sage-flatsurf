@@ -784,6 +784,48 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 """
                 return self.edge_transformation(label, edge).matrix()
 
+            def _boundary_trace(self, loop):
+                r"""
+                Return the trace in `\mathrm{SO}(2, 1)` of the holonomy of the
+                boundary ``loop``.
+
+                This is a helper method for
+                :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`.
+                The trace is a conjugacy invariant in the base ring, `1 + 2
+                \cosh \ell` for a geodesic boundary of length `\ell`.
+
+                INPUT:
+
+                - ``loop`` -- an element of the fundamental group of this
+                  surface punctured at all of its vertices and based at its
+                  root
+
+                EXAMPLES:
+
+                A pair of pants glued from two right-angled regular hexagons::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: rho = AA(6).sqrt() / 3
+                    sage: h = AA(2).sqrt() / 2
+                    sage: P = HyperbolicPlane(AA).polygon(vertices=[(rho, 0), (rho/2, h), (-rho/2, h), (-rho, 0), (-rho/2, -h), (rho/2, -h)])
+                    sage: S = MutableOrientedHyperbolicSurface(AA)
+                    sage: S.add_polygon(P)
+                    0
+                    sage: S.add_polygon(P)
+                    1
+                    sage: S.glue((0, 0), (1, 0))
+                    sage: S.glue((0, 2), (1, 4))
+                    sage: S.glue((0, 4), (1, 2))
+                    sage: S.set_immutable(minimal_field=True)
+                    sage: [S._boundary_trace(loop) for loop in S.fundamental_group(punctured_vertices=True).boundary_loops()]
+                    [15, 15, 15]
+
+                """
+                # The side pairings lie in SO(2, 1), so does their product,
+                # whose trace is then invariant under conjugation.
+                return self.holonomy_representation()(loop).matrix().trace()
+
             @cached_surface_method
             def _angle_vertex(self, vertex, numerical):
                 r"""

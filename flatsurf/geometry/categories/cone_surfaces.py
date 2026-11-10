@@ -517,6 +517,272 @@ class ConeSurfaces(SurfaceCategory):
                         for vertex in self.vertices()
                     )
 
+            class Connected(SurfaceCategoryWithAxiom):
+                r"""
+                The category of oriented connected cone surfaces built from
+                finitely many polygons.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: from flatsurf.geometry.categories import ConeSurfaces
+                    sage: translation_surfaces.square_torus() in ConeSurfaces().FiniteType().Oriented().Connected()
+                    True
+
+                """
+
+                class ParentMethods:
+                    r"""
+                    Provides methods available to all oriented connected cone
+                    surfaces built from finitely many polygons.
+
+                    If you want to add functionality for such surfaces you
+                    most likely want to put it here.
+                    """
+
+                    def signature(self):
+                        r"""
+                        Return the signature of this surface: its genus, the
+                        orders of its cone points, its number of cusps and the
+                        traces of the holonomy of its boundary components.
+
+                        OUTPUT:
+
+                        A :class:`~flatsurf.geometry.signature.SurfaceSignature`.
+                        Its cone points are the vertices not on the boundary
+                        whose angle `2\pi (1 + k)` is not `2\pi`, of order
+                        `k`, and the midpoints of the edges glued to
+                        themselves, of order `-1/2`. Its boundary traces are
+                        the traces in `\mathrm{SO}(2, 1)` of the holonomy of
+                        the
+                        :meth:`~flatsurf.geometry.fundamental_group.FundamentalGroup.boundary_loops`
+                        on a hyperbolic surface, ``None`` on a flat one.
+
+                        A ``NotImplementedError`` is raised if the angle of an
+                        interior vertex is not a rational multiple of `2\pi`;
+                        a ``ValueError`` if the angle of a vertex on the
+                        boundary is not `\pi`, i.e., the boundary is not
+                        geodesic.
+
+                        ALGORITHM:
+
+                        The genus `g` is read from the Euler characteristic
+                        `2 - 2g - b` of the surface, where `b` is the number
+                        of boundary components; it counts the midpoint of an
+                        edge glued to itself as a vertex.
+
+                        EXAMPLES:
+
+                        A translation surface in `H(2)`::
+
+                            sage: from flatsurf import translation_surfaces
+                            sage: translation_surfaces.regular_octagon().signature()
+                            SurfaceSignature(genus=2, cone_orders=(2,))
+
+                        A polygon glued to itself along each of its edges is
+                        a sphere with four cone points of angle `\pi`, the
+                        midpoints of the edges::
+
+                            sage: from flatsurf import Polygon, similarity_surfaces
+                            sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                            sage: S.signature()
+                            SurfaceSignature(genus=0, cone_orders=(-1/2, -1/2, -1/2, -1/2))
+
+                        A flat cylinder has two boundary components without a
+                        trace::
+
+                            sage: from flatsurf import MutableOrientedSimilaritySurface
+                            sage: S = MutableOrientedSimilaritySurface(QQ)
+                            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                            0
+                            sage: S.glue((0, 0), (0, 2))
+                            sage: S.set_immutable()
+                            sage: S.signature()
+                            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(None, None))
+
+                        A pair of pants, glued from two right-angled regular
+                        hexagons: its three boundary components have length
+                        `\operatorname{arccosh} 7`, of trace `1 + 2 \cdot 7`::
+
+                            sage: from flatsurf import HyperbolicPlane
+                            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                            sage: rho = AA(6).sqrt() / 3
+                            sage: h = AA(2).sqrt() / 2
+                            sage: P = HyperbolicPlane(AA).polygon(vertices=[(rho, 0), (rho/2, h), (-rho/2, h), (-rho, 0), (-rho/2, -h), (rho/2, -h)])
+                            sage: S = MutableOrientedHyperbolicSurface(AA)
+                            sage: S.add_polygon(P)
+                            0
+                            sage: S.add_polygon(P)
+                            1
+                            sage: S.glue((0, 0), (1, 0))
+                            sage: S.glue((0, 2), (1, 4))
+                            sage: S.glue((0, 4), (1, 2))
+                            sage: S.set_immutable(minimal_field=True)
+                            sage: s = S.signature()
+                            sage: s
+                            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(15, 15, 15))
+                            sage: s.area() == S.area()
+                            True
+
+                        A hyperbolic orbifold of signature `(0; 2, 8, 8)`, the
+                        quotient of the regular octagon of angles `\pi/4` by
+                        its rotation of order 8::
+
+                            sage: K.<r> = NumberField(x^4 + 32*x^2 - 32, embedding=AA(12*AA(2).sqrt() - 16).sqrt())
+                            sage: s2 = r^2/12 + 4/3
+                            sage: P = HyperbolicPlane(K).polygon(vertices=[(0, 0), (r, 0), (r / s2, r / s2)])
+                            sage: S = MutableOrientedHyperbolicSurface(K)
+                            sage: S.add_polygon(P)
+                            0
+                            sage: S.glue((0, 0), (0, 2))
+                            sage: S.glue((0, 1), (0, 1))
+                            sage: S.set_immutable()
+                            sage: S.signature()
+                            SurfaceSignature(genus=0, cone_orders=(-7/8, -7/8, -1/2))
+                            sage: S.signature().katok()
+                            (0, (2, 8, 8), 0)
+
+                        A vertex of the Lambert quadrilateral has an angle that
+                        is not a rational multiple of `2\pi`::
+
+                            sage: S = MutableOrientedHyperbolicSurface(QQ)
+                            sage: S.add_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                            0
+                            sage: S.glue((0, 0), (0, 3))
+                            sage: S.glue((0, 1), (0, 2))
+                            sage: S.set_immutable()
+                            sage: S.signature()
+                            Traceback (most recent call last):
+                            ...
+                            NotImplementedError: the angle of Vertex 2 of polygon 0 is not a rational multiple of 2π
+
+                        A corner on the boundary::
+
+                            sage: S = MutableOrientedSimilaritySurface(QQ)
+                            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]))
+                            0
+                            sage: S.set_immutable()
+                            sage: S.signature()
+                            Traceback (most recent call last):
+                            ...
+                            ValueError: the boundary of the surface is not geodesic at Vertex 0 of polygon 0, of angle 1/8
+
+                        """
+                        from sage.all import QQ, ZZ
+
+                        from flatsurf.geometry.signature import SurfaceSignature
+
+                        components = self.boundary_components()
+
+                        # Each vertex on the boundary is the start of an unglued
+                        # edge.
+                        boundary = {
+                            self(label, edge)  # pylint: disable=not-callable
+                            for component in components
+                            for label, edge in component
+                        }
+
+                        orders = []
+                        seen = set()
+                        for label, corner in self.edges():
+                            vertex = self(label, corner)  # pylint: disable=not-callable
+                            if vertex in seen:
+                                continue
+                            seen.add(vertex)
+
+                            try:
+                                angle = QQ(vertex.angle())
+                            except (ValueError, NotImplementedError) as error:
+                                # The exact angle of a hyperbolic vertex raises
+                                # a ValueError, the one of a flat vertex a
+                                # NotImplementedError, when it is not a
+                                # rational multiple of 2π.
+                                if vertex in boundary:
+                                    raise ValueError(
+                                        f"the boundary of the surface is not geodesic at {vertex}"
+                                    ) from error
+                                raise NotImplementedError(
+                                    f"the angle of {vertex} is not a rational multiple of 2π"
+                                ) from error
+
+                            if vertex in boundary:
+                                if angle != QQ((1, 2)):
+                                    raise ValueError(
+                                        f"the boundary of the surface is not geodesic at {vertex}, of angle {angle}"
+                                    )
+                            elif angle != 1:
+                                orders.append(angle - 1)
+
+                        for label, edge in self.edges():
+                            if self.opposite_edge(label, edge) == (label, edge):
+                                orders.append(-QQ((1, 2)))
+
+                        genus = ZZ(
+                            (2 - len(components) - self.euler_characteristic()) / 2
+                        )
+
+                        loops = self.fundamental_group(
+                            punctured_vertices=True
+                        ).boundary_loops()
+
+                        return SurfaceSignature(
+                            genus,
+                            orders,
+                            boundary_traces=[
+                                self._boundary_trace(loop) for loop in loops
+                            ],
+                        )
+
+                    def _test_gauss_bonnet(self, **options):
+                        r"""
+                        Verify the Gauss-Bonnet theorem for the
+                        :meth:`signature` of this surface: the Euler
+                        characteristic `\chi(S, \beta)` is zero on a flat
+                        surface, and minus the area, in units of `2\pi`, on a
+                        hyperbolic one.
+
+                        The test is skipped when the signature is not
+                        defined.
+
+                        EXAMPLES::
+
+                            sage: from flatsurf import translation_surfaces
+                            sage: translation_surfaces.regular_octagon()._test_gauss_bonnet()
+
+                        """
+                        tester = self._tester(**options)
+
+                        try:
+                            signature = self.signature()
+                        except (NotImplementedError, ValueError):
+                            return
+
+                        chi = signature.euler_characteristic()
+
+                        from flatsurf.geometry.categories import (
+                            FlatConeSurfaces,
+                            HyperbolicConeSurfaces,
+                        )
+
+                        if self in HyperbolicConeSurfaces():
+                            if all(
+                                polygon.is_rational() for polygon in self.polygons()
+                            ):
+                                tester.assertEqual(self.area(), -chi)
+                            else:
+                                # The area of a polygon whose corners are not
+                                # rational multiples of π is only known
+                                # numerically.
+                                tester.assertAlmostEqual(
+                                    sum(
+                                        polygon.area(numerical=True)
+                                        for polygon in self.polygons()
+                                    ),
+                                    float(-chi),
+                                )
+                        elif self in FlatConeSurfaces():
+                            tester.assertEqual(chi, 0)
+
 
 class FlatConeSurfaces(SurfaceCategory):
     r"""
@@ -735,6 +1001,38 @@ class FlatConeSurfaces(SurfaceCategory):
                             self, limit=limit
                         )
                     )
+
+                def _boundary_trace(self, loop):
+                    r"""
+                    Return the invariant of the holonomy of the boundary
+                    ``loop`` recorded by the signature, ``None`` for a flat
+                    surface.
+
+                    This is a helper method for
+                    :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`.
+                    The holonomy of a loop parallel to a flat boundary is a
+                    translation or a rotation, which carries no invariant of
+                    the length of the boundary.
+
+                    INPUT:
+
+                    - ``loop`` -- an element of the fundamental group of this
+                      surface
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.set_immutable()
+                        sage: loop = S.fundamental_group().boundary_loops()[0]
+                        sage: S._boundary_trace(loop) is None
+                        True
+
+                    """
+                    return None
 
             class WithoutBoundary(SurfaceCategoryWithAxiom):
                 r"""

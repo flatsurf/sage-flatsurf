@@ -469,6 +469,7 @@ class MutablePolygonalSurface(Surface_base):
              'orbifold_points',
              'pyflatsurf',
              'rel_deformation',
+             'signature',
              'stratum',
              'veech_group',
              'veering_triangulation'}

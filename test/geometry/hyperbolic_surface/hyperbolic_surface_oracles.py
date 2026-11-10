@@ -8,8 +8,8 @@ A signature has three groups:
   case, `k_i` is the degree of a zero of an Abelian differential);
 - the number `c` of cusps, with no parameter (a cusp is both of angle 0 and of
   length 0);
-- the geodesic boundaries; their parametrisation (trace or `\cosh(\ell/2)`
-  rather than the length) is not chosen yet.
+- the geodesic boundaries, each given by the trace `t = 1 + 2 \cosh \ell` of
+  its holonomy in `SO(2, 1)`, where `\ell` is its length.
 
 The Euler characteristic with a divisor is
 `\chi(S, \beta) = 2 - 2g + \sum k_i - c - b` where `b` is the number of
@@ -50,7 +50,7 @@ This module is not collected by pytest (its name does not start with
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from sage.all import QQ, RR, NumberField, polygen
+from sage.all import AA, QQ, RR, NumberField, polygen
 
 
 def octagon_vertices():
@@ -201,6 +201,44 @@ def cell_vertices(name):
     K = NumberField(x**2 - 3, "s3", embedding=RR(1.7))
     s3 = K.gen()
     return K, [(QQ(1) / 2, 0), (-QQ(1) / 4, s3 / 4), (-QQ(1) / 4, -s3 / 4)]
+
+
+def hexagon_vertices():
+    r"""
+    Return the Klein coordinates over ``AA`` of the vertices of the regular
+    right-angled hexagon of ``HEXAGON_SURFACES``, of Klein radius
+    `\rho = \sqrt{6}/3`, counterclockwise from `(\rho, 0)`.
+    """
+    rho = AA(6).sqrt() / 3
+    h = AA(2).sqrt() / 2
+    return [
+        (rho, 0),
+        (rho / 2, h),
+        (-rho / 2, h),
+        (-rho, 0),
+        (-rho / 2, -h),
+        (rho / 2, -h),
+    ]
+
+
+# Regular right-angled hexagon about the origin, and the surfaces glued from
+# two copies of it (polygons 0 and 1). The hexagon is made of six triangles
+# with angles pi/3 (at the centre), pi/4, pi/4. Source: Katok, Fuchsian groups
+# (1992), Theorem 1.5.2 (iii), p. 16 (Cosine Rule II):
+# - the circumradius R has cosh R = (cos(pi/4) + cos(pi/3) cos(pi/4)) /
+#   (sin(pi/3) sin(pi/4)) = sqrt(3), so the Klein radius is
+#   tanh R = sqrt(6)/3;
+# - the side s has cosh s = (cos(pi/3) + cos^2(pi/4)) / sin^2(pi/4) = 2.
+# A boundary of length l has the trace t = 1 + 2 cosh l in SO(2, 1).
+# - "pants": each of the three boundaries is two sides, cosh 2s = 2 * 2^2 - 1
+#   = 7, t = 1 + 2 * 7 = 15;
+# - "torus": the one boundary is six sides, cosh 6s = 4 * 7^3 - 3 * 7 = 1351,
+#   t = 1 + 2 * 1351 = 2703.
+# Rows: the gluings, the genus and the boundary traces.
+HEXAGON_SURFACES = {
+    "pants": ([((0, 0), (1, 0)), ((0, 2), (1, 4)), ((0, 4), (1, 2))], 0, (15,) * 3),
+    "torus": ([((0, 0), (1, 0)), ((0, 2), (1, 2)), ((0, 4), (1, 4))], 1, (2703,)),
+}
 
 
 # Order 3 point of the modular group, fixed by z -> -1/(z + 1), i.e. the

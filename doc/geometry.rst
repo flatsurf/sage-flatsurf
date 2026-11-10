@@ -31,6 +31,7 @@ The flatsurf.geometry Package
    geometry/polygon
    geometry/polyhedra
    geometry/pyflatsurf_conversion
+   geometry/signature
    geometry/similarity
    geometry/similarity_surface_generators
    geometry/straight_line_trajectory
