@@ -26,7 +26,6 @@ import pytest
 from sage.all import (
     AA,
     QQ,
-    RR,
     I,
     NumberField,
     diagonal_matrix,
@@ -47,7 +46,7 @@ from hyperbolic_surface_oracles import (
     BOOST,
     CELL_CENTRE,
     CELL_ROTATIONS,
-    octagon_vertices,
+    cell_vertices,
 )
 
 
@@ -216,22 +215,6 @@ def test_mixed_rings():
 
 def proportional(v, w):
     return matrix(QQ, [v, w]).rank() == 1
-
-
-def cell_vertices(name):
-    r"""
-    Return the field and the Klein coordinates of the vertices of a regular
-    polygon about the origin.
-    """
-    if name == "square":
-        half = QQ(1) / 2
-        return QQ, [(half, 0), (0, half), (-half, 0), (0, -half)]
-    if name == "octagon":
-        return octagon_vertices()
-    x = polygen(QQ)
-    K = NumberField(x**2 - 3, "s3", embedding=RR(1.7))
-    s3 = K.gen()
-    return K, [(QQ(1) / 2, 0), (-QQ(1) / 4, s3 / 4), (-QQ(1) / 4, -s3 / 4)]
 
 
 @pytest.mark.parametrize("name,n,trace", CELL_ROTATIONS)

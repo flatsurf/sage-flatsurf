@@ -186,6 +186,23 @@ CELL_ROTATIONS = [
 CELL_CENTRE = (QQ(3) / 5, QQ(0))
 BOOST = [[QQ(5) / 4, 0, QQ(3) / 4], [0, 1, 0], [QQ(3) / 4, 0, QQ(5) / 4]]
 
+
+def cell_vertices(name):
+    r"""
+    Return the field and the Klein coordinates of the vertices of the regular
+    polygon ``name`` of ``CELL_ROTATIONS`` about the origin, before the boost.
+    """
+    if name == "square":
+        half = QQ(1) / 2
+        return QQ, [(half, 0), (0, half), (-half, 0), (0, -half)]
+    if name == "octagon":
+        return octagon_vertices()
+    x = polygen(QQ)
+    K = NumberField(x**2 - 3, "s3", embedding=RR(1.7))
+    s3 = K.gen()
+    return K, [(QQ(1) / 2, 0), (-QQ(1) / 4, s3 / 4), (-QQ(1) / 4, -s3 / 4)]
+
+
 # Order 3 point of the modular group, fixed by z -> -1/(z + 1), i.e. the
 # matrix [[0, -1], [1, 1]].
 # Source: Katok section 3.5 Example A, p. 71.

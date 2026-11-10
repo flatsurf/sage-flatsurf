@@ -855,6 +855,154 @@ class HyperbolicPolygon(Parent):
 
         return HyperbolicPolygon(self.parent(), polygon_corners(self._v))
 
+    def cyclic_quotient(self, m):
+        r"""
+        Return a fundamental domain of the rotation of order ``m`` that
+        leaves this polygon invariant.
+
+        Write `v_0, \ldots, v_{n-1}` for the vertices of this polygon, marked
+        vertices included, and `k = n/m`. The rotation `g` is the orientation
+        preserving isometry that sends the edge `v_0 v_1` onto the edge `v_k
+        v_{k+1}`; it must send every `v_i` to `v_{i+k}` (indices modulo `n`)
+        and is then of order `m`. Its centre `c` is its fixed point.
+
+        For `m \ge 3`, the result is the sector `(c, v_0, v_1, \ldots, v_k)`:
+        gluing its edge `0` (from `c` to `v_0`) to its edge `k + 1` (from `v_k`
+        to `c`) gives the quotient of this polygon by `g`, with a cone point
+        of angle `1/m` (in multiples of `2\pi`) at `c`. For `m = 2`, the result
+        is the half `(v_0, v_1, \ldots, v_k)`: gluing its last edge (from
+        `v_k` to `v_0`, through `c`) to itself gives the quotient, the
+        half-turn `g` exchanging the two halves of that edge about its
+        midpoint `c`.
+
+        The rotation permutes the vertices, so its matrix in
+        `\mathrm{SO}(2, 1)^+` and its centre `c` are defined over the base
+        ring: so is the result.
+
+        INPUT:
+
+        - ``m`` -- an integer at least 2 that divides the number of vertices
+
+        OUTPUT:
+
+        A polygon of the same hyperbolic plane. A :class:`ValueError` is raised
+        when ``m`` is not an integer at least 2, or when no rotation sends
+        every `v_i` to `v_{i+k}`. For a non-convex polygon, the sector may be
+        no valid polygon, in which case the polygon constructor raises its
+        error.
+
+        EXAMPLES:
+
+        A square cell centred at the Klein point `(3/5, 0)`, i.e., `3/5 +
+        4/5 i` in the upper half plane::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: P = H.polygon(vertices=[(11/13, 0), (3/5, 2/5), (1/7, 0), (3/5, -2/5)])
+            sage: Q = P.cyclic_quotient(4)
+            sage: Q
+            Hyperbolic polygon with vertices [3/5 + 4/5*I, (11/13, 0), (3/5, 2/5)]
+
+        Its edges 0 and 2 glued, the centre is a cone point of angle `1/4`::
+
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: S = MutableOrientedHyperbolicSurface(QQ)
+            sage: S.add_polygon(Q)
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.set_immutable()
+            sage: S(0, 0).angle()
+            1/4
+            sage: S(0, 0).angle(numerical=True)
+            0.25
+
+        The quotient by the half-turn is half of the square, its last edge
+        glued to itself::
+
+            sage: P.cyclic_quotient(2)
+            Hyperbolic polygon with vertices [(11/13, 0), (3/5, 2/5), (1/7, 0)]
+
+        TESTS::
+
+            sage: P.cyclic_quotient(3)
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon is not invariant under a rotation of order 3
+            sage: P.cyclic_quotient(1)
+            Traceback (most recent call last):
+            ...
+            ValueError: m must be an integer at least 2
+            sage: P.cyclic_quotient(1/2)
+            Traceback (most recent call last):
+            ...
+            ValueError: m must be an integer at least 2
+
+        A rectangle has a half-turn but no quarter turn::
+
+            sage: R = H.polygon(vertices=[(-1/2, -1/4), (1/2, -1/4), (1/2, 1/4), (-1/2, 1/4)])
+            sage: R.cyclic_quotient(2)
+            Hyperbolic polygon with vertices [(-1/2, -1/4), (1/2, -1/4), (1/2, 1/4)]
+            sage: R.cyclic_quotient(4)
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon is not invariant under a rotation of order 4
+
+        A Lambert quadrilateral has no rotation::
+
+            sage: L = H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+            sage: L.cyclic_quotient(2)
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon is not invariant under a rotation of order 2
+
+        """
+        from sage.all import ZZ
+
+        from flatsurf.geometry.hyperbolic_isometry import (
+            HyperbolicIsometryGroup,
+            segment_isometry,
+        )
+
+        try:
+            m = ZZ(m)
+        except (TypeError, ValueError) as error:
+            raise ValueError("m must be an integer at least 2") from error
+        if m < 2:
+            raise ValueError("m must be an integer at least 2")
+
+        refused = f"polygon is not invariant under a rotation of order {m}"
+
+        vertices = self._v
+        n = len(vertices)
+        if n % m:
+            raise ValueError(refused)
+        k = n // m
+
+        K = self.base_ring()
+        try:
+            M = segment_isometry(
+                (vertices[0], vertices[1]),
+                (vertices[k], vertices[(k + 1) % n]),
+                ring=K,
+            )
+        except ValueError as error:
+            raise ValueError(refused) from error
+
+        for i, (x, y) in enumerate(vertices):
+            X = M[0, 0] * x + M[0, 1] * y + M[0, 2]
+            Y = M[1, 0] * x + M[1, 1] * y + M[1, 2]
+            Z = M[2, 0] * x + M[2, 1] * y + M[2, 2]
+            if (X / Z, Y / Z) != tuple(vertices[(i + k) % n]):
+                raise ValueError(refused)
+
+        if m == 2:
+            return self.parent().polygon(vertices=vertices[: k + 1])
+
+        centre = HyperbolicIsometryGroup(K)(M).fixed_point()
+        return self.parent().polygon(
+            vertices=[centre.coordinates(model="klein")] + list(vertices[: k + 1])
+        )
+
     def apply_isometry(self, isometry, model="klein"):
         r"""
         Return the image of this polygon under the orientation preserving

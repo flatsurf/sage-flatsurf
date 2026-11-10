@@ -23,11 +23,18 @@ hard-coded values of classical hyperbolic geometry.
 
 import pytest
 
-from sage.all import AA, QQ, RR, I, NumberField, polygen
+from sage.all import AA, QQ, RR, I, NumberField, matrix, polygen
 
 from flatsurf import HyperbolicPlane
+from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
 
-from hyperbolic_surface_oracles import OCTAGON
+from hyperbolic_surface_oracles import (
+    BOOST,
+    CELL_CENTRE,
+    CELL_ROTATIONS,
+    OCTAGON,
+    cell_vertices,
+)
 
 
 # Klein coordinates of a Lambert quadrilateral (three right angles).
@@ -170,3 +177,57 @@ def test_from_hyperbolic_polygon(H):
     R = H.polygon(polygon=Q)
     assert R.base_ring() == QQ
     assert R == H.polygon(vertices=QUADRILATERAL)
+
+
+def boosted_cell(name):
+    K, vertices = cell_vertices(name)
+    boost = HyperbolicIsometryGroup(K)(matrix(K, BOOST))
+    return boost(HyperbolicPlane(K).polygon(vertices=vertices))
+
+
+@pytest.mark.parametrize("name,n,trace", CELL_ROTATIONS)
+def test_cyclic_quotient(name, n, trace):
+    P = boosted_cell(name)
+    K = P.base_ring()
+    centre = P.parent().point(*CELL_CENTRE, model="klein")
+
+    Q = P.cyclic_quotient(n)
+    assert Q.parent() is P.parent()
+    assert Q.vertices() == (centre,) + P.vertices()[:2]
+    assert Q.angle(0, numerical=False) == QQ(1) / n
+    assert Q.base_ring() is K
+
+
+@pytest.mark.parametrize("name,n,trace", CELL_ROTATIONS)
+def test_cyclic_quotient_refused(name, n, trace):
+    P = boosted_cell(name)
+    for m in range(2, n + 2):
+        if n % m == 0:
+            continue
+        with pytest.raises(ValueError, match=f"rotation of order {m}$"):
+            P.cyclic_quotient(m)
+    for m in (0, 1, QQ(1) / 2):
+        with pytest.raises(ValueError, match="m must be an integer at least 2"):
+            P.cyclic_quotient(m)
+
+
+def test_cyclic_quotient_square():
+    P = boosted_cell("square")
+    assert [tuple(v.coordinates(model="klein")) for v in P.vertices()] == [
+        (QQ(11) / 13, 0),
+        (QQ(3) / 5, QQ(2) / 5),
+        (QQ(1) / 7, 0),
+        (QQ(3) / 5, -QQ(2) / 5),
+    ]
+    assert P.cyclic_quotient(2).vertices() == P.vertices()[:3]
+    with pytest.raises(ValueError, match="rotation of order 3"):
+        P.cyclic_quotient(3)
+
+
+def test_cyclic_quotient_octagon(octagon):
+    origin = octagon.parent().point(0, 0, model="klein")
+    Q = octagon.cyclic_quotient(8)
+    assert Q.vertices() == (origin,) + octagon.vertices()[:2]
+    assert Q.angles() == (QQ(1) / 8, QQ(1) / 16, QQ(1) / 16)
+    assert octagon.cyclic_quotient(4).vertices() == (origin,) + octagon.vertices()[:3]
+    assert octagon.cyclic_quotient(2).vertices() == octagon.vertices()[:5]

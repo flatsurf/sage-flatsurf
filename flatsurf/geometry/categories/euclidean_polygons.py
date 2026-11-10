@@ -648,6 +648,147 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return Polygon(vertices=self.vertices(marked_vertices=False))
 
+        def cyclic_quotient(self, m):
+            r"""
+            Return a fundamental domain of the rotation of order ``m`` that
+            leaves this polygon invariant.
+
+            Write `v_0, \ldots, v_{n-1}` for the vertices of this polygon,
+            marked vertices included, and `k = n/m`. The rotation `g` is the
+            orientation preserving isometry that sends the edge `v_0 v_1` onto
+            the edge `v_k v_{k+1}`; it must send every `v_i` to `v_{i+k}`
+            (indices modulo `n`) and is then of order `m`. Its centre `c` is
+            the average of the vertices.
+
+            For `m \ge 3`, the result is the sector `(c, v_0, v_1, \ldots,
+            v_k)`: gluing its edge `0` (from `c` to `v_0`) to its edge `k + 1`
+            (from `v_k` to `c`) gives the quotient of this polygon by `g`, with
+            a cone point of angle `1/m` (in multiples of `2\pi`) at `c`. For
+            `m = 2`, the result is the half `(v_0, v_1, \ldots, v_k)`: gluing
+            its last edge (from `v_k` to `v_0`, through `c`) to itself gives
+            the quotient, the half-turn `g` exchanging the two halves of that
+            edge about its midpoint `c`.
+
+            INPUT:
+
+            - ``m`` -- an integer at least 2 that divides the number of
+              vertices
+
+            OUTPUT:
+
+            A polygon over the base ring of this polygon. A
+            :class:`ValueError` is raised when ``m`` is not an integer at
+            least 2, or when no rotation sends every `v_i` to `v_{i+k}`. For a
+            non-convex polygon, the sector may be no valid polygon, in which
+            case the polygon constructor raises its error.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                sage: P.cyclic_quotient(4)
+                Polygon(vertices=[(1/2, 1/2), (0, 0), (1, 0)])
+                sage: P.cyclic_quotient(2)
+                Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+
+            Its edges 0 and 2 glued, the sector has a cone point of angle
+            `1/4` at the centre::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S.add_polygon(P.cyclic_quotient(4))
+                0
+                sage: S.glue((0, 0), (0, 2))
+                sage: S.set_immutable()
+                sage: S(0, 0).angle()
+                1/4
+
+            TESTS::
+
+                sage: P.cyclic_quotient(3)
+                Traceback (most recent call last):
+                ...
+                ValueError: polygon is not invariant under a rotation of order 3
+                sage: P.cyclic_quotient(1)
+                Traceback (most recent call last):
+                ...
+                ValueError: m must be an integer at least 2
+                sage: P.cyclic_quotient(1/2)
+                Traceback (most recent call last):
+                ...
+                ValueError: m must be an integer at least 2
+
+            A rectangle has a half-turn but no quarter turn::
+
+                sage: R = Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+                sage: R.cyclic_quotient(2)
+                Polygon(vertices=[(0, 0), (2, 0), (2, 1)])
+                sage: R.cyclic_quotient(4)
+                Traceback (most recent call last):
+                ...
+                ValueError: polygon is not invariant under a rotation of order 4
+
+            A rhombus with an angle of `\pi/3` has its sides of the same length
+            but no quarter turn::
+
+                sage: K.<s3> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+                sage: Polygon(vertices=[(0, 0), (1, 0), (3/2, s3/2), (1/2, s3/2)]).cyclic_quotient(4)
+                Traceback (most recent call last):
+                ...
+                ValueError: polygon is not invariant under a rotation of order 4
+
+            The regular hexagon has rotations of order 2, 3 and 6::
+
+                sage: H = Polygon(vertices=[(1, 0), (1/2, s3/2), (-1/2, s3/2), (-1, 0), (-1/2, -s3/2), (1/2, -s3/2)])
+                sage: H.cyclic_quotient(3)
+                Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*s3), (-1/2, 1/2*s3)])
+                sage: H.cyclic_quotient(6)
+                Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*s3)])
+
+            """
+            from sage.all import ZZ
+
+            from flatsurf import Polygon
+            from flatsurf.geometry.similarity import similarity_from_vectors
+
+            try:
+                m = ZZ(m)
+            except (TypeError, ValueError) as error:
+                raise ValueError("m must be an integer at least 2") from error
+            if m < 2:
+                raise ValueError("m must be an integer at least 2")
+
+            refused = f"polygon is not invariant under a rotation of order {m}"
+
+            vertices = self.vertices()
+            n = len(vertices)
+            if n % m:
+                raise ValueError(refused)
+            k = n // m
+
+            u = vertices[1] - vertices[0]
+            v = vertices[(k + 1) % n] - vertices[k]
+            if u.dot_product(u) != v.dot_product(v):
+                raise ValueError(refused)
+
+            rotation = similarity_from_vectors(u, v)
+            for i, vertex in enumerate(vertices):
+                if (
+                    rotation * (vertex - vertices[0]) + vertices[k]
+                    != vertices[(i + k) % n]
+                ):
+                    raise ValueError(refused)
+
+            if m == 2:
+                return Polygon(vertices=vertices[: k + 1], base_ring=self.base_ring())
+
+            # The rotation permutes the vertices without fixed point, so it
+            # fixes their average.
+            centre = sum(vertices) / n
+            return Polygon(
+                vertices=[centre] + list(vertices[: k + 1]), base_ring=self.base_ring()
+            )
+
         def is_equilateral(self):
             r"""
             Return whether all sides of this polygon have the same length.
