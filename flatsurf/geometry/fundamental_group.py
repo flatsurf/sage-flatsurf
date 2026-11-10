@@ -537,6 +537,92 @@ class Path(MultiplicativeGroupElement):
         return n
 
 
+def _immutable_copy(surface):
+    r"""
+    Return an immutable copy of the mutable ``surface``, with the same labels,
+    gluings and roots.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+        sage: from flatsurf.geometry.fundamental_group import _immutable_copy
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+        0
+        sage: S.glue((0, 0), (0, 2))
+        sage: T = _immutable_copy(S)
+        sage: T.is_mutable()
+        False
+        sage: list(T.gluings()) == list(S.gluings())
+        True
+
+    A hyperbolic surface::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+        sage: S = MutableOrientedHyperbolicSurface(QQ)
+        sage: S.add_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+        0
+        sage: S.glue((0, 0), (0, 3))
+        sage: T = _immutable_copy(S)
+        sage: T.is_mutable()
+        False
+        sage: list(T.gluings()) == list(S.gluings())
+        True
+
+    """
+    from flatsurf.geometry.categories import HyperbolicConeSurfaces
+
+    if surface in HyperbolicConeSurfaces():
+        from flatsurf.geometry.hyperbolic_surface import (
+            MutableOrientedHyperbolicSurface,
+        )
+
+        copy = MutableOrientedHyperbolicSurface(surface.base_ring())
+        for label in surface.labels():
+            copy.add_polygon(surface.polygon(label), label=label)
+        for (label, edge), opposite in surface.gluings():
+            if opposite is not None:
+                copy.glue((label, edge), opposite)
+        copy.set_roots(surface.roots())
+    else:
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+        copy = MutableOrientedSimilaritySurface.from_surface(surface)
+        copy.set_roots(surface.roots())
+
+    copy.set_immutable()
+    return copy
+
+
+def _copy_vertex(surface, copy, vertex):
+    r"""
+    Return the vertex of ``copy`` that corresponds to the ``vertex`` of
+    ``surface``, or ``vertex`` itself when it is not a vertex of ``surface``.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+        sage: from flatsurf.geometry.fundamental_group import _immutable_copy, _copy_vertex
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+        0
+        sage: S.glue((0, 0), (0, 2))
+        sage: T = _immutable_copy(S)
+        sage: _copy_vertex(S, T, S(0, 1))
+        Vertex 1 of polygon 0
+        sage: _copy_vertex(S, T, 0)
+        0
+
+    """
+    # The vertices of a mutable surface are not hashable: they are found by a
+    # linear scan of the corners.
+    for label, corner in surface.edges():
+        if surface(label, corner) == vertex:
+            return copy(label, corner)
+    return vertex
+
+
 class FundamentalGroup(UniqueRepresentation, Group):
     r"""
     The fundamental group of a surface built from polygons, punctured at
@@ -616,6 +702,16 @@ class FundamentalGroup(UniqueRepresentation, Group):
         Traceback (most recent call last):
         ...
         ValueError: 5 is not a label of a polygon of the surface
+
+    A mutable surface is replaced by an immutable copy::
+
+        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface.from_surface(t)
+        sage: F = FundamentalGroup(S, 0, [S(0, 0)])
+        sage: F is t.fundamental_group(punctured_vertices=True)
+        True
+        sage: S.is_mutable()
+        True
     """
 
     Element = Path
@@ -635,6 +731,15 @@ class FundamentalGroup(UniqueRepresentation, Group):
         """
         if not surface.is_finite_type():
             raise ValueError("the method only work for finite surfaces")
+        if surface.is_mutable():
+            # The group is cached by its surface, which must then be hashable.
+            mutable = surface
+            surface = _immutable_copy(mutable)
+            if punctured_vertices is not True and punctured_vertices is not False:
+                punctured_vertices = [
+                    _copy_vertex(mutable, surface, vertex)
+                    for vertex in punctured_vertices
+                ]
         if base not in surface.labels():
             raise ValueError(
                 "{} is not a label of a polygon of the surface".format(base)
@@ -977,4 +1082,98 @@ class FundamentalGroup(UniqueRepresentation, Group):
             t = self._tree_walk(letters[-1][0])
             walk = t + tuple(letters) + self._inverse_walk(t)
             loops[vertex] = self.element_class(self, walk, check=False)
+        return loops
+
+    def boundary_loops(self):
+        r"""
+        Return the loops parallel to the boundary components of the surface.
+
+        For a boundary component ``(q_0, j_0), ..., (q_{k-1}, j_{k-1})`` of
+        :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods.boundary_components`,
+        the loop follows the boundary in its order, the surface on its left:
+        around the end vertex of each unglued edge ``j_i`` of ``q_i``, it
+        crosses the glued edges met before the next unglued edge, its letters
+        being the edges through which it enters the polygons. It is a walk at
+        ``q_0``, which is conjugated into the group by the walk in the
+        spanning tree from the base polygon to ``q_0``. A component whose
+        edges belong to a single polygon, with no glued edge between them, has
+        the trivial loop.
+
+        The loops avoid the vertices of the surface, so they are defined
+        whatever the punctured vertices.
+
+        OUTPUT:
+
+        A list of elements of this group, one per boundary component, in the
+        order of the boundary components.
+
+        EXAMPLES:
+
+        On a cylinder, the loops parallel to the two boundary components are
+        a generator of the group and its inverse::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.set_immutable()
+            sage: S.boundary_components()
+            [((0, 1),), ((0, 3),)]
+            sage: F = S.fundamental_group(punctured_vertices=True)
+            sage: F.gens()
+            (0 --0-- 0,)
+            sage: F.boundary_loops()
+            [0 --2-- 0, 0 --0-- 0]
+            sage: a, b = F.boundary_loops()
+            sage: a == ~F.gens()[0] and b == ~a
+            True
+
+        A polygon without gluings is a disk, whose boundary loop is trivial::
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]))
+            0
+            sage: S.set_immutable()
+            sage: S.fundamental_group().boundary_loops()
+            [0]
+
+        A surface without boundary has no boundary loop::
+
+            sage: from flatsurf import translation_surfaces
+            sage: translation_surfaces.square_torus().fundamental_group().boundary_loops()
+            []
+
+        TESTS:
+
+        A boundary component across two polygons and a self-glued edge; the
+        loop is conjugated into a group based at the other polygon::
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            1
+            sage: S.glue((0, 1), (1, 3))
+            sage: S.glue((0, 2), (0, 2))
+            sage: S.set_immutable()
+            sage: S.fundamental_group(base_label=1).boundary_loops()
+            [1 --3-- 0 --2-- 0 --1-- 1]
+
+        """
+        s = self._s
+        loops = []
+        for component in s.boundary_components():
+            letters = []
+            for label, edge in component:
+                edge = (edge + 1) % len(s.polygon(label).vertices())
+                letter = s.opposite_edge(label, edge)
+                while letter is not None:
+                    letters.append(letter)
+                    label, edge = letter
+                    edge = (edge + 1) % len(s.polygon(label).vertices())
+                    letter = s.opposite_edge(label, edge)
+            t = self._tree_walk(component[0][0])
+            walk = t + tuple(letters) + self._inverse_walk(t)
+            loops.append(self.element_class(self, walk, check=False))
         return loops

@@ -1382,6 +1382,95 @@ class PolygonalSurfaces(SurfaceCategory):
 
                     return ZZ(V - E + F)
 
+                def boundary_components(self):
+                    r"""
+                    Return the boundary components of this surface as cycles
+                    of unglued edges.
+
+                    Each component is a tuple of the unglued edges ``(label,
+                    edge)`` along it, in boundary order, with the surface on
+                    its left: an edge runs counterclockwise around its polygon,
+                    and the edge after it is found by turning around its end
+                    vertex across the glued edges. Each tuple starts with its
+                    first edge in the order of
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edges`,
+                    and the components are in the order of their first edge.
+
+                    OUTPUT:
+
+                    A list of tuples of pairs ``(label, edge)``, empty if this
+                    surface has no boundary.
+
+                    EXAMPLES:
+
+                    A square glued along its horizontal edges is a cylinder
+                    with two boundary components::
+
+                        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.boundary_components()
+                        [((0, 1),), ((0, 3),)]
+
+                    A polygon without gluings is a disk, bounded by all of its
+                    edges::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]))
+                        0
+                        sage: S.set_immutable()
+                        sage: S.boundary_components()
+                        [((0, 0), (0, 1), (0, 2))]
+
+                    A surface without boundary::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: translation_surfaces.square_torus().boundary_components()
+                        []
+
+                    TESTS:
+
+                    A boundary component made of edges of two polygons, the
+                    walk turning across a self-glued edge::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        0
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        1
+                        sage: S.glue((0, 1), (1, 3))
+                        sage: S.glue((0, 2), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.boundary_components()
+                        [((0, 0), (1, 0), (1, 1), (1, 2), (0, 3))]
+
+                    """
+                    components = []
+                    seen = set()
+                    for start in self.edges():
+                        if start in seen or self.opposite_edge(*start) is not None:
+                            continue
+                        component = []
+                        label, edge = start
+                        while True:
+                            component.append((label, edge))
+                            seen.add((label, edge))
+                            # Turn around the end vertex of the edge: it is the
+                            # start of the next edge of the polygon, and when
+                            # that edge is glued, the end of the edge glued to
+                            # it, i.e., the start of the edge after that one.
+                            edge = (edge + 1) % len(self.polygon(label).vertices())
+                            while self.opposite_edge(label, edge) is not None:
+                                label, edge = self.opposite_edge(label, edge)
+                                edge = (edge + 1) % len(self.polygon(label).vertices())
+                            if (label, edge) == start:
+                                break
+                        components.append(tuple(component))
+                    return components
+
                 def fundamental_group(self, base_label=None, punctured_vertices=False):
                     r"""
                     Return the fundamental group of this surface, punctured at
