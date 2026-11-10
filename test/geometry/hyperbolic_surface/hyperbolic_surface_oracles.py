@@ -241,6 +241,80 @@ HEXAGON_SURFACES = {
 }
 
 
+# Doubles of hyperbolic triangles: a triangle of angles pi/m_i and its mirror
+# image, glued along their three edges, a sphere with three cone points whose
+# group is the triangle group of periods (m_1, m_2, m_3). Rows: the periods at
+# vertices 0, 1, 2 of the triangle; the field of the vertices (defining
+# polynomial as a coefficient list, constant term first, and an approximation
+# of the embedding of its generator); the Klein coordinates of the vertices
+# 1 = (x_1, 0) and 2 = (x_2, y_2), vertex 0 at the origin (coefficient lists in
+# the generator); a defining polynomial of the invariant trace field.
+# Sources: the coordinates are exact values computed with sage-flatsurf in AA
+# from the angles (the sides by Katok, Fuchsian groups (1992), Theorem 1.5.2
+# (iii), p. 16), written over their minimal field; the invariant trace field
+# k_0 = Q(cos^2(pi/m_i), cos(pi/m_1) cos(pi/m_2) cos(pi/m_3)) is Takeuchi,
+# Arithmetic triangle groups (1977), Propositions 4 and 5, pp. 96-99: Q(sqrt 5)
+# for (2, 4, 5), Q(cos(2 pi/7)) for (2, 3, 7), Q(sqrt 2) for (3, 3, 4) and
+# (4, 4, 4).
+TRIANGLE_DOUBLES = [
+    (
+        (4, 5, 2),
+        ([-4, 0, -2, 0, 1], -1.79890743994787),
+        ([0, -2, 0, QQ(1) / 2], [0, -1, 0, QQ(1) / 4], [0, -1, 0, QQ(1) / 4]),
+        [-1, -1, 1],
+    ),
+    (
+        (4, 2, 5),
+        ([-1, 0, -1, 0, 1], 1.27201964951407),
+        ([0, 2, 0, -1], [0, 2, 0, -1], [0, 2, 0, -1]),
+        [-1, -1, 1],
+    ),
+    (
+        (2, 7, 3),
+        ([-1, 0, -2, 0, 1, 0, 1], 1.11668240951376),
+        ([0, 2, 0, 0, 0, -1], [0], [0, -1, 0, 1]),
+        [-1, -2, 1, 1],
+    ),
+    (
+        (2, 3, 7),
+        ([-1, 0, -2, 0, 1, 0, 1], -1.11668240951376),
+        ([0, 1, 0, -1], [0], [0, -2, 0, 0, 0, 1]),
+        [-1, -2, 1, 1],
+    ),
+    (
+        (4, 3, 3),
+        ([-2, 0, 0, 0, 1], 1.18920711500272),
+        ([0, 2, 0, -1], [0, -1, 0, 1], [0, -1, 0, 1]),
+        [-2, 0, 1],
+    ),
+    (
+        (4, 4, 4),
+        ([-1, 0, -2, 0, 1], -1.55377397403004),
+        ([0, -3, 0, 1], [0, 2, 0, -1], [0, 2, 0, -1]),
+        [-2, 0, 1],
+    ),
+]
+
+
+def triangle_double_vertices(row):
+    r"""
+    Return the field and the Klein coordinates of the vertices of the triangle
+    of the row ``row`` of ``TRIANGLE_DOUBLES``, and of its mirror image, whose
+    vertex `j` is the image of the vertex `1 - j` under `(x, y) \mapsto (x,
+    -y)`, so that edge `i` of the triangle is the image of edge `-i` of the
+    mirror.
+    """
+    _, (polynomial, embedding), (x1, x2, y2), _ = row
+    x = polygen(QQ, "x")
+    K = NumberField(
+        sum(c * x**i for i, c in enumerate(polynomial)), "a", embedding=RR(embedding)
+    )
+    a = K.gen()
+    x1, x2, y2 = (sum(c * a**i for i, c in enumerate(p)) for p in (x1, x2, y2))
+    front = [(0, 0), (x1, 0), (x2, y2)]
+    return K, front, [(x1, 0), (0, 0), (x2, -y2)]
+
+
 # Order 3 point of the modular group, fixed by z -> -1/(z + 1), i.e. the
 # matrix [[0, -1], [1, 1]].
 # Source: Katok section 3.5 Example A, p. 71.

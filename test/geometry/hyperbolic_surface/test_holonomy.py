@@ -39,7 +39,9 @@ from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurfac
 from hyperbolic_surface_oracles import (
     FLAT_ORBIFOLDS,
     OCTAGON_GLUINGS,
+    TRIANGLE_DOUBLES,
     octagon_vertices,
+    triangle_double_vertices,
 )
 
 CONSTRUCTORS = {
@@ -187,6 +189,25 @@ def test_octagon(octagon, gluing):
     psi = S.holonomy_representation(punctured_vertices=False)
     assert psi.domain() is S.fundamental_group()
     assert psi.image().gens() == G.gens()
+
+
+@pytest.mark.parametrize("row", TRIANGLE_DOUBLES, ids=lambda row: str(row[0]))
+def test_triangle_double_invariant_trace_field(row):
+    # The invariant trace field depends on the periods only, not on the vertex
+    # at the origin nor on whether a generator is a half-turn.
+    K, front, mirror = triangle_double_vertices(row)
+    H = HyperbolicPlane(K)
+    S = MutableOrientedHyperbolicSurface(K)
+    S.add_polygon(H.polygon(vertices=front))
+    S.add_polygon(H.polygon(vertices=mirror))
+    for i in range(3):
+        S.glue((0, i), (1, -i % 3))
+    S.set_immutable()
+
+    field = S.holonomy_representation().invariant_trace_field()
+    expected = NumberField(polygen(QQ).parent()(row[3]), "b")
+    assert field is not QQ
+    assert field.is_isomorphic(expected)
 
 
 def test_homomorphism():
