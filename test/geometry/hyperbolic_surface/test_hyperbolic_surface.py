@@ -227,6 +227,33 @@ def test_octagon(octagon, gluing):
         assert g.trace() == in_radius(r, trace)
 
 
+@pytest.mark.parametrize("gluing", sorted(OCTAGON_GLUINGS))
+def test_octagon_invariant_trace_field(octagon, gluing):
+    pairs, trace = OCTAGON_GLUINGS[gluing]
+    K = octagon.base_ring()
+
+    S = MutableOrientedHyperbolicSurface(K)
+    S.add_polygon(octagon)
+    for a, b in pairs:
+        S.glue((0, a), (0, b))
+    S.set_immutable()
+
+    L = S.holonomy_representation().invariant_trace_field()
+    assert L.degree() == 2
+    assert L.polynomial() == polygen(QQ, "x") ** 2 - 2
+
+    # The traces of OCTAGON_GLUINGS lie in Q(sqrt(2)) and generate it.
+    for edge in range(8):
+        t = S.edge_transformation(0, edge).trace()
+        assert t.minpoly().degree() == 2
+        roots = t.minpoly().change_ring(L).roots(multiplicities=False)
+        assert any(AA(root) == AA(t) for root in roots)
+
+
+def test_sphere_invariant_trace_field(sphere):
+    assert sphere.holonomy_representation().invariant_trace_field() is QQ
+
+
 def test_octagon_point(octagon):
     K = octagon.base_ring()
     r = K.gen()

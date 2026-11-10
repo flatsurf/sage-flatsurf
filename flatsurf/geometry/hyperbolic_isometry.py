@@ -1006,6 +1006,58 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
 
         return self * x
 
+    def _half_lift(self):
+        r"""
+        Return the matrix of this isometry in `\mathrm{SL}(2, \RR)` up to a
+        scalar whose square lies in the base ring, and that square.
+
+        OUTPUT:
+
+        A pair ``(B, s)`` of a 2×2 matrix ``B`` over the base ring and a
+        nonzero element ``s`` of the base ring such that ``B = aA`` and
+        ``s = a^2``, where `A` is the matrix of :meth:`psl2_matrix` and `a`
+        a nonzero scalar. In particular ``B.det() == s``.
+
+        ALGORITHM:
+
+        The matrix of this isometry is quadratic in the entries `a, b, c, d`
+        of `A`: its entries give `a^2, b^2, c^2, d^2` and the products of
+        two of them. As `ad - bc = 1`, either `a` or `b` is nonzero. If
+        `s = a^2` is nonzero, then `aA = (a^2, ab; ac, ad)`; otherwise
+        `bA = (ab, b^2; bc, bd)` and `s = b^2`. No square root is taken.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: G = HyperbolicIsometryGroup(QQ)
+            sage: g = G(matrix([[5/4, 0, 3/4], [0, 1, 0], [3/4, 0, 5/4]]))
+            sage: B, s = g._half_lift()
+            sage: B
+            [9/8 3/8]
+            [3/8 9/8]
+            sage: s
+            9/8
+            sage: B.det() == s
+            True
+            sage: B / AA(s).sqrt() == g.psl2_matrix(AA)
+            True
+        """
+        from sage.matrix.constructor import matrix
+
+        K = self.parent().base_ring()
+        m00, m01, m02, m10, m11, m12, m20, m21, m22 = self._matrix.list()
+        two = K(2)
+
+        a2 = (m11 + m12 + m21 + m22) / two
+        if a2:
+            square = a2
+            entries = [a2, (m10 + m20) / two, (m01 + m02) / two, (m00 + 1) / two]
+        else:
+            square = (m12 + m22 - m11 - m21) / two
+            entries = [K.zero(), square, (m00 - 1) / two, (m02 - m01) / two]
+        return matrix(K, 2, entries), square
+
     def psl2_matrix(self, ring=None):
         r"""
         Return a matrix of `\mathrm{SL}(2, R)` that acts on the upper half
@@ -1107,16 +1159,8 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
         if ring is None:
             ring = K
 
-        m00, m01, m02, m10, m11, m12, m20, m21, m22 = self._matrix.list()
-        two = K(2)
-
-        a2 = (m11 + m12 + m21 + m22) / two
-        if a2:
-            square = a2
-            entries = [a2, (m10 + m20) / two, (m01 + m02) / two, (m00 + 1) / two]
-        else:
-            square = (m12 + m22 - m11 - m21) / two
-            entries = [K.zero(), square, (m00 - 1) / two, (m02 - m01) / two]
+        half, square = self._half_lift()
+        entries = half.list()
 
         try:
             square_ = ring(square)
