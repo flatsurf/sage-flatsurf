@@ -9,7 +9,8 @@ acts on the hyperboloid model, and on the Klein model by sending the point
 
 The :class:`HyperbolicIsometryGroup` over a field `K` is the group of those
 matrices with entries in `K`. The functions :func:`tangent_vector_isometry`
-and :func:`segment_isometry` build such matrices in closed form.
+and :func:`segment_isometry` build such matrices in closed form, and
+:func:`segment_midpoint` gives the midpoint of a segment.
 
 EXAMPLES:
 
@@ -515,6 +516,69 @@ def segment_isometry(source, target, ring=None):
     return tangent_vector_isometry((a, b - a), (c, d - c), ring=ring)
 
 
+def segment_midpoint(a, b, ring=None):
+    r"""
+    Return the Klein coordinates of the hyperbolic midpoint of the segment
+    from ``a`` to ``b``.
+
+    INPUT:
+
+    - ``a``, ``b`` -- finite points of the hyperbolic plane, or pairs or
+      vectors of Klein coordinates
+
+    - ``ring`` -- a field or ``None`` (default: ``None``); the field of the
+      result, by default the fraction field of the pushout of the rings of
+      the coordinates
+
+    OUTPUT:
+
+    An immutable vector of length two over ``ring``. A :class:`ValueError` is
+    raised when the midpoint is not defined over ``ring``, exactly when the
+    half turn about it is not (see :func:`segment_isometry`).
+
+    ALGORITHM:
+
+    The lifts `(a, 1)/\sqrt{1 - |a|^2}` and `(b, 1)/\sqrt{1 - |b|^2}` lie on
+    the hyperboloid and their sum is the lift of the midpoint. With
+    `\lambda^2 = (1 - |a|^2) / (1 - |b|^2)` and `\lambda > 0`, the midpoint
+    is `(a + \lambda b) / (1 + \lambda)`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_isometry import segment_midpoint
+        sage: segment_midpoint((1/2, 0), (0, 1/2))
+        (1/4, 1/4)
+        sage: segment_midpoint((0, 0), (1/2, 0))
+        Traceback (most recent call last):
+        ...
+        ValueError: isometry is not defined over Rational Field; adjoin a square root of 4/3
+        sage: L.<s3> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+        sage: segment_midpoint((0, 0), (1/2, 0), ring=L)
+        (-s3 + 2, 0)
+        sage: segment_midpoint((0, 0), (1/2, 0), ring=AA)
+        (0.2679491924311227?, 0)
+
+    """
+    a = _klein_vector(a)
+    b = _klein_vector(b)
+
+    ring = _common_ring([a, b], ring)
+    a, b = (w.change_ring(ring) for w in (a, b))
+
+    for point in (a, b):
+        if not point[0] ** 2 + point[1] ** 2 < 1:
+            raise ValueError(f"{point} is not a finite point of the hyperbolic plane")
+
+    lambda2 = (1 - a.dot_product(a)) / (1 - b.dot_product(b))
+    lam = _positive_sqrt(lambda2)
+    if lam is None:
+        raise _not_defined_over(ring, lambda2)
+
+    midpoint = (a + lam * b) / (1 + lam)
+    midpoint.set_immutable()
+    return midpoint
+
+
 class HyperbolicIsometry(MultiplicativeGroupElement):
     r"""
     An orientation preserving isometry of the hyperbolic plane, given by a
@@ -603,6 +667,115 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
 
         """
         return self._matrix.trace()
+
+    def _fixed_vector(self):
+        r"""
+        Return a vector spanning the kernel of `M - 1`, where `M` is the
+        matrix of this isometry.
+
+        OUTPUT:
+
+        A vector over the base ring, not normalised; its last coordinate
+        vanishes when `M` is a hyperbolic isometry whose axis is a diameter.
+        A :class:`ValueError` is raised for the identity.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: G = HyperbolicIsometryGroup(QQ)
+            sage: G(matrix([[0, -1], [1, 1]]))._fixed_vector()
+            (1, 0, -2)
+            sage: G(matrix([[1, 1], [0, 1]]))._fixed_vector()
+            (0, 1, 1)
+            sage: B = matrix([[5/4, 0, 3/4], [0, 1, 0], [3/4, 0, 5/4]])
+            sage: G(B)._fixed_vector()
+            (0, 1, 0)
+            sage: G(matrix([[2, 1], [1, 1]]))._fixed_vector()
+            (1, -2, 0)
+            sage: G.one()._fixed_vector()
+            Traceback (most recent call last):
+            ...
+            ValueError: every point is fixed by the identity
+
+        """
+        kernel = (self._matrix - 1).right_kernel()
+        if kernel.dimension() == 3:
+            raise ValueError("every point is fixed by the identity")
+        assert kernel.dimension() == 1
+        return kernel.basis()[0]
+
+    def fixed_point(self):
+        r"""
+        Return the fixed point of this isometry in the projective plane of the
+        Klein model.
+
+        OUTPUT:
+
+        A point of the hyperbolic plane over the base ring of this isometry:
+        the finite fixed point of an elliptic isometry, or the ideal fixed
+        point of a parabolic isometry. The fixed point of a hyperbolic
+        isometry is not in the closed disk (it is the pole of its axis) and
+        cannot be represented yet: a :class:`NotImplementedError` is raised.
+        A :class:`ValueError` is raised for the identity.
+
+        ALGORITHM:
+
+        A fixed point of the action on the projective plane is a line of
+        fixed vectors, the kernel of `M - 1`, spanned by `v`. The sign of the
+        Minkowski norm `\langle v, v\rangle` is negative for a finite point,
+        zero for an ideal point and positive outside of the closed disk.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: G = HyperbolicIsometryGroup(QQ)
+            sage: rho = G(matrix([[0, -1], [1, 1]]))
+            sage: rho.trace()
+            0
+            sage: rho.fixed_point()
+            (-1/2, 0)
+            sage: G(matrix([[1, 1], [0, 1]])).fixed_point()
+            ∞
+
+        The fixed point is the midpoint of a segment for the half turn
+        exchanging its endpoints::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import segment_isometry, segment_midpoint
+            sage: s = ((1/2, 0), (0, 1/2))
+            sage: g = G(segment_isometry(s, (s[1], s[0])))
+            sage: g.fixed_point()
+            (1/4, 1/4)
+            sage: segment_midpoint(*s)
+            (1/4, 1/4)
+
+        TESTS::
+
+            sage: B = matrix([[5/4, 0, 3/4], [0, 1, 0], [3/4, 0, 5/4]])
+            sage: G(B).fixed_point()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: the fixed point of a hyperbolic isometry is outside of the closed disk and cannot be represented yet
+            sage: G(matrix([[2, 1], [1, 1]])).fixed_point()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: the fixed point of a hyperbolic isometry is outside of the closed disk and cannot be represented yet
+            sage: G.one().fixed_point()
+            Traceback (most recent call last):
+            ...
+            ValueError: every point is fixed by the identity
+
+        """
+        from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+        v = self._fixed_vector()
+        norm = v[0] ** 2 + v[1] ** 2 - v[2] ** 2
+        if norm > 0:
+            raise NotImplementedError(
+                "the fixed point of a hyperbolic isometry is outside of the closed disk and cannot be represented yet"
+            )
+
+        H = HyperbolicPlane(self.parent().base_ring())
+        return H.point(v[0] / v[2], v[1] / v[2], model="klein")
 
     def _repr_(self):
         r"""
@@ -777,6 +950,13 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             True
 
         TESTS:
+
+        A point cannot be multiplied by an isometry on the right::
+
+            sage: H(I) * G.one()
+            Traceback (most recent call last):
+            ...
+            TypeError: unsupported operand parent(s) for *: 'Hyperbolic Plane over Rational Field' and 'Group of orientation preserving isometries of the hyperbolic plane over Rational Field'
 
         Fields embedded in the reals of Sage have no common parent::
 

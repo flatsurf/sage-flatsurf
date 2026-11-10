@@ -50,7 +50,31 @@ This module is not collected by pytest (its name does not start with
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from sage.all import QQ
+from sage.all import QQ, RR, NumberField, polygen
+
+
+def octagon_vertices():
+    r"""
+    Return the field `K = \QQ(r)` and the Klein coordinates over `K` of the
+    vertices of the regular octagon of ``OCTAGON``, counterclockwise from
+    `(r, 0)`.
+    """
+    x = polygen(QQ, "x")
+    f = sum(c * x**i for i, c in enumerate(OCTAGON["klein_radius_polynomial"]))
+    K = NumberField(f, "r", embedding=RR(OCTAGON["klein_radius_embedding"]))
+    r = K.gen()
+    s2 = sum(c * r**i for i, c in enumerate(OCTAGON["sqrt2_in_radius"]))
+    return K, [
+        (r, 0),
+        (r / s2, r / s2),
+        (0, r),
+        (-r / s2, r / s2),
+        (-r, 0),
+        (-r / s2, -r / s2),
+        (0, -r),
+        (r / s2, -r / s2),
+    ]
+
 
 # Compact hyperbolic orbifolds, in Katok's orbifold form, rows
 # (g, periods, area / pi).
@@ -144,6 +168,23 @@ OCTAGON_GLUINGS = {
     "opposite": ([(0, 4), (1, 5), (2, 6), (3, 7)], [QQ(65) / 3, 0, QQ(2) / 3, 0]),
     "katok": ([(0, 2), (1, 3), (4, 6), (5, 7)], [QQ(31) / 3, 0, QQ(1) / 3, 0]),
 }
+
+# Regular polygons about the origin, moved by the boost
+# [[5/4, 0, 3/4], [0, 1, 0], [3/4, 0, 5/4]] (so that every centre has Klein
+# coordinates (3/5, 0)). Rows: name, order n of the rotation of the polygon,
+# trace of that rotation as a polynomial in the generator of the field
+# (coefficient list, constant term first). The traces are 1 + 2 cos(2 pi / n)
+# with n = 4, 8, 3, written in the field of the vertices (Q, Q(r) of OCTAGON,
+# Q(sqrt(3))).
+# Source: exact values computed with sage-flatsurf (rotation sending a side
+# onto the next one).
+CELL_ROTATIONS = [
+    ("square", 4, [QQ(1)]),
+    ("octagon", 8, [QQ(7) / 3, 0, QQ(1) / 12, 0]),
+    ("triangle", 3, [QQ(0)]),
+]
+CELL_CENTRE = (QQ(3) / 5, QQ(0))
+BOOST = [[QQ(5) / 4, 0, QQ(3) / 4], [0, 1, 0], [QQ(3) / 4, 0, QQ(5) / 4]]
 
 # Order 3 point of the modular group, fixed by z -> -1/(z + 1), i.e. the
 # matrix [[0, -1], [1, 1]].

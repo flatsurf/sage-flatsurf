@@ -36,7 +36,11 @@ from flatsurf import (
 from flatsurf.geometry.holonomy import _holonomy_angle
 from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
 
-from hyperbolic_surface_oracles import FLAT_ORBIFOLDS, OCTAGON, OCTAGON_GLUINGS
+from hyperbolic_surface_oracles import (
+    FLAT_ORBIFOLDS,
+    OCTAGON_GLUINGS,
+    octagon_vertices,
+)
 
 CONSTRUCTORS = {
     "square_torus": lambda: translation_surfaces.square_torus(),
@@ -63,21 +67,7 @@ def H():
 
 @pytest.fixture(scope="module")
 def octagon():
-    x = polygen(QQ, "x")
-    f = sum(c * x**i for i, c in enumerate(OCTAGON["klein_radius_polynomial"]))
-    K = NumberField(f, "r", embedding=RR(OCTAGON["klein_radius_embedding"]))
-    r = K.gen()
-    s2 = sum(c * r**i for i, c in enumerate(OCTAGON["sqrt2_in_radius"]))
-    points = [
-        (r, 0),
-        (r / s2, r / s2),
-        (0, r),
-        (-r / s2, r / s2),
-        (-r, 0),
-        (-r / s2, -r / s2),
-        (0, -r),
-        (r / s2, -r / s2),
-    ]
+    K, points = octagon_vertices()
     return HyperbolicPlane(K).polygon(vertices=points)
 
 

@@ -220,7 +220,7 @@ import collections.abc
 
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
-from sage.structure.element import Element
+from sage.structure.element import Element, Matrix
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_method
 
@@ -5289,6 +5289,9 @@ class HyperbolicConvexSet(SageObject):
             sage: assert p * (m0 * m1) == (p * m0) * m1
 
         """
+        if not isinstance(x, Matrix):
+            return None
+
         return self.apply_isometry(x, on_right=self_on_left)
 
     def is_subset(self, other):

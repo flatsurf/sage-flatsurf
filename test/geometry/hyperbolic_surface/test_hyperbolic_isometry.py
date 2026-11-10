@@ -23,13 +23,31 @@ of side pairings and of tangent vector maps.
 
 import pytest
 
-from sage.all import AA, QQ, I, NumberField, diagonal_matrix, matrix, polygen, vector
+from sage.all import (
+    AA,
+    QQ,
+    RR,
+    I,
+    NumberField,
+    diagonal_matrix,
+    matrix,
+    polygen,
+    vector,
+)
 
 from flatsurf import HyperbolicPlane
 from flatsurf.geometry.hyperbolic_isometry import (
     HyperbolicIsometryGroup,
     segment_isometry,
+    segment_midpoint,
     tangent_vector_isometry,
+)
+
+from hyperbolic_surface_oracles import (
+    BOOST,
+    CELL_CENTRE,
+    CELL_ROTATIONS,
+    octagon_vertices,
 )
 
 
@@ -194,6 +212,110 @@ def test_mixed_rings():
     s2 = M.gen()
     P_M = HyperbolicPlane(M).polygon(vertices=[(0, 0), (s2 / 4, 0), (0, s2 / 4)])
     assert g(P_M) == HyperbolicIsometryGroup(AA)(g)(P_M.change_ring(AA))
+
+
+def proportional(v, w):
+    return matrix(QQ, [v, w]).rank() == 1
+
+
+def cell_vertices(name):
+    r"""
+    Return the field and the Klein coordinates of the vertices of a regular
+    polygon about the origin.
+    """
+    if name == "square":
+        half = QQ(1) / 2
+        return QQ, [(half, 0), (0, half), (-half, 0), (0, -half)]
+    if name == "octagon":
+        return octagon_vertices()
+    x = polygen(QQ)
+    K = NumberField(x**2 - 3, "s3", embedding=RR(1.7))
+    s3 = K.gen()
+    return K, [(QQ(1) / 2, 0), (-QQ(1) / 4, s3 / 4), (-QQ(1) / 4, -s3 / 4)]
+
+
+@pytest.mark.parametrize("name,n,trace", CELL_ROTATIONS)
+def test_cell_rotation(name, n, trace):
+    K, vertices = cell_vertices(name)
+    G = HyperbolicIsometryGroup(K)
+    boost = G(matrix(K, BOOST))
+    vertices = [boost(v) for v in vertices]
+
+    g = G(segment_isometry((vertices[0], vertices[1]), (vertices[1], vertices[2])))
+    assert g.trace() == sum(c * K.gen() ** i for i, c in enumerate(trace))
+    assert (g**n).is_one()
+    assert not any((g**k).is_one() for k in range(1, n))
+    assert g.fixed_point() == HyperbolicPlane(K).point(*CELL_CENTRE, model="klein")
+
+
+def test_cell_boost():
+    K, vertices = cell_vertices("square")
+    boost = HyperbolicIsometryGroup(QQ)(matrix(QQ, BOOST))
+    assert [tuple(boost(v)) for v in vertices] == [
+        (QQ(11) / 13, 0),
+        (QQ(3) / 5, QQ(2) / 5),
+        (QQ(1) / 7, 0),
+        (QQ(3) / 5, -QQ(2) / 5),
+    ]
+
+
+def test_fixed_points(G):
+    rho = G(matrix(QQ, [[0, -1], [1, 1]]))
+    assert rho.trace() == 0
+    assert proportional(rho._fixed_vector(), (1, 0, -2))
+    assert rho.fixed_point() == HyperbolicPlane(QQ).point(
+        -QQ(1) / 2, 0, model="klein"
+    )
+
+    parabolic = G(matrix(QQ, [[1, 1], [0, 1]]))
+    assert parabolic.trace() == 3
+    assert parabolic.fixed_point() == HyperbolicPlane(QQ).point(0, 1, model="klein")
+
+    boost = G(matrix(QQ, BOOST))
+    assert boost.trace() == QQ(7) / 2
+    assert proportional(boost._fixed_vector(), (0, 1, 0))
+    with pytest.raises(NotImplementedError):
+        boost.fixed_point()
+
+    hyperbolic = G(matrix(QQ, [[2, 1], [1, 1]]))
+    assert hyperbolic.trace() == 8
+    assert proportional(hyperbolic._fixed_vector(), (1, -2, 0))
+    with pytest.raises(NotImplementedError):
+        hyperbolic.fixed_point()
+
+    with pytest.raises(ValueError):
+        G.one().fixed_point()
+
+
+def test_half_turn_fixed_point(G):
+    s = ((QQ(1) / 2, 0), (0, QQ(1) / 2))
+    M = segment_isometry(s, (s[1], s[0]))
+    assert M == matrix(QQ, [[-8, -1, 4], [-1, -8, 4], [-4, -4, 9]]) / 7
+    g = G(M)
+    assert proportional(g._fixed_vector(), (1, 1, 4))
+    assert g.fixed_point() == HyperbolicPlane(QQ).point(
+        QQ(1) / 4, QQ(1) / 4, model="klein"
+    )
+
+
+def test_segment_midpoint():
+    half = QQ(1) / 2
+    assert segment_midpoint((half, 0), (0, half)) == vector(QQ, (QQ(1) / 4, QQ(1) / 4))
+    with pytest.raises(ValueError):
+        segment_midpoint((0, 0), (half, 0))
+
+    x = polygen(QQ)
+    L = NumberField(x**2 - 3, "s3", embedding=AA(3).sqrt())
+    assert segment_midpoint((0, 0), (half, 0), ring=L) == vector(L, (2 - L.gen(), 0))
+    m = segment_midpoint((0, 0), (half, 0), ring=AA)
+    assert m == vector(AA, (2 - AA(3).sqrt(), 0))
+
+
+def test_point_on_isometry_right(H, G):
+    with pytest.raises(TypeError):
+        H(I) * G.one()
+    m = matrix(QQ, [[1, 2], [3, 4]])
+    assert H(I) * m == H.point(-QQ(7) / 5, QQ(1) / 5, model="half_plane")
 
 
 def test_constructor_errors(G):
