@@ -20,6 +20,7 @@ The flatsurf.geometry Package
    geometry/hyperbolic_isometry
    geometry/hyperbolic_polygon
    geometry/hyperbolic_surface
+   geometry/hyperbolic_surface_generators
    geometry/interval_exchange_transformation
    geometry/l_infinity_delaunay_cells
    geometry/lazy

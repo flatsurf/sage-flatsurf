@@ -1730,6 +1730,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         vertices=None,
         model="klein",
         polygon=None,
+        angles=None,
     ):
         r"""
         Return the convex polygon obtained by intersecting ``half_spaces``,
@@ -1779,6 +1780,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
           :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
           of this hyperbolic plane with the same vertices, marked vertices
           included.
+
+        - ``angles`` -- three rational numbers (default: ``None``), the
+          interior angles as multiples of `2\pi` of the triangle built by
+          :meth:`~flatsurf.geometry.hyperbolic_surface_generators.HyperbolicPolygonsConstructor.triangle`
+          over the base ring of this hyperbolic plane; exclusive with
+          ``half_spaces``, ``vertices`` and ``polygon``.
 
         The arguments ``assume_sorted``, ``assume_minimal`` and
         ``marked_vertices`` only apply to ``half_spaces``, and ``model`` only
@@ -1978,6 +1985,39 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: vertex 0 is not a finite point of the hyperbolic plane
 
+        A compact triangle is given by its angles, when its vertices lie in
+        the base ring::
+
+            sage: T = HyperbolicPlane(AA).polygon(angles=[1/4, 1/16, 1/16])
+            sage: T.angles()
+            (1/4, 1/16, 1/16)
+            sage: H.polygon(angles=[1/4, 1/16, 1/16])
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: H.polygon(angles=[1/8, 1/8, 1/8, 1/8])
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: only triangles can be built from their angles
+            sage: H.polygon(angles=[1/8, 1/8])
+            Traceback (most recent call last):
+            ...
+            ValueError: a polygon has at least three angles
+            sage: H.polygon(angles=[1/8, 1/8], vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            Traceback (most recent call last):
+            ...
+            ValueError: angles cannot be combined with half_spaces, vertices, or polygon
+
+        The triangle of the triangle group `(2, 3, 7)` is not defined over
+        `\QQ`::
+
+            sage: H.polygon(angles=[1/4, 1/6, 1/14])
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: HyperbolicPlane(AA).polygon(angles=[1/4, 1/6, 1/14]).area()  # long time
+            1/84
+
         Exactly one of ``half_spaces``, ``vertices`` and ``polygon`` must be
         given::
 
@@ -2013,6 +2053,25 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             of a union of convex sets
 
         """
+        if angles is not None:
+            if half_spaces is not None or vertices is not None or polygon is not None:
+                raise ValueError(
+                    "angles cannot be combined with half_spaces, vertices, or polygon"
+                )
+            angles = list(angles)
+            if len(angles) > 3:
+                raise NotImplementedError(
+                    "only triangles can be built from their angles"
+                )
+            if len(angles) < 3:
+                raise ValueError("a polygon has at least three angles")
+            from flatsurf.geometry.hyperbolic_surface_generators import (
+                hyperbolic_polygons,
+            )
+
+            triangle = hyperbolic_polygons.triangle(*angles, ring=self.base_ring())
+            return self.polygon(polygon=triangle, check=False)
+
         if (half_spaces is None) + (vertices is None) + (polygon is None) != 2:
             raise ValueError(
                 "exactly one of half_spaces, vertices, and polygon must be given"
