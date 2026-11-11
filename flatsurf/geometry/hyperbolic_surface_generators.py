@@ -1481,3 +1481,371 @@ class HyperbolicSurfaceGenerators:
 
 
 hyperbolic_surfaces = HyperbolicSurfaceGenerators()
+
+
+def _triangle_group_degree_bound(m1, m2, m3):
+    r"""
+    Return a lower bound on the degree of the real fields that contain the
+    Klein coordinates of a triangle of the triangle group with periods
+    ``m1``, ``m2``, ``m3``.
+
+    INPUT:
+
+    - ``m1``, ``m2``, ``m3`` -- integers at least 2, with `1/m_1 + 1/m_2 +
+      1/m_3 < 1`
+
+    OUTPUT:
+
+    The integer `[k_0 : \QQ]` when the quaternion algebra `A_0` is a matrix
+    algebra over `k_0`, `2 [k_0 : \QQ]` otherwise.
+
+    ALGORITHM:
+
+    With `c_i = \cos(\pi/m_i)`, the invariant trace field of the group `\Gamma`
+    is `k_0 = \QQ(c_1^2, c_2^2, c_3^2, c_1 c_2 c_3)`, Takeuchi, Arithmetic
+    triangle groups (1977), Propositions 4 and 5. For two rotations `g, h`
+    of periods `m_i, m_j` other than 2, of traces `2 c_i, 2 c_j` in
+    `\mathrm{SL}_2(\RR)`, its quaternion algebra is `A_0 = (a, b | k_0)` with
+    `a = \mathrm{tr}^2 g (\mathrm{tr}^2 g - 4) = 4 c_i^2 (4 c_i^2 - 4)` and `b
+    = \mathrm{tr}^2 g \mathrm{tr}^2 h (\mathrm{tr} [g, h] - 2) = 16 c_i^2
+    c_j^2 \cdot 4 \Delta`, `\Delta = c_1^2 + c_2^2 + c_3^2 + 2 c_1 c_2 c_3 -
+    1`, by Maclachlan and Reid, The Arithmetic of Hyperbolic 3-Manifolds
+    (2003), Theorem 3.6.2 and the Fricke identity. A hyperbolic triangle
+    group has at most one period 2.
+
+    If the Klein coordinates of a triangle lie in a real field `F`, the
+    pairings of its pillowcase lie over `F`, so `\Gamma` lies in the
+    orthogonal group of the isotropic form `x^2 + y^2 - z^2` over `F`, which
+    is `\mathrm{PGL}_2(F)`. The lifts to `\mathrm{SL}_2(\RR)` of the squares
+    of `\Gamma` then lie in a conjugate of `M_2(F)`, so `F` contains `k_0`
+    and splits `A_0`: `[F : \QQ] \ge 2 [k_0 : \QQ]` when `A_0` is a division
+    algebra.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _triangle_group_degree_bound
+        sage: _triangle_group_degree_bound(2, 3, 7)
+        6
+        sage: _triangle_group_degree_bound(3, 4, 4)
+        2
+        sage: _triangle_group_degree_bound(int(2), int(4), int(5))
+        4
+
+    """
+    from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
+    from flatsurf.geometry.subfield import number_field_elements_from_algebraics
+
+    periods = (m1, m2, m3)
+    c1, c2, c3 = (_cos_sin(QQ((1, 2 * m)))[0] for m in periods)
+    k0, (s1, s2, s3, p) = number_field_elements_from_algebraics(
+        [c1 * c1, c2 * c2, c3 * c3, c1 * c2 * c3]
+    )
+    squares = (s1, s2, s3)
+    i, j = [k for k in range(3) if periods[k] != 2][:2]
+
+    delta = s1 + s2 + s3 + 2 * p - 1
+    a = 4 * squares[i] * (4 * squares[i] - 4)
+    b = 16 * squares[i] * squares[j] * 4 * delta
+
+    degree = k0.degree()
+    if QuaternionAlgebra(k0, a, b).is_matrix_ring():
+        return degree
+    return 2 * degree
+
+
+def _triangle_placements(angles, order):
+    r"""
+    Return an iterator over placements of the triangle with the interior
+    angles ``angles`` at its vertices 0, 1, 2.
+
+    INPUT:
+
+    - ``angles`` -- a list of three positive rational numbers, the angles as
+      multiples of `2\pi`, of sum less than `1/2`
+
+    - ``order`` -- a sequence of vertices of the triangle
+
+    OUTPUT:
+
+    An iterator over lists of three pairs of elements of ``AA``, the Klein
+    coordinates of the vertices 0, 1, 2 of the triangle, counterclockwise.
+    For each vertex of ``order`` in turn, three placements with that vertex
+    at the origin: the edge to the next vertex on the positive `x`-axis, the
+    edge to the previous vertex on it, and the bisector of its angle on it.
+
+    EXAMPLES:
+
+    The triangle with a right angle at the vertex 0, placed at that vertex::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _triangle_placements
+        sage: placements = list(_triangle_placements([1/4, 1/12, 1/12], [0]))
+        sage: placements[0]
+        [(0, 0), (0.8164965809277260?, 0), (0, 0.816496580927726?)]
+        sage: placements[1]
+        [(0, 0), (0, -0.8164965809277260?), (0.816496580927726?, 0)]
+        sage: placements[2]
+        [(0, 0),
+         (0.5773502691896258?, -0.5773502691896258?),
+         (0.5773502691896258?, 0.5773502691896258?)]
+
+    """
+    for i in order:
+        T = hyperbolic_polygons.triangle(
+            angles[i], angles[(i + 1) % 3], angles[(i + 2) % 3], ring=AA
+        )
+        vertices = [v.coordinates(model="klein") for v in T.vertices()]
+        for rotation in (0, -angles[i], -angles[i] / 2):
+            cos, sin = _cos_sin(rotation)
+            rotated = [(cos * x - sin * y, sin * x + cos * y) for x, y in vertices]
+            yield [rotated[(j - i) % 3] for j in range(3)]
+
+
+class FuchsianGroupGenerators:
+    r"""
+    Constructors of Fuchsian groups, as groups of matrices of `\mathrm{SO}(2,
+    1)^+` acting on the Klein model of the hyperbolic plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf import fuchsian_groups
+        sage: fuchsian_groups
+        fuchsian groups
+
+    """
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this constructor.
+
+        EXAMPLES::
+
+            sage: from flatsurf import fuchsian_groups
+            sage: fuchsian_groups
+            fuchsian groups
+
+        """
+        return "fuchsian groups"
+
+    @staticmethod
+    def triangle(m1, m2, m3, ring=None, optimize_placement=True):
+        r"""
+        Return the cocompact triangle group with periods ``m1``, ``m2`` and
+        ``m3``.
+
+        The group is generated by the rotations `g_1, g_2, g_3` by the
+        angles `2\pi/m_1, 2\pi/m_2, 2\pi/m_3` about the vertices of a
+        triangle with interior angles `\pi/m_i`, and has the presentation
+        `g_1^{m_1} = g_2^{m_2} = g_3^{m_3} = g_1 g_2 g_3 = 1` of Katok,
+        Fuchsian groups (1992), Section 4.3, p. 99. The vertices of periods
+        `m_1, m_3, m_2` are the vertices 0, 1, 2 of the triangle,
+        counterclockwise.
+
+        INPUT:
+
+        - ``m1``, ``m2``, ``m3`` -- integers at least 2, with `1/m_1 + 1/m_2
+          + 1/m_3 < 1`
+
+        - ``ring`` -- a ring or ``None`` (default: ``None``), the base ring
+          of the matrices: with ``None``, the number field generated by the
+          Klein coordinates of the triangle; ``AA`` keeps the coordinates in
+          ``AA``, which makes the construction slow; any other ring receives
+          the coordinates by conversion
+
+        - ``optimize_placement`` -- a boolean (default: ``True``); whether to
+          search for a placement of the triangle whose coordinates generate a
+          field of small degree, see below. Otherwise the vertex of period
+          ``m1`` is at the origin and its edge to the vertex of period
+          ``m3`` on the positive `x`-axis.
+
+        OUTPUT:
+
+        A matrix group generated by the `3 \times 3` matrices of `g_1, g_2,
+        g_3` in `\mathrm{SO}(2, 1)^+`. They need not lift to
+        `\mathrm{PSL}_2` over the base ring.
+
+        ALGORITHM:
+
+        The generators are the images by the
+        :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.holonomy_representation`
+        of the loops around the vertices of the
+        :meth:`~HyperbolicSurfaceGenerators.pillowcase` of the triangle.
+        The loops turn counterclockwise, and their images multiply to the
+        identity in the clockwise order of the vertices, `0, 2, 1`.
+
+        The base ring is the field of the Klein coordinates of the
+        triangle, which depends on its placement. With
+        ``optimize_placement``, the vertices are tried by decreasing even
+        period, then by decreasing odd period, in the order of the input on
+        ties; at each vertex, the vertex is at the origin and the edge to the
+        next vertex, the edge to the previous vertex, or the bisector of its
+        angle on the positive `x`-axis. The search stops at the first
+        placement whose field has a degree at most a lower bound, otherwise
+        it keeps the first placement of smallest degree.
+
+        The bound is `[k_0 : \QQ]` or `2 [k_0 : \QQ]`, with `k_0` the
+        invariant trace field of Takeuchi, Arithmetic triangle groups
+        (1977), Propositions 4 and 5, the second when the quaternion algebra
+        `A_0` of the group is a division algebra over `k_0`: a real field
+        `F` that contains the coordinates of a triangle puts the group in
+        `\mathrm{PGL}_2(F)`, so it contains `k_0` and splits `A_0`.
+
+        EXAMPLES:
+
+        The triangle group `(3, 4, 4)`::
+
+            sage: from flatsurf import fuchsian_groups
+            sage: G = fuchsian_groups.triangle(3, 4, 4)
+            sage: G
+            Matrix group over Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178? with 3 generators (
+            [  -7/2   -3/2  3/2*a]  [ 0 -1  0]  [  -3/2   -1/2  1/2*a]
+            [   3/2   -1/2 -1/2*a]  [ 1  0  0]  [   7/2   -3/2 -3/2*a]
+            [-3/2*a -1/2*a      4], [ 0  0  1], [-3/2*a  1/2*a      4]
+            )
+            sage: G.base_ring()
+            Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1^3).is_one(), (g2^4).is_one(), (g3^4).is_one()
+            (True, True, True)
+            sage: (g1 * g2 * g3).is_one()
+            True
+
+        The triangle group `(2, 4, 6)`, given by Python integers::
+
+            sage: G = fuchsian_groups.triangle(int(2), int(4), int(6))
+            sage: G.base_ring()
+            Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1^2).is_one(), (g2^4).is_one(), (g3^6).is_one()
+            (True, True, True)
+            sage: (g1 * g2 * g3).is_one()
+            True
+
+        The triangle group `(2, 3, 7)` is defined over a field of degree
+        6, the lower bound, twice the degree of its invariant trace field::
+
+            sage: # long time
+            sage: G = fuchsian_groups.triangle(2, 3, 7)
+            sage: G.base_ring().polynomial()
+            y^6 + y^4 - 2*y^2 - 1
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1^2).is_one(), (g2^3).is_one(), (g3^7).is_one()
+            (True, True, True)
+            sage: (g1 * g2 * g3).is_one()
+            True
+
+        Its triangle has the vertex of period 2 at the origin and the edge
+        to the vertex of period 7 on the positive `x`-axis; the invariant
+        trace field of its pillowcase is `\QQ(\cos(2\pi/7))`::
+
+            sage: # long time
+            sage: from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
+            sage: T = hyperbolic_polygons.triangle(1/4, 1/14, 1/6, ring=G.base_ring())
+            sage: hyperbolic_surfaces.pillowcase(T).holonomy_representation().invariant_trace_field()
+            Number Field in ... with defining polynomial x^3 - 7*x - 7 with ...
+
+        With the vertex of period `m_1` at the origin, the field may be
+        larger::
+
+            sage: G = fuchsian_groups.triangle(3, 4, 4, optimize_placement=False)
+            sage: G.base_ring().degree()
+            4
+
+        The coordinates can be kept in ``AA``::
+
+            sage: G = fuchsian_groups.triangle(3, 4, 4, ring=AA)
+            sage: G.base_ring()
+            Algebraic Real Field
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1 * g2 * g3).is_one()
+            True
+
+        The periods are integers at least 2, and the group is hyperbolic::
+
+            sage: fuchsian_groups.triangle(1, 4, 4)
+            Traceback (most recent call last):
+            ...
+            ValueError: the period 1 is not an integer at least 2
+            sage: fuchsian_groups.triangle(2, 3, 6)
+            Traceback (most recent call last):
+            ...
+            ValueError: the triangle group (2, 3, 6) is euclidean, not hyperbolic: 1/m1 + 1/m2 + 1/m3 must be less than 1
+            sage: fuchsian_groups.triangle(2, 3, 5)
+            Traceback (most recent call last):
+            ...
+            ValueError: the triangle group (2, 3, 5) is spherical, not hyperbolic: 1/m1 + 1/m2 + 1/m3 must be less than 1
+
+        TESTS::
+
+            sage: fuchsian_groups.triangle(3, 4, 4, ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: fuchsian_groups.triangle(5/2, 4, 4)
+            Traceback (most recent call last):
+            ...
+            ValueError: the period 5/2 is not an integer at least 2
+
+        """
+        from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+        from flatsurf.geometry.signature import SurfaceSignature
+
+        geometry = SurfaceSignature.from_katok(0, (m1, m2, m3)).geometry()
+        if geometry != "hyperbolic":
+            raise ValueError(
+                f"the triangle group ({m1}, {m2}, {m3}) is {geometry}, not hyperbolic: 1/m1 + 1/m2 + 1/m3 must be less than 1"
+            )
+        m1, m2, m3 = ZZ(m1), ZZ(m2), ZZ(m3)
+        angles = [QQ((1, 2 * m)) for m in (m1, m3, m2)]
+
+        if not optimize_placement:
+            T = hyperbolic_polygons.triangle(*angles, ring=ring)
+        else:
+            from flatsurf.geometry.hyperbolic import HyperbolicPlane
+            from flatsurf.geometry.subfield import (
+                number_field_elements_from_algebraics,
+            )
+
+            # The input periods m1, m2, m3 are at the vertices 0, 2, 1.
+            order = [
+                vertex
+                for _, vertex in sorted(
+                    zip((m1, m2, m3), (0, 2, 1)), key=lambda pv: (pv[0] % 2, -pv[0])
+                )
+            ]
+
+            # No placement over QQ is sought as _optimize_placement does: when
+            # k_0 is QQ the group is arithmetic and A_0 a division algebra
+            # (Takeuchi, Theorem 1), so the bound is 2.
+            bound = _triangle_group_degree_bound(m1, m2, m3)
+
+            candidates = []
+            for vertices in _triangle_placements(angles, order):
+                field, coordinates = number_field_elements_from_algebraics(
+                    [c for vertex in vertices for c in vertex]
+                )
+                candidates.append(
+                    (field.degree(), len(candidates), field, coordinates, vertices)
+                )
+                if field.degree() <= bound:
+                    break
+            _, _, field, coordinates, vertices = min(
+                candidates, key=lambda candidate: candidate[:2]
+            )
+
+            if ring is None:
+                # The minimal field is already computed; _polygon would
+                # compute it again.
+                T = HyperbolicPlane(field).polygon(
+                    vertices=list(zip(coordinates[::2], coordinates[1::2]))
+                )
+            else:
+                T = _polygon(vertices, ring)
+
+        S = HyperbolicSurfaceGenerators.pillowcase(T)
+        phi = S.holonomy_representation()
+        loops = phi.domain().vertex_loops()
+        g1, g3, g2 = (phi(loops[S(0, i)]).matrix() for i in range(3))
+        return MatrixGroup([g1, g2, g3])
+
+
+fuchsian_groups = FuchsianGroupGenerators()

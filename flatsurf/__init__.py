@@ -23,6 +23,7 @@ from flatsurf.geometry.similarity_surface_generators import (
 from flatsurf.geometry.hyperbolic_surface_generators import (
     hyperbolic_polygons,
     hyperbolic_surfaces,
+    fuchsian_groups,
 )
 
 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
