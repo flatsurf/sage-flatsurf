@@ -762,6 +762,106 @@ def _reflection(p, q):
     return identity_matrix(3) - 2 * matrix(n).transpose() * matrix(J * n) / (n * J * n)
 
 
+def _optimize_placement(vertices):
+    r"""
+    Return the image of the polygon with the Klein coordinates ``vertices``
+    by an isometry that makes its coordinates rational, or ``vertices`` when
+    no such isometry is found.
+
+    INPUT:
+
+    - ``vertices`` -- a list of pairs of elements of ``AA``, the Klein
+      coordinates of the vertices of a polygon
+
+    OUTPUT:
+
+    A list of pairs of elements of ``AA`` of the same length, the image of
+    the vertices, in the same order, by an orientation preserving isometry;
+    ``vertices`` itself when their coordinates are rational, generate a
+    field of degree other than 2, or when no image is rational.
+
+    ALGORITHM:
+
+    When the coordinates generate `\QQ(\sqrt{d})`, with `d` the squarefree
+    part of the discriminant, the point `(x_0, 0)` with `x_0 = (q^2 -
+    dp^2)/(q^2 + dp^2)` has `1 - x_0^2 \in d \QQ^2`. For each vertex `i`
+    and its neighbours `j = i + 1, i - 1`, in this order, the isometry that
+    sends the vertex `i` to `(x_0, 0)` and the direction of the vertex `j`
+    to the positive `x`-axis is applied; the first rational image is
+    returned.
+
+    The start point `x_0` is the one of smallest height, then the smallest,
+    among `1 \le p, q \le 40`. Any two start points with `1 - x_0^2 \in d
+    \QQ^2` differ by a boost along the `x`-axis with rational `\cosh` and
+    `\sinh`, so the choice of `x_0` only changes the size of the rational
+    coordinates, not whether there are some; `p = q = 1` is always a
+    candidate.
+
+    EXAMPLES:
+
+    The right-angled hexagon whose alternate sides have `\cosh = 5/4`, the
+    half of a pair of pants with three cuffs of trace `21/4`, has its
+    coordinates in `\QQ(\sqrt{6})` when its vertex 0 is at the origin, and
+    rational ones once moved::
+
+        sage: from flatsurf import hyperbolic_polygons
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _optimize_placement
+        sage: P = hyperbolic_polygons.right_angled_hexagon(5/4, 5/4, 5/4, ring=AA)
+        sage: vertices = [v.coordinates(model="klein") for v in P.vertices()]
+        sage: _optimize_placement(vertices)
+        [(-1/5, 0), (-1/5, -24/25), (-5/61, -60/61), (23/65, -12/13), (5/11, -48/55), (5/11, 0)]
+
+    Rational coordinates are kept::
+
+        sage: vertices = [(AA(0), AA(0)), (AA(1/2), AA(0)), (AA(0), AA(1/2))]
+        sage: _optimize_placement(vertices) is vertices
+        True
+
+    """
+    from flatsurf.geometry.hyperbolic_isometry import tangent_vector_isometry
+    from flatsurf.geometry.subfield import number_field_elements_from_algebraics
+
+    field, _ = number_field_elements_from_algebraics(
+        [c for vertex in vertices for c in vertex]
+    )
+    if field is QQ or field.degree() != 2:
+        return vertices
+
+    d = field.discriminant().squarefree_part()
+
+    def height_and_value(x):
+        return max(abs(x.numerator()), x.denominator()), x
+
+    x0 = min(
+        (
+            QQ((q * q - d * p * p, q * q + d * p * p))
+            for p in range(1, 41)
+            for q in range(1, 41)
+        ),
+        key=height_and_value,
+    )
+
+    n = len(vertices)
+    lifts = [vector(AA, (x, y, 1)) for x, y in vertices]
+    for i in range(n):
+        for j in ((i + 1) % n, (i - 1) % n):
+            direction = (
+                vertices[j][0] - vertices[i][0],
+                vertices[j][1] - vertices[i][1],
+            )
+            M = tangent_vector_isometry(
+                (vertices[i], direction), ((x0, 0), (1, 0)), ring=AA
+            )
+            images = []
+            for lift in lifts:
+                x, y, z = M * lift
+                images.append((x / z, y / z))
+            if all(c in QQ for image in images for c in image):
+                return [(AA(QQ(x)), AA(QQ(y))) for x, y in images]
+
+    return vertices
+
+
 class HyperbolicSurfaceGenerators:
     r"""
     Constructors of hyperbolic surfaces from hyperbolic polygons.
@@ -952,6 +1052,430 @@ class HyperbolicSurfaceGenerators:
         surface.add_polygon(Q, label=1)
         for x, y in gluings:
             surface.glue(x, y)
+        surface.set_immutable()
+        return surface
+
+    @staticmethod
+    def pants(boundary_traces=(), cone_orders=(), ring=None, optimize_placement=True):
+        r"""
+        Return the hyperbolic pair of pants with geodesic boundary components
+        of traces ``boundary_traces`` and cone points of orders
+        ``cone_orders``.
+
+        A pair of pants has three slots, each a geodesic boundary component,
+        a cuff, or a cone point. The cone points take the first slots, in the
+        order of ``cone_orders``, and the cuffs the last ones, in the order
+        of ``boundary_traces``. The pants is the
+        :meth:`pillowcase` of its front polygon glued along its seams, the
+        mirror edge being the seam between the slots 2 and 0. The front
+        polygon has the edges, counterclockwise, seam 20, half-cuff 0, seam
+        01, half-cuff 1, seam 12, half-cuff 2, all its angles right; a cone
+        point in the slot `s` replaces the half-cuff `s` by a vertex of half
+        its cone angle.
+
+        INPUT:
+
+        - ``boundary_traces`` -- a sequence of real algebraic numbers larger
+          than 3 (default: ``()``); the traces in `\mathrm{SO}(2, 1)` of the
+          holonomy of the cuffs. A cuff of trace `t` has length `\ell` with
+          `\cosh(\ell / 2) = \sqrt{t + 1} / 2`.
+
+        - ``cone_orders`` -- a sequence of rational numbers in `(-1, 0)`
+          (default: ``()``); the orders `k` of the cone points, of angle
+          `2\pi(1 + k)`
+
+        - ``ring`` -- a ring or ``None`` (default: ``None``), the base ring
+          of the surface: with ``None``, the number field generated by the
+          Klein coordinates of the front polygon, ``QQ`` when they are
+          rational; ``AA`` keeps the coordinates in ``AA``; any other ring
+          receives the coordinates by conversion
+
+        - ``optimize_placement`` -- a boolean (default: ``True``); whether to
+          move the front polygon by an isometry that makes its coordinates
+          rational when they generate a quadratic field, see below.
+          Otherwise the front polygon has its vertex 0 at the origin and its
+          edge 0 on the positive `x`-axis.
+
+        OUTPUT:
+
+        An immutable
+        :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
+        with the labels 0, the front polygon, and 1, its mirror image. Its
+        :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
+        has the genus 0, the cone orders ``cone_orders`` and the boundary
+        traces ``boundary_traces``.
+
+        ALGORITHM:
+
+        The front polygon is
+        :meth:`~HyperbolicPolygonsConstructor.right_angled_hexagon` without
+        cone point,
+        :meth:`~HyperbolicPolygonsConstructor.right_angled_pentagon` with
+        one, :meth:`~HyperbolicPolygonsConstructor.right_angled_quadrilateral`
+        with two, and :meth:`~HyperbolicPolygonsConstructor.triangle` with
+        three, built over ``AA``.
+
+        When its coordinates generate `\QQ(\sqrt{d})` and
+        ``optimize_placement`` is set, the polygon is moved by the isometry
+        that sends one of its vertices to a point `(x_0, 0)` with `1 -
+        x_0^2 \in d \QQ^2`, and the direction of a neighbouring vertex to
+        the positive `x`-axis, for the first vertex and neighbour whose image
+        has rational coordinates; the polygon is kept when there is none.
+
+        EXAMPLES:
+
+        The pants with three cuffs of trace `21/4` is defined over `\QQ`
+        once its front hexagon is moved off the origin::
+
+            sage: from flatsurf import hyperbolic_surfaces
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4))
+            sage: S
+            Hyperbolic Surface with boundary built from 2 right-angled hexagons
+            sage: S.base_ring()
+            Rational Field
+            sage: S.polygon(0).vertices()
+            ((-1/5, 0),
+             (-1/5, -24/25),
+             (-5/61, -60/61),
+             (23/65, -12/13),
+             (5/11, -48/55),
+             (5/11, 0))
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(21/4, 21/4, 21/4))
+            sage: S.area()
+            1
+            sage: TestSuite(S).run()
+
+        With the vertex 0 of the hexagon at the origin, the coordinates need
+        `\sqrt{6}`::
+
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), optimize_placement=False)
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(21/4, 21/4, 21/4))
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), ring=QQ, optimize_placement=False)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+
+        A cone point of angle `\pi` and two cuffs, from a pentagon::
+
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(QQ(21)/4, QQ(21)/4), cone_orders=(QQ(-1)/2,))
+            sage: S
+            Hyperbolic Surface with boundary built from 2 right-angled pentagons
+            sage: S.base_ring()
+            Rational Field
+            sage: S.polygon(0).vertices()
+            ((-15/19, 0),
+             -15/29 + 6/29*I,
+             (-225/421, -340/421),
+             (-9/25, -544/625),
+             (-9/25, 0))
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(-1/2,), boundary_traces=(21/4, 21/4))
+            sage: S.area()
+            1/2
+
+        Two cone points and a cuff, from a quadrilateral::
+
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4,), cone_orders=(-1/2, -2/3))
+            sage: S
+            Hyperbolic Surface with boundary built from 2 quadrilaterals
+            sage: S.base_ring()
+            Rational Field
+            sage: S.polygon(0).vertices()
+            ((-6/7, 0), -2/3 + 1/3*I, (-9/17, -10/17), (-9/17, 0))
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(-2/3, -1/2), boundary_traces=(21/4,))
+            sage: S.area()
+            1/6
+
+        Three cone points, from a triangle, give a closed orbifold of genus
+        0::
+
+            sage: S = hyperbolic_surfaces.pants(cone_orders=(-1/2, -3/4, -7/8))
+            sage: S
+            Genus 0 Hyperbolic Surface built from 2 right triangles
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^4 - 2 with a = 1.189207115002722?
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(-7/8, -3/4, -1/2))
+            sage: S.area()
+            1/8
+
+        A cone angle larger than `\pi` requires cuffs of comparable lengths::
+
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(-1/4,))
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(-1/4,), boundary_traces=(21/4, 21/4))
+            sage: S.area()
+            1/4
+            sage: hyperbolic_surfaces.pants(boundary_traces=(20881/144, 21/4), cone_orders=(-1/4,))
+            Traceback (most recent call last):
+            ...
+            ValueError: no pair of pants with these parameters: c2 + c1 cos(π(1 + k0)) must be positive, with k0 the cone order of slot 0 and cs = √(ts + 1)/2 for the boundary trace ts of slot s
+
+        Two cone points of angle `\pi` and a cuff would give a flat
+        surface::
+
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4,), cone_orders=(-1/2, -1/2))
+            Traceback (most recent call last):
+            ...
+            ValueError: the Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not 0
+
+        A pair of pants has three slots, the traces of its cuffs are larger
+        than 3, and its cone orders are in `(-1, 0)`::
+
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4))
+            Traceback (most recent call last):
+            ...
+            ValueError: a pair of pants has three cuffs and cone points in total, not 2
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 3))
+            Traceback (most recent call last):
+            ...
+            ValueError: the boundary trace 3 must be larger than 3
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(-1,))
+            Traceback (most recent call last):
+            ...
+            ValueError: the cone order -1 is not larger than -1
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(0,))
+            Traceback (most recent call last):
+            ...
+            ValueError: a cone order must be nonzero
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(1,))
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cone points of angle larger than 2π are not implemented, the cone order 1 is positive
+
+        TESTS:
+
+        The slots of the cuffs and of the cone points, in their input
+        order::
+
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(int(4), int(4), int(4)))
+            sage: S.base_ring().polynomial()
+            y^4 - 2*y^2 - 4
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(4, 4, 4))
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 20881/144))
+            sage: S.base_ring()
+            Rational Field
+            sage: [v.coordinates(model="klein") for v in S.polygon(0).vertices()]
+            [(0, 0), (56/65, 0), (56/65, 99/325), (840/4121, 4015/4121), (1344/9425, 143/145), (0, 143/145)]
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(-2/3,)).base_ring()
+            Rational Field
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4,), cone_orders=(-2/3, -2/3)).base_ring()
+            Rational Field
+            sage: hyperbolic_surfaces.pants(boundary_traces=(20881/144,), cone_orders=(-1/4, -7/8))
+            Traceback (most recent call last):
+            ...
+            ValueError: no pair of pants with these parameters: cos(π(1 + k1)) + c2 cos(π(1 + k0)) must be positive, with k0, k1 the cone orders of slots 0, 1 and c2 = √(t2 + 1)/2 for the boundary trace t2 of slot 2
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(1/2,))
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cone points of angle larger than 2π are not implemented, the cone order 1/2 is positive
+            sage: hyperbolic_surfaces.pants(cone_orders=(-1/2, -2/3, -5/6))
+            Traceback (most recent call last):
+            ...
+            ValueError: the Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not 0
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(sqrt(2),))
+            Traceback (most recent call last):
+            ...
+            ValueError: the cone order sqrt(2) must be a rational number
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, I))
+            Traceback (most recent call last):
+            ...
+            ValueError: the boundary trace I must be a real algebraic number
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), ring=AA)
+            sage: S.base_ring()
+            Algebraic Real Field
+
+        """
+        boundary_traces = tuple(boundary_traces)
+        cone_orders = tuple(cone_orders)
+        if len(boundary_traces) + len(cone_orders) != 3:
+            raise ValueError(
+                f"a pair of pants has three cuffs and cone points in total, not {len(boundary_traces) + len(cone_orders)}"
+            )
+
+        orders = []
+        for k in cone_orders:
+            try:
+                order = QQ(k)
+            except (TypeError, ValueError):
+                raise ValueError(f"the cone order {k} must be a rational number")
+            if order <= -1:
+                raise ValueError(f"the cone order {order} is not larger than -1")
+            if order == 0:
+                raise ValueError("a cone order must be nonzero")
+            if order > 0:
+                raise NotImplementedError(
+                    f"cone points of angle larger than 2π are not implemented, the cone order {order} is positive"
+                )
+            orders.append(order)
+
+        cosh = []
+        for t in boundary_traces:
+            try:
+                trace = AA(t)
+            except (TypeError, ValueError):
+                raise ValueError(
+                    f"the boundary trace {t} must be a real algebraic number"
+                )
+            if not trace > 3:
+                raise ValueError(f"the boundary trace {t} must be larger than 3")
+            cosh.append((trace + 1).sqrt() / 2)
+
+        euler_characteristic = 2 + sum(orders) - len(cosh)
+        if not euler_characteristic < 0:
+            raise ValueError(
+                f"the Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not {euler_characteristic}"
+            )
+
+        angles = [(1 + k) / 2 for k in orders]
+
+        # The primitives test the inequalities below; the ones not listed
+        # cannot fail once the cuffs, the cone orders and the Euler
+        # characteristic are checked.
+        if len(orders) == 0:
+            constructor, arguments, seams = (
+                hyperbolic_polygons.right_angled_hexagon,
+                cosh,
+                [0, 2, 4],
+            )
+            inequalities = {}
+        elif len(orders) == 1:
+            constructor, arguments, seams = (
+                hyperbolic_polygons.right_angled_pentagon,
+                [angles[0]] + cosh,
+                [0, 1, 3],
+            )
+            slots = "with k0 the cone order of slot 0 and cs = √(ts + 1)/2 for the boundary trace ts of slot s"
+            inequalities = {
+                "c1 + c0 cos(2π angle)": f"c2 + c1 cos(π(1 + k0)) must be positive, {slots}",
+                "c0 + c1 cos(2π angle)": f"c1 + c2 cos(π(1 + k0)) must be positive, {slots}",
+            }
+        elif len(orders) == 2:
+            constructor, arguments, seams = (
+                hyperbolic_polygons.right_angled_quadrilateral,
+                angles + cosh,
+                [0, 1, 2],
+            )
+            slots = "with k0, k1 the cone orders of slots 0, 1 and c2 = √(t2 + 1)/2 for the boundary trace t2 of slot 2"
+            inequalities = {
+                "cos(2π angle1) + c cos(2π angle0)": f"cos(π(1 + k1)) + c2 cos(π(1 + k0)) must be positive, {slots}",
+                "cos(2π angle0) + c cos(2π angle1)": f"cos(π(1 + k0)) + c2 cos(π(1 + k1)) must be positive, {slots}",
+            }
+        else:
+            constructor, arguments, seams = (
+                hyperbolic_polygons.triangle,
+                [angles[2], angles[0], angles[1]],
+                [0, 1, 2],
+            )
+            inequalities = {}
+
+        try:
+            P = constructor(*arguments, ring=AA)
+        except ValueError as error:
+            for inequality, message in inequalities.items():
+                if inequality in str(error):
+                    raise ValueError(
+                        f"no pair of pants with these parameters: {message}"
+                    ) from error
+            raise
+
+        vertices = [v.coordinates(model="klein") for v in P.vertices()]
+        if optimize_placement:
+            vertices = _optimize_placement(vertices)
+
+        return HyperbolicSurfaceGenerators.pillowcase(
+            _polygon(vertices, ring), glued_edges=seams
+        )
+
+    @staticmethod
+    def regular_octagon(gluing="opposite", ring=None):
+        r"""
+        Return the hyperbolic surface of genus 2 built from the regular
+        octagon with interior angles `\pi/4`.
+
+        INPUT:
+
+        - ``gluing`` -- a string (default: ``"opposite"``); ``"opposite"``
+          glues each edge `e` to the edge `e + 4`, ``"katok"`` glues the
+          edges `0, 1, 4, 5` to the edges `2, 3, 6, 7`, the identification
+          `a_1 b_1 a_1^{-1} b_1^{-1} a_2 b_2 a_2^{-1} b_2^{-1}` of Katok,
+          Fuchsian groups (1992), Section 4.3, Example C, p. 95
+
+        - ``ring`` -- a ring or ``None`` (default: ``None``), the base ring
+          of the octagon, see :class:`HyperbolicPolygonsConstructor`
+
+        OUTPUT:
+
+        An immutable
+        :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
+        with the label 0, the octagon of
+        :meth:`~HyperbolicPolygonsConstructor.regular_ngon`, with its vertex
+        0 at the origin and its edge 0 on the positive `x`-axis.
+
+        EXAMPLES::
+
+            sage: from flatsurf import hyperbolic_surfaces
+            sage: S = hyperbolic_surfaces.regular_octagon()
+            sage: S
+            Genus 2 Hyperbolic Surface built from a regular octagon
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^4 - 2*y^2 - 1 with a = ...
+            sage: S.signature()
+            SurfaceSignature(genus=2, cone_orders=())
+            sage: S.area()
+            2
+            sage: S.holonomy_representation().invariant_trace_field()
+            Number Field in ... with defining polynomial x^2 - 2 with ...
+            sage: TestSuite(S).run()
+
+        The identification of Katok::
+
+            sage: S = hyperbolic_surfaces.regular_octagon(gluing="katok")
+            sage: S
+            Genus 2 Hyperbolic Surface built from a regular octagon
+            sage: S.signature()
+            SurfaceSignature(genus=2, cone_orders=())
+            sage: S.area()
+            2
+            sage: S.holonomy_representation().invariant_trace_field()
+            Number Field in ... with defining polynomial x^2 - 2 with ...
+            sage: TestSuite(S).run()
+
+        TESTS::
+
+            sage: hyperbolic_surfaces.regular_octagon(gluing="adjacent")
+            Traceback (most recent call last):
+            ...
+            ValueError: gluing must be "opposite" or "katok", not 'adjacent'
+            sage: hyperbolic_surfaces.regular_octagon(ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+
+        """
+        from flatsurf.geometry.hyperbolic_surface import (
+            MutableOrientedHyperbolicSurface,
+        )
+
+        if gluing == "opposite":
+            pairs = [(0, 4), (1, 5), (2, 6), (3, 7)]
+        elif gluing == "katok":
+            pairs = [(0, 2), (1, 3), (4, 6), (5, 7)]
+        else:
+            raise ValueError(f'gluing must be "opposite" or "katok", not {gluing!r}')
+
+        P = hyperbolic_polygons.regular_ngon(8, QQ((1, 8)), ring=ring)
+
+        surface = MutableOrientedHyperbolicSurface(P.base_ring())
+        surface.add_polygon(P, label=0)
+        for e, f in pairs:
+            surface.glue((0, e), (0, f))
         surface.set_immutable()
         return surface
 
