@@ -656,6 +656,111 @@ def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
     return TFractalSurface(w, r, h1, h2)
 
 
+def _pillowcase_gluings(n, glued_edges, mirror_edge):
+    r"""
+    Return the combinatorics of the pillowcase of a polygon with ``n``
+    vertices, after checking the arguments.
+
+    The polygon has label 0 and its mirror image, the reflection in the line
+    of the edge ``mirror_edge``, has label 1. This is a helper function of
+    :meth:`SimilaritySurfaceGenerators.pillowcase` and of
+    :meth:`~flatsurf.geometry.hyperbolic_surface_generators.HyperbolicSurfaceGenerators.pillowcase`.
+
+    INPUT:
+
+    - ``n`` -- an integer, the number of vertices of the polygon
+
+    - ``glued_edges`` -- an iterable of edges of the polygon or ``None``
+      for all its edges
+
+    - ``mirror_edge`` -- an edge in ``glued_edges`` or ``None`` for the first
+      of ``glued_edges``
+
+    OUTPUT:
+
+    A triple ``(m, permutation, gluings)``: the mirror edge ``m``; the list
+    whose entry ``j`` is the vertex of the polygon whose reflection is the
+    vertex ``j`` of the mirror polygon, `2m + 1 - j \bmod n`; the list of
+    pairs of edges ``((0, e), (1, (2m - e) mod n))`` to glue, one for each
+    ``e`` in ``glued_edges``, in that order.
+
+    EXAMPLES:
+
+    A pentagon reflected in the line of its edge 2::
+
+        sage: from flatsurf.geometry.similarity_surface_generators import _pillowcase_gluings
+        sage: m, permutation, gluings = _pillowcase_gluings(5, None, 2)
+        sage: m
+        2
+        sage: permutation
+        [0, 4, 3, 2, 1]
+        sage: gluings
+        [((0, 0), (1, 4)), ((0, 1), (1, 3)), ((0, 2), (1, 2)), ((0, 3), (1, 1)), ((0, 4), (1, 0))]
+
+    Two glued edges of a pentagon, the mirror edge defaulting to the first
+    one::
+
+        sage: _pillowcase_gluings(5, [3, 1], None)
+        (3, [2, 1, 0, 4, 3], [((0, 3), (1, 3)), ((0, 1), (1, 0))])
+
+    TESTS::
+
+        sage: _pillowcase_gluings(4, None, None)
+        (0, [1, 0, 3, 2], [((0, 0), (1, 0)), ((0, 1), (1, 3)), ((0, 2), (1, 2)), ((0, 3), (1, 1))])
+        sage: _pillowcase_gluings(4, [], None)
+        Traceback (most recent call last):
+        ...
+        ValueError: glued_edges must not be empty, the two polygons would be disjoint
+        sage: _pillowcase_gluings(4, [0, 4], None)
+        Traceback (most recent call last):
+        ...
+        ValueError: 4 is not an edge of a polygon with 4 vertices
+        sage: _pillowcase_gluings(4, [0, 1, 0], None)
+        Traceback (most recent call last):
+        ...
+        ValueError: edge 0 is repeated in glued_edges
+        sage: _pillowcase_gluings(4, [0, 1], 2)
+        Traceback (most recent call last):
+        ...
+        ValueError: mirror_edge 2 is not one of the glued edges
+        sage: _pillowcase_gluings(4, None, -1)
+        Traceback (most recent call last):
+        ...
+        ValueError: -1 is not an edge of a polygon with 4 vertices
+
+    """
+    n = int(n)
+
+    def edge(e):
+        e = ZZ(e)
+        if not 0 <= e < n:
+            raise ValueError(f"{e} is not an edge of a polygon with {n} vertices")
+        return int(e)
+
+    if glued_edges is None:
+        glued_edges = list(range(n))
+    else:
+        glued_edges = [edge(e) for e in glued_edges]
+        if not glued_edges:
+            raise ValueError(
+                "glued_edges must not be empty, the two polygons would be disjoint"
+            )
+        for i, e in enumerate(glued_edges):
+            if e in glued_edges[:i]:
+                raise ValueError(f"edge {e} is repeated in glued_edges")
+
+    if mirror_edge is None:
+        m = glued_edges[0]
+    else:
+        m = edge(mirror_edge)
+        if m not in glued_edges:
+            raise ValueError(f"mirror_edge {m} is not one of the glued edges")
+
+    permutation = [(2 * m + 1 - j) % n for j in range(n)]
+    gluings = [((0, e), (1, (2 * m - e) % n)) for e in glued_edges]
+    return m, permutation, gluings
+
+
 class SimilaritySurfaceGenerators:
     r"""
     Examples of similarity surfaces.
@@ -714,6 +819,157 @@ class SimilaritySurfaceGenerators:
             s.glue((0, i), (0, i))
         s.set_immutable()
         return s
+
+    @staticmethod
+    def pillowcase(P, glued_edges=None, mirror_edge=None):
+        r"""
+        Return the surface built from the polygon ``P`` and its mirror image,
+        glued along ``glued_edges``.
+
+        The polygon ``P`` has label 0 and its reflection `Q` in the line of
+        the edge `m` = ``mirror_edge`` has label 1. With `n` the number of
+        vertices of ``P``, the vertex `j` of `Q` is the reflection of the
+        vertex `2m + 1 - j \bmod n` of ``P``, so that the edge `j` of `Q` is
+        the reflection of the edge `2m - j \bmod n` of ``P``. The edge `e`
+        of ``P`` is glued to the edge `2m - e \bmod n` of `Q` for every `e`
+        in ``glued_edges``, by the reflection in the line of `e` followed by
+        the reflection in the line of `m`; the edge `m` is glued to itself
+        in the plane, by the identity. The other edges of ``P`` and of `Q`
+        form the boundary of the surface.
+
+        INPUT:
+
+        - ``P`` -- a Euclidean polygon, convex or not
+
+        - ``glued_edges`` -- an iterable of edges of ``P`` or ``None``
+          (default: ``None``) for all the edges of ``P``
+
+        - ``mirror_edge`` -- an edge in ``glued_edges`` or ``None`` (default:
+          ``None``) for the first of ``glued_edges``, the edge `0` when
+          ``glued_edges`` is ``None``
+
+        OUTPUT:
+
+        An immutable surface over the base ring of ``P``: a reflection in a
+        line through two points has rational coefficients in their
+        coordinates.
+
+        EXAMPLES:
+
+        A triangle reflected in its edge 0, of slope `\sqrt{2}`::
+
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: K.<a> = NumberField(x^2 - 2, embedding=1.4)
+            sage: P = Polygon(vertices=[(0, 0), (1, a), (-1, 1)])
+            sage: S = similarity_surfaces.pillowcase(P)
+            sage: S
+            Genus 0 Cone Surface built from 2 triangles
+            sage: S.base_ring()
+            Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095?
+            sage: S.polygon(1)
+            Polygon(vertices=[(1, a), (0, 0), (2/3*a + 1/3, -2/3*a + 1/3)])
+            sage: S.edge_transformation(0, 0).is_one()
+            True
+            sage: TestSuite(S).run()
+
+        A square glued along two of its edges has a boundary::
+
+            sage: from flatsurf import polygons
+            sage: S = similarity_surfaces.pillowcase(polygons.square(), glued_edges=[0, 1])
+            sage: S
+            Half-Translation Surface with boundary built from 2 squares
+            sage: S.boundary_components()
+            [((0, 2), (0, 3), (1, 1), (1, 2))]
+            sage: TestSuite(S).run()
+
+        A non-convex polygon is not triangulated::
+
+            sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 1), (1, 1), (1, 2), (0, 2)])
+            sage: S = similarity_surfaces.pillowcase(P)
+            sage: S
+            Half-Translation Surface in Q_0(1, -1^5) built from 2 non-convex hexagons
+            sage: TestSuite(S).run()
+
+        The mirror edge must be glued, and the glued edges distinct edges of
+        ``P``::
+
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[])
+            Traceback (most recent call last):
+            ...
+            ValueError: glued_edges must not be empty, the two polygons would be disjoint
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[0, 1], mirror_edge=2)
+            Traceback (most recent call last):
+            ...
+            ValueError: mirror_edge 2 is not one of the glued edges
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[1, 1])
+            Traceback (most recent call last):
+            ...
+            ValueError: edge 1 is repeated in glued_edges
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[4])
+            Traceback (most recent call last):
+            ...
+            ValueError: 4 is not an edge of a polygon with 4 vertices
+
+        A hyperbolic polygon is refused, see
+        :meth:`~flatsurf.geometry.hyperbolic_surface_generators.HyperbolicSurfaceGenerators.pillowcase`
+        instead::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: P = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: similarity_surfaces.pillowcase(P)
+            Traceback (most recent call last):
+            ...
+            TypeError: P must be a Euclidean polygon
+
+        TESTS:
+
+        For an odd number `n` of vertices and a horizontal edge `(n -
+        1)/2`, the surface of :meth:`billiard` of a convex polygon, up to a
+        translation of the polygon 1::
+
+            sage: P = Polygon(vertices=[(0, 1), (0, 0), (1, 0)])
+            sage: S = similarity_surfaces.pillowcase(P, mirror_edge=1)
+            sage: S
+            Genus 0 Rational Cone Surface built from 2 isosceles triangles
+            sage: B = similarity_surfaces.billiard(P)
+            sage: [S.opposite_edge(0, e) for e in range(3)] == [B.opposite_edge(0, e) for e in range(3)]
+            True
+            sage: S.polygon(1).edge_vectors() == B.polygon(1).edge_vectors()
+            True
+            sage: S.polygon(1) == B.polygon(1)
+            False
+
+        SEEALSO:
+
+        :meth:`billiard`, which triangulates a non-convex polygon
+
+        """
+        if not isinstance(P, EuclideanPolygon):
+            raise TypeError("P must be a Euclidean polygon")
+
+        vertices = P.vertices()
+        m, permutation, gluings = _pillowcase_gluings(
+            len(vertices), glued_edges, mirror_edge
+        )
+
+        from sage.matrix.constructor import matrix
+
+        p = vertices[m]
+        d = vertices[(m + 1) % len(vertices)] - p
+        reflection = 2 * matrix(d).transpose() * matrix(d) / (d * d) - 1
+
+        Q = Polygon(
+            vertices=[p + reflection * (vertices[j] - p) for j in permutation],
+            base_ring=P.base_ring(),
+        )
+
+        surface = MutableOrientedSimilaritySurface(P.base_ring())
+        surface.add_polygon(P, label=0)
+        surface.add_polygon(Q, label=1)
+        for x, y in gluings:
+            surface.glue(x, y)
+        surface.set_immutable()
+        return surface
 
     @staticmethod
     def billiard(P, rational=None):
@@ -787,6 +1043,11 @@ class SimilaritySurfaceGenerators:
             sage: from flatsurf.geometry.categories import FlatConeSurfaces
             sage: S in FlatConeSurfaces()
             True
+
+        SEEALSO:
+
+        :meth:`pillowcase`, which reflects ``P`` in the line of one of its
+        edges and can leave edges unglued
 
         """
         if not isinstance(P, EuclideanPolygon):
@@ -922,10 +1183,38 @@ class SimilaritySurfaceGenerators:
     @staticmethod
     def polygon_double(P):
         r"""
-        Return the ConeSurface associated to the billiard in the polygon ``P``.
-        Differs from billiard(P) only in the graphical display. Here, we display
-        the polygons separately.
+        Return the surface built from the polygon ``P`` and its mirror image
+        in a horizontal line, with the edge `e` of ``P`` glued to the edge `n -
+        1 - e` of the mirror image.
+
+        This method is deprecated, use :meth:`pillowcase` instead, which
+        reflects ``P`` in the line of one of its edges; for an even number of
+        vertices, :meth:`pillowcase` also numbers the vertices of the mirror
+        image differently.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: S = similarity_surfaces.polygon_double(polygons.square())
+            doctest:warning
+            ...
+            UserWarning: polygon_double() has been deprecated and will be removed in a future version of sage-flatsurf; use pillowcase() instead
+            sage: S
+            Half-Translation Surface in Q_0(-1^4) built from 2 squares
+            sage: S.opposite_edge(0, 0)
+            (1, 3)
+
+        SEEALSO:
+
+        :meth:`pillowcase`
+
         """
+        import warnings
+
+        warnings.warn(
+            "polygon_double() has been deprecated and will be removed in a future version of sage-flatsurf; use pillowcase() instead"
+        )
+
         from sage.matrix.constructor import matrix
 
         n = len(P.vertices())

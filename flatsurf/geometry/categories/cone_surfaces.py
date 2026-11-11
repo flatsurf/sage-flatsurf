@@ -373,7 +373,7 @@ class ConeSurfaces(SurfaceCategory):
                     A flat vertex whose angle is not a rational multiple of
                     `2\pi`::
 
-                        sage: S = similarity_surfaces.polygon_double(Polygon(vertices=[(0, 0), (1, 0), (1/3, 1/2)]))
+                        sage: S = similarity_surfaces.pillowcase(Polygon(vertices=[(0, 0), (1, 0), (1/3, 1/2)]))
                         sage: S.orbifold_points()
                         []
 
@@ -423,7 +423,7 @@ class ConeSurfaces(SurfaceCategory):
                     EXAMPLES::
 
                         sage: from flatsurf import polygons, similarity_surfaces
-                        sage: S = similarity_surfaces.polygon_double(polygons.square())
+                        sage: S = similarity_surfaces.pillowcase(polygons.square())
                         sage: S._orbifold_order(S(0, 0))
                         2
 

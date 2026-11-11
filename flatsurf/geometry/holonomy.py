@@ -304,7 +304,7 @@ class HolonomyRepresentation(Morphism):
         The pillowcase has the wallpaper group p2 as uniformisation group::
 
             sage: from flatsurf import polygons, similarity_surfaces
-            sage: S = similarity_surfaces.polygon_double(polygons.square())
+            sage: S = similarity_surfaces.pillowcase(polygons.square())
             sage: G = S.holonomy_representation().image()
             sage: G
             Matrix group over Rational Field with 3 generators (
@@ -671,7 +671,7 @@ class HolonomyRepresentation(Morphism):
 
         The double of a triangle, with irrational sines::
 
-            sage: S = similarity_surfaces.polygon_double(Polygon(angles=(1, 2, 3)))
+            sage: S = similarity_surfaces.pillowcase(Polygon(angles=(1, 2, 3)))
             sage: S.holonomy_representation()._test_vertex_loops()
         """
         import math

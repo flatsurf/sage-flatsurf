@@ -46,14 +46,14 @@ from hyperbolic_surface_oracles import (
 
 CONSTRUCTORS = {
     "square_torus": lambda: translation_surfaces.square_torus(),
-    "pillowcase": lambda: similarity_surfaces.polygon_double(polygons.square()),
-    "equilateral_double": lambda: similarity_surfaces.polygon_double(
+    "pillowcase": lambda: similarity_surfaces.pillowcase(polygons.square()),
+    "equilateral_double": lambda: similarity_surfaces.pillowcase(
         Polygon(angles=(1, 1, 1))
     ),
-    "isosceles_right_double": lambda: similarity_surfaces.polygon_double(
+    "isosceles_right_double": lambda: similarity_surfaces.pillowcase(
         Polygon(angles=(1, 1, 2))
     ),
-    "triangle_236_double": lambda: similarity_surfaces.polygon_double(
+    "triangle_236_double": lambda: similarity_surfaces.pillowcase(
         Polygon(angles=(1, 2, 3))
     ),
 }

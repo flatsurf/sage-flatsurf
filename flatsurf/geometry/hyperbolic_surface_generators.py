@@ -38,7 +38,8 @@ EXAMPLES::
 
 from sage.rings.all import AA, QQ, QQbar, ZZ
 from sage.matrix.constructor import matrix
-from sage.matrix.special import identity_matrix
+from sage.matrix.special import diagonal_matrix, identity_matrix
+from sage.modules.free_module_element import vector
 
 
 def _angle(angle, name="angle"):
@@ -723,3 +724,236 @@ class HyperbolicPolygonsConstructor:
 
 
 hyperbolic_polygons = HyperbolicPolygonsConstructor()
+
+
+def _reflection(p, q):
+    r"""
+    Return the matrix of the reflection in the hyperbolic line through the
+    points of Klein coordinates ``p`` and ``q``, acting on the Klein lifts
+    `(x, y, 1)`.
+
+    ALGORITHM:
+
+    With `J = \mathrm{diag}(1, 1, -1)` and `n = J (\hat p \times \hat q)`
+    the Minkowski normal of the plane of the lifts `\hat p, \hat q`, the
+    reflection is `R = I - 2 n (J n)^T / \langle n, n \rangle`, where
+    `\langle n, n \rangle = n^T J n` is positive. Its coefficients are
+    rational in the coordinates of ``p`` and ``q``.
+
+    EXAMPLES:
+
+    The reflection in the edge 1 of the triangle `(0, 0), (1/2, 0), (1/3,
+    1/2)`, which sends the origin to `(36/49, 12/49)`::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _reflection
+        sage: R = _reflection((1/2, 0), (1/3, 1/2))
+        sage: R
+        [-41/31 -24/31  36/31]
+        [-24/31  23/31  12/31]
+        [-36/31 -12/31  49/31]
+        sage: R.determinant(), (R^2).is_one()
+        (-1, True)
+        sage: R * vector((1/2, 0, 1))
+        (1/2, 0, 1)
+
+    """
+    J = diagonal_matrix([1, 1, -1])
+    n = J * vector((p[0], p[1], 1)).cross_product(vector((q[0], q[1], 1)))
+    return identity_matrix(3) - 2 * matrix(n).transpose() * matrix(J * n) / (n * J * n)
+
+
+class HyperbolicSurfaceGenerators:
+    r"""
+    Constructors of hyperbolic surfaces from hyperbolic polygons.
+
+    EXAMPLES::
+
+        sage: from flatsurf import hyperbolic_surfaces
+        sage: hyperbolic_surfaces
+        hyperbolic surfaces
+
+    """
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this constructor.
+
+        EXAMPLES::
+
+            sage: from flatsurf import hyperbolic_surfaces
+            sage: hyperbolic_surfaces
+            hyperbolic surfaces
+
+        """
+        return "hyperbolic surfaces"
+
+    @staticmethod
+    def pillowcase(P, glued_edges=None, mirror_edge=None):
+        r"""
+        Return the surface built from the hyperbolic polygon ``P`` and its
+        mirror image, glued along ``glued_edges``.
+
+        The polygon ``P`` has label 0 and its reflection `Q` in the line of
+        the edge `m` = ``mirror_edge`` has label 1. With `n` the number of
+        vertices of ``P``, the vertex `j` of `Q` is the reflection of the
+        vertex `2m + 1 - j \bmod n` of ``P``, so that the edge `j` of `Q` is
+        the reflection of the edge `2m - j \bmod n` of ``P``. The edge `e`
+        of ``P`` is glued to the edge `2m - e \bmod n` of `Q` for every `e`
+        in ``glued_edges``, by the reflection in the line of `e` followed by
+        the reflection in the line of `m`; the edge `m` is glued to itself
+        in the plane, by the identity. The other edges of ``P`` and of `Q`
+        form the boundary of the surface.
+
+        INPUT:
+
+        - ``P`` -- a
+          :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`,
+          convex or not
+
+        - ``glued_edges`` -- an iterable of edges of ``P`` or ``None``
+          (default: ``None``) for all the edges of ``P``
+
+        - ``mirror_edge`` -- an edge in ``glued_edges`` or ``None`` (default:
+          ``None``) for the first of ``glued_edges``, the edge `0` when
+          ``glued_edges`` is ``None``
+
+        OUTPUT:
+
+        An immutable
+        :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
+        over the base ring of ``P``: a reflection in a line through two
+        points has rational coefficients in their Klein coordinates.
+
+        EXAMPLES:
+
+        A triangle reflected in its edge 1, a line that does not pass through
+        the origin::
+
+            sage: from flatsurf import HyperbolicPlane, hyperbolic_surfaces
+            sage: P = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/3, 1/2)])
+            sage: S = hyperbolic_surfaces.pillowcase(P, mirror_edge=1)
+            sage: S
+            Genus 0 Hyperbolic Surface built from 2 triangles
+            sage: S.base_ring()
+            Rational Field
+            sage: [v.coordinates(model="klein") for v in S.polygon(1).vertices()]
+            [(36/49, 12/49), (1/3, 1/2), (1/2, 0)]
+
+        Each gluing is the reflection in the line of its edge followed by
+        the reflection in the line of the edge 1; the edge 1 is glued by the
+        identity::
+
+            sage: from flatsurf.geometry.hyperbolic_surface_generators import _reflection
+            sage: vertices = [v.coordinates(model="klein") for v in P.vertices()]
+            sage: R = [_reflection(vertices[e], vertices[(e + 1) % 3]) for e in range(3)]
+            sage: S.edge_transformation(0, 0)
+            [-41/31  24/31  36/31]
+            [-24/31 -23/31  12/31]
+            [-36/31  12/31  49/31]
+            sage: S.edge_transformation(0, 1)
+            [1 0 0]
+            [0 1 0]
+            [0 0 1]
+            sage: S.edge_transformation(0, 2)
+            [ -83/403 -612/403    36/31]
+            [ 396/403 -173/403    12/31]
+            [  36/403 -492/403    49/31]
+            sage: all(S.edge_transformation(0, e).matrix() == R[1] * R[e] for e in range(3))
+            True
+            sage: S.holonomy_representation().invariant_trace_field()
+            Rational Field
+            sage: TestSuite(S).run()
+
+        A non-convex quadrilateral is not triangulated; its reflex vertex
+        is a cone point of angle `3/2`::
+
+            sage: P = HyperbolicPlane(QQ).polygon(vertices=[(0, -1/2), (1/2, 1/2), (0, 0), (-1/2, 1/2)])
+            sage: S = hyperbolic_surfaces.pillowcase(P)
+            sage: S
+            Genus 0 Hyperbolic Surface built from 2 non-convex quadrilaterals
+            sage: S(0, 2).angle()
+            3/2
+            sage: TestSuite(S).run()
+
+        A right-angled hexagon glued along its alternate edges is a pair of
+        pants::
+
+            sage: from flatsurf import hyperbolic_polygons
+            sage: P = hyperbolic_polygons.right_angled_hexagon(5/4, 5/4, 145/24)
+            sage: S = hyperbolic_surfaces.pillowcase(P, glued_edges=[0, 2, 4])
+            sage: S
+            Hyperbolic Surface with boundary built from 2 right-angled hexagons
+            sage: S.base_ring()
+            Rational Field
+            sage: S.boundary_components()
+            [((0, 1), (1, 5)), ((0, 3), (1, 3)), ((0, 5), (1, 1))]
+            sage: S.signature()
+            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(21/4, 21/4, 20881/144))
+            sage: TestSuite(S).run()
+
+        The mirror edge must be glued, and the glued edges distinct edges of
+        ``P``::
+
+            sage: hyperbolic_surfaces.pillowcase(P, glued_edges=[])
+            Traceback (most recent call last):
+            ...
+            ValueError: glued_edges must not be empty, the two polygons would be disjoint
+            sage: hyperbolic_surfaces.pillowcase(P, glued_edges=[0, 2], mirror_edge=1)
+            Traceback (most recent call last):
+            ...
+            ValueError: mirror_edge 1 is not one of the glued edges
+            sage: hyperbolic_surfaces.pillowcase(P, glued_edges=[0, 2, 0])
+            Traceback (most recent call last):
+            ...
+            ValueError: edge 0 is repeated in glued_edges
+            sage: hyperbolic_surfaces.pillowcase(P, glued_edges=[6])
+            Traceback (most recent call last):
+            ...
+            ValueError: 6 is not an edge of a polygon with 6 vertices
+
+        A Euclidean polygon is refused, see
+        :meth:`~flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.pillowcase`
+        instead::
+
+            sage: from flatsurf import polygons
+            sage: hyperbolic_surfaces.pillowcase(polygons.square())
+            Traceback (most recent call last):
+            ...
+            TypeError: P must be a hyperbolic polygon
+
+        """
+        from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
+        from flatsurf.geometry.hyperbolic_surface import (
+            MutableOrientedHyperbolicSurface,
+        )
+        from flatsurf.geometry.similarity_surface_generators import (
+            _pillowcase_gluings,
+        )
+
+        if not isinstance(P, HyperbolicPolygon):
+            raise TypeError("P must be a hyperbolic polygon")
+
+        vertices = [v.coordinates(model="klein") for v in P.vertices()]
+        m, permutation, gluings = _pillowcase_gluings(
+            len(vertices), glued_edges, mirror_edge
+        )
+
+        H = P.parent()
+        reflection = _reflection(vertices[m], vertices[(m + 1) % len(vertices)])
+
+        mirrored = []
+        for j in permutation:
+            x, y, z = reflection * vector((vertices[j][0], vertices[j][1], 1))
+            mirrored.append((x / z, y / z))
+        Q = H.polygon(vertices=mirrored)
+
+        surface = MutableOrientedHyperbolicSurface(H.base_ring())
+        surface.add_polygon(P, label=0)
+        surface.add_polygon(Q, label=1)
+        for x, y in gluings:
+            surface.glue(x, y)
+        surface.set_immutable()
+        return surface
+
+
+hyperbolic_surfaces = HyperbolicSurfaceGenerators()
