@@ -542,8 +542,8 @@ class HyperbolicPolygonsConstructor:
 
             sage: from flatsurf import hyperbolic_polygons
             sage: P = hyperbolic_polygons.right_angled_pentagon(3/8, 5/4, 5/4)
-            sage: P.base_ring()
-            Number Field in a with defining polynomial ...
+            sage: P.base_ring().polynomial()
+            y^4 - 56*y^2 - 72*y + 414
             sage: P.angles()
             (1/4, 3/8, 1/4, 1/4, 1/4)
             sage: P.area()

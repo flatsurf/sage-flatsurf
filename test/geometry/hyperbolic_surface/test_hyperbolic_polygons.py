@@ -47,8 +47,8 @@ y = polygen(QQ, "y")
 
 # Rows: name, constructor, arguments, defining polynomial of the field of the
 # coordinates (None for QQ, an integer when only the degree is known), angles,
-# area. Source: section on polygon primitives of the design of pants, computed
-# with sage-flatsurf as said in the module docstring.
+# area, computed with sage-flatsurf from the formulas cited in the module
+# docstring (Katok, Thm 1.5.2; Buser, Chapter 2).
 PRIMITIVES = [
     (
         "rational hexagon",
@@ -94,7 +94,7 @@ PRIMITIVES = [
         "pentagon of angle 3/8",
         "right_angled_pentagon",
         (QQ(3) / 8, QQ(5) / 4, QQ(5) / 4),
-        None,
+        y**4 - 56 * y**2 - 72 * y + 414,
         (QQ(1) / 4, QQ(3) / 8, QQ(1) / 4, QQ(1) / 4, QQ(1) / 4),
         QQ(1) / 8,
     ),
@@ -110,7 +110,7 @@ PRIMITIVES = [
         "quadrilateral (1/6, 1/6)",
         "right_angled_quadrilateral",
         (QQ(1) / 6, QQ(1) / 6, QQ(5) / 4),
-        None,
+        y**2 - 3,
         (QQ(1) / 4, QQ(1) / 6, QQ(1) / 6, QQ(1) / 4),
         QQ(1) / 6,
     ),
@@ -129,9 +129,11 @@ def test_primitive(name, constructor, arguments, field, angles, area):
     assert P.vertices()[0].coordinates(model="klein") == (0, 0)
     assert P.vertices()[1].coordinates(model="klein")[1] == 0
     K = P.base_ring()
-    if isinstance(field, int):
+    if field is None:
+        assert K is QQ
+    elif isinstance(field, int):
         assert K.degree() == field
-    elif field is not None:
+    else:
         assert K.is_isomorphic(NumberField(field, "b"))
 
 
