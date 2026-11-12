@@ -1133,7 +1133,8 @@ class HyperbolicPolygon(Parent):
 
         EXAMPLES:
 
-        The edges of a rectangle::
+        The edges of the quadrilateral whose vertices are those of a
+        Euclidean square in the Klein model::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
@@ -1160,16 +1161,15 @@ class HyperbolicPolygon(Parent):
 
         TESTS::
 
-            sage: P = T
-            sage: P.edge_cosh_squared(3)
+            sage: T.edge_cosh_squared(3)
             Traceback (most recent call last):
             ...
             ValueError: the edge 3 is not an edge of a polygon with 3 vertices
-            sage: P.edge_cosh_squared(-1)
+            sage: T.edge_cosh_squared(-1)
             Traceback (most recent call last):
             ...
             ValueError: the edge -1 is not an edge of a polygon with 3 vertices
-            sage: P.edge_cosh_squared(1/2)
+            sage: T.edge_cosh_squared(1/2)
             Traceback (most recent call last):
             ...
             ValueError: the edge 1/2 is not an edge of a polygon with 3 vertices

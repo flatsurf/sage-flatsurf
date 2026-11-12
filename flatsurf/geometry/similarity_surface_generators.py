@@ -835,8 +835,8 @@ class SimilaritySurfaceGenerators:
         in ``glued_edges``, by the reflection in the line of `e` followed by
         the reflection in the line of `m`; the edge `m` of ``P`` is glued to
         the edge `m` of `Q`, which is the same segment of the plane, by the
-        identity. The other edges of ``P`` and of `Q`
-        form the boundary of the surface.
+        identity. The other edges of ``P`` and of `Q` form the boundary of
+        the surface.
 
         INPUT:
 

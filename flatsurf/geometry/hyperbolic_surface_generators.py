@@ -654,13 +654,13 @@ class HyperbolicPolygonsConstructor:
         the edges 2 and 4 for the sides `\alpha, \beta` and the edge 3 for
         `c`, is `\cos\varphi = \sinh s_2 \sinh s_4 \cosh s_3 - \cosh s_2
         \cosh s_4`, so that `\cosh s_3 = (\cos\varphi + \cosh s_2 \cosh s_4)
-        / (\sinh s_2 \sinh s_4)`. The edges 1 and 0 are not given as such by
-        the book; the same relations of the example solve them: `\sinh s_1 =
-        (\cosh s_4 + \cosh s_2 \cos\varphi) / (\sinh s_2 \sin\varphi)` and
-        symmetrically. The pentagon exists if and only if these two
-        hyperbolic sines are positive. For `\varphi = \pi/2` the pentagon is
-        the right-angled one, with `\cosh s_3 = \sinh s_0 \sinh s_1`,
-        Theorem 2.3.4 (i), p. 39.
+        / (\sinh s_2 \sinh s_4)`. The book does not state the edges 1 and 0
+        in this form; they are derived here from the same relations of the
+        example: `\sinh s_1 = (\cosh s_4 + \cosh s_2 \cos\varphi) / (\sinh
+        s_2 \sin\varphi)` and symmetrically. The pentagon exists if and only
+        if these two hyperbolic sines are positive. For `\varphi = \pi/2` the
+        pentagon is the right-angled one, with `\cosh s_3 = \sinh s_0 \sinh
+        s_1`, Theorem 2.3.4 (i), p. 39.
 
         """
         _check_exact(ring)
@@ -763,17 +763,18 @@ class HyperbolicPolygonsConstructor:
         states the relations of a quadrilateral with three right angles,
         Theorem 2.3.1, and of one with two opposite angles that are not
         right, Example 2.2.7 (i) and (ii), p. 37; the two angles
-        `\varphi_0, \varphi_1` here are adjacent. The relations below are
-        the analogue of Theorem 2.4.1 (iii), p. 40, for the hexagon with two
-        sides replaced by angles, and follow from Theorem 2.2.6, p. 36, the
-        identity on the matrices of the sides and angles from which Buser
-        obtains all of them. The edge 0, at the vertex of `\varphi_0`, has
-        `\sinh h_0 = (\cos\varphi_1 + \cosh a \cos\varphi_0) / (\sinh a
-        \sin\varphi_0)`, and symmetrically for the edge 2. The quadrilateral
-        exists if and only if these two hyperbolic sines are positive. For
-        `\varphi_1 = \pi/2` this is Theorem 2.3.1 (vi), `\sinh h_0 = \coth a
-        \cot\varphi_0`, and Theorem 2.3.1 (i), `\cos\varphi_0 = \sinh a \sinh
-        h_2`, for the quadrilateral with three right angles.
+        `\varphi_0, \varphi_1` here are adjacent. The book does not state the
+        relations below; they are derived here as the analogue of Theorem
+        2.4.1 (iii), p. 40, for the hexagon with two sides replaced by
+        angles, from Theorem 2.2.6, p. 36, the identity on the matrices of
+        the sides and angles from which Buser obtains all of them. The edge
+        0, at the vertex of `\varphi_0`, has `\sinh h_0 = (\cos\varphi_1 +
+        \cosh a \cos\varphi_0) / (\sinh a \sin\varphi_0)`, and symmetrically
+        for the edge 2. The quadrilateral exists if and only if these two
+        hyperbolic sines are positive. For `\varphi_1 = \pi/2` this is
+        Theorem 2.3.1 (vi), `\sinh h_0 = \coth a \cot\varphi_0`, and Theorem
+        2.3.1 (i), `\cos\varphi_0 = \sinh a \sinh h_2`, for the quadrilateral
+        with three right angles.
 
         Vertex 1 is reached along edge 0, and the vertices 3 and 2 along
         the edges 3 and 2 walked from the origin in the mirror image under
@@ -1160,8 +1161,8 @@ class HyperbolicSurfaceGenerators:
         in ``glued_edges``, by the reflection in the line of `e` followed by
         the reflection in the line of `m`; the edge `m` of ``P`` is glued to
         the edge `m` of `Q`, which is the same segment of the plane, by the
-        identity. The other edges of ``P`` and of `Q`
-        form the boundary of the surface.
+        identity. The other edges of ``P`` and of `Q` form the boundary of
+        the surface.
 
         INPUT:
 

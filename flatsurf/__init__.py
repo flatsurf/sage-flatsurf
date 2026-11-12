@@ -32,6 +32,8 @@ from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
 from flatsurf.geometry.hyperbolic import HyperbolicPlane
 from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
+from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+from flatsurf.geometry.signature import SurfaceSignature
 
 from flatsurf.geometry.homology import SimplicialHomology
 from flatsurf.geometry.cohomology import SimplicialCohomology
