@@ -862,6 +862,178 @@ def _optimize_placement(vertices):
     return vertices
 
 
+def _pants_polygon(boundary_traces, cone_orders, optimize_placement):
+    r"""
+    Return the Klein coordinates in ``AA`` of the front polygon of the pair
+    of pants of :meth:`HyperbolicSurfaceGenerators.pants`, and its seams.
+
+    INPUT:
+
+    - ``boundary_traces``, ``cone_orders``, ``optimize_placement`` -- as in
+      :meth:`HyperbolicSurfaceGenerators.pants`
+
+    OUTPUT:
+
+    A pair ``(vertices, seams)``: the list of the Klein coordinates of the
+    vertices of the front polygon, and the list of its edges that are
+    seams. The other edges are the half-cuffs, in the order of
+    ``boundary_traces``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _pants_polygon
+        sage: _pants_polygon((21/4, 21/4), (-1/2,), True)
+        ([(-15/19, 0),
+          (-15/19, -10/19),
+          (-225/421, -340/421),
+          (-9/25, -544/625),
+          (-9/25, 0)],
+         [0, 1, 3])
+
+    """
+    boundary_traces = tuple(boundary_traces)
+    cone_orders = tuple(cone_orders)
+    if len(boundary_traces) + len(cone_orders) != 3:
+        raise ValueError(
+            f"a pair of pants has three cuffs and cone points in total, not {len(boundary_traces) + len(cone_orders)}"
+        )
+
+    orders = []
+    for k in cone_orders:
+        try:
+            order = QQ(k)
+        except (TypeError, ValueError):
+            raise ValueError(f"the cone order {k} must be a rational number")
+        if order <= -1:
+            raise ValueError(f"the cone order {order} is not larger than -1")
+        if order == 0:
+            raise ValueError("a cone order must be nonzero")
+        if order > 0:
+            raise NotImplementedError(
+                f"cone points of angle larger than 2π are not implemented, the cone order {order} is positive"
+            )
+        orders.append(order)
+
+    cosh = []
+    for t in boundary_traces:
+        try:
+            trace = AA(t)
+        except (TypeError, ValueError):
+            raise ValueError(f"the boundary trace {t} must be a real algebraic number")
+        if not trace > 3:
+            raise ValueError(f"the boundary trace {t} must be larger than 3")
+        cosh.append((trace + 1).sqrt() / 2)
+
+    divisor_euler_characteristic = 2 + sum(orders) - len(cosh)
+    if not divisor_euler_characteristic < 0:
+        raise ValueError(
+            f"the divisor Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not {divisor_euler_characteristic}"
+        )
+
+    angles = [(1 + k) / 2 for k in orders]
+
+    # The primitives test the inequalities below; the ones not listed
+    # cannot fail once the cuffs, the cone orders and the Euler
+    # characteristic are checked.
+    if len(orders) == 0:
+        constructor, arguments, seams = (
+            hyperbolic_polygons.right_angled_hexagon,
+            cosh,
+            [0, 2, 4],
+        )
+        inequalities = {}
+    elif len(orders) == 1:
+        constructor, arguments, seams = (
+            hyperbolic_polygons.right_angled_pentagon,
+            [angles[0]] + cosh,
+            [0, 1, 3],
+        )
+        slots = "with k0 the cone order of slot 0 and cs = √(ts + 1)/2 for the boundary trace ts of slot s"
+        inequalities = {
+            "c1 + c0 cos(2π angle)": f"c2 + c1 cos(π(1 + k0)) must be positive, {slots}",
+            "c0 + c1 cos(2π angle)": f"c1 + c2 cos(π(1 + k0)) must be positive, {slots}",
+        }
+    elif len(orders) == 2:
+        constructor, arguments, seams = (
+            hyperbolic_polygons.right_angled_quadrilateral,
+            angles + cosh,
+            [0, 1, 2],
+        )
+        slots = "with k0, k1 the cone orders of slots 0, 1 and c2 = √(t2 + 1)/2 for the boundary trace t2 of slot 2"
+        inequalities = {
+            "cos(2π angle1) + c cos(2π angle0)": f"cos(π(1 + k1)) + c2 cos(π(1 + k0)) must be positive, {slots}",
+            "cos(2π angle0) + c cos(2π angle1)": f"cos(π(1 + k0)) + c2 cos(π(1 + k1)) must be positive, {slots}",
+        }
+    else:
+        constructor, arguments, seams = (
+            hyperbolic_polygons.triangle,
+            [angles[2], angles[0], angles[1]],
+            [0, 1, 2],
+        )
+        inequalities = {}
+
+    try:
+        P = constructor(*arguments, ring=AA)
+    except ValueError as error:
+        for inequality, message in inequalities.items():
+            if inequality in str(error):
+                raise ValueError(
+                    f"no pair of pants with these parameters: {message}"
+                ) from error
+        raise
+
+    vertices = [v.coordinates(model="klein") for v in P.vertices()]
+    if optimize_placement:
+        vertices = _optimize_placement(vertices)
+
+    return vertices, seams
+
+
+def _mirror(P, glued_edges, mirror_edge):
+    r"""
+    Return the mirror image of the hyperbolic polygon ``P`` and the gluings
+    of :meth:`HyperbolicSurfaceGenerators.pillowcase`.
+
+    INPUT:
+
+    - ``P``, ``glued_edges``, ``mirror_edge`` -- as in
+      :meth:`HyperbolicSurfaceGenerators.pillowcase`
+
+    OUTPUT:
+
+    A pair ``(Q, gluings)``: the reflection `Q` of ``P`` in the line of the
+    mirror edge, a polygon over the base ring of ``P``, and the list of
+    the pairs of edges ``(label, edge)`` to glue, ``P`` having the label 0
+    and `Q` the label 1.
+
+    EXAMPLES::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _mirror
+        sage: P = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/3, 1/2)])
+        sage: Q, gluings = _mirror(P, None, 1)
+        sage: [v.coordinates(model="klein") for v in Q.vertices()]
+        [(36/49, 12/49), (1/3, 1/2), (1/2, 0)]
+        sage: gluings
+        [((0, 0), (1, 2)), ((0, 1), (1, 1)), ((0, 2), (1, 0))]
+
+    """
+    from flatsurf.geometry.similarity_surface_generators import _pillowcase_gluings
+
+    vertices = [v.coordinates(model="klein") for v in P.vertices()]
+    m, permutation, gluings = _pillowcase_gluings(
+        len(vertices), glued_edges, mirror_edge
+    )
+
+    reflection = _reflection(vertices[m], vertices[(m + 1) % len(vertices)])
+
+    mirrored = []
+    for j in permutation:
+        x, y, z = reflection * vector((vertices[j][0], vertices[j][1], 1))
+        mirrored.append((x / z, y / z))
+    return P.parent().polygon(vertices=mirrored), gluings
+
+
 class HyperbolicSurfaceGenerators:
     r"""
     Constructors of hyperbolic surfaces from hyperbolic polygons.
@@ -1026,28 +1198,13 @@ class HyperbolicSurfaceGenerators:
         from flatsurf.geometry.hyperbolic_surface import (
             MutableOrientedHyperbolicSurface,
         )
-        from flatsurf.geometry.similarity_surface_generators import (
-            _pillowcase_gluings,
-        )
 
         if not isinstance(P, HyperbolicPolygon):
             raise TypeError("P must be a hyperbolic polygon")
 
-        vertices = [v.coordinates(model="klein") for v in P.vertices()]
-        m, permutation, gluings = _pillowcase_gluings(
-            len(vertices), glued_edges, mirror_edge
-        )
+        Q, gluings = _mirror(P, glued_edges, mirror_edge)
 
-        H = P.parent()
-        reflection = _reflection(vertices[m], vertices[(m + 1) % len(vertices)])
-
-        mirrored = []
-        for j in permutation:
-            x, y, z = reflection * vector((vertices[j][0], vertices[j][1], 1))
-            mirrored.append((x / z, y / z))
-        Q = H.polygon(vertices=mirrored)
-
-        surface = MutableOrientedHyperbolicSurface(H.base_ring())
+        surface = MutableOrientedHyperbolicSurface(P.parent().base_ring())
         surface.add_polygon(P, label=0)
         surface.add_polygon(Q, label=1)
         for x, y in gluings:
@@ -1292,103 +1449,9 @@ class HyperbolicSurfaceGenerators:
             Algebraic Real Field
 
         """
-        boundary_traces = tuple(boundary_traces)
-        cone_orders = tuple(cone_orders)
-        if len(boundary_traces) + len(cone_orders) != 3:
-            raise ValueError(
-                f"a pair of pants has three cuffs and cone points in total, not {len(boundary_traces) + len(cone_orders)}"
-            )
-
-        orders = []
-        for k in cone_orders:
-            try:
-                order = QQ(k)
-            except (TypeError, ValueError):
-                raise ValueError(f"the cone order {k} must be a rational number")
-            if order <= -1:
-                raise ValueError(f"the cone order {order} is not larger than -1")
-            if order == 0:
-                raise ValueError("a cone order must be nonzero")
-            if order > 0:
-                raise NotImplementedError(
-                    f"cone points of angle larger than 2π are not implemented, the cone order {order} is positive"
-                )
-            orders.append(order)
-
-        cosh = []
-        for t in boundary_traces:
-            try:
-                trace = AA(t)
-            except (TypeError, ValueError):
-                raise ValueError(
-                    f"the boundary trace {t} must be a real algebraic number"
-                )
-            if not trace > 3:
-                raise ValueError(f"the boundary trace {t} must be larger than 3")
-            cosh.append((trace + 1).sqrt() / 2)
-
-        divisor_euler_characteristic = 2 + sum(orders) - len(cosh)
-        if not divisor_euler_characteristic < 0:
-            raise ValueError(
-                f"the divisor Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not {divisor_euler_characteristic}"
-            )
-
-        angles = [(1 + k) / 2 for k in orders]
-
-        # The primitives test the inequalities below; the ones not listed
-        # cannot fail once the cuffs, the cone orders and the Euler
-        # characteristic are checked.
-        if len(orders) == 0:
-            constructor, arguments, seams = (
-                hyperbolic_polygons.right_angled_hexagon,
-                cosh,
-                [0, 2, 4],
-            )
-            inequalities = {}
-        elif len(orders) == 1:
-            constructor, arguments, seams = (
-                hyperbolic_polygons.right_angled_pentagon,
-                [angles[0]] + cosh,
-                [0, 1, 3],
-            )
-            slots = "with k0 the cone order of slot 0 and cs = √(ts + 1)/2 for the boundary trace ts of slot s"
-            inequalities = {
-                "c1 + c0 cos(2π angle)": f"c2 + c1 cos(π(1 + k0)) must be positive, {slots}",
-                "c0 + c1 cos(2π angle)": f"c1 + c2 cos(π(1 + k0)) must be positive, {slots}",
-            }
-        elif len(orders) == 2:
-            constructor, arguments, seams = (
-                hyperbolic_polygons.right_angled_quadrilateral,
-                angles + cosh,
-                [0, 1, 2],
-            )
-            slots = "with k0, k1 the cone orders of slots 0, 1 and c2 = √(t2 + 1)/2 for the boundary trace t2 of slot 2"
-            inequalities = {
-                "cos(2π angle1) + c cos(2π angle0)": f"cos(π(1 + k1)) + c2 cos(π(1 + k0)) must be positive, {slots}",
-                "cos(2π angle0) + c cos(2π angle1)": f"cos(π(1 + k0)) + c2 cos(π(1 + k1)) must be positive, {slots}",
-            }
-        else:
-            constructor, arguments, seams = (
-                hyperbolic_polygons.triangle,
-                [angles[2], angles[0], angles[1]],
-                [0, 1, 2],
-            )
-            inequalities = {}
-
-        try:
-            P = constructor(*arguments, ring=AA)
-        except ValueError as error:
-            for inequality, message in inequalities.items():
-                if inequality in str(error):
-                    raise ValueError(
-                        f"no pair of pants with these parameters: {message}"
-                    ) from error
-            raise
-
-        vertices = [v.coordinates(model="klein") for v in P.vertices()]
-        if optimize_placement:
-            vertices = _optimize_placement(vertices)
-
+        vertices, seams = _pants_polygon(
+            boundary_traces, cone_orders, optimize_placement
+        )
         return HyperbolicSurfaceGenerators.pillowcase(
             _polygon(vertices, ring), glued_edges=seams
         )
@@ -1477,6 +1540,489 @@ class HyperbolicSurfaceGenerators:
         for e, f in pairs:
             surface.glue((0, e), (0, f))
         surface.set_immutable()
+        return surface
+
+    @staticmethod
+    def from_signature(signature, cuff_traces=None, ring=None, optimize_placement=True):
+        r"""
+        Return a compact hyperbolic surface of signature ``signature``, glued
+        from pairs of pants.
+
+        INPUT:
+
+        - ``signature`` -- a
+          :class:`~flatsurf.geometry.signature.SurfaceSignature` without
+          cusps, whose cone orders are in `(-1, 0)`, whose boundary traces
+          are larger than 3, and whose geometry is hyperbolic
+
+        - ``cuff_traces`` -- a sequence of real algebraic numbers larger than
+          3 or ``None`` (default: ``None``); the traces in `\mathrm{SO}(2,
+          1)` of the interior cuffs, in the order given below. With
+          ``None``, every interior cuff has the trace `21/4`.
+
+        - ``ring`` -- a ring or ``None`` (default: ``None``), the base ring
+          of the surface: with ``None``, the number field generated by the
+          Klein coordinates of all the polygons, ``QQ`` when they are
+          rational; ``AA`` keeps the coordinates in ``AA``; any other ring
+          receives the coordinates by conversion
+
+        - ``optimize_placement`` -- a boolean (default: ``True``); whether to
+          move each polygon to coordinates of small degree, as in
+          :meth:`pants` and :meth:`~FuchsianGroupGenerators.triangle`
+
+        OUTPUT:
+
+        An immutable
+        :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
+        whose
+        :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
+        is ``signature``. The pair of pants `i` of the decomposition below
+        is made of the polygons with the labels ``(i, 0)``, its front
+        polygon, and ``(i, 1)``, its mirror image, as in :meth:`pants`.
+
+        EXAMPLES:
+
+        A closed surface of genus 2, from two pairs of pants::
+
+            sage: from flatsurf import hyperbolic_surfaces
+            sage: from flatsurf.geometry.signature import SurfaceSignature
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature(2))
+            sage: S
+            Genus 2 Hyperbolic Surface built from 4 right-angled hexagons
+            sage: S.signature()
+            SurfaceSignature(g=2)
+            sage: S.base_ring()
+            Rational Field
+            sage: S.area()
+            2
+            sage: TestSuite(S).run()
+
+        Orbifolds, given in Katok's form; the cone points of angle `\pi`
+        come in pairs as folds::
+
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(1, (2,)))
+            sage: S.signature()
+            SurfaceSignature(g=1, cone_orders=(-1/2,))
+            sage: S.base_ring()
+            Rational Field
+            sage: S.area()
+            1/2
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(0, (2, 2, 2, 3)))
+            sage: S.signature()
+            SurfaceSignature(g=0, cone_orders=(-2/3, -1/2, -1/2, -1/2))
+            sage: S.base_ring()
+            Rational Field
+            sage: S.area()
+            1/6
+
+        Three cone points of angles `2\pi/m` give the pillowcase of the
+        triangle of the triangle group, placed by the search of
+        :meth:`~FuchsianGroupGenerators.triangle`::
+
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(0, (3, 3, 4)))
+            sage: S.signature()
+            SurfaceSignature(g=0, cone_orders=(-3/4, -2/3, -2/3))
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^4 - 2 with a = 1.189207115002722?
+            sage: S.area()
+            1/12
+
+        ::
+
+            sage: # long time
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(0, (2, 3, 7)))
+            sage: S.signature()
+            SurfaceSignature(g=0, cone_orders=(-6/7, -2/3, -1/2))
+            sage: S.base_ring().polynomial()
+            y^6 + y^4 - 2*y^2 - 1
+            sage: S.area()
+            1/42
+
+        With the default traces, the polygons of the orbifold of signature
+        `(2; 2)` are rational but not its side pairings: the surface is
+        glued over ``AA`` and moved to the field of its coordinates and
+        side pairings, which is its invariant trace field. Traces `99`
+        give a surface over ``QQ``::
+
+            sage: s = SurfaceSignature.from_orbifold_orders(2, (2,))
+            sage: S = hyperbolic_surfaces.from_signature(s)
+            sage: S.signature()
+            SurfaceSignature(g=2, cone_orders=(-1/2,))
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^2 - 51 with a = 7.141428428542850?
+            sage: S.area()
+            5/2
+            sage: S.holonomy_representation().invariant_trace_field()
+            Number Field in a with defining polynomial y^2 - 51 with a = 7.141428428542850?
+            sage: S = hyperbolic_surfaces.from_signature(s, cuff_traces=(int(99),) * 4)
+            sage: S.signature()
+            SurfaceSignature(g=2, cone_orders=(-1/2,))
+            sage: S.base_ring()
+            Rational Field
+            sage: S.area()
+            5/2
+
+        A surface with geodesic boundary::
+
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature(1, boundary_traces=(QQ(21)/4,)))
+            sage: S.signature()
+            SurfaceSignature(g=1, boundary_traces=(21/4,))
+            sage: S.base_ring()
+            Rational Field
+            sage: S.area()
+            1
+
+        Cusps, cone angles larger than `2\pi`, boundary components without
+        a trace larger than 3, and signatures that are not hyperbolic are
+        refused::
+
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(0, (2, 3), cusps=1))
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: surfaces with cusps are not implemented, the signature has 1 cusps
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2, cone_orders=(1/2,)))
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cone points of angle larger than 2π are not implemented, the cone order 1/2 is positive
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(1, boundary_traces=(3,)))
+            Traceback (most recent call last):
+            ...
+            ValueError: the boundary trace 3 must be larger than 3
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(0, (2, 3, 6)))
+            Traceback (most recent call last):
+            ...
+            ValueError: the signature SurfaceSignature(g=0, cone_orders=(-5/6, -2/3, -1/2)) is euclidean, not hyperbolic
+
+        A pair of pants of the decomposition may not exist, while a surface
+        of the signature does::
+
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(0, cone_orders=(-1/4,), boundary_traces=(21/4, 20881/144)))
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: a pair of pants of the decomposition into pants of this signature does not exist, the surface may exist without such a decomposition: no pair of pants with these parameters: ...
+
+        TESTS:
+
+        The labels of the closed surface of genus 3, from four pairs of
+        pants::
+
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature(3))
+            sage: list(S.labels())
+            [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1), (3, 0), (3, 1)]
+            sage: S.signature()
+            SurfaceSignature(g=3)
+
+        The number of cuff traces, their values, and an explicit ring
+        that does not hold the side pairings::
+
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2), cuff_traces=(21/4,))
+            Traceback (most recent call last):
+            ...
+            ValueError: cuff_traces must have 3 traces, one per interior cuff, not 1
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2), cuff_traces=(21/4, 21/4, 2))
+            Traceback (most recent call last):
+            ...
+            ValueError: the cuff trace 2 must be larger than 3
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(2, (2,)), ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot glue edge 5 of polygon (0, 0) to edge 2 of polygon (1, 0): isometry is not defined over Rational Field; adjoin a square root of 390625/55539
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2), ring=AA).base_ring()
+            Algebraic Real Field
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(1, boundary_traces=(None,)))
+            Traceback (most recent call last):
+            ...
+            ValueError: the boundary traces of the signature must be given, not None
+            sage: hyperbolic_surfaces.from_signature((2,))
+            Traceback (most recent call last):
+            ...
+            TypeError: signature must be a SurfaceSignature
+
+        ALGORITHM:
+
+        The legs of the signature are its boundary components, its folds,
+        one for each pair of cone points of angle `\pi`, and its other cone
+        points. A fold is a cuff whose front half-cuff is glued to its own
+        back half-cuff, the edge `e` of the polygon ``(i, 0)`` to the edge
+        `-e \bmod n` of the polygon ``(i, 1)``; its two seam feet become cone
+        points of angle `\pi`. The legs are ordered boundary components
+        first, then folds, then the cone points sorted by angle, paired
+        smallest with largest, `k_0, k_{c-1}, k_1, k_{c-2}, \dots`, so that
+        the pants at the ends of the chain below, the only ones with two
+        legs, receive them first.
+
+        With `L_1, \dots, L_n` the legs and `g` the genus, the `2g - 2 + n`
+        pairs of pants are glued along a chain:
+
+        - `g = 0`: the pants `(L_1, L_2, c_1)`, then `(c_{i-1}, L_{i+1},
+          c_i)` for `i = 2, \dots, n - 3`, then `(c_{n-3}, L_{n-1}, L_n)`;
+          the single pants `(L_1, L_2, L_3)` when `n = 3`;
+
+        - `g \ge 1`: the pants `(\ell, \ell, c)` whose first two cuffs, a
+          loop, are glued to each other, or `(\ell, \ell, L_1)` when `g = 1`
+          and `n = 1`; then one pants `(c, L_i, c')` per leg, but for the
+          last two when `g = 1`; then, for each handle `2, \dots, g - 1`, two
+          pants `(c, d, d')` and `(d, d', c')` glued along two cuffs; then
+          `(c, \ell', \ell')` when `g \ge 2`, `(c, L_{n-1}, L_n)` when `g =
+          1`.
+
+        A pair of pants is the one of :meth:`pants`, its cone points in its
+        first slots, its cuffs in its last ones. Two cuffs are glued without
+        twist: gluing the slot `a` of the pants `i` to the slot `b` of the
+        pants `j` glues the front half-cuffs ``((i, 0), e_a)`` and ``((j, 0),
+        e_b)`` and the back ones ``((i, 1), -e_a mod n_i)`` and ``((j, 1),
+        -e_b mod n_j)``, so that the reflection exchanging every front and
+        back polygon is an isometry of the surface.
+
+        The interior cuffs are the loops, the links `c`, the doubled cuffs
+        `d, d'` and the folds. Each has the trace `21/4` by default, for
+        which the pants have rational coordinates once placed, or the trace
+        of ``cuff_traces``, given in the order in which the interior cuffs
+        first appear along the pants of the chain and their slots: on `(2;
+        2)` the loop `\ell`, the links `c_1, c_2`, the loop `\ell'`.
+
+        With ``ring=None``, the polygons are built over the number field of
+        all their Klein coordinates. The side pairings between two pants
+        may need square roots that this field does not hold: when a gluing
+        is refused, the surface is glued over ``AA`` and moved to the field
+        of its coordinates and side pairings by
+        :meth:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface.set_immutable`.
+        With an explicit ``ring``, the refusal is raised.
+
+        Three cone points of angles `2\pi/m_i`, without boundary, give the
+        pillowcase of the triangle of
+        :meth:`~FuchsianGroupGenerators.triangle`.
+
+        """
+        from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        from flatsurf.geometry.hyperbolic_surface import (
+            MutableOrientedHyperbolicSurface,
+        )
+        from flatsurf.geometry.signature import SurfaceSignature
+
+        if not isinstance(signature, SurfaceSignature):
+            raise TypeError("signature must be a SurfaceSignature")
+
+        def check_trace(t, name):
+            try:
+                trace = AA(t)
+            except (TypeError, ValueError):
+                raise ValueError(f"the {name} {t} must be a real algebraic number")
+            if not trace > 3:
+                raise ValueError(f"the {name} {t} must be larger than 3")
+
+        if signature.cusps():
+            raise NotImplementedError(
+                f"surfaces with cusps are not implemented, the signature has {signature.cusps()} cusps"
+            )
+        for k in signature.cone_orders():
+            if k > 0:
+                raise NotImplementedError(
+                    f"cone points of angle larger than 2π are not implemented, the cone order {k} is positive"
+                )
+        for t in signature.boundary_traces():
+            if t is None:
+                raise ValueError(
+                    "the boundary traces of the signature must be given, not None"
+                )
+            check_trace(t, "boundary trace")
+        geometry = signature.geometry()
+        if geometry != "hyperbolic":
+            raise ValueError(
+                f"the signature {signature!r} is {geometry}, not hyperbolic"
+            )
+
+        genus = signature.genus()
+        cone_orders = signature.cone_orders()
+        boundary_traces = signature.boundary_traces()
+
+        triangle = (
+            genus == 0
+            and not boundary_traces
+            and len(cone_orders) == 3
+            and all((1 + k).numerator() == 1 for k in cone_orders)
+        )
+
+        # A leg is ("boundary", trace), ("fold", None) or ("cone", order).
+        half = QQ((-1, 2))
+        cones = list(cone_orders)
+        folds = 0 if triangle else cones.count(half) // 2
+        for _ in range(2 * folds):
+            cones.remove(half)
+        paired = []
+        while cones:
+            paired.append(cones.pop(0))
+            if cones:
+                paired.append(cones.pop())
+        legs = (
+            [("leg", ("boundary", t)) for t in boundary_traces]
+            + [("leg", ("fold", None))] * folds
+            + [("leg", ("cone", k)) for k in paired]
+        )
+
+        # Each slot of a pants is a leg or ("cuff", name), each name in two
+        # slots.
+        n = len(legs)
+        if genus == 0 and n == 3:
+            chain = [legs]
+        elif genus == 0:
+            chain = [[legs[0], legs[1], ("cuff", ("link", 1))]]
+            for i in range(2, n - 2):
+                chain.append(
+                    [("cuff", ("link", i - 1)), legs[i], ("cuff", ("link", i))]
+                )
+            chain.append([("cuff", ("link", n - 3)), legs[n - 2], legs[n - 1]])
+        elif genus == 1 and n == 1:
+            loop = ("cuff", ("loop", 0))
+            chain = [[loop, loop, legs[0]]]
+        else:
+            loop = ("cuff", ("loop", 0))
+            chain = [[loop, loop, ("cuff", ("link", 0))]]
+            link = 0
+            for leg in legs if genus >= 2 else legs[: n - 2]:
+                chain.append(
+                    [("cuff", ("link", link)), leg, ("cuff", ("link", link + 1))]
+                )
+                link += 1
+            for handle in range(2, genus):
+                d, e = ("cuff", ("handle", handle, 0)), ("cuff", ("handle", handle, 1))
+                chain.append([("cuff", ("link", link)), d, e])
+                chain.append([d, e, ("cuff", ("link", link + 1))])
+                link += 1
+            if genus >= 2:
+                loop = ("cuff", ("loop", 1))
+                chain.append([("cuff", ("link", link)), loop, loop])
+            else:
+                chain.append([("cuff", ("link", link)), legs[n - 2], legs[n - 1]])
+
+        # The interior cuffs in the order they first appear; a fold is
+        # identified by its slot.
+        interior = []
+        for i, slots in enumerate(chain):
+            for s, slot in enumerate(slots):
+                if slot[0] == "cuff":
+                    key = slot[1]
+                elif slot[1][0] == "fold":
+                    key = ("fold", i, s)
+                else:
+                    continue
+                if key not in interior:
+                    interior.append(key)
+
+        if cuff_traces is None:
+            cuff_traces = [QQ((21, 4))] * len(interior)
+        else:
+            cuff_traces = list(cuff_traces)
+            if len(cuff_traces) != len(interior):
+                raise ValueError(
+                    f"cuff_traces must have {len(interior)} traces, one per interior cuff, not {len(cuff_traces)}"
+                )
+            for t in cuff_traces:
+                check_trace(t, "cuff trace")
+        traces = dict(zip(interior, cuff_traces))
+
+        # The half-cuff edge of the front polygon of each slot that is not a
+        # cone point.
+        half_cuffs = {}
+        if triangle:
+            periods = signature.orbifold_orders()[1]
+            polygons = [_triangle_group_polygon(*periods, ring, optimize_placement)]
+            seams = [None]
+        else:
+            fronts = []
+            seams = []
+            for i, slots in enumerate(chain):
+                orders = []
+                cuffs = []
+                pants_traces = []
+                for s, slot in enumerate(slots):
+                    if slot[0] == "cuff":
+                        pants_traces.append(traces[slot[1]])
+                    elif slot[1][0] == "boundary":
+                        pants_traces.append(slot[1][1])
+                    elif slot[1][0] == "fold":
+                        pants_traces.append(traces[("fold", i, s)])
+                    else:
+                        orders.append(slot[1][1])
+                        continue
+                    cuffs.append(s)
+                try:
+                    vertices, pants_seams = _pants_polygon(
+                        pants_traces, orders, optimize_placement
+                    )
+                except ValueError as error:
+                    raise NotImplementedError(
+                        f"a pair of pants of the decomposition into pants of this signature does not exist, the surface may exist without such a decomposition: {error}"
+                    ) from error
+                edges = [e for e in range(len(vertices)) if e not in pants_seams]
+                for s, e in zip(cuffs, edges):
+                    half_cuffs[i, s] = e
+                fronts.append(vertices)
+                seams.append(pants_seams)
+
+            if ring is None:
+                from flatsurf.geometry.subfield import (
+                    number_field_elements_from_algebraics,
+                )
+
+                field, coordinates = number_field_elements_from_algebraics(
+                    [c for vertices in fronts for vertex in vertices for c in vertex]
+                )
+                H = HyperbolicPlane(field)
+                coordinates = iter(coordinates)
+                polygons = [
+                    H.polygon(
+                        vertices=[
+                            (next(coordinates), next(coordinates)) for _ in vertices
+                        ]
+                    )
+                    for vertices in fronts
+                ]
+            else:
+                polygons = [_polygon(vertices, ring) for vertices in fronts]
+
+        labelled = {}
+        gluings = []
+        for i, P in enumerate(polygons):
+            Q, pants_gluings = _mirror(P, seams[i], None)
+            labelled[i, 0] = P
+            labelled[i, 1] = Q
+            gluings.extend(
+                (((i, a), e), ((i, b), f)) for (a, e), (b, f) in pants_gluings
+            )
+
+        ends = {}
+        for i, slots in enumerate(chain):
+            size = len(polygons[i].vertices())
+            for s, slot in enumerate(slots):
+                if (i, s) not in half_cuffs:
+                    continue
+                e = half_cuffs[i, s]
+                if slot[0] == "cuff":
+                    ends.setdefault(slot[1], []).append((i, e, size))
+                elif slot[1][0] == "fold":
+                    gluings.append((((i, 0), e), ((i, 1), -e % size)))
+        for (i, a, n_i), (j, b, n_j) in ends.values():
+            gluings.append((((i, 0), a), ((j, 0), b)))
+            gluings.append((((i, 1), -a % n_i), ((j, 1), -b % n_j)))
+
+        def assemble(base_ring):
+            surface = MutableOrientedHyperbolicSurface(base_ring)
+            for label, polygon in labelled.items():
+                surface.add_polygon(polygon, label=label)
+            for x, y in gluings:
+                surface.glue(x, y)
+            return surface
+
+        try:
+            surface = assemble(polygons[0].parent().base_ring())
+        except ValueError as error:
+            if ring is not None or "isometry is not defined over" not in str(error):
+                raise
+            surface = assemble(AA)
+            surface.set_immutable(minimal_field=True)
+        else:
+            surface.set_immutable()
         return surface
 
 
@@ -1598,6 +2144,78 @@ def _triangle_placements(angles, order):
             cos, sin = _cos_sin(rotation)
             rotated = [(cos * x - sin * y, sin * x + cos * y) for x, y in vertices]
             yield [rotated[(j - i) % 3] for j in range(3)]
+
+
+def _triangle_group_polygon(m1, m2, m3, ring, optimize_placement):
+    r"""
+    Return the triangle of :meth:`FuchsianGroupGenerators.triangle`, with
+    the vertices of periods ``m1``, ``m3``, ``m2`` at its vertices 0, 1, 2.
+
+    INPUT:
+
+    - ``m1``, ``m2``, ``m3``, ``ring``, ``optimize_placement`` -- as in
+      :meth:`FuchsianGroupGenerators.triangle`, the group being hyperbolic
+
+    OUTPUT:
+
+    A hyperbolic triangle over ``ring``, over the field of its Klein
+    coordinates when ``ring`` is ``None``, placed by the search of
+    :meth:`FuchsianGroupGenerators.triangle` when ``optimize_placement`` is
+    set.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _triangle_group_polygon
+        sage: T = _triangle_group_polygon(3, 4, 4, None, True)
+        sage: T.base_ring()
+        Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
+        sage: T.angles()
+        (1/6, 1/8, 1/8)
+
+    """
+    m1, m2, m3 = ZZ(m1), ZZ(m2), ZZ(m3)
+    angles = [QQ((1, 2 * m)) for m in (m1, m3, m2)]
+
+    if not optimize_placement:
+        return hyperbolic_polygons.triangle(*angles, ring=ring)
+
+    from flatsurf.geometry.hyperbolic import HyperbolicPlane
+    from flatsurf.geometry.subfield import number_field_elements_from_algebraics
+
+    # The input periods m1, m2, m3 are at the vertices 0, 2, 1.
+    order = [
+        vertex
+        for _, vertex in sorted(
+            zip((m1, m2, m3), (0, 2, 1)), key=lambda pv: (pv[0] % 2, -pv[0])
+        )
+    ]
+
+    # No placement over QQ is sought as _optimize_placement does: when
+    # k_0 is QQ the group is arithmetic and A_0 a division algebra
+    # (Takeuchi, Theorem 1), so the bound is 2.
+    bound = _triangle_group_degree_bound(m1, m2, m3)
+
+    candidates = []
+    for vertices in _triangle_placements(angles, order):
+        field, coordinates = number_field_elements_from_algebraics(
+            [c for vertex in vertices for c in vertex]
+        )
+        candidates.append(
+            (field.degree(), len(candidates), field, coordinates, vertices)
+        )
+        if field.degree() <= bound:
+            break
+    _, _, field, coordinates, vertices = min(
+        candidates, key=lambda candidate: candidate[:2]
+    )
+
+    if ring is None:
+        # The minimal field is already computed; _polygon would compute it
+        # again.
+        return HyperbolicPlane(field).polygon(
+            vertices=list(zip(coordinates[::2], coordinates[1::2]))
+        )
+    return _polygon(vertices, ring)
 
 
 class FuchsianGroupGenerators:
@@ -1794,52 +2412,7 @@ class FuchsianGroupGenerators:
             raise ValueError(
                 f"the triangle group ({m1}, {m2}, {m3}) is {geometry}, not hyperbolic: 1/m1 + 1/m2 + 1/m3 must be less than 1"
             )
-        m1, m2, m3 = ZZ(m1), ZZ(m2), ZZ(m3)
-        angles = [QQ((1, 2 * m)) for m in (m1, m3, m2)]
-
-        if not optimize_placement:
-            T = hyperbolic_polygons.triangle(*angles, ring=ring)
-        else:
-            from flatsurf.geometry.hyperbolic import HyperbolicPlane
-            from flatsurf.geometry.subfield import (
-                number_field_elements_from_algebraics,
-            )
-
-            # The input periods m1, m2, m3 are at the vertices 0, 2, 1.
-            order = [
-                vertex
-                for _, vertex in sorted(
-                    zip((m1, m2, m3), (0, 2, 1)), key=lambda pv: (pv[0] % 2, -pv[0])
-                )
-            ]
-
-            # No placement over QQ is sought as _optimize_placement does: when
-            # k_0 is QQ the group is arithmetic and A_0 a division algebra
-            # (Takeuchi, Theorem 1), so the bound is 2.
-            bound = _triangle_group_degree_bound(m1, m2, m3)
-
-            candidates = []
-            for vertices in _triangle_placements(angles, order):
-                field, coordinates = number_field_elements_from_algebraics(
-                    [c for vertex in vertices for c in vertex]
-                )
-                candidates.append(
-                    (field.degree(), len(candidates), field, coordinates, vertices)
-                )
-                if field.degree() <= bound:
-                    break
-            _, _, field, coordinates, vertices = min(
-                candidates, key=lambda candidate: candidate[:2]
-            )
-
-            if ring is None:
-                # The minimal field is already computed; _polygon would
-                # compute it again.
-                T = HyperbolicPlane(field).polygon(
-                    vertices=list(zip(coordinates[::2], coordinates[1::2]))
-                )
-            else:
-                T = _polygon(vertices, ring)
+        T = _triangle_group_polygon(m1, m2, m3, ring, optimize_placement)
 
         S = HyperbolicSurfaceGenerators.pillowcase(T)
         phi = S.holonomy_representation()
