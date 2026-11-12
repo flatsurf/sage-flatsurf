@@ -31,7 +31,7 @@ in ``hyperbolic_surface_oracles``.
 
 import pytest
 
-from sage.all import QQ, ZZ, polygen
+from sage.all import QQ, RR, ZZ, polygen
 
 from flatsurf import fuchsian_groups
 from flatsurf.geometry.hyperbolic_surface_generators import (
@@ -124,3 +124,8 @@ def test_refused_ring():
         ValueError, match="the coordinates of the polygon do not lie in Rational Field"
     ):
         fuchsian_groups.triangle(3, 4, 4, ring=QQ)
+    with pytest.raises(
+        ValueError,
+        match="the ring must be exact, not Real Field with 53 bits of precision",
+    ):
+        fuchsian_groups.triangle(3, 4, 4, ring=RR)

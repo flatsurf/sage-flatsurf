@@ -31,7 +31,7 @@ units of `\pi`, here halved to units of `2\pi`.
 
 import pytest
 
-from sage.all import AA, QQ, polygen
+from sage.all import AA, QQ, RR, polygen
 
 from flatsurf import hyperbolic_surfaces
 from flatsurf.geometry.signature import SurfaceSignature
@@ -58,6 +58,10 @@ def check(S, signature, area, polynomial, polygons):
     assert len(S.labels()) == polygons
 
 
+# The polynomials of the base fields are regression values of the current
+# construction: they depend on the placement of each pair of pants and on the
+# order of the pairs of pants and of the slots in the chain, not only on the
+# signature.
 @pytest.mark.parametrize(
     "signature,area,polynomial,polygons",
     [
@@ -121,6 +125,8 @@ def test_ring():
     assert hyperbolic_surfaces.from_signature(SurfaceSignature(2), ring=QQ).base_ring() is QQ
     with pytest.raises(ValueError, match="isometry is not defined over Rational Field"):
         hyperbolic_surfaces.from_signature(orbifold(2, (2,)), ring=QQ)
+    with pytest.raises(ValueError, match="the ring must be exact, not Real Field"):
+        hyperbolic_surfaces.from_signature(SurfaceSignature(2), ring=RR)
 
 
 @pytest.mark.parametrize(

@@ -808,12 +808,14 @@ def _holonomy_angle(surface, vertex):
     # on an infinite surface.
     q0, point = next(iter(vertex.representatives()))
     j0 = surface.polygon(q0).get_point_position(point).get_vertex()
+    if surface.opposite_edge(q0, j0) is None:
+        # A vertex on the boundary has no loop.
+        raise not_rational()
     letters = [(q0, j0)]
     while True:
         q, j = letters[-1]
         corner = surface.opposite_edge(q, (j - 1) % len(surface.polygon(q).vertices()))
-        if corner is None or surface.opposite_edge(q0, j0) is None:
-            # A vertex on the boundary has no loop.
+        if corner is None:
             raise not_rational()
         if corner == (q0, j0):
             break

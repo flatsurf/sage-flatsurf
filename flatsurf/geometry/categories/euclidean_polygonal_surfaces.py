@@ -142,6 +142,11 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
 
             - ``edge`` -- an edge index of that polygon
 
+            OUTPUT:
+
+            A vector over the base ring: the midpoint of two vertices of the
+            polygon is always defined over the base ring.
+
             EXAMPLES::
 
                 sage: from flatsurf import translation_surfaces

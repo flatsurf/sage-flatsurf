@@ -833,8 +833,9 @@ class SimilaritySurfaceGenerators:
         the reflection of the edge `2m - j \bmod n` of ``P``. The edge `e`
         of ``P`` is glued to the edge `2m - e \bmod n` of `Q` for every `e`
         in ``glued_edges``, by the reflection in the line of `e` followed by
-        the reflection in the line of `m`; the edge `m` is glued to itself
-        in the plane, by the identity. The other edges of ``P`` and of `Q`
+        the reflection in the line of `m`; the edge `m` of ``P`` is glued to
+        the edge `m` of `Q`, which is the same segment of the plane, by the
+        identity. The other edges of ``P`` and of `Q`
         form the boundary of the surface.
 
         INPUT:
@@ -936,8 +937,8 @@ class SimilaritySurfaceGenerators:
             True
             sage: S.polygon(1).edge_vectors() == B.polygon(1).edge_vectors()
             True
-            sage: S.polygon(1) == B.polygon(1)
-            False
+            sage: [u - v for u, v in zip(S.polygon(1).vertices(), B.polygon(1).vertices())]
+            [(0, -1), (0, -1), (0, -1)]
 
         SEEALSO:
 

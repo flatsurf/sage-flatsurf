@@ -8,11 +8,11 @@ A signature has three groups:
   case, `k_i` is the degree of a zero of an Abelian differential);
 - the number `c` of cusps, with no parameter (a cusp is both of angle 0 and of
   length 0);
-- the geodesic boundaries, each given by the trace `t = 1 + 2 \cosh \ell` of
-  its holonomy in `SO(2, 1)`, where `\ell` is its length.
+- the geodesic boundary components, each given by the trace `t = 1 + 2 \cosh
+  \ell` of its holonomy in `SO(2, 1)`, where `\ell` is its length.
 
 The divisor Euler characteristic is
-`\chi(S, \beta) = 2 - 2g + \sum k_i - c - b` where `b` is the number of
+`\chi(S, \beta) = 2 - 2g - c - b + \sum k_i` where `b` is the number of
 boundary components, and the area of a hyperbolic surface is
 `-2\pi \chi(S, \beta)`.
 

@@ -678,9 +678,9 @@ class EuclideanPolygons(Category_over_base_ring):
 
             A polygon over the base ring of this polygon. A
             :class:`ValueError` is raised when ``m`` is not an integer at
-            least 2, or when no rotation sends every `v_i` to `v_{i+k}`. For a
-            non-convex polygon, the sector may be no valid polygon, in which
-            case the polygon constructor raises its error.
+            least 2, when `m \nmid n`, or when no rotation sends every `v_i`
+            to `v_{i+k}`. For a non-convex polygon, the sector may be no valid
+            polygon, in which case the polygon constructor raises its error.
 
             EXAMPLES::
 

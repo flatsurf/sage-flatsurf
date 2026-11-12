@@ -133,15 +133,6 @@ def _walk(sides, angles):
     - ``angles`` -- a list of pairs ``(cos, sin)`` of the interior angles at
       the vertices 1, 2, ..., one fewer than ``sides``
 
-    ALGORITHM:
-
-    A frame of the hyperboloid model starts at the origin, pointing along
-    the positive `x`-axis. A side of hyperbolic cosine `c` and sine `s`
-    multiplies the frame on the right by the translation `((c, 0, s), (0, 1,
-    0), (s, 0, c))` along its first axis, and a vertex of interior angle
-    `\alpha` by the rotation by `\pi - \alpha`, a left turn. Each vertex is
-    the last column of its frame, divided by its last entry.
-
     EXAMPLES:
 
     A walk along two sides of `\cosh = 5/4` with a right angle between
@@ -150,6 +141,15 @@ def _walk(sides, angles):
         sage: from flatsurf.geometry.hyperbolic_surface_generators import _walk
         sage: _walk([(AA(5/4), AA(3/4))] * 2, [(AA(0), AA(1))])
         [(0, 0), (3/5, 0), (3/5, 12/25)]
+
+    ALGORITHM:
+
+    A frame of the hyperboloid model starts at the origin, pointing along
+    the positive `x`-axis. A side of hyperbolic cosine `c` and sine `s`
+    multiplies the frame on the right by the translation `((c, 0, s), (0, 1,
+    0), (s, 0, c))` along its first axis, and a vertex of interior angle
+    `\alpha` by the rotation by `\pi - \alpha`, a left turn. Each vertex is
+    the last column of its frame, divided by its last entry.
 
     """
     frame = identity_matrix(AA, 3)
@@ -162,6 +162,32 @@ def _walk(sides, angles):
             cos, sin = angles[i]
             frame = frame * matrix(AA, [[-cos, -sin, 0], [sin, -cos, 0], [0, 0, 1]])
     return vertices
+
+
+def _check_exact(ring):
+    r"""
+    Raise a ``ValueError`` if ``ring`` is an inexact ring.
+
+    The polygons are computed exactly in ``AA`` and the checks on their
+    gluings and fields assume an exact base ring.
+
+    INPUT:
+
+    - ``ring`` -- a ring or ``None``
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _check_exact
+        sage: _check_exact(None)
+        sage: _check_exact(QQ)
+        sage: _check_exact(RDF)
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Double Field
+
+    """
+    if ring is not None and not ring.is_exact():
+        raise ValueError(f"the ring must be exact, not {ring}")
 
 
 def _polygon(vertices, ring):
@@ -204,7 +230,9 @@ def _polygon(vertices, ring):
         try:
             coordinates = [ring(c) for c in coordinates]
         except (TypeError, ValueError):
-            raise ValueError(f"the coordinates of the polygon do not lie in {ring}")
+            raise ValueError(
+                f"the coordinates of the polygon do not lie in {ring}"
+            ) from None
 
     return HyperbolicPlane(ring).polygon(
         vertices=list(zip(coordinates[::2], coordinates[1::2]))
@@ -267,15 +295,6 @@ class HyperbolicPolygonsConstructor:
         A :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
         with vertex 0 at the origin and edge 0 on the positive `x`-axis.
 
-        ALGORITHM:
-
-        The side `c` opposite the angle `\gamma` has `\cosh c = (\cos\alpha
-        \cos\beta + \cos\gamma) / (\sin\alpha \sin\beta)`, the second
-        cosine rule of Katok, Fuchsian groups (1992), Theorem 1.5.2, p. 16.
-
-        The field of the coordinates depends on the vertex at the origin,
-        chosen by the order of the angles.
-
         EXAMPLES:
 
         A triangle with a right angle at the origin::
@@ -323,7 +342,31 @@ class HyperbolicPolygonsConstructor:
             ...
             ValueError: the coordinates of the polygon do not lie in Rational Field
 
+        The ring must be exact::
+
+            sage: hyperbolic_polygons.triangle(1/8, 1/8, 1/8, ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
+        A ring that contains the coordinates is accepted::
+
+            sage: K.<a> = QuadraticField(6)
+            sage: T = hyperbolic_polygons.triangle(1/4, 1/12, 1/12, ring=K)
+            sage: T.vertex(1).coordinates(model="klein")
+            (1/3*a, 0)
+
+        ALGORITHM:
+
+        The side `c` opposite the angle `\gamma` has `\cosh c = (\cos\alpha
+        \cos\beta + \cos\gamma) / (\sin\alpha \sin\beta)`, the second
+        cosine rule of Katok, Fuchsian groups (1992), Theorem 1.5.2, p. 16.
+
+        The field of the coordinates depends on the vertex at the origin,
+        chosen by the order of the angles.
+
         """
+        _check_exact(ring)
         a, b, c = _angle(a), _angle(b), _angle(c)
         if not (a > 0 and b > 0 and c > 0):
             raise ValueError("the angles of a hyperbolic triangle must be positive")
@@ -362,15 +405,6 @@ class HyperbolicPolygonsConstructor:
         A :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
         with vertex 0 at the origin and edge 0 on the positive `x`-axis.
 
-        ALGORITHM:
-
-        The triangles from the centre to the sides have angles `2\pi/n` at
-        the centre and `\theta/2` at the vertices, with `\theta = 2\pi`
-        ``angle``. The second cosine rule of Katok, Fuchsian groups (1992),
-        Theorem 1.5.2, p. 16, gives the side `\cosh s = (\cos^2(\theta/2) +
-        \cos(2\pi/n)) / \sin^2(\theta/2)`; the octagon of angle `1/8` is
-        the one of Katok, Section 4.3, Example C, p. 95.
-
         EXAMPLES:
 
         The octagon of the genus two surface of Katok::
@@ -403,9 +437,34 @@ class HyperbolicPolygonsConstructor:
             Traceback (most recent call last):
             ...
             ValueError: a polygon has at least 3 vertices
+            sage: hyperbolic_polygons.regular_ngon(QQ((11, 2)), 1/8)
+            Traceback (most recent call last):
+            ...
+            ValueError: the number of vertices must be an integer
+            sage: hyperbolic_polygons.regular_ngon(5.5, 1/8)
+            Traceback (most recent call last):
+            ...
+            ValueError: the number of vertices must be an integer
+            sage: hyperbolic_polygons.regular_ngon(8, 1/16, ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
+        ALGORITHM:
+
+        The triangles from the centre to the sides have angles `2\pi/n` at
+        the centre and `\theta/2` at the vertices, with `\theta = 2\pi`
+        ``angle``. The second cosine rule of Katok, Fuchsian groups (1992),
+        Theorem 1.5.2, p. 16, gives the side `\cosh s = (\cos^2(\theta/2) +
+        \cos(2\pi/n)) / \sin^2(\theta/2)`; the octagon of angle `1/8` is
+        the one of Katok, Section 4.3, Example C, p. 95.
 
         """
-        n = ZZ(n)
+        _check_exact(ring)
+        try:
+            n = ZZ(n)
+        except (TypeError, ValueError):
+            raise ValueError("the number of vertices must be an integer") from None
         if n < 3:
             raise ValueError("a polygon has at least 3 vertices")
         angle = _angle(angle)
@@ -444,14 +503,6 @@ class HyperbolicPolygonsConstructor:
         with vertex 0 at the origin, edge 0 on the positive `x`-axis, and
         edge 5 ending at vertex 0.
 
-        ALGORITHM:
-
-        Such a hexagon exists for any three lengths of its alternate sides,
-        Buser, Geometry and spectra of compact Riemann surfaces (1992),
-        Lemma 1.7.1. The side `b_k` opposite the side `a_k` has `\cosh b_k =
-        (\cosh a_k + \cosh a_i \cosh a_j) / (\sinh a_i \sinh a_j)`, Buser,
-        Chapter 2.
-
         EXAMPLES:
 
         A hexagon with rational vertices::
@@ -486,7 +537,17 @@ class HyperbolicPolygonsConstructor:
             ...
             ValueError: c0 must be larger than 1
 
+        ALGORITHM:
+
+        Such a hexagon exists, and is unique, for any three lengths of its
+        alternate sides, Buser, Geometry and spectra of compact Riemann
+        surfaces (1992), Theorem 2.4.2. The side `b_k` opposite the side
+        `a_k` has `\cosh b_k = (\cosh a_k + \cosh a_i \cosh a_j) / (\sinh a_i
+        \sinh a_j)`, which is Theorem 2.4.1 (i), p. 40, solved for the
+        hyperbolic cosine of the side opposite `a_k`.
+
         """
+        _check_exact(ring)
         h0 = _from_cosh(c0, "c0")
         h1 = _from_cosh(c1, "c1")
         h2 = _from_cosh(c2, "c2")
@@ -528,17 +589,6 @@ class HyperbolicPolygonsConstructor:
         with vertex 0 at the origin, edge 0 on the positive `x`-axis, and
         edge 4 ending at vertex 0.
 
-        ALGORITHM:
-
-        The formula for right-angled hexagons of Buser, Geometry and spectra
-        of compact Riemann surfaces (1992), Chapter 2, with a side replaced
-        by the angle `\varphi = 2\pi` ``angle``: the edge 3 has `\cosh s_3 =
-        (\cos\varphi + \cosh s_2 \cosh s_4) / (\sinh s_2 \sinh s_4)`, and the
-        edges 1 and 0 have `\sinh s_1 = (\cosh s_4 + \cosh s_2 \cos\varphi)
-        / (\sinh s_2 \sin\varphi)` and symmetrically. The pentagon exists if
-        and only if these two hyperbolic sines are positive; for `\varphi =
-        \pi/2` this is `\cosh s_4 = \sinh s_1 \sinh s_2`.
-
         EXAMPLES::
 
             sage: from flatsurf import hyperbolic_polygons
@@ -549,6 +599,13 @@ class HyperbolicPolygonsConstructor:
             (1/4, 3/8, 1/4, 1/4, 1/4)
             sage: P.area()
             1/8
+
+        The Klein coordinates of the vertices of a pentagon with a quadratic
+        base field::
+
+            sage: P = hyperbolic_polygons.right_angled_pentagon(1/6, 5/4, 5/4)
+            sage: [v.coordinates(model="klein") for v in P.vertices()]
+            [(0, 0), (5/14*a, 0), (10/31*a, 15/31), (16/55*a, 3/5), (0, 3/5)]
 
         A pentagon of degree 6::
 
@@ -588,7 +645,25 @@ class HyperbolicPolygonsConstructor:
             ...
             ValueError: no right-angled pentagon with these parameters: c0 + c1 cos(2π angle) must be positive
 
+        ALGORITHM:
+
+        The pentagon with the angle `\varphi = 2\pi` ``angle`` at the vertex
+        1 and right angles elsewhere is the generalized triangle of Buser,
+        Geometry and spectra of compact Riemann surfaces (1992), Example
+        2.2.7 (second figure of Figure 2.2.4), p. 37. Its relation (v), with
+        the edges 2 and 4 for the sides `\alpha, \beta` and the edge 3 for
+        `c`, is `\cos\varphi = \sinh s_2 \sinh s_4 \cosh s_3 - \cosh s_2
+        \cosh s_4`, so that `\cosh s_3 = (\cos\varphi + \cosh s_2 \cosh s_4)
+        / (\sinh s_2 \sinh s_4)`. The edges 1 and 0 are not given as such by
+        the book; the same relations of the example solve them: `\sinh s_1 =
+        (\cosh s_4 + \cosh s_2 \cos\varphi) / (\sinh s_2 \sin\varphi)` and
+        symmetrically. The pentagon exists if and only if these two
+        hyperbolic sines are positive. For `\varphi = \pi/2` the pentagon is
+        the right-angled one, with `\cosh s_3 = \sinh s_0 \sinh s_1`,
+        Theorem 2.3.4 (i), p. 39.
+
         """
+        _check_exact(ring)
         angle = _angle(angle)
         if not 0 < angle < QQ((1, 2)):
             raise ValueError("the angle must be in (0, 1/2)")
@@ -639,28 +714,14 @@ class HyperbolicPolygonsConstructor:
         with vertex 0 at the origin, edge 0 on the positive `x`-axis, and
         edge 3 ending at vertex 0.
 
-        ALGORITHM:
-
-        The formula for right-angled hexagons of Buser, Geometry and spectra
-        of compact Riemann surfaces (1992), Chapter 2, with two sides
-        replaced by the angles `\varphi_0, \varphi_1`: the edge 0, at the
-        vertex of `\varphi_0`, has `\sinh h_0 = (\cos\varphi_1 + \cosh a
-        \cos\varphi_0) / (\sinh a \sin\varphi_0)`, and symmetrically for
-        the edge 2. The quadrilateral exists if and only if these two
-        hyperbolic sines are positive; for `\varphi_1 = \pi/2` this is the
-        relation `\cos\varphi_0 = \sinh a \sinh h_2` of a Lambert
-        quadrilateral.
-
-        Vertex 1 is reached along edge 0, and the vertices 3 and 2 along
-        the edges 3 and 2 walked from the origin in the mirror image under
-        `(x, y) \mapsto (y, x)`, so that the edge 1 is never needed.
-
         EXAMPLES::
 
             sage: from flatsurf import hyperbolic_polygons
             sage: P = hyperbolic_polygons.right_angled_quadrilateral(1/4, 1/8, 5/4)
             sage: P.base_ring()
             Number Field in a with defining polynomial y^2 - 34 with a = 5.830951894845300?
+            sage: [v.coordinates(model="klein") for v in P.vertices()]
+            [(0, 0), (2/17*a, 0), (2/17*a, 3/5), (0, 3/5)]
             sage: P.angles()
             (1/4, 1/4, 1/8, 1/4)
             sage: P.area()
@@ -696,7 +757,30 @@ class HyperbolicPolygonsConstructor:
             ...
             ValueError: c must be larger than 1
 
+        ALGORITHM:
+
+        Buser, Geometry and spectra of compact Riemann surfaces (1992),
+        states the relations of a quadrilateral with three right angles,
+        Theorem 2.3.1, and of one with two opposite angles that are not
+        right, Example 2.2.7 (i) and (ii), p. 37; the two angles
+        `\varphi_0, \varphi_1` here are adjacent. The relations below are
+        the analogue of Theorem 2.4.1 (iii), p. 40, for the hexagon with two
+        sides replaced by angles, and follow from Theorem 2.2.6, p. 36, the
+        identity on the matrices of the sides and angles from which Buser
+        obtains all of them. The edge 0, at the vertex of `\varphi_0`, has
+        `\sinh h_0 = (\cos\varphi_1 + \cosh a \cos\varphi_0) / (\sinh a
+        \sin\varphi_0)`, and symmetrically for the edge 2. The quadrilateral
+        exists if and only if these two hyperbolic sines are positive. For
+        `\varphi_1 = \pi/2` this is Theorem 2.3.1 (vi), `\sinh h_0 = \coth a
+        \cot\varphi_0`, and Theorem 2.3.1 (i), `\cos\varphi_0 = \sinh a \sinh
+        h_2`, for the quadrilateral with three right angles.
+
+        Vertex 1 is reached along edge 0, and the vertices 3 and 2 along
+        the edges 3 and 2 walked from the origin in the mirror image under
+        `(x, y) \mapsto (y, x)`, so that the edge 1 is never needed.
+
         """
+        _check_exact(ring)
         angle0 = _angle(angle0, "angle0")
         angle1 = _angle(angle1, "angle1")
         if not (angle0 > 0 and angle1 > 0 and angle0 + angle1 < QQ((1, 2))):
@@ -732,14 +816,6 @@ def _reflection(p, q):
     points of Klein coordinates ``p`` and ``q``, acting on the Klein lifts
     `(x, y, 1)`.
 
-    ALGORITHM:
-
-    With `J = \mathrm{diag}(1, 1, -1)` and `n = J (\hat p \times \hat q)`
-    the Minkowski normal of the plane of the lifts `\hat p, \hat q`, the
-    reflection is `R = I - 2 n (J n)^T / \langle n, n \rangle`, where
-    `\langle n, n \rangle = n^T J n` is positive. Its coefficients are
-    rational in the coordinates of ``p`` and ``q``.
-
     EXAMPLES:
 
     The reflection in the edge 1 of the triangle `(0, 0), (1/2, 0), (1/3,
@@ -755,6 +831,14 @@ def _reflection(p, q):
         (-1, True)
         sage: R * vector((1/2, 0, 1))
         (1/2, 0, 1)
+
+    ALGORITHM:
+
+    With `J = \mathrm{diag}(1, 1, -1)` and `n = J (\hat p \times \hat q)`
+    the Minkowski normal of the plane of the lifts `\hat p, \hat q`, the
+    reflection is `R = I - 2 n (J n)^T / \langle n, n \rangle`, where
+    `\langle n, n \rangle = n^T J n` is positive. Its coefficients are
+    rational in the coordinates of ``p`` and ``q``.
 
     """
     J = diagonal_matrix([1, 1, -1])
@@ -780,23 +864,6 @@ def _optimize_placement(vertices):
     ``vertices`` itself when their coordinates are rational, generate a
     field of degree other than 2, or when no image is rational.
 
-    ALGORITHM:
-
-    When the coordinates generate `\QQ(\sqrt{d})`, with `d` the squarefree
-    part of the discriminant, the point `(x_0, 0)` with `x_0 = (q^2 -
-    dp^2)/(q^2 + dp^2)` has `1 - x_0^2 \in d \QQ^2`. For each vertex `i`
-    and its neighbours `j = i + 1, i - 1`, in this order, the isometry that
-    sends the vertex `i` to `(x_0, 0)` and the direction of the vertex `j`
-    to the positive `x`-axis is applied; the first rational image is
-    returned.
-
-    The start point `x_0` is the one of smallest height, then the smallest,
-    among `1 \le p, q \le 40`. Any two start points with `1 - x_0^2 \in d
-    \QQ^2` differ by a boost along the `x`-axis with rational `\cosh` and
-    `\sinh`, so the choice of `x_0` only changes the size of the rational
-    coordinates, not whether there are some; `p = q = 1` is always a
-    candidate.
-
     EXAMPLES:
 
     The right-angled hexagon whose alternate sides have `\cosh = 5/4`, the
@@ -816,6 +883,23 @@ def _optimize_placement(vertices):
         sage: vertices = [(AA(0), AA(0)), (AA(1/2), AA(0)), (AA(0), AA(1/2))]
         sage: _optimize_placement(vertices) is vertices
         True
+
+    ALGORITHM:
+
+    When the coordinates generate `\QQ(\sqrt{d})`, with `d` the squarefree
+    part of the discriminant, the point `(x_0, 0)` with `x_0 = (q^2 -
+    dp^2)/(q^2 + dp^2)` has `1 - x_0^2 \in d \QQ^2`. For each vertex `i`
+    and its neighbours `j = i + 1, i - 1`, in this order, the isometry that
+    sends the vertex `i` to `(x_0, 0)` and the direction of the vertex `j`
+    to the positive `x`-axis is applied; the first rational image is
+    returned.
+
+    The start point `x_0` is the one of smallest height, then the smallest,
+    among `1 \le p, q \le 40`. Any two start points with `1 - x_0^2 \in d
+    \QQ^2` differ by a boost along the `x`-axis with rational `\cosh` and
+    `\sinh`, so the choice of `x_0` only changes the size of the rational
+    coordinates, not whether there are some; `p = q = 1` is always a
+    candidate.
 
     """
     from flatsurf.geometry.hyperbolic_isometry import tangent_vector_isometry
@@ -903,7 +987,7 @@ def _pants_polygon(boundary_traces, cone_orders, optimize_placement):
         try:
             order = QQ(k)
         except (TypeError, ValueError):
-            raise ValueError(f"the cone order {k} must be a rational number")
+            raise ValueError(f"the cone order {k} must be a rational number") from None
         if order <= -1:
             raise ValueError(f"the cone order {order} is not larger than -1")
         if order == 0:
@@ -919,7 +1003,9 @@ def _pants_polygon(boundary_traces, cone_orders, optimize_placement):
         try:
             trace = AA(t)
         except (TypeError, ValueError):
-            raise ValueError(f"the boundary trace {t} must be a real algebraic number")
+            raise ValueError(
+                f"the boundary trace {t} must be a real algebraic number"
+            ) from None
         if not trace > 3:
             raise ValueError(f"the boundary trace {t} must be larger than 3")
         cosh.append((trace + 1).sqrt() / 2)
@@ -1072,8 +1158,9 @@ class HyperbolicSurfaceGenerators:
         the reflection of the edge `2m - j \bmod n` of ``P``. The edge `e`
         of ``P`` is glued to the edge `2m - e \bmod n` of `Q` for every `e`
         in ``glued_edges``, by the reflection in the line of `e` followed by
-        the reflection in the line of `m`; the edge `m` is glued to itself
-        in the plane, by the identity. The other edges of ``P`` and of `Q`
+        the reflection in the line of `m`; the edge `m` of ``P`` is glued to
+        the edge `m` of `Q`, which is the same segment of the plane, by the
+        identity. The other edges of ``P`` and of `Q`
         form the boundary of the surface.
 
         INPUT:
@@ -1230,6 +1317,12 @@ class HyperbolicSurfaceGenerators:
         point in the slot `s` replaces the half-cuff `s` by a vertex of half
         its cone angle.
 
+        The front polygon, hence its base field and its coordinates, depends
+        on the order of ``cone_orders`` and of ``boundary_traces``, which
+        decides what slot each takes. The surfaces of two orders are
+        isometric, and the signature of the surface does not depend on the
+        order.
+
         INPUT:
 
         - ``boundary_traces`` -- a sequence of real algebraic numbers larger
@@ -1261,23 +1354,6 @@ class HyperbolicSurfaceGenerators:
         :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
         has the genus 0, the cone orders ``cone_orders`` and the boundary
         traces ``boundary_traces``.
-
-        ALGORITHM:
-
-        The front polygon is
-        :meth:`~HyperbolicPolygonsConstructor.right_angled_hexagon` without
-        cone point,
-        :meth:`~HyperbolicPolygonsConstructor.right_angled_pentagon` with
-        one, :meth:`~HyperbolicPolygonsConstructor.right_angled_quadrilateral`
-        with two, and :meth:`~HyperbolicPolygonsConstructor.triangle` with
-        three, built over ``AA``.
-
-        When its coordinates generate `\QQ(\sqrt{d})` and
-        ``optimize_placement`` is set, the polygon is moved by the isometry
-        that sends one of its vertices to a point `(x_0, 0)` with `1 -
-        x_0^2 \in d \QQ^2`, and the direction of a neighbouring vertex to
-        the positive `x`-axis, for the first vertex and neighbour whose image
-        has rational coordinates; the polygon is kept when there is none.
 
         EXAMPLES:
 
@@ -1447,8 +1523,30 @@ class HyperbolicSurfaceGenerators:
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), ring=AA)
             sage: S.base_ring()
             Algebraic Real Field
+            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
+        ALGORITHM:
+
+        The front polygon is
+        :meth:`~HyperbolicPolygonsConstructor.right_angled_hexagon` without
+        cone point,
+        :meth:`~HyperbolicPolygonsConstructor.right_angled_pentagon` with
+        one, :meth:`~HyperbolicPolygonsConstructor.right_angled_quadrilateral`
+        with two, and :meth:`~HyperbolicPolygonsConstructor.triangle` with
+        three, built over ``AA``.
+
+        When its coordinates generate `\QQ(\sqrt{d})` and
+        ``optimize_placement`` is set, the polygon is moved by the isometry
+        that sends one of its vertices to a point `(x_0, 0)` with `1 -
+        x_0^2 \in d \QQ^2`, and the direction of a neighbouring vertex to
+        the positive `x`-axis, for the first vertex and neighbour whose image
+        has rational coordinates; the polygon is kept when there is none.
 
         """
+        _check_exact(ring)
         vertices, seams = _pants_polygon(
             boundary_traces, cone_orders, optimize_placement
         )
@@ -1526,6 +1624,7 @@ class HyperbolicSurfaceGenerators:
             MutableOrientedHyperbolicSurface,
         )
 
+        _check_exact(ring)
         if gluing == "opposite":
             pairs = [(0, 4), (1, 5), (2, 6), (3, 7)]
         elif gluing == "katok":
@@ -1737,6 +1836,10 @@ class HyperbolicSurfaceGenerators:
             Traceback (most recent call last):
             ...
             TypeError: signature must be a SurfaceSignature
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2), ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
 
         ALGORITHM:
 
@@ -1800,6 +1903,7 @@ class HyperbolicSurfaceGenerators:
         )
         from flatsurf.geometry.signature import SurfaceSignature
 
+        _check_exact(ring)
         if not isinstance(signature, SurfaceSignature):
             raise TypeError("signature must be a SurfaceSignature")
 
@@ -1807,7 +1911,9 @@ class HyperbolicSurfaceGenerators:
             try:
                 trace = AA(t)
             except (TypeError, ValueError):
-                raise ValueError(f"the {name} {t} must be a real algebraic number")
+                raise ValueError(
+                    f"the {name} {t} must be a real algebraic number"
+                ) from None
             if not trace > 3:
                 raise ValueError(f"the {name} {t} must be larger than 3")
 
@@ -1843,7 +1949,9 @@ class HyperbolicSurfaceGenerators:
             and all((1 + k).numerator() == 1 for k in cone_orders)
         )
 
-        # A leg is ("boundary", trace), ("fold", None) or ("cone", order).
+        # A leg is stored as ("leg", kind), with kind ("boundary", trace),
+        # ("fold", None) or ("cone", order); a slot of a pants is a leg or a
+        # ("cuff", name).
         half = QQ((-1, 2))
         cones = list(cone_orders)
         folds = 0 if triangle else cones.count(half) // 2
@@ -1860,8 +1968,7 @@ class HyperbolicSurfaceGenerators:
             + [("leg", ("cone", k)) for k in paired]
         )
 
-        # Each slot of a pants is a leg or ("cuff", name), each name in two
-        # slots.
+        # Each cuff name is in two slots.
         n = len(legs)
         if genus == 0 and n == 3:
             chain = [legs]
@@ -2045,6 +2152,16 @@ def _triangle_group_degree_bound(m1, m2, m3):
     The integer `[k_0 : \QQ]` when the quaternion algebra `A_0` is a matrix
     algebra over `k_0`, `2 [k_0 : \QQ]` otherwise.
 
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _triangle_group_degree_bound
+        sage: _triangle_group_degree_bound(2, 3, 7)
+        6
+        sage: _triangle_group_degree_bound(3, 4, 4)
+        2
+        sage: _triangle_group_degree_bound(int(2), int(4), int(5))
+        4
+
     ALGORITHM:
 
     With `c_i = \cos(\pi/m_i)`, the invariant trace field of the group `\Gamma`
@@ -2066,16 +2183,6 @@ def _triangle_group_degree_bound(m1, m2, m3):
     of `\Gamma` then lie in a conjugate of `M_2(F)`, so `F` contains `k_0`
     and splits `A_0`: `[F : \QQ] \ge 2 [k_0 : \QQ]` when `A_0` is a division
     algebra.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.hyperbolic_surface_generators import _triangle_group_degree_bound
-        sage: _triangle_group_degree_bound(2, 3, 7)
-        6
-        sage: _triangle_group_degree_bound(3, 4, 4)
-        2
-        sage: _triangle_group_degree_bound(int(2), int(4), int(5))
-        4
 
     """
     from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
@@ -2281,32 +2388,6 @@ class FuchsianGroupGenerators:
         g_3` in `\mathrm{SO}(2, 1)^+`. They need not lift to
         `\mathrm{PSL}_2` over the base ring.
 
-        ALGORITHM:
-
-        The generators are the images by the
-        :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.holonomy_representation`
-        of the loops around the vertices of the
-        :meth:`~HyperbolicSurfaceGenerators.pillowcase` of the triangle.
-        The loops turn counterclockwise, and their images multiply to the
-        identity in the clockwise order of the vertices, `0, 2, 1`.
-
-        The base ring is the field of the Klein coordinates of the
-        triangle, which depends on its placement. With
-        ``optimize_placement``, the vertices are tried by decreasing even
-        period, then by decreasing odd period, in the order of the input on
-        ties; at each vertex, the vertex is at the origin and the edge to the
-        next vertex, the edge to the previous vertex, or the bisector of its
-        angle on the positive `x`-axis. The search stops at the first
-        placement whose field has a degree at most a lower bound, otherwise
-        it keeps the first placement of smallest degree.
-
-        The bound is `[k_0 : \QQ]` or `2 [k_0 : \QQ]`, with `k_0` the
-        invariant trace field of Takeuchi, Arithmetic triangle groups
-        (1977), Propositions 4 and 5, the second when the quaternion algebra
-        `A_0` of the group is a division algebra over `k_0`: a real field
-        `F` that contains the coordinates of a triangle puts the group in
-        `\mathrm{PGL}_2(F)`, so it contains `k_0` and splits `A_0`.
-
         EXAMPLES:
 
         The triangle group `(3, 4, 4)`::
@@ -2402,11 +2483,42 @@ class FuchsianGroupGenerators:
             Traceback (most recent call last):
             ...
             ValueError: the period 5/2 is not an integer at least 2
+            sage: fuchsian_groups.triangle(3, 4, 4, ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
+        ALGORITHM:
+
+        The generators are the images by the
+        :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.holonomy_representation`
+        of the loops around the vertices of the
+        :meth:`~HyperbolicSurfaceGenerators.pillowcase` of the triangle.
+        The loops turn counterclockwise, and their images multiply to the
+        identity in the clockwise order of the vertices, `0, 2, 1`.
+
+        The base ring is the field of the Klein coordinates of the
+        triangle, which depends on its placement. With
+        ``optimize_placement``, the vertices are tried by decreasing even
+        period, then by decreasing odd period, in the order of the input on
+        ties; at each vertex, the vertex is at the origin and the edge to the
+        next vertex, the edge to the previous vertex, or the bisector of its
+        angle on the positive `x`-axis. The search stops at the first
+        placement whose field has a degree at most a lower bound, otherwise
+        it keeps the first placement of smallest degree.
+
+        The bound is `[k_0 : \QQ]` or `2 [k_0 : \QQ]`, with `k_0` the
+        invariant trace field of Takeuchi, Arithmetic triangle groups
+        (1977), Propositions 4 and 5, the second when the quaternion algebra
+        `A_0` of the group is a division algebra over `k_0`: a real field
+        `F` that contains the coordinates of a triangle puts the group in
+        `\mathrm{PGL}_2(F)`, so it contains `k_0` and splits `A_0`.
 
         """
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
         from flatsurf.geometry.signature import SurfaceSignature
 
+        _check_exact(ring)
         geometry = SurfaceSignature.from_orbifold_orders(0, (m1, m2, m3)).geometry()
         if geometry != "hyperbolic":
             raise ValueError(

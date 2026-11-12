@@ -90,6 +90,20 @@ def test_quadrilateral(H):
         P.angle(2, numerical=False)
 
 
+def test_edge_cosh_squared(H):
+    P = H.polygon(vertices=QUADRILATERAL)
+    assert [P.edge_cosh_squared(i) for i in range(4)] == [
+        QQ(4) / 3,
+        QQ(3) / 2,
+        QQ(3) / 2,
+        QQ(4) / 3,
+    ]
+    assert P.edge_cosh_squared(2).parent() is QQ
+    for i in (-1, 4, QQ(1) / 2):
+        with pytest.raises(ValueError, match="is not an edge of a polygon with 4"):
+            P.edge_cosh_squared(i)
+
+
 def test_arrow(H):
     P = H.polygon(vertices=ARROW)
     assert P._cosh2_sides() == (QQ(25) / 6, QQ(2), QQ(2), QQ(25) / 6)

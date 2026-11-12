@@ -885,11 +885,11 @@ class HyperbolicPolygon(Parent):
 
         OUTPUT:
 
-        A polygon of the same hyperbolic plane. A :class:`ValueError` is raised
-        when ``m`` is not an integer at least 2, or when no rotation sends
-        every `v_i` to `v_{i+k}`. For a non-convex polygon, the sector may be
-        no valid polygon, in which case the polygon constructor raises its
-        error.
+        A polygon over the base ring of this polygon, of the same hyperbolic
+        plane. A :class:`ValueError` is raised when ``m`` is not an integer at
+        least 2, when `m \nmid n`, or when no rotation sends every `v_i` to
+        `v_{i+k}`. For a non-convex polygon, the sector may be no valid
+        polygon, in which case the polygon constructor raises its error.
 
         EXAMPLES:
 
@@ -1113,6 +1113,77 @@ class HyperbolicPolygon(Parent):
             raise ValueError("isometry must preserve the orientation")
 
         return polygon
+
+    def edge_cosh_squared(self, i):
+        r"""
+        Return the square of the hyperbolic cosine of the length of the edge
+        ``i`` of this polygon.
+
+        The square lies in the base ring of this polygon, which the
+        hyperbolic cosine itself does not in general.
+
+        INPUT:
+
+        - ``i`` -- an integer, the index of the edge from the vertex ``i`` to
+          the vertex ``i + 1``, with `0 \le i <` the number of vertices
+
+        OUTPUT:
+
+        An element of the base ring.
+
+        EXAMPLES:
+
+        The edges of a rectangle::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+            sage: [P.edge_cosh_squared(i) for i in range(4)]
+            [4/3, 3/2, 3/2, 4/3]
+
+        The edge of a regular octagon, from the vertex 0 to the vertex 1::
+
+            sage: from flatsurf import hyperbolic_polygons
+            sage: P = hyperbolic_polygons.regular_ngon(8, 1/8)
+            sage: P.edge_cosh_squared(0)
+            40*a^2 + 17
+            sage: P.edge_cosh_squared(0).parent() is P.base_ring()
+            True
+
+        The edge 1 of a triangle with a right angle at the vertex 0::
+
+            sage: T = hyperbolic_polygons.triangle(QQ(1)/4, QQ(1)/12, QQ(1)/12)
+            sage: T.base_ring()
+            Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
+            sage: T.edge_cosh_squared(1)
+            9
+
+        TESTS::
+
+            sage: P = T
+            sage: P.edge_cosh_squared(3)
+            Traceback (most recent call last):
+            ...
+            ValueError: the edge 3 is not an edge of a polygon with 3 vertices
+            sage: P.edge_cosh_squared(-1)
+            Traceback (most recent call last):
+            ...
+            ValueError: the edge -1 is not an edge of a polygon with 3 vertices
+            sage: P.edge_cosh_squared(1/2)
+            Traceback (most recent call last):
+            ...
+            ValueError: the edge 1/2 is not an edge of a polygon with 3 vertices
+
+        """
+        from sage.all import ZZ
+
+        n = len(self._v)
+        if i not in ZZ or not 0 <= i < n:
+            raise ValueError(
+                f"the edge {i} is not an edge of a polygon with {n} vertices"
+            )
+        i = int(i)
+        return _cosh2(self._v[i], self._v[(i + 1) % n])
 
     def _cosh2_sides(self):
         r"""

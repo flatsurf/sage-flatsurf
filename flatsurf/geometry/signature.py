@@ -146,6 +146,15 @@ class SurfaceSignature(SageObject):
         ...
         TypeError: no conversion of this rational to integer
 
+    The boundary traces are all given or all ``None``::
+
+        sage: SurfaceSignature(0, boundary_traces=(None, 15))
+        Traceback (most recent call last):
+        ...
+        ValueError: the boundary traces must be all None or none of them None
+        sage: SurfaceSignature(0, boundary_traces=(None, None))
+        SurfaceSignature(g=0, boundary_traces=(None, None))
+
     """
 
     def __init__(self, g, cone_orders=(), cusps=0, boundary_traces=()):
@@ -169,8 +178,13 @@ class SurfaceSignature(SageObject):
             orders.append(k)
 
         traces = tuple(boundary_traces)
-        if all(t is not None for t in traces):
+        unknown = sum(t is None for t in traces)
+        if unknown == 0:
             traces = tuple(sorted(traces))
+        elif unknown != len(traces):
+            raise ValueError(
+                "the boundary traces must be all None or none of them None"
+            )
 
         self._genus = g
         self._cone_orders = tuple(sorted(orders))

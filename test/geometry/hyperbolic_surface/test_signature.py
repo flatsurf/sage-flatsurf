@@ -295,6 +295,14 @@ def test_signature_constructor():
         SurfaceSignature(0, [-QQ(3) / 2])
     with pytest.raises(ValueError):
         SurfaceSignature(0, [0])
+    with pytest.raises(ValueError, match="all None or none of them None"):
+        SurfaceSignature(0, boundary_traces=(None, 15))
+    with pytest.raises(ValueError, match="all None or none of them None"):
+        SurfaceSignature(0, boundary_traces=(15, None))
+    assert SurfaceSignature(0, boundary_traces=(None, None)).boundary_traces() == (
+        None,
+        None,
+    )
 
     s = SurfaceSignature(0, [-QQ(1) / 2, -QQ(7) / 8, -QQ(7) / 8])
     assert repr(s) == "SurfaceSignature(g=0, cone_orders=(-7/8, -7/8, -1/2))"

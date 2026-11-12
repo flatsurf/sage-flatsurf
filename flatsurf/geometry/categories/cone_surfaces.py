@@ -282,6 +282,10 @@ class ConeSurfaces(SurfaceCategory):
                     edge whose half-turn, and so whose midpoint, is not over
                     the base ring.
 
+                    This method is only available for immutable surfaces, as
+                    the category that provides it is determined for those
+                    only.
+
                     OUTPUT:
 
                     A list of pairs ``(p, m)``, ``p`` a point of this surface
@@ -420,6 +424,17 @@ class ConeSurfaces(SurfaceCategory):
                     This is a helper method for :meth:`orbifold_points` and
                     :meth:`is_orbifold`; a regular vertex has order 1.
 
+                    INPUT:
+
+                    - ``vertex`` -- a vertex of this surface, a point of its
+                      vertex set whose exact angle is read
+
+                    OUTPUT:
+
+                    A positive integer, or ``None`` when the angle of
+                    ``vertex`` is not `1/m`, including when it is not a
+                    rational multiple of `2\pi`.
+
                     EXAMPLES::
 
                         sage: from flatsurf import polygons, similarity_surfaces
@@ -459,6 +474,10 @@ class ConeSurfaces(SurfaceCategory):
 
                     The midpoints of the edges glued to themselves are
                     orbifold points of order 2 and always qualify.
+
+                    This method is only available for immutable surfaces, as
+                    the category that provides it is determined for those
+                    only.
 
                     EXAMPLES::
 

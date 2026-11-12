@@ -410,8 +410,11 @@ def test_orbifold_points_288(octagon):
     assert S.is_orbifold()
 
     p, m = S.orbifold_points()[2]
-    # Exact value computed with sage-flatsurf.
+    # The Klein midpoint of the edge 1 glued to itself, the fixed point of
+    # its half-turn: the exact value returned by segment_midpoint through
+    # S._edge_midpoint(0, 1), checked below against it.
     midpoint = vector(K, (r**3 / 48 + 5 * r / 6, r**3 / 48 + r / 3))
+    assert S._edge_midpoint(0, 1) == midpoint
     assert p == S(0, midpoint)
     assert S.edge_transformation(0, 1) * midpoint == midpoint
     assert p.angle() == QQ(1) / 2

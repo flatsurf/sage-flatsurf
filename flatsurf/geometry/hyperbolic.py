@@ -2070,6 +2070,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             )
 
             triangle = hyperbolic_polygons.triangle(*angles, ring=self.base_ring())
+            if triangle.parent() is self:
+                return triangle
             return self.polygon(polygon=triangle, check=False)
 
         if (half_spaces is None) + (vertices is None) + (polygon is None) != 2:

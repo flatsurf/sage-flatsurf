@@ -29,7 +29,7 @@ below were computed with sage-flatsurf; the octagon gluings are those of
 
 import pytest
 
-from sage.all import AA, QQ, polygen
+from sage.all import AA, QQ, RDF, RR, polygen
 
 from flatsurf import hyperbolic_surfaces
 from flatsurf.geometry.signature import SurfaceSignature
@@ -188,3 +188,15 @@ def test_regular_octagon_refused():
         hyperbolic_surfaces.regular_octagon(gluing="adjacent")
     with pytest.raises(ValueError, match="do not lie in Rational Field"):
         hyperbolic_surfaces.regular_octagon(ring=QQ)
+    with pytest.raises(ValueError, match="the ring must be exact, not Real Field"):
+        hyperbolic_surfaces.regular_octagon(ring=RR)
+
+
+def test_pants_inexact_ring_refused():
+    with pytest.raises(
+        ValueError,
+        match="the ring must be exact, not Real Field with 53 bits of precision",
+    ):
+        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), ring=RR)
+    with pytest.raises(ValueError, match="the ring must be exact, not Real Double"):
+        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), ring=RDF)
