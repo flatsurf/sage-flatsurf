@@ -1,28 +1,32 @@
 r"""
 The signature of a cone surface.
 
-The signature of a compact cone surface, flat or hyperbolic, has three
-groups:
+The signature of a compact cone surface, of any curvature (flat, hyperbolic
+or spherical), is topological. It has three groups:
 
 - the genus `g` and the cone points, given by their order `k_i`: the cone
   angle is `2\pi (1 + k_i)` with `k_i > -1`, `k_i \neq 0`, a rational number;
 - the number `c` of cusps;
-- the geodesic boundary components, each given by the trace of its holonomy
-  in `\mathrm{SO}(2, 1)`.
+- the boundary components, `b` of them. On a hyperbolic surface with
+  geodesic boundary, each is given by the trace of its holonomy in
+  `\mathrm{SO}(2, 1)`; on a surface of another geometry the trace is
+  ``None``.
 
-The Euler characteristic with a divisor (Troyanov, *Prescribing curvature on
-compact surfaces with conical singularities*, 1991) is
-`\chi(S, \beta) = 2 - 2g + \sum k_i - c - b` where `b` is the number of
-boundary components. By the Gauss-Bonnet theorem, it is zero for a flat
-surface, and the area of a hyperbolic surface is `-2 \pi \chi(S, \beta)`.
+The topological Euler characteristic is `\chi(S) = 2 - 2g - c - b`. The
+divisor Euler characteristic of Troyanov (*Prescribing curvature on compact
+surfaces with conical singularities*, 1991), for the divisor `\beta = \sum k_i
+p_i`, is `\chi(S, \beta) = 2 - 2g - c - b + \sum k_i`. By the Gauss-Bonnet
+theorem, for any cone angles and with geodesic boundary, a flat surface has
+`\chi(S, \beta) = 0`, a hyperbolic surface has `\chi(S, \beta) < 0` and area
+`-2 \pi \chi(S, \beta)`, and a spherical surface has `\chi(S, \beta) > 0`.
 
 The cone orders of a flat surface are the data of its stratum: `k_i = m_i`
 for a translation surface in `H(m_1, \dots, m_n)`, `k_i = d_i / 2` for a
 half-translation surface in `Q(d_1, \dots, d_n)`.
 
 For an orbifold, where every cone angle is `2\pi/m_i`, Katok's signature
-`(g; m_1, \dots, m_r; s)` (*Fuchsian groups*, 1992) is a second form, with
-`k_i = 1/m_i - 1` and `s = c`.
+`(g; m_1, \dots, m_r; s)` (*Fuchsian groups*, 1992) is a second form, the
+orbifold orders, with `k_i = 1/m_i - 1` and `s = c`.
 
 EXAMPLES:
 
@@ -30,19 +34,25 @@ The signature of the hyperbolic orbifold of a triangle of angles `\pi/2`,
 `\pi/8`, `\pi/8`::
 
     sage: from flatsurf.geometry.signature import SurfaceSignature
-    sage: s = SurfaceSignature.from_katok(0, (2, 8, 8))
+    sage: s = SurfaceSignature.from_orbifold_orders(0, (2, 8, 8))
     sage: s
-    SurfaceSignature(genus=0, cone_orders=(-7/8, -7/8, -1/2))
-    sage: s.euler_characteristic()
+    SurfaceSignature(g=0, cone_orders=(-7/8, -7/8, -1/2))
+    sage: s.divisor_euler_characteristic()
     -1/4
     sage: s.geometry()
     'hyperbolic'
 
-The signature of a translation surface in `H(2)`::
+The signature of a translation surface in `H(2)`, whose topological and
+divisor Euler characteristics differ::
 
     sage: from flatsurf import translation_surfaces
-    sage: translation_surfaces.regular_octagon().signature()
-    SurfaceSignature(genus=2, cone_orders=(2,))
+    sage: S = translation_surfaces.regular_octagon()
+    sage: S.signature()
+    SurfaceSignature(g=2, cone_orders=(2,))
+    sage: S.signature().euler_characteristic()
+    -2
+    sage: S.signature().divisor_euler_characteristic()
+    0
 
 """
 
@@ -74,9 +84,12 @@ class SurfaceSignature(SageObject):
     cone points, its number of cusps and the traces of its boundary
     components.
 
+    The signature is topological and holds for every curvature, see the
+    module documentation.
+
     INPUT:
 
-    - ``genus`` -- a non-negative integer
+    - ``g`` -- a non-negative integer, the genus
 
     - ``cone_orders`` -- a sequence of rationals (default: ``()``); the
       orders `k > -1`, `k \neq 0`, of the cone points, of angle
@@ -87,25 +100,28 @@ class SurfaceSignature(SageObject):
 
     - ``boundary_traces`` -- a sequence (default: ``()``); for each boundary
       component, the trace of its holonomy in `\mathrm{SO}(2, 1)`, see
-      :meth:`boundary_traces`, or ``None`` when there is none
+      :meth:`boundary_traces`, or ``None`` when the surface is not
+      hyperbolic
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.signature import SurfaceSignature
         sage: s = SurfaceSignature(0, (-1/2, -7/8, -7/8))
         sage: s
-        SurfaceSignature(genus=0, cone_orders=(-7/8, -7/8, -1/2))
-        sage: s == SurfaceSignature.from_katok(0, (8, 2, 8))
+        SurfaceSignature(g=0, cone_orders=(-7/8, -7/8, -1/2))
+        sage: s == SurfaceSignature.from_orbifold_orders(0, (8, 2, 8))
         True
         sage: TestSuite(s).run()
 
-    The repr is valid input::
+    The repr is valid input and shows only the non-empty groups::
 
         sage: s = SurfaceSignature(1, cusps=2, boundary_traces=(15, 3))
         sage: s
-        SurfaceSignature(genus=1, cone_orders=(), cusps=2, boundary_traces=(3, 15))
-        sage: SurfaceSignature(genus=1, cone_orders=(), cusps=2, boundary_traces=(3, 15)) == s
+        SurfaceSignature(g=1, cusps=2, boundary_traces=(3, 15))
+        sage: SurfaceSignature(g=1, cusps=2, boundary_traces=(3, 15)) == s
         True
+        sage: SurfaceSignature(g=2)
+        SurfaceSignature(g=2)
 
     TESTS::
 
@@ -132,11 +148,11 @@ class SurfaceSignature(SageObject):
 
     """
 
-    def __init__(self, genus, cone_orders=(), cusps=0, boundary_traces=()):
+    def __init__(self, g, cone_orders=(), cusps=0, boundary_traces=()):
         from sage.all import QQ, ZZ
 
-        genus = ZZ(genus)
-        if genus < 0:
+        g = ZZ(g)
+        if g < 0:
             raise ValueError("the genus must be non-negative")
 
         cusps = ZZ(cusps)
@@ -156,16 +172,16 @@ class SurfaceSignature(SageObject):
         if all(t is not None for t in traces):
             traces = tuple(sorted(traces))
 
-        self._genus = genus
+        self._genus = g
         self._cone_orders = tuple(sorted(orders))
         self._cusps = cusps
         self._boundary_traces = traces
 
     @classmethod
-    def from_katok(cls, g, periods, cusps=0):
+    def from_orbifold_orders(cls, g, periods, cusps=0):
         r"""
-        Return the signature of an orbifold given in Katok's form `(g; m_1,
-        \dots, m_r; s)`.
+        Return the signature of an orbifold given by its orbifold orders, i.e.,
+        Katok's form `(g; m_1, \dots, m_r; s)`.
 
         INPUT:
 
@@ -180,14 +196,19 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(0, (2, 3, 7))
-            SurfaceSignature(genus=0, cone_orders=(-6/7, -2/3, -1/2))
-            sage: SurfaceSignature.from_katok(0, (2, 3), cusps=1)
-            SurfaceSignature(genus=0, cone_orders=(-2/3, -1/2), cusps=1)
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 3, 7))
+            SurfaceSignature(g=0, cone_orders=(-6/7, -2/3, -1/2))
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 3), cusps=1)
+            SurfaceSignature(g=0, cone_orders=(-2/3, -1/2), cusps=1)
+
+        The arguments can be Python integers::
+
+            sage: SurfaceSignature.from_orbifold_orders(int(0), (int(2), int(3)))
+            SurfaceSignature(g=0, cone_orders=(-2/3, -1/2))
 
         TESTS::
 
-            sage: SurfaceSignature.from_katok(0, (1, 2))
+            sage: SurfaceSignature.from_orbifold_orders(0, (1, 2))
             Traceback (most recent call last):
             ...
             ValueError: the period 1 is not an integer at least 2
@@ -210,7 +231,7 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(2, ()).genus()
+            sage: SurfaceSignature(2).genus()
             2
 
         """
@@ -224,7 +245,7 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(0, (2, 8, 8)).cone_orders()
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 8, 8)).cone_orders()
             (-7/8, -7/8, -1/2)
 
         """
@@ -238,7 +259,7 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(0, (2, 8, 8)).cone_angles()
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 8, 8)).cone_angles()
             (1/8, 1/8, 1/2)
 
         """
@@ -251,7 +272,7 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(0, (), cusps=3).cusps()
+            sage: SurfaceSignature.from_orbifold_orders(0, (), cusps=3).cusps()
             3
 
         """
@@ -274,7 +295,8 @@ class SurfaceSignature(SageObject):
         r"""
         Return the traces of the holonomy of the boundary components in
         `\mathrm{SO}(2, 1)`, sorted, or ``None`` for each of them when the
-        holonomy has no such invariant (on a flat surface).
+        surface is not hyperbolic (on a flat surface the holonomy has no such
+        invariant).
 
         A hyperbolic isometry of translation length `\ell` has the trace
         `t = 1 + 2 \cosh \ell` in `\mathrm{SO}(2, 1)`, an element of the base
@@ -309,27 +331,76 @@ class SurfaceSignature(SageObject):
 
     def euler_characteristic(self):
         r"""
-        Return the Euler characteristic with a divisor `\chi(S, \beta) = 2 -
-        2g + \sum k_i - c - b` of this signature.
+        Return the topological Euler characteristic `\chi(S) = 2 - 2g - c -
+        b` of this signature, where `c` is the number of cusps and `b` the
+        number of boundary components.
+
+        It does not depend on the cone orders: it is the
+        ``euler_characteristic()`` of a surface of this signature. See
+        :meth:`divisor_euler_characteristic` for the one of Troyanov.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(0, (2, 3, 7)).euler_characteristic()
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 3, 7)).euler_characteristic()
+            2
+            sage: SurfaceSignature(0, boundary_traces=(15, 15, 15)).euler_characteristic()
+            -1
+            sage: SurfaceSignature(1, cusps=2, boundary_traces=(15, 3)).euler_characteristic()
+            -4
+
+        The topological Euler characteristic of a translation surface, where
+        it differs from the divisor one::
+
+            sage: from flatsurf import translation_surfaces, hyperbolic_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: S.signature().euler_characteristic()
+            -2
+            sage: S.signature().euler_characteristic() == S.euler_characteristic()
+            True
+            sage: S = hyperbolic_surfaces.regular_octagon()
+            sage: S.signature().euler_characteristic()
+            -2
+
+        """
+        return 2 - 2 * self._genus - self._cusps - len(self._boundary_traces)
+
+    def divisor_euler_characteristic(self):
+        r"""
+        Return the divisor Euler characteristic `\chi(S, \beta) = 2 - 2g - c -
+        b + \sum k_i` of Troyanov of this signature, for the divisor `\beta =
+        \sum k_i p_i` of the cone points.
+
+        On an orbifold, where every cone angle is `2\pi/m_i`, it is the
+        orbifold Euler characteristic `2 - 2g - \sum (1 - 1/m_i) - c` of
+        Thurston. By the Gauss-Bonnet theorem, a hyperbolic surface has area
+        `-2 \pi \chi(S, \beta)` and a flat one has `\chi(S, \beta) = 0`, for
+        every cone angle and with geodesic boundary.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.signature import SurfaceSignature
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 3, 7)).divisor_euler_characteristic()
             -1/42
-            sage: SurfaceSignature(0, [-1/4] * 8).euler_characteristic()
+            sage: SurfaceSignature(0, [-1/4] * 8).divisor_euler_characteristic()
             0
+            sage: SurfaceSignature(0, boundary_traces=(15, 15, 15)).divisor_euler_characteristic()
+            -1
+            sage: SurfaceSignature(1, cusps=2, boundary_traces=(15, 3)).divisor_euler_characteristic()
+            -4
+
+        The octagons, flat and hyperbolic::
+
+            sage: from flatsurf import translation_surfaces, hyperbolic_surfaces
+            sage: translation_surfaces.regular_octagon().signature().divisor_euler_characteristic()
+            0
+            sage: hyperbolic_surfaces.regular_octagon().signature().divisor_euler_characteristic()
+            -2
 
         """
         from sage.all import QQ
 
-        return (
-            2
-            - 2 * self._genus
-            + sum(self._cone_orders, QQ(0))
-            - self._cusps
-            - len(self._boundary_traces)
-        )
+        return self.euler_characteristic() + sum(self._cone_orders, QQ(0))
 
     def area(self):
         r"""
@@ -339,75 +410,75 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(2, ()).area()
+            sage: SurfaceSignature(2).area()
             2
 
         """
-        return -self.euler_characteristic()
+        return -self.divisor_euler_characteristic()
 
     def geometry(self):
         r"""
         Return the geometry of the surfaces of this signature, from the sign
-        of :meth:`euler_characteristic`.
+        of :meth:`divisor_euler_characteristic`.
 
         OUTPUT:
 
         ``"hyperbolic"``, ``"euclidean"`` or ``"spherical"``, for a negative,
-        zero or positive Euler characteristic.
+        zero or positive divisor Euler characteristic.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature.from_katok(2, ()).geometry()
+            sage: SurfaceSignature(2).geometry()
             'hyperbolic'
-            sage: SurfaceSignature.from_katok(0, (2, 3, 6)).geometry()
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 3, 6)).geometry()
             'euclidean'
-            sage: SurfaceSignature.from_katok(0, (2, 3, 5)).geometry()
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 3, 5)).geometry()
             'spherical'
 
         """
-        chi = self.euler_characteristic()
+        chi = self.divisor_euler_characteristic()
         if chi < 0:
             return "hyperbolic"
         if chi == 0:
             return "euclidean"
         return "spherical"
 
-    def katok(self):
+    def orbifold_orders(self):
         r"""
-        Return this signature in Katok's orbifold form `(g; m_1, \dots, m_r;
-        s)`.
+        Return this signature as orbifold orders, Katok's form `(g; m_1,
+        \dots, m_r; s)`.
 
         OUTPUT:
 
         A triple ``(g, periods, s)``: the genus, the sorted tuple of the
-        periods `m_i`, with `k_i = 1/m_i - 1`, and the number of cusps. A
-        ``ValueError`` is raised if a cone angle is not `2\pi/m` for an
-        integer `m \ge 2`, or if there is a boundary.
+        orbifold orders `m_i`, with `k_i = 1/m_i - 1`, and the number of
+        cusps. A ``ValueError`` is raised if a cone angle is not `2\pi/m` for
+        an integer `m \ge 2`, or if there is a boundary.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature(0, (-7/8, -1/2, -7/8)).katok()
+            sage: SurfaceSignature(0, (-7/8, -1/2, -7/8)).orbifold_orders()
             (0, (2, 8, 8), 0)
-            sage: SurfaceSignature.from_katok(0, (2, 3), cusps=1).katok()
+            sage: SurfaceSignature.from_orbifold_orders(0, (2, 3), cusps=1).orbifold_orders()
             (0, (2, 3), 1)
 
-        A cone angle that is not `2\pi/m`, or a boundary, has no Katok
-        form::
+        A cone angle that is not `2\pi/m`, or a boundary, has no orbifold
+        orders::
 
-            sage: SurfaceSignature(2, (2,)).katok()
+            sage: SurfaceSignature(2, (2,)).orbifold_orders()
             Traceback (most recent call last):
             ...
             ValueError: the cone order 2 is not 1/m - 1 for an integer m
-            sage: SurfaceSignature(0, boundary_traces=(15, 15, 15)).katok()
+            sage: SurfaceSignature(0, boundary_traces=(15, 15, 15)).orbifold_orders()
             Traceback (most recent call last):
             ...
-            ValueError: a signature with boundary has no Katok form
+            ValueError: a signature with boundary has no orbifold orders
 
         """
         if self._boundary_traces:
-            raise ValueError("a signature with boundary has no Katok form")
+            raise ValueError("a signature with boundary has no orbifold orders")
 
         periods = []
         for k in self._cone_orders:
@@ -421,20 +492,20 @@ class SurfaceSignature(SageObject):
     def _repr_(self):
         r"""
         Return a printable representation of this signature, which is valid
-        input.
+        input and shows only the non-empty groups.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
             sage: SurfaceSignature(2)
-            SurfaceSignature(genus=2, cone_orders=())
+            SurfaceSignature(g=2)
             sage: SurfaceSignature(0, (2,), boundary_traces=(None, None))
-            SurfaceSignature(genus=0, cone_orders=(2,), boundary_traces=(None, None))
+            SurfaceSignature(g=0, cone_orders=(2,), boundary_traces=(None, None))
 
         """
-        text = (
-            f"SurfaceSignature(genus={self._genus!r}, cone_orders={self._cone_orders!r}"
-        )
+        text = f"SurfaceSignature(g={self._genus!r}"
+        if self._cone_orders:
+            text += f", cone_orders={self._cone_orders!r}"
         if self._cusps:
             text += f", cusps={self._cusps!r}"
         if self._boundary_traces:
@@ -461,7 +532,7 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: SurfaceSignature(0, (-1/2,) * 4) == SurfaceSignature.from_katok(0, (2, 2, 2, 2))
+            sage: SurfaceSignature(0, (-1/2,) * 4) == SurfaceSignature.from_orbifold_orders(0, (2, 2, 2, 2))
             True
             sage: SurfaceSignature(0, (-1/2,) * 4) == SurfaceSignature(0, (-1/2,) * 3)
             False
@@ -493,7 +564,7 @@ class SurfaceSignature(SageObject):
         EXAMPLES::
 
             sage: from flatsurf.geometry.signature import SurfaceSignature
-            sage: hash(SurfaceSignature(0, (-1/2,) * 4)) == hash(SurfaceSignature.from_katok(0, (2, 2, 2, 2)))
+            sage: hash(SurfaceSignature(0, (-1/2,) * 4)) == hash(SurfaceSignature.from_orbifold_orders(0, (2, 2, 2, 2)))
             True
 
         """

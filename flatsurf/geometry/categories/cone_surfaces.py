@@ -577,7 +577,7 @@ class ConeSurfaces(SurfaceCategory):
 
                             sage: from flatsurf import translation_surfaces
                             sage: translation_surfaces.regular_octagon().signature()
-                            SurfaceSignature(genus=2, cone_orders=(2,))
+                            SurfaceSignature(g=2, cone_orders=(2,))
 
                         A polygon glued to itself along each of its edges is
                         a sphere with four cone points of angle `\pi`, the
@@ -586,7 +586,7 @@ class ConeSurfaces(SurfaceCategory):
                             sage: from flatsurf import Polygon, similarity_surfaces
                             sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
                             sage: S.signature()
-                            SurfaceSignature(genus=0, cone_orders=(-1/2, -1/2, -1/2, -1/2))
+                            SurfaceSignature(g=0, cone_orders=(-1/2, -1/2, -1/2, -1/2))
 
                         A flat cylinder has two boundary components without a
                         trace::
@@ -598,7 +598,7 @@ class ConeSurfaces(SurfaceCategory):
                             sage: S.glue((0, 0), (0, 2))
                             sage: S.set_immutable()
                             sage: S.signature()
-                            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(None, None))
+                            SurfaceSignature(g=0, boundary_traces=(None, None))
 
                         A pair of pants, glued from two right-angled regular
                         hexagons: its three boundary components have length
@@ -620,7 +620,7 @@ class ConeSurfaces(SurfaceCategory):
                             sage: S.set_immutable(minimal_field=True)
                             sage: s = S.signature()
                             sage: s
-                            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(15, 15, 15))
+                            SurfaceSignature(g=0, boundary_traces=(15, 15, 15))
                             sage: s.area() == S.area()
                             True
 
@@ -638,8 +638,8 @@ class ConeSurfaces(SurfaceCategory):
                             sage: S.glue((0, 1), (0, 1))
                             sage: S.set_immutable()
                             sage: S.signature()
-                            SurfaceSignature(genus=0, cone_orders=(-7/8, -7/8, -1/2))
-                            sage: S.signature().katok()
+                            SurfaceSignature(g=0, cone_orders=(-7/8, -7/8, -1/2))
+                            sage: S.signature().orbifold_orders()
                             (0, (2, 8, 8), 0)
 
                         A vertex of the Lambert quadrilateral has an angle that
@@ -736,7 +736,7 @@ class ConeSurfaces(SurfaceCategory):
                     def _test_gauss_bonnet(self, **options):
                         r"""
                         Verify the Gauss-Bonnet theorem for the
-                        :meth:`signature` of this surface: the Euler
+                        :meth:`signature` of this surface: the divisor Euler
                         characteristic `\chi(S, \beta)` is zero on a flat
                         surface, and minus the area, in units of `2\pi`, on a
                         hyperbolic one.
@@ -757,7 +757,7 @@ class ConeSurfaces(SurfaceCategory):
                         except (NotImplementedError, ValueError):
                             return
 
-                        chi = signature.euler_characteristic()
+                        chi = signature.divisor_euler_characteristic()
 
                         from flatsurf.geometry.categories import (
                             FlatConeSurfaces,

@@ -118,7 +118,8 @@ def test_flat_cylinder_signature():
     assert s.genus() == 0
     assert s.cone_orders() == ()
     assert s.boundary_traces() == (None, None)
-    assert s.euler_characteristic() == 0
+    assert s.euler_characteristic() == S.euler_characteristic() == 0
+    assert s.divisor_euler_characteristic() == 0
 
 
 def test_flat_corner():
@@ -136,7 +137,8 @@ def test_regular_octagon_signature():
     s = S.signature()
     assert s.genus() == 2
     assert s.cone_orders() == (2,)
-    assert s.euler_characteristic() == 0
+    assert s.euler_characteristic() == S.euler_characteristic() == -2
+    assert s.divisor_euler_characteristic() == 0
     assert s.geometry() == "euclidean"
 
 
@@ -149,8 +151,9 @@ def test_self_glued_polygon_signature():
     s = S.signature()
     assert s.genus() == 0
     assert s.cone_orders() == (-QQ(1) / 2,) * 4
-    assert s.euler_characteristic() == 0
-    assert s.katok() == (0, (2, 2, 2, 2), 0)
+    assert s.euler_characteristic() == S.euler_characteristic() == 2
+    assert s.divisor_euler_characteristic() == 0
+    assert s.orbifold_orders() == (0, (2, 2, 2, 2), 0)
 
 
 @pytest.mark.parametrize("name", sorted(HEXAGON_SURFACES))
@@ -173,10 +176,11 @@ def test_hexagon_surface(name):
     assert s.cusps() == 0
     assert s.boundary_components() == len(traces)
     assert s.boundary_traces() == traces
-    assert s.euler_characteristic() == -1
+    assert s.euler_characteristic() == S.euler_characteristic() == -1
+    assert s.divisor_euler_characteristic() == -1
     assert s.area() == S.area()
     with pytest.raises(ValueError):
-        s.katok()
+        s.orbifold_orders()
 
     S._test_gauss_bonnet()
 
@@ -211,7 +215,9 @@ def test_octagon_signature(gluing):
     assert s.cone_orders() == ()
     assert s.area() == 2
     assert S.area() == 2
-    assert s.katok() == (2, (), 0)
+    assert s.euler_characteristic() == S.euler_characteristic() == -2
+    assert s.divisor_euler_characteristic() == -2
+    assert s.orbifold_orders() == (2, (), 0)
 
 
 def test_288_signature():
@@ -225,8 +231,9 @@ def test_288_signature():
 
     s = S.signature()
     assert s.cone_orders() == (-QQ(7) / 8, -QQ(7) / 8, -QQ(1) / 2)
-    assert s.euler_characteristic() == -QQ(1) / 4
-    assert s.katok() == (0, (2, 8, 8), 0)
+    assert s.euler_characteristic() == S.euler_characteristic() == 2
+    assert s.divisor_euler_characteristic() == -QQ(1) / 4
+    assert s.orbifold_orders() == (0, (2, 8, 8), 0)
     assert S.area() == s.area()
 
 
@@ -243,35 +250,38 @@ def test_lambert_sphere_signature():
 
 @pytest.mark.parametrize("g,periods,area", COMPACT_SIGNATURES)
 def test_compact_signatures(g, periods, area):
-    s = SurfaceSignature.from_katok(g, periods)
+    s = SurfaceSignature.from_orbifold_orders(g, periods)
     assert s.area() == area / 2
     assert s.geometry() == "hyperbolic"
-    assert s.katok() == (g, tuple(sorted(periods)), 0)
+    assert s.euler_characteristic() == 2 - 2 * g
+    assert s.orbifold_orders() == (g, tuple(sorted(periods)), 0)
 
 
 @pytest.mark.parametrize("g,periods,cusps,area", CUSPED_SIGNATURES)
 def test_cusped_signatures(g, periods, cusps, area):
-    s = SurfaceSignature.from_katok(g, periods, cusps=cusps)
+    s = SurfaceSignature.from_orbifold_orders(g, periods, cusps=cusps)
     assert s.cusps() == cusps
     assert s.area() == area / 2
-    assert s.katok() == (g, tuple(sorted(periods)), cusps)
+    assert s.euler_characteristic() == 2 - 2 * g - cusps
+    assert s.orbifold_orders() == (g, tuple(sorted(periods)), cusps)
 
 
 @pytest.mark.parametrize("g,periods", FLAT_SIGNATURES)
 def test_flat_signatures(g, periods):
-    s = SurfaceSignature.from_katok(g, periods)
-    assert s.euler_characteristic() == 0
+    s = SurfaceSignature.from_orbifold_orders(g, periods)
+    assert s.divisor_euler_characteristic() == 0
     assert s.geometry() == "euclidean"
-    assert s.katok() == (g, tuple(sorted(periods)), 0)
+    assert s.orbifold_orders() == (g, tuple(sorted(periods)), 0)
 
 
 def test_cube_divisor():
     s = SurfaceSignature(CUBE_DIVISOR["genus"], CUBE_DIVISOR["orders"])
     assert (
-        s.euler_characteristic() == CUBE_DIVISOR["euler_characteristic_with_divisor"]
+        s.divisor_euler_characteristic()
+        == CUBE_DIVISOR["divisor_euler_characteristic"]
     )
     with pytest.raises(ValueError):
-        s.katok()
+        s.orbifold_orders()
 
 
 def test_signature_constructor():
@@ -287,6 +297,18 @@ def test_signature_constructor():
         SurfaceSignature(0, [0])
 
     s = SurfaceSignature(0, [-QQ(1) / 2, -QQ(7) / 8, -QQ(7) / 8])
-    assert repr(s) == "SurfaceSignature(genus=0, cone_orders=(-7/8, -7/8, -1/2))"
-    assert hash(s) == hash(SurfaceSignature.from_katok(0, (8, 2, 8)))
+    assert repr(s) == "SurfaceSignature(g=0, cone_orders=(-7/8, -7/8, -1/2))"
+    assert hash(s) == hash(SurfaceSignature.from_orbifold_orders(0, (8, 2, 8)))
     assert s != SurfaceSignature(0)
+
+    assert repr(SurfaceSignature(2)) == "SurfaceSignature(g=2)"
+    t = SurfaceSignature(1, cusps=2, boundary_traces=(15, 3))
+    assert repr(t) == "SurfaceSignature(g=1, cusps=2, boundary_traces=(3, 15))"
+    assert eval(repr(t)) == t  # noqa: S307
+    assert t.euler_characteristic() == -4
+    assert t.divisor_euler_characteristic() == -4
+
+    with pytest.raises(ValueError, match="no orbifold orders"):
+        t.orbifold_orders()
+    with pytest.raises(ValueError, match="period 1 is not"):
+        SurfaceSignature.from_orbifold_orders(0, (1, 2))

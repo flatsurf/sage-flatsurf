@@ -11,9 +11,10 @@ A signature has three groups:
 - the geodesic boundaries, each given by the trace `t = 1 + 2 \cosh \ell` of
   its holonomy in `SO(2, 1)`, where `\ell` is its length.
 
-The Euler characteristic with a divisor is
+The divisor Euler characteristic is
 `\chi(S, \beta) = 2 - 2g + \sum k_i - c - b` where `b` is the number of
-geodesic boundaries, and the area is `-2\pi \chi(S, \beta)`.
+boundary components, and the area of a hyperbolic surface is
+`-2\pi \chi(S, \beta)`.
 
 For orbifolds, where every cone angle is `2\pi/m_i`, Katok's signature
 ``(g; m_1, ..., m_r; s)`` is a second, more readable form: `k_i = 1/m_i - 1`
@@ -122,7 +123,7 @@ CUBE_DIVISOR = {
     "orders": [-QQ(1) / 4] * 8,
     "cusps": 0,
     "boundaries": [],
-    "euler_characteristic_with_divisor": 0,
+    "divisor_euler_characteristic": 0,
 }
 
 # Buser's signature (g, p; q): p geodesic boundaries of free length, q cusps.

@@ -988,7 +988,7 @@ class HyperbolicSurfaceGenerators:
             sage: S.boundary_components()
             [((0, 1), (1, 5)), ((0, 3), (1, 3)), ((0, 5), (1, 1))]
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(21/4, 21/4, 20881/144))
+            SurfaceSignature(g=0, boundary_traces=(21/4, 21/4, 20881/144))
             sage: TestSuite(S).run()
 
         The mirror edge must be glued, and the glued edges distinct edges of
@@ -1141,7 +1141,7 @@ class HyperbolicSurfaceGenerators:
              (5/11, -48/55),
              (5/11, 0))
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(21/4, 21/4, 21/4))
+            SurfaceSignature(g=0, boundary_traces=(21/4, 21/4, 21/4))
             sage: S.area()
             1
             sage: TestSuite(S).run()
@@ -1153,7 +1153,7 @@ class HyperbolicSurfaceGenerators:
             sage: S.base_ring()
             Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(21/4, 21/4, 21/4))
+            SurfaceSignature(g=0, boundary_traces=(21/4, 21/4, 21/4))
             sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), ring=QQ, optimize_placement=False)
             Traceback (most recent call last):
             ...
@@ -1173,7 +1173,7 @@ class HyperbolicSurfaceGenerators:
              (-9/25, -544/625),
              (-9/25, 0))
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(-1/2,), boundary_traces=(21/4, 21/4))
+            SurfaceSignature(g=0, cone_orders=(-1/2,), boundary_traces=(21/4, 21/4))
             sage: S.area()
             1/2
 
@@ -1187,7 +1187,7 @@ class HyperbolicSurfaceGenerators:
             sage: S.polygon(0).vertices()
             ((-6/7, 0), -2/3 + 1/3*I, (-9/17, -10/17), (-9/17, 0))
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(-2/3, -1/2), boundary_traces=(21/4,))
+            SurfaceSignature(g=0, cone_orders=(-2/3, -1/2), boundary_traces=(21/4,))
             sage: S.area()
             1/6
 
@@ -1200,7 +1200,7 @@ class HyperbolicSurfaceGenerators:
             sage: S.base_ring()
             Number Field in a with defining polynomial y^4 - 2 with a = 1.189207115002722?
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(-7/8, -3/4, -1/2))
+            SurfaceSignature(g=0, cone_orders=(-7/8, -3/4, -1/2))
             sage: S.area()
             1/8
 
@@ -1208,7 +1208,7 @@ class HyperbolicSurfaceGenerators:
 
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(-1/4,))
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(-1/4,), boundary_traces=(21/4, 21/4))
+            SurfaceSignature(g=0, cone_orders=(-1/4,), boundary_traces=(21/4, 21/4))
             sage: S.area()
             1/4
             sage: hyperbolic_surfaces.pants(boundary_traces=(20881/144, 21/4), cone_orders=(-1/4,))
@@ -1222,7 +1222,7 @@ class HyperbolicSurfaceGenerators:
             sage: hyperbolic_surfaces.pants(boundary_traces=(21/4,), cone_orders=(-1/2, -1/2))
             Traceback (most recent call last):
             ...
-            ValueError: the Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not 0
+            ValueError: the divisor Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not 0
 
         A pair of pants has three slots, the traces of its cuffs are larger
         than 3, and its cone orders are in `(-1, 0)`::
@@ -1257,7 +1257,7 @@ class HyperbolicSurfaceGenerators:
             sage: S.base_ring().polynomial()
             y^4 - 2*y^2 - 4
             sage: S.signature()
-            SurfaceSignature(genus=0, cone_orders=(), boundary_traces=(4, 4, 4))
+            SurfaceSignature(g=0, boundary_traces=(4, 4, 4))
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 20881/144))
             sage: S.base_ring()
             Rational Field
@@ -1278,7 +1278,7 @@ class HyperbolicSurfaceGenerators:
             sage: hyperbolic_surfaces.pants(cone_orders=(-1/2, -2/3, -5/6))
             Traceback (most recent call last):
             ...
-            ValueError: the Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not 0
+            ValueError: the divisor Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not 0
             sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(sqrt(2),))
             Traceback (most recent call last):
             ...
@@ -1327,10 +1327,10 @@ class HyperbolicSurfaceGenerators:
                 raise ValueError(f"the boundary trace {t} must be larger than 3")
             cosh.append((trace + 1).sqrt() / 2)
 
-        euler_characteristic = 2 + sum(orders) - len(cosh)
-        if not euler_characteristic < 0:
+        divisor_euler_characteristic = 2 + sum(orders) - len(cosh)
+        if not divisor_euler_characteristic < 0:
             raise ValueError(
-                f"the Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not {euler_characteristic}"
+                f"the divisor Euler characteristic 2 + sum(cone_orders) - len(boundary_traces) must be negative, not {divisor_euler_characteristic}"
             )
 
         angles = [(1 + k) / 2 for k in orders]
@@ -1427,7 +1427,7 @@ class HyperbolicSurfaceGenerators:
             sage: S.base_ring()
             Number Field in a with defining polynomial y^4 - 2*y^2 - 1 with a = ...
             sage: S.signature()
-            SurfaceSignature(genus=2, cone_orders=())
+            SurfaceSignature(g=2)
             sage: S.area()
             2
             sage: S.holonomy_representation().invariant_trace_field()
@@ -1440,7 +1440,7 @@ class HyperbolicSurfaceGenerators:
             sage: S
             Genus 2 Hyperbolic Surface built from a regular octagon
             sage: S.signature()
-            SurfaceSignature(genus=2, cone_orders=())
+            SurfaceSignature(g=2)
             sage: S.area()
             2
             sage: S.holonomy_representation().invariant_trace_field()
@@ -1789,7 +1789,7 @@ class FuchsianGroupGenerators:
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
         from flatsurf.geometry.signature import SurfaceSignature
 
-        geometry = SurfaceSignature.from_katok(0, (m1, m2, m3)).geometry()
+        geometry = SurfaceSignature.from_orbifold_orders(0, (m1, m2, m3)).geometry()
         if geometry != "hyperbolic":
             raise ValueError(
                 f"the triangle group ({m1}, {m2}, {m3}) is {geometry}, not hyperbolic: 1/m1 + 1/m2 + 1/m3 must be less than 1"
