@@ -119,14 +119,19 @@ def test_compact_signatures(g, periods, area):
 
 
 def test_ring():
-    S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), ring=AA)
+    S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), base_ring=AA)
     assert S.base_ring() is AA
     assert S.signature() == SurfaceSignature(2)
-    assert hyperbolic_surfaces.from_signature(SurfaceSignature(2), ring=QQ).base_ring() is QQ
+    assert (
+        hyperbolic_surfaces.from_signature(
+            SurfaceSignature(2), base_ring=QQ
+        ).base_ring()
+        is QQ
+    )
     with pytest.raises(ValueError, match="isometry is not defined over Rational Field"):
-        hyperbolic_surfaces.from_signature(orbifold(2, (2,)), ring=QQ)
+        hyperbolic_surfaces.from_signature(orbifold(2, (2,)), base_ring=QQ)
     with pytest.raises(ValueError, match="the ring must be exact, not Real Field"):
-        hyperbolic_surfaces.from_signature(SurfaceSignature(2), ring=RR)
+        hyperbolic_surfaces.from_signature(SurfaceSignature(2), base_ring=RR)
 
 
 @pytest.mark.parametrize(

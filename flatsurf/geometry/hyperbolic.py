@@ -2069,7 +2069,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 hyperbolic_polygons,
             )
 
-            triangle = hyperbolic_polygons.triangle(*angles, ring=self.base_ring())
+            triangle = hyperbolic_polygons.triangle(*angles, base_ring=self.base_ring())
             if triangle.parent() is self:
                 return triangle
             return self.polygon(polygon=triangle, check=False)

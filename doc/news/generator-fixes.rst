@@ -7,13 +7,15 @@
 
 **Changed:**
 
-* The hyperbolic generators with a ``ring`` argument
+* The hyperbolic generators with a ``base_ring`` argument
   (``hyperbolic_polygons.triangle()``, ``regular_ngon()``,
   ``right_angled_hexagon()``, ``right_angled_pentagon()``,
   ``right_angled_quadrilateral()``, ``hyperbolic_surfaces.pants()``,
   ``regular_octagon()``, ``from_signature()`` and
-  ``fuchsian_groups.triangle()``) raise a ``ValueError`` when ``ring`` is not
-  exact.
+  ``fuchsian_groups.triangle()``) raise a ``ValueError`` when ``base_ring``
+  is not exact.
+* The hyperbolic polygon constructors raise a ``ValueError`` on an angle that
+  is not a rational number, a float included.
 * ``hyperbolic_polygons.regular_ngon()`` raises a ``ValueError`` instead of a
   ``TypeError`` when the number of vertices is not an integer.
 * ``SurfaceSignature`` raises a ``ValueError`` when only some of the boundary

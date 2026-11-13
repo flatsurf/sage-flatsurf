@@ -196,10 +196,10 @@ def test_triangle_of_triangle_double(row):
 
 
 def test_ring():
-    T = hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 16, QQ(1) / 16, ring=AA)
+    T = hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 16, QQ(1) / 16, base_ring=AA)
     assert T.base_ring() is AA
     assert T.angles() == (QQ(1) / 4, QQ(1) / 16, QQ(1) / 16)
-    P = hyperbolic_polygons.right_angled_hexagon(5, 5, 5, ring=AA)
+    P = hyperbolic_polygons.right_angled_hexagon(5, 5, 5, base_ring=AA)
     assert P.base_ring() is AA
 
 
@@ -208,7 +208,7 @@ def test_ring_conversion():
     # (a/3, 0) with a the square root of 6, computed with sage-flatsurf.
     K = QuadraticField(6, "a")
     a = K.gen()
-    T = hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 12, QQ(1) / 12, ring=K)
+    T = hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 12, QQ(1) / 12, base_ring=K)
     assert T.base_ring() is K
     assert T.vertices()[1].coordinates(model="klein") == (a / 3, 0)
     assert T.angles() == (QQ(1) / 4, QQ(1) / 12, QQ(1) / 12)
@@ -227,7 +227,7 @@ def test_ring_conversion():
 )
 def test_inexact_ring_refused(constructor, arguments, ring):
     with pytest.raises(ValueError, match="the ring must be exact, not"):
-        getattr(hyperbolic_polygons, constructor)(*arguments, ring=ring)
+        getattr(hyperbolic_polygons, constructor)(*arguments, base_ring=ring)
 
 
 def test_inexact_ring_message():
@@ -235,7 +235,7 @@ def test_inexact_ring_message():
         ValueError,
         match="the ring must be exact, not Real Field with 53 bits of precision",
     ):
-        hyperbolic_polygons.triangle(QQ(1) / 8, QQ(1) / 8, QQ(1) / 8, ring=RR)
+        hyperbolic_polygons.triangle(QQ(1) / 8, QQ(1) / 8, QQ(1) / 8, base_ring=RR)
 
 
 @pytest.mark.parametrize("n", [QQ(11) / 2, 5.5])
@@ -250,8 +250,17 @@ def test_regular_ngon_non_integral(n):
 
 def test_polygon_coordinates_error_suppresses_context():
     with pytest.raises(ValueError, match="do not lie in") as error:
-        hyperbolic_polygons.regular_ngon(8, QQ(1) / 16, ring=QuadraticField(2, "a"))
+        hyperbolic_polygons.regular_ngon(
+            8, QQ(1) / 16, base_ring=QuadraticField(2, "a")
+        )
     assert error.value.__suppress_context__
+
+
+def test_float_angle_refused():
+    with pytest.raises(ValueError, match="rational multiple"):
+        hyperbolic_polygons.triangle(float(1) / 6, 0.125, 0.125)
+    with pytest.raises(ValueError, match="rational multiple"):
+        hyperbolic_polygons.regular_ngon(8, 0.0625)
 
 
 @pytest.mark.parametrize(
@@ -289,7 +298,7 @@ def test_plane_polygon_from_angles():
     assert T.angles() == (QQ(1) / 4, QQ(1) / 16, QQ(1) / 16)
     assert T.parent() is HyperbolicPlane(AA)
     assert T == hyperbolic_polygons.triangle(
-        QQ(1) / 4, QQ(1) / 16, QQ(1) / 16, ring=AA
+        QQ(1) / 4, QQ(1) / 16, QQ(1) / 16, base_ring=AA
     )
     with pytest.raises(ValueError):
         HyperbolicPlane(QQ).polygon(angles=[QQ(1) / 4, QQ(1) / 6, QQ(1) / 14])

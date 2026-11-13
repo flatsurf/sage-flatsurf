@@ -123,9 +123,9 @@ def test_refused_ring():
     with pytest.raises(
         ValueError, match="the coordinates of the polygon do not lie in Rational Field"
     ):
-        fuchsian_groups.triangle(3, 4, 4, ring=QQ)
+        fuchsian_groups.triangle(3, 4, 4, base_ring=QQ)
     with pytest.raises(
         ValueError,
         match="the ring must be exact, not Real Field with 53 bits of precision",
     ):
-        fuchsian_groups.triangle(3, 4, 4, ring=RR)
+        fuchsian_groups.triangle(3, 4, 4, base_ring=RR)

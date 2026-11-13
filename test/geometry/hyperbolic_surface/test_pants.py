@@ -113,11 +113,17 @@ def test_moved_quadrilateral():
 
 
 def test_ring():
-    assert hyperbolic_surfaces.pants(boundary_traces=(T, T, T), ring=QQ).base_ring() is QQ
-    assert hyperbolic_surfaces.pants(boundary_traces=(T, T, T), ring=AA).base_ring() is AA
+    assert (
+        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), base_ring=QQ).base_ring()
+        is QQ
+    )
+    assert (
+        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), base_ring=AA).base_ring()
+        is AA
+    )
     with pytest.raises(ValueError, match="do not lie in Rational Field"):
         hyperbolic_surfaces.pants(
-            boundary_traces=(T, T, T), ring=QQ, optimize_placement=False
+            boundary_traces=(T, T, T), base_ring=QQ, optimize_placement=False
         )
 
 
@@ -187,9 +193,9 @@ def test_regular_octagon_refused():
     with pytest.raises(ValueError, match='"opposite" or "katok"'):
         hyperbolic_surfaces.regular_octagon(gluing="adjacent")
     with pytest.raises(ValueError, match="do not lie in Rational Field"):
-        hyperbolic_surfaces.regular_octagon(ring=QQ)
+        hyperbolic_surfaces.regular_octagon(base_ring=QQ)
     with pytest.raises(ValueError, match="the ring must be exact, not Real Field"):
-        hyperbolic_surfaces.regular_octagon(ring=RR)
+        hyperbolic_surfaces.regular_octagon(base_ring=RR)
 
 
 def test_pants_inexact_ring_refused():
@@ -197,6 +203,6 @@ def test_pants_inexact_ring_refused():
         ValueError,
         match="the ring must be exact, not Real Field with 53 bits of precision",
     ):
-        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), ring=RR)
+        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), base_ring=RR)
     with pytest.raises(ValueError, match="the ring must be exact, not Real Double"):
-        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), ring=RDF)
+        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), base_ring=RDF)
