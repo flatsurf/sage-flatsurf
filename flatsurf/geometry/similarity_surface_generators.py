@@ -1320,9 +1320,7 @@ class DilationSurfaceGenerators:
 
         The unit square is made into an octagon by marking a point on
         each of its edges. Then opposite sides of this octagon are
-        glued together by translation. (Since we currently require strictly
-        convex polygons, we subdivide the square into a hexagon and two
-        triangles as depicted below.) The parameters ``a``, ``b``, ``c``, and
+        glued together by dilations. The parameters ``a``, ``b``, ``c``, and
         ``d`` should be real numbers strictly between zero and one. These
         represent the lengths of an edge of the resulting octagon, as below::
 
@@ -1345,31 +1343,32 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import dilation_surfaces
             sage: ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
             sage: ds
-            Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon
+            Genus 2 Positive Dilation Surface built from a square
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: ds in DilationSurfaces().Positive()
             True
             sage: TestSuite(ds).run()
+
+            sage: ds = dilation_surfaces.genus_two_square(1/AA(2).sqrt(), 1/AA(3).sqrt(), 1/2, 1/5)
+            sage: ds
+            Genus 2 Positive Dilation Surface built from a square
+            sage: ds.base_ring()
+            Algebraic Real Field
+
         """
         field = Sequence([a, b, c, d]).universe().fraction_field()
-        s = MutableOrientedSimilaritySurface(QQ)
+        s = MutableOrientedSimilaritySurface(field)
 
-        hexagon = Polygon(
-            edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)],
-            base_ring=field,
-        )
-        s.add_polygon(hexagon, label=0)
-        s.set_roots([0])
-        triangle1 = Polygon(base_ring=field, edges=[(1 - a, 0), (0, b), (a - 1, -b)])
-        s.add_polygon(triangle1, label=1)
-        triangle2 = Polygon(base_ring=field, edges=[(1 - c, d), (c - 1, 0), (0, -d)])
-        s.add_polygon(triangle2, label=2)
-        s.glue((0, 0), (0, 3))
-        s.glue((0, 2), (0, 5))
-        s.glue((0, 1), (1, 2))
-        s.glue((0, 4), (2, 0))
-        s.glue((1, 0), (2, 1))
-        s.glue((1, 1), (2, 2))
+        square = Polygon(
+            edges=[(a, 0), (1 - a, 0), (0, b), (0, 1 - b), (-c, 0), (-1 + c, 0),
+                   (0, -d), (0, - 1 + d)],
+            base_ring = field)
+
+        s.add_polygon(square)
+        s.glue((0, 0), (0, 4))
+        s.glue((0, 1), (0, 5))
+        s.glue((0, 2), (0, 6))
+        s.glue((0, 3), (0, 7))
         s.set_immutable()
         return s
 
