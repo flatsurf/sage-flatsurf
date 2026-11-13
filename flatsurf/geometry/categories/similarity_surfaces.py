@@ -451,11 +451,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: ds1 = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: ds1.polygon(0)
-                Polygon(vertices=[(0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)])
+                Polygon(vertices=[(0, 0), (1/2, 0), (1, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 1), (0, 4/5)])
                 sage: m = matrix(QQ, [[0, 1], [1, 0]]) # maps (x,y) to (y, x)
                 sage: ds2 = m*ds1
                 sage: ds2.polygon(0)
-                Polygon(vertices=[(0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)])
+                Polygon(vertices=[(0, 0), (4/5, 0), (1, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1), (0, 1/2)])
             """
             if not switch_sides:
                 raise NotImplementedError
@@ -557,10 +557,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: S.homology()
-                H₁(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H₁(Genus 2 Positive Dilation Surface built from a square)
 
                 sage: S.homology(0)
-                H₀(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H₀(Genus 2 Positive Dilation Surface built from a square)
 
             """
             if self.is_mutable():
@@ -670,12 +670,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: S.cohomology()
-                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H¹(Genus 2 Positive Dilation Surface built from a square)
 
             ::
 
                 sage: S.cohomology(0)
-                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H⁰(Genus 2 Positive Dilation Surface built from a square)
 
             """
             if self.is_mutable():

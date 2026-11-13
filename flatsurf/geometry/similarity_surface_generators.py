@@ -1360,9 +1360,18 @@ class DilationSurfaceGenerators:
         s = MutableOrientedSimilaritySurface(field)
 
         square = Polygon(
-            edges=[(a, 0), (1 - a, 0), (0, b), (0, 1 - b), (-c, 0), (-1 + c, 0),
-                   (0, -d), (0, - 1 + d)],
-            base_ring = field)
+            edges=[
+                (a, 0),
+                (1 - a, 0),
+                (0, b),
+                (0, 1 - b),
+                (-c, 0),
+                (-1 + c, 0),
+                (0, -d),
+                (0, -1 + d),
+            ],
+            base_ring=field,
+        )
 
         s.add_polygon(square)
         s.glue((0, 0), (0, 4))

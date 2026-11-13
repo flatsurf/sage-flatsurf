@@ -46,7 +46,8 @@ A dilation square:
 
 ```{code-cell}
 from flatsurf import dilation_surfaces
-ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+
+ds = dilation_surfaces.genus_two_square(1 / 2, 1 / 3, 1 / 4, 1 / 5)
 ds.plot(polygon_labels=False, edge_labels="letter")
 ```
 
@@ -61,6 +62,7 @@ s.plot(polygon_labels=False, edge_labels=False)
 ```
 
 The infinite stairacase (which is an infinite ramified cover of the torus):
+
 ```{code-cell}
 s = translation_surfaces.infinite_staircase()
 ```

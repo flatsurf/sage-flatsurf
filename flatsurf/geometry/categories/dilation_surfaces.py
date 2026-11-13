@@ -493,7 +493,7 @@ class DilationSurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: A = S.affine_automorphism_group(); A
-                AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from a square)
 
             TESTS:
 
@@ -523,7 +523,7 @@ class DilationSurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: V = S.veech_group(); V
-                VeechGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                VeechGroup(Genus 2 Positive Dilation Surface built from a square)
 
             TESTS:
 

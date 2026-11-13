@@ -816,7 +816,7 @@ def AffineAutomorphismGroup(surface):
         sage: from flatsurf import dilation_surfaces, AffineAutomorphismGroup
         sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
         sage: AffineAutomorphismGroup(S)
-        AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+        AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from a square)
 
     .. SEEALSO::
 
@@ -836,7 +836,7 @@ def VeechGroup(surface):
         sage: from flatsurf import dilation_surfaces, VeechGroup
         sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
         sage: VeechGroup(S)
-        VeechGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+        VeechGroup(Genus 2 Positive Dilation Surface built from a square)
 
     .. SEEALSO::
 
