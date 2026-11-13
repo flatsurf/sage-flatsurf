@@ -14,12 +14,17 @@ kernelspec:
 
 # Defining Surfaces
 
-sage-flatsurf handles flat surfaces (translation, half-translation, dilation
-and similarity surfaces) and hyperbolic cone surfaces. Both are built the same
-way, from collections of pre-built surfaces or by gluing polygons, and they
-share many methods.
+sage-flatsurf handles flat and hyperbolic surfaces. Both are built the same
+way, either from collections of pre-built surfaces or by gluing polygons, and
+they share many methods.
 
 ## Built in surfaces
+
+There are four built-in collections of flat surface
+- `similarity_surfaces`
+- `dilation_surfaces`
+- `half_translation_surfaces`
+- `translation_surfaces`
 
 Veech's double n-gon surfaces:
 
@@ -30,11 +35,19 @@ s = translation_surfaces.veech_double_n_gon(5)
 s.plot()
 ```
 
-The Arnoux-Yoccoz surface of arbitrary genus is built in:
+The Arnoux-Yoccoz surface of arbitrary genus:
 
 ```{code-cell}
 s = translation_surfaces.arnoux_yoccoz(3)
 s.plot()
+```
+
+A dilation square:
+
+```{code-cell}
+from flatsurf import dilation_surfaces
+ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+ds.plot(polygon_labels=False, edge_labels="letter")
 ```
 
 Chamanara's infinite translation surface:
@@ -47,6 +60,7 @@ s = translation_surfaces.chamanara(1 / 2)
 s.plot(polygon_labels=False, edge_labels=False)
 ```
 
+The infinite stairacase (which is an infinite ramified cover of the torus):
 ```{code-cell}
 s = translation_surfaces.infinite_staircase()
 ```
@@ -80,16 +94,6 @@ What is specific to the hyperbolic setting is described in
 
 ## Billiard tables and pillowcases
 
-```{code-cell}
-from flatsurf import similarity_surfaces, Polygon
-
-s = similarity_surfaces.billiard(Polygon(vertices=[(0, 0), (3, 0), (0, 4)]))
-```
-
-```{code-cell}
-s.plot()
-```
-
 The pillowcase of a polygon is the polygon glued to its mirror image along its
 edges. The same call builds it in both geometries. A flat triangle with angles
 proportional to $1, 2, 3$, that is $\pi/6, \pi/3, \pi/2$, gives a flat sphere:
@@ -105,8 +109,6 @@ A hyperbolic triangle with angles $\pi/3, \pi/4, \pi/4$ gives a hyperbolic
 sphere:
 
 ```{code-cell}
-from sage.all import QQ
-
 from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
 
 T = hyperbolic_polygons.triangle(QQ(1) / 6, QQ(1) / 8, QQ(1) / 8)
