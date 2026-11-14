@@ -1230,12 +1230,6 @@ class EuclideanPolygonsConstructor:
         if n < 3:
             raise ValueError("a polygon has at least 3 vertices")
 
-        # For n=4 the coordinates of the walk below are rational, so the
-        # polygon would not get the category of rectangles that square()
-        # provides.
-        if n == 4:
-            return EuclideanPolygonsConstructor.square(base_ring=base_ring)
-
         from sage.rings.qqbar import QQbar
 
         c = QQbar.zeta(n).real()
