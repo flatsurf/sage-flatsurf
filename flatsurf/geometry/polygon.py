@@ -43,6 +43,7 @@ from sage.all import (
     cached_method,
     Parent,
     QQ,
+    ZZ,
     matrix,
     vector,
 )
@@ -883,6 +884,376 @@ class PolygonsConstructor:
 
 
 polygons = PolygonsConstructor()
+
+
+def _polygon_change_ring(polygon, base_ring):
+    r"""
+    Return ``polygon`` over ``base_ring``, or ``polygon`` itself if
+    ``base_ring`` is ``None``.
+
+    A ring that cannot hold the coordinates of the polygon is reported as a
+    ``ValueError`` naming the ring.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Polygon
+        sage: from flatsurf.geometry.polygon import _polygon_change_ring
+        sage: P = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+        sage: _polygon_change_ring(P, None) is P
+        True
+        sage: _polygon_change_ring(P, AA).base_ring()
+        Algebraic Real Field
+
+        sage: K.<a> = QuadraticField(2)
+        sage: Q = Polygon(vertices=[(0, 0), (a, 0), (0, 1)])
+        sage: _polygon_change_ring(Q, QQ)
+        Traceback (most recent call last):
+        ...
+        ValueError: the coordinates of the polygon do not lie in Rational Field
+
+    """
+    if base_ring is None:
+        return polygon
+    try:
+        return polygon.change_ring(base_ring)
+    except (TypeError, ValueError) as e:
+        raise ValueError(
+            f"the coordinates of the polygon do not lie in {base_ring}"
+        ) from e
+
+
+class EuclideanPolygonsConstructor:
+    r"""
+    Constructors of Euclidean polygons: ``square()``, ``rectangle()``,
+    ``triangle()`` and ``regular_ngon()``.
+
+    Angles are multiples of `2\pi`, so that `1/4` is a right angle;
+    ``triangle()`` also reads them as proportions and rescales them to sum to
+    `1/2`. Each polygon has its vertex 0 at the origin and its edge 0 on the
+    positive `x`-axis, and is oriented counterclockwise.
+
+    With ``base_ring=None``, a polygon is defined over the field that its
+    construction computes: the smallest ring containing the rationals and the
+    given sizes for ``square()`` and ``rectangle()``, the field of the
+    coordinates of the vertices for ``triangle()`` and ``regular_ngon()``. An
+    exact ``base_ring`` receives the coordinates by conversion, and a
+    ``ValueError`` is raised if they do not lie in it. An inexact ring is
+    refused.
+
+    EXAMPLES::
+
+        sage: from flatsurf import euclidean_polygons
+        sage: euclidean_polygons
+        Euclidean polygons
+
+    """
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this constructor.
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: euclidean_polygons
+            Euclidean polygons
+
+        """
+        return "Euclidean polygons"
+
+    @staticmethod
+    def square(side=1, base_ring=None):
+        r"""
+        Return a square with the given side length.
+
+        INPUT:
+
+        - ``side`` -- a positive number (default: ``1``)
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon with vertices ``(0, 0)``, ``(side, 0)``,
+        ``(side, side)`` and ``(0, side)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: euclidean_polygons.square()
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: euclidean_polygons.square(2)
+            Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+            sage: euclidean_polygons.square(int(2))
+            Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.square(base_ring=AA).base_ring()
+            Algebraic Real Field
+
+        TESTS::
+
+            sage: euclidean_polygons.square(0)
+            Traceback (most recent call last):
+            ...
+            ValueError: side must be positive
+            sage: euclidean_polygons.square(-1)
+            Traceback (most recent call last):
+            ...
+            ValueError: side must be positive
+            sage: euclidean_polygons.square(base_ring=RDF)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Double Field
+            sage: K.<sqrt2> = QuadraticField(2)
+            sage: euclidean_polygons.square(sqrt2, base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+
+        """
+        _check_exact(base_ring)
+        if side <= 0:
+            raise ValueError("side must be positive")
+        return EuclideanPolygonsConstructor.rectangle(side, side, base_ring=base_ring)
+
+    @staticmethod
+    def rectangle(width, height, base_ring=None):
+        r"""
+        Return a rectangle with the given width and height.
+
+        INPUT:
+
+        - ``width`` -- a positive number
+
+        - ``height`` -- a positive number
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon with vertices ``(0, 0)``, ``(width, 0)``,
+        ``(width, height)`` and ``(0, height)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: euclidean_polygons.rectangle(2, 1)
+            Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+            sage: euclidean_polygons.rectangle(int(2), int(1))
+            Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+        The default ring contains the sizes::
+
+            sage: K.<sqrt2> = QuadraticField(2)
+            sage: P = euclidean_polygons.rectangle(1, sqrt2)
+            sage: P.base_ring()
+            Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.rectangle(1, sqrt2, base_ring=AA).base_ring()
+            Algebraic Real Field
+
+        TESTS::
+
+            sage: euclidean_polygons.rectangle(0, 1)
+            Traceback (most recent call last):
+            ...
+            ValueError: width must be positive
+            sage: euclidean_polygons.rectangle(1, 0)
+            Traceback (most recent call last):
+            ...
+            ValueError: height must be positive
+            sage: euclidean_polygons.rectangle(1, 1, base_ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
+        """
+        _check_exact(base_ring)
+        if width <= 0:
+            raise ValueError("width must be positive")
+        if height <= 0:
+            raise ValueError("height must be positive")
+        P = Polygon(
+            edges=[(width, 0), (0, height), (-width, 0), (0, -height)],
+            angles=(1, 1, 1, 1),
+            check=False,
+        )
+        return _polygon_change_ring(P, base_ring)
+
+    @staticmethod
+    def triangle(a, b, c, base_ring=None):
+        r"""
+        Return the triangle with angles proportional to ``a``, ``b``, ``c``.
+
+        The first edge has length 1. The angles are positive rationals,
+        rescaled to sum to `1/2`; absolute angles (multiples of `2\pi`) that
+        sum to `1/2` are thus kept as they are, and integers are proportions.
+
+        INPUT:
+
+        - ``a``, ``b``, ``c`` -- positive rationals, the angles at the
+          vertices 0, 1 and 2
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon with the given angles
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: T = euclidean_polygons.triangle(1/12, 1/6, 1/4)
+            sage: T.angles()
+            (1/12, 1/6, 1/4)
+
+        The billiard triangle with angles proportional to 2, 5, 7::
+
+            sage: euclidean_polygons.triangle(2, 5, 7).angles()
+            (1/14, 5/28, 1/4)
+            sage: euclidean_polygons.triangle(int(1), int(2), int(3)).angles()
+            (1/12, 1/6, 1/4)
+
+        Proportions and absolute angles agree::
+
+            sage: euclidean_polygons.triangle(1, 2, 3) == T
+            True
+
+        The right triangle with acute angle ``a`` at the vertex 0 is
+        ``triangle(a, 1/4, 1/4 - a)``; its first leg is fixed by
+        ``Polygon(angles=..., lengths=...)``::
+
+            sage: euclidean_polygons.triangle(1/6, 1/4, 1/12).angles()
+            (1/6, 1/4, 1/12)
+            sage: from flatsurf import Polygon
+            sage: Polygon(angles=(1/6, 1/4, 1/12), lengths=[2]).edge_vector(0)
+            (2, 0)
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.triangle(1, 1, 2, base_ring=QQ)
+            Polygon(vertices=[(0, 0), (2, 0), (1, 1)])
+            sage: euclidean_polygons.triangle(1, 2, 3, base_ring=AA).base_ring()
+            Algebraic Real Field
+
+        TESTS::
+
+            sage: euclidean_polygons.triangle(1, 2, 3, base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: euclidean_polygons.triangle(1, 2, 3, base_ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+            sage: euclidean_polygons.triangle(0, 1, 1)
+            Traceback (most recent call last):
+            ...
+            ValueError: angles must be positive rationals
+            sage: euclidean_polygons.triangle(1.0, 2.0, 3.0)
+            Traceback (most recent call last):
+            ...
+            TypeError: ...
+
+        """
+        _check_exact(base_ring)
+        return _polygon_change_ring(Polygon(angles=[a, b, c], check=False), base_ring)
+
+    @staticmethod
+    def regular_ngon(n, base_ring=None):
+        r"""
+        Return the regular polygon with ``n`` vertices and edges of length 1.
+
+        INPUT:
+
+        - ``n`` -- an integer, at least 3
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon whose edge 0 is ``(1, 0)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: P = euclidean_polygons.regular_ngon(8)
+            sage: P.base_ring()
+            Number Field in a with defining polynomial y^2 - 2 with a = 1.414213562373095?
+            sage: euclidean_polygons.regular_ngon(int(5)).base_ring()
+            Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308?
+            sage: euclidean_polygons.regular_ngon(4)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.regular_ngon(3, base_ring=AA)
+            Polygon(vertices=[(0, 0), (1, 0), (1/2, 0.866025403784439?)])
+
+        The field picked by default differs from the one of ``triangle()``,
+        although the polygons are equal::
+
+            sage: euclidean_polygons.regular_ngon(3) == euclidean_polygons.triangle(1, 1, 1)
+            True
+
+        TESTS::
+
+            sage: euclidean_polygons.regular_ngon(4, base_ring=QQ)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: euclidean_polygons.regular_ngon(8, base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: euclidean_polygons.regular_ngon(8, base_ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+            sage: euclidean_polygons.regular_ngon(2)
+            Traceback (most recent call last):
+            ...
+            ValueError: a polygon has at least 3 vertices
+            sage: euclidean_polygons.regular_ngon(5.5)
+            Traceback (most recent call last):
+            ...
+            ValueError: the number of vertices must be an integer
+            sage: euclidean_polygons.regular_ngon(QQ(7)/2)
+            Traceback (most recent call last):
+            ...
+            ValueError: the number of vertices must be an integer
+
+        """
+        _check_exact(base_ring)
+        try:
+            n = ZZ(n)
+        except (TypeError, ValueError):
+            raise ValueError("the number of vertices must be an integer") from None
+        if n < 3:
+            raise ValueError("a polygon has at least 3 vertices")
+
+        # For n=4 the coordinates of the walk below are rational, so the
+        # polygon would not get the category of rectangles that square()
+        # provides.
+        if n == 4:
+            return EuclideanPolygonsConstructor.square(base_ring=base_ring)
+
+        from sage.rings.qqbar import QQbar
+
+        c = QQbar.zeta(n).real()
+        s = QQbar.zeta(n).imag()
+        field, (c, s) = number_field_elements_from_algebraics((c, s))
+        cn = field.one()
+        sn = field.zero()
+        edges = [(cn, sn)]
+        for _ in range(n - 1):
+            cn, sn = c * cn - s * sn, c * sn + s * cn
+            edges.append((cn, sn))
+
+        ngon = Polygon(base_ring=field, edges=edges)
+        ngon._refine_category_(ngon.category().WithAngles([1] * n))
+        return _polygon_change_ring(ngon, base_ring)
+
+
+euclidean_polygons = EuclideanPolygonsConstructor()
 
 
 def ConvexPolygons(base_ring):

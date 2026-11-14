@@ -142,7 +142,6 @@ def _inexact_polygons():
     }
 
 
-@pytest.mark.filterwarnings("ignore::UserWarning")
 @pytest.mark.parametrize(
     "name",
     [
@@ -154,7 +153,10 @@ def _inexact_polygons():
         "angles-RR",
         "change_ring-RDF",
         "square-RDF",
-        "regular_ngon-RR",
+        pytest.param(
+            "regular_ngon-RR",
+            marks=pytest.mark.filterwarnings("ignore::UserWarning"),
+        ),
     ],
 )
 def test_inexact_ring_refused(name):
@@ -171,3 +173,176 @@ def test_exact_rings_accepted():
     assert (
         Polygon(vertices=[(0, 0), (1.0, 0), (0, 1)], base_ring=QQ).base_ring() is QQ
     )
+
+
+def _euclidean_pairs():
+    from sage.all import AA, QuadraticField
+
+    from flatsurf import euclidean_polygons, polygons
+
+    K = QuadraticField(2, "sqrt2")
+    sqrt2 = K.gen()
+
+    return {
+        "square": (lambda: euclidean_polygons.square(), lambda: polygons.square()),
+        "square-AA": (
+            lambda: euclidean_polygons.square(base_ring=AA),
+            lambda: polygons.square(base_ring=AA),
+        ),
+        "rectangle": (
+            lambda: euclidean_polygons.rectangle(1, sqrt2),
+            lambda: polygons.rectangle(1, sqrt2),
+        ),
+        "triangle": (
+            lambda: euclidean_polygons.triangle(3, 4, 5),
+            lambda: polygons.triangle(3, 4, 5),
+        ),
+        "regular_ngon": (
+            lambda: euclidean_polygons.regular_ngon(8),
+            lambda: polygons.regular_ngon(8),
+        ),
+        "regular_ngon-AA": (
+            lambda: euclidean_polygons.regular_ngon(3, base_ring=AA),
+            lambda: polygons.regular_ngon(3, field=AA),
+        ),
+    }
+
+
+@pytest.mark.filterwarnings("ignore::UserWarning")
+@pytest.mark.parametrize(
+    "name",
+    [
+        "square",
+        "square-AA",
+        "rectangle",
+        "triangle",
+        "regular_ngon",
+        "regular_ngon-AA",
+    ],
+)
+def test_euclidean_polygons_agree_with_polygons(name):
+    new, old = _euclidean_pairs()[name]
+    new, old = new(), old()
+    assert new == old
+    assert new.category() == old.category()
+
+
+def test_euclidean_triangle_angles():
+    from sage.all import QQ
+
+    from flatsurf import euclidean_polygons
+
+    assert euclidean_polygons.triangle(1, 2, 3).angles() == (
+        QQ(1) / 12,
+        QQ(1) / 6,
+        QQ(1) / 4,
+    )
+    assert euclidean_polygons.triangle(
+        QQ(1) / 12, QQ(1) / 6, QQ(1) / 4
+    ) == euclidean_polygons.triangle(1, 2, 3)
+    assert euclidean_polygons.triangle(2, 5, 7).angles() == (
+        QQ(1) / 14,
+        QQ(5) / 28,
+        QQ(1) / 4,
+    )
+    assert euclidean_polygons.triangle(QQ(1) / 6, QQ(1) / 8, QQ(1) / 8).angles() == (
+        QQ(1) / 5,
+        QQ(3) / 20,
+        QQ(3) / 20,
+    )
+
+
+def _euclidean_errors():
+    from sage.all import QQ, RDF, RR, QuadraticField
+
+    from flatsurf import euclidean_polygons as E
+
+    sqrt2 = QuadraticField(2, "sqrt2").gen()
+    not_in_QQ = "the coordinates of the polygon do not lie in Rational Field"
+    inexact = "the ring must be exact, not"
+
+    return {
+        "square-0": (lambda: E.square(0), ValueError, "side must be positive"),
+        "square--1": (lambda: E.square(-1), ValueError, "side must be positive"),
+        "square-RDF": (
+            lambda: E.square(base_ring=RDF),
+            ValueError,
+            "the ring must be exact, not Real Double Field",
+        ),
+        "square-QQ": (lambda: E.square(sqrt2, base_ring=QQ), ValueError, not_in_QQ),
+        "rectangle-width": (
+            lambda: E.rectangle(0, 1),
+            ValueError,
+            "width must be positive",
+        ),
+        "rectangle-height": (
+            lambda: E.rectangle(1, 0),
+            ValueError,
+            "height must be positive",
+        ),
+        "triangle-0": (
+            lambda: E.triangle(0, 1, 1),
+            ValueError,
+            "angles must be positive rationals",
+        ),
+        "triangle-float": (lambda: E.triangle(1.0, 2.0, 3.0), TypeError, None),
+        "triangle-QQ": (lambda: E.triangle(1, 2, 3, base_ring=QQ), ValueError, not_in_QQ),
+        "triangle-RR": (
+            lambda: E.triangle(1, 2, 3, base_ring=RR),
+            ValueError,
+            inexact,
+        ),
+        "regular_ngon-QQ": (
+            lambda: E.regular_ngon(8, base_ring=QQ),
+            ValueError,
+            not_in_QQ,
+        ),
+        "regular_ngon-RR": (
+            lambda: E.regular_ngon(8, base_ring=RR),
+            ValueError,
+            inexact,
+        ),
+        "regular_ngon-2": (
+            lambda: E.regular_ngon(2),
+            ValueError,
+            "a polygon has at least 3 vertices",
+        ),
+        "regular_ngon-float": (
+            lambda: E.regular_ngon(5.5),
+            ValueError,
+            "the number of vertices must be an integer",
+        ),
+        "regular_ngon-rational": (
+            lambda: E.regular_ngon(QQ(7) / 2),
+            ValueError,
+            "the number of vertices must be an integer",
+        ),
+    }
+
+
+@pytest.mark.parametrize("name", list(_euclidean_errors()))
+def test_euclidean_polygons_errors(name):
+    call, error, message = _euclidean_errors()[name]
+    with pytest.raises(error, match=message):
+        call()
+
+
+def test_euclidean_polygons_base_ring():
+    from sage.all import AA, QQ, QuadraticField
+
+    from flatsurf import euclidean_polygons as E
+
+    K = QuadraticField(2, "sqrt2")
+    sqrt2 = K.gen()
+
+    assert E.triangle(1, 2, 3, base_ring=AA) == E.triangle(1, 2, 3)
+    assert E.triangle(1, 2, 3, base_ring=AA).base_ring() is AA
+    assert E.rectangle(1, sqrt2, base_ring=AA).base_ring() is AA
+
+    P = E.regular_ngon(8, base_ring=K)
+    assert P == E.regular_ngon(8)
+    assert P.base_ring() is K
+
+    for P in [E.regular_ngon(4), E.regular_ngon(4, base_ring=QQ)]:
+        assert P.base_ring() is QQ
+        assert [tuple(v) for v in P.vertices()] == [(0, 0), (1, 0), (1, 1), (0, 1)]

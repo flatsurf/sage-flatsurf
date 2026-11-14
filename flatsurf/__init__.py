@@ -7,6 +7,7 @@ from flatsurf.version import version as __version__
 from flatsurf.geometry.polygon import (
     Polygon,
     polygons,
+    euclidean_polygons,
     EquiangularPolygons,
     EuclideanPolygonsWithAngles,
     EuclideanPolygons as Polygons,
