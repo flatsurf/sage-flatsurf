@@ -346,3 +346,380 @@ def test_euclidean_polygons_base_ring():
     for P in [E.regular_ngon(4), E.regular_ngon(4, base_ring=QQ)]:
         assert P.base_ring() is QQ
         assert [tuple(v) for v in P.vertices()] == [(0, 0), (1, 0), (1, 1), (0, 1)]
+
+
+def _both_geometries():
+    r"""
+    Return the rings, hyperbolic planes, vertices, angles and points used by
+    the tests of ``Polygon`` in both geometries, by name.
+    """
+    from sage.all import AA, QQ, RR, QuadraticField
+
+    from flatsurf import HyperbolicPlane
+
+    half = QQ(1) / 2
+    K = QuadraticField(2, "s")
+    s = K.gen()
+
+    H1 = HyperbolicPlane(QQ)
+    HK = HyperbolicPlane(K)
+    HA = HyperbolicPlane(AA)
+    HR = HyperbolicPlane(RR)
+
+    V = [(0, 0), (half, 0), (0, half)]
+    W = [(0, 0), (s / 4, 0), (0, s / 4)]
+    A = (QQ(1) / 6, QQ(1) / 8, QQ(1) / 8)
+
+    p0, p1, p2 = (H1.point(x, y, model="klein") for (x, y) in V)
+    pK = HK.point(s / 4, 0, model="klein")
+    qK = HK.point(0, s / 4, model="klein")
+    r0, r1, r2 = (HR.point(x, y, model="klein") for (x, y) in V)
+
+    return {
+        "QQ": QQ,
+        "AA": AA,
+        "K": K,
+        "s": s,
+        "H1": H1,
+        "HK": HK,
+        "HA": HA,
+        "HR": HR,
+        "V": V,
+        "W": W,
+        "A": A,
+        "p": (p0, p1, p2),
+        "pK": pK,
+        "qK": qK,
+        "r": (r0, r1, r2),
+    }
+
+
+def _hyperbolic_equal():
+    r"""
+    Return the calls of ``Polygon`` that give the same polygon as
+    ``HyperbolicPlane.polygon`` or ``hyperbolic_polygons.triangle``.
+    """
+    from flatsurf import Polygon, hyperbolic_polygons
+
+    d = _both_geometries()
+    H1, V, A, QQ = d["H1"], d["V"], d["A"], d["QQ"]
+    p0, p1, p2 = d["p"]
+    half = QQ(1) / 2
+
+    def expected():
+        return H1.polygon(vertices=V)
+
+    return {
+        "geometry": (lambda: Polygon(vertices=V, geometry="hyperbolic"), expected),
+        "Geometry": (lambda: Polygon(vertices=V, geometry="Hyperbolic"), expected),
+        "angles": (
+            lambda: Polygon(angles=A, geometry="hyperbolic"),
+            lambda: hyperbolic_polygons.triangle(*A),
+        ),
+        "parent": (lambda: Polygon(vertices=V, parent=H1), expected),
+        "parent-geometry": (
+            lambda: Polygon(vertices=V, parent=H1, geometry="hyperbolic"),
+            expected,
+        ),
+        "parent-base_ring": (
+            lambda: Polygon(vertices=V, parent=H1, base_ring=QQ),
+            expected,
+        ),
+        "points": (lambda: Polygon(vertices=[p0, p1, p2]), expected),
+        "points-numbers": (lambda: Polygon(vertices=[p0, (half, 0), p2]), expected),
+    }
+
+
+@pytest.mark.parametrize("name", list(_hyperbolic_equal()))
+def test_polygon_hyperbolic_equal(name):
+    from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
+
+    call, expected = _hyperbolic_equal()[name]
+    P, Q = call(), expected()
+    assert isinstance(P, HyperbolicPolygon)
+    assert P == Q
+    assert P.parent() is Q.parent()
+
+
+def _hyperbolic_in():
+    r"""
+    Return the calls of ``Polygon`` with the name of the plane of the result.
+    """
+    from flatsurf import Polygon
+
+    d = _both_geometries()
+    V, W, A, AA, QQ, K, s = d["V"], d["W"], d["A"], d["AA"], d["QQ"], d["K"], d["s"]
+    HK, HA, HR = d["HK"], d["HA"], d["HR"]
+    p0, p1, p2 = d["p"]
+    r0, r1, r2 = d["r"]
+    pK, qK = d["pK"], d["qK"]
+    half = QQ(1) / 2
+
+    return {
+        "W": (lambda: Polygon(vertices=W, geometry="hyperbolic"), "HK"),
+        "V-AA": (lambda: Polygon(vertices=V, geometry="hyperbolic", base_ring=AA), "HA"),
+        "angles-AA": (
+            lambda: Polygon(angles=A, geometry="hyperbolic", base_ring=AA),
+            "HA",
+        ),
+        "half_plane": (
+            lambda: Polygon(
+                vertices=[(0, 1), (1, 1), (0, 2)],
+                geometry="hyperbolic",
+                model="half_plane",
+            ),
+            "H1",
+        ),
+        "non-convex": (
+            lambda: Polygon(
+                vertices=[(0, -half), (half, half), (0, 0), (-half, half)],
+                geometry="hyperbolic",
+            ),
+            "H1",
+        ),
+        "parent-K": (lambda: Polygon(vertices=V, parent=HK), "HK"),
+        "parent-angles-AA": (lambda: Polygon(angles=A, parent=HA), "HA"),
+        "parent-K-points": (lambda: Polygon(vertices=[p0, p1, p2], parent=HK), "HK"),
+        "parent-RR": (lambda: Polygon(vertices=V, parent=HR), "HR"),
+        "parent-RR-points": (lambda: Polygon(vertices=[p0, p1, p2], parent=HR), "HR"),
+        "points-K": (lambda: Polygon(vertices=[p0, pK, qK]), "HK"),
+        "points-base_ring-K": (
+            lambda: Polygon(vertices=[p0, p1, p2], base_ring=K),
+            "HK",
+        ),
+        "points-RR": (lambda: Polygon(vertices=[r0, r1, r2]), "HR"),
+        "points-mixed-RR": (lambda: Polygon(vertices=[p0, r1, r2]), "HR"),
+        "points-numbers-K": (lambda: Polygon(vertices=[p0, (s / 4, 0), p2]), "HK"),
+    }
+
+
+@pytest.mark.parametrize("name", list(_hyperbolic_in()))
+def test_polygon_hyperbolic_in(name):
+    from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
+
+    call, plane = _hyperbolic_in()[name]
+    P = call()
+    assert isinstance(P, HyperbolicPolygon)
+    assert P.parent() is _both_geometries()[plane]
+
+
+def test_polygon_hyperbolic_half_plane_vertices():
+    from sage.all import I
+
+    from flatsurf import Polygon
+
+    H1 = _both_geometries()["H1"]
+    P = Polygon(
+        vertices=[(0, 1), (1, 1), (0, 2)], geometry="hyperbolic", model="half_plane"
+    )
+    assert list(P.vertices()) == [H1(I), H1(1 + I), H1(2 * I)]
+
+
+def test_polygon_hyperbolic_angles():
+    from flatsurf import Polygon
+
+    d = _both_geometries()
+    A, AA, HA = d["A"], d["AA"], d["HA"]
+    assert Polygon(angles=A, geometry="hyperbolic", base_ring=AA).angles() == A
+    assert Polygon(angles=A, parent=HA).angles() == A
+
+
+def test_polygon_euclidean_unchanged():
+    from sage.all import QQ
+
+    from flatsurf import Polygon
+    from flatsurf.geometry.polygon import EuclideanPolygon
+
+    d = _both_geometries()
+    V, A = d["V"], d["A"]
+    P = Polygon(vertices=V)
+    assert isinstance(P, EuclideanPolygon)
+    assert Polygon(vertices=V, geometry="euclidean") == P
+    assert Polygon(vertices=V, geometry="Euclidean") == P
+    Q = Polygon(angles=A)
+    assert isinstance(Q, EuclideanPolygon)
+    assert Q.angles() == (QQ(1) / 5, QQ(3) / 20, QQ(3) / 20)
+
+
+def _hyperbolic_errors():
+    import re
+
+    from sage.all import QQ, RR
+
+    from flatsurf import Polygon
+    from flatsurf.geometry.categories import EuclideanPolygons
+
+    d = _both_geometries()
+    V, W, A, AA = d["V"], d["W"], d["A"], d["AA"]
+    H1, HR = d["H1"], d["HR"]
+    p0, p1, p2 = d["p"]
+    pK, qK = d["pK"], d["qK"]
+    half = QQ(1) / 2
+    edges = [(1, 0), (-1, 1), (0, -1)]
+    not_in_QQ = "do not lie in Rational Field"
+    inexact = "the ring must be exact, not Real"
+
+    def hyp(**kwds):
+        return lambda: Polygon(geometry="hyperbolic", **kwds)
+
+    return {
+        "model-euclidean": (
+            lambda: Polygon(vertices=V, model="klein"),
+            ValueError,
+            "model can only be used with a hyperbolic polygon",
+        ),
+        "W-QQ": (
+            hyp(vertices=W, base_ring=QQ),
+            TypeError,
+            re.escape("Unable to coerce 1/4*s to a rational"),
+        ),
+        "angles-QQ": (hyp(angles=A, base_ring=QQ), ValueError, not_in_QQ),
+        "angles-sum": (
+            hyp(angles=(1, 2, 3)),
+            ValueError,
+            "must sum to less than 1/2",
+        ),
+        "angles-4": (
+            hyp(angles=(QQ(1) / 8,) * 4),
+            NotImplementedError,
+            "only triangles",
+        ),
+        "infinite": (
+            hyp(vertices=[(0, 0), (2, 0), (0, 2)]),
+            ValueError,
+            re.escape("vertex (2, 0) is not a finite point"),
+        ),
+        "float": (
+            hyp(vertices=[(0, 0), (0.5, 0), (0, 0.5)]),
+            ValueError,
+            "the ring must be exact, not Real Double Field",
+        ),
+        "base_ring-RR": (hyp(vertices=V, base_ring=RR), ValueError, inexact),
+        "negative": (
+            hyp(vertices=[(0, 0), (0, half), (half, 0)]),
+            ValueError,
+            "polygon has negative area",
+        ),
+        "poincare": (
+            hyp(vertices=V, model="poincare"),
+            NotImplementedError,
+            "unsupported model 'poincare'",
+        ),
+        "parent-angles-QQ": (
+            lambda: Polygon(angles=A, parent=H1),
+            ValueError,
+            not_in_QQ,
+        ),
+        "parent-angles-RR": (
+            lambda: Polygon(angles=A, parent=HR),
+            ValueError,
+            inexact,
+        ),
+        "parent-base_ring": (
+            lambda: Polygon(vertices=V, parent=H1, base_ring=AA),
+            ValueError,
+            "base_ring is Algebraic Real Field but parent is Hyperbolic Plane over Rational Field",
+        ),
+        "points-infinite": (
+            lambda: Polygon(vertices=[H1(0), p1, p2]),
+            ValueError,
+            "vertex 0 is not a finite point",
+        ),
+        "a": (
+            lambda: Polygon(vertices=V, geometry="spherical"),
+            ValueError,
+            re.escape("geometry must be \"euclidean\" or \"hyperbolic\", not 'spherical'"),
+        ),
+        "a-object": (
+            lambda: Polygon(vertices=V, geometry=H1.geometry),
+            ValueError,
+            "not Exact geometry over Rational Field",
+        ),
+        "b": (
+            lambda: Polygon(vertices=V, geometry="euclidean", parent=H1),
+            ValueError,
+            re.escape('parent is a hyperbolic plane but geometry is "euclidean"'),
+        ),
+        "c": (
+            lambda: Polygon(vertices=V, parent=QQ),
+            ValueError,
+            "parent must be a HyperbolicPlane, not Rational Field",
+        ),
+        "d": (
+            lambda: Polygon(vertices=[p0, p1, p2], geometry="euclidean"),
+            ValueError,
+            re.escape('the vertices are hyperbolic points but geometry is "euclidean"'),
+        ),
+        "e": (
+            lambda: Polygon(vertices=[p0, pK, qK], parent=H1),
+            ValueError,
+            "the vertices do not convert into Hyperbolic Plane over Rational Field",
+        ),
+        "f": (
+            hyp(edges=edges),
+            ValueError,
+            re.escape("a hyperbolic polygon has no edge vectors; give its vertices"),
+        ),
+        "f-parent": (
+            lambda: Polygon(edges=edges, parent=H1),
+            ValueError,
+            re.escape("a hyperbolic polygon has no edge vectors; give its vertices"),
+        ),
+        "lengths": (
+            hyp(angles=A, lengths=[1]),
+            NotImplementedError,
+            "a hyperbolic polygon cannot be built from lengths",
+        ),
+        "category": (
+            hyp(vertices=V, category=EuclideanPolygons(QQ)),
+            ValueError,
+            "the category of a hyperbolic polygon cannot be chosen",
+        ),
+        "nothing": (
+            hyp(),
+            NotImplementedError,
+            "one of vertices or angles must be set",
+        ),
+        "both": (
+            hyp(vertices=V, angles=A),
+            ValueError,
+            "a hyperbolic polygon is built from vertices or from angles, not both",
+        ),
+        "angles-model": (
+            hyp(angles=A, model="half_plane"),
+            ValueError,
+            "model can only be used with vertices",
+        ),
+    }
+
+
+@pytest.mark.parametrize("name", list(_hyperbolic_errors()))
+def test_polygon_hyperbolic_errors(name):
+    call, error, message = _hyperbolic_errors()[name]
+    with pytest.raises(error, match=message):
+        call()
+
+
+def test_polygon_hyperbolic_no_common_base_ring():
+    from sage.all import AA, QQ, NumberField, QuadraticField, polygen
+
+    from flatsurf import HyperbolicPlane, Polygon
+
+    p0 = HyperbolicPlane(QQ).point(0, 0, model="klein")
+
+    K = QuadraticField(2, "s")
+    L = QuadraticField(3, "t")
+    pK = HyperbolicPlane(K).point(K.gen() / 4, 0, model="klein")
+    qL = HyperbolicPlane(L).point(0, L.gen() / 4, model="klein")
+    with pytest.raises(
+        ValueError,
+        match="the vertices lie in hyperbolic planes with no common base ring",
+    ):
+        Polygon(vertices=[p0, pK, qL])
+
+    x = polygen(QQ)
+    K = NumberField(x**2 - 2, "s", embedding=AA(2).sqrt())
+    L = NumberField(x**2 - 3, "t", embedding=AA(3).sqrt())
+    pK = HyperbolicPlane(K).point(K.gen() / 4, 0, model="klein")
+    qL = HyperbolicPlane(L).point(0, L.gen() / 4, model="klein")
+    assert Polygon(vertices=[p0, pK, qL]).parent() is HyperbolicPlane(AA)

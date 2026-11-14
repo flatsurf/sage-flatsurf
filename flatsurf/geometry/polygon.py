@@ -1285,38 +1285,78 @@ def Polygon(
     base_ring=None,
     category=None,
     check=True,
+    geometry=None,
+    parent=None,
+    model=None,
     **kwds,
 ):
     r"""
-    Return a polygon from the given ``vertices``, ``edges``, or ``angles``.
+    Return a Euclidean or hyperbolic polygon from the given ``vertices``,
+    ``edges``, or ``angles``.
+
+    The polygon is Euclidean unless the input is explicitly hyperbolic:
+    ``geometry="hyperbolic"``, ``parent`` a hyperbolic plane, or a vertex that
+    is a point of a hyperbolic plane. Numbers alone always give a Euclidean
+    polygon.
 
     INPUT:
 
     - ``vertices`` -- a sequence of vertices or ``None`` (default: ``None``); the
-      vertices of the polygon as points in the real plane
+      vertices of the polygon as points in the real plane. For a hyperbolic
+      polygon, each vertex is a point of a hyperbolic plane or a pair of
+      coordinates in ``model``.
 
     - ``edges`` -- a sequence of vectors or ``None`` (default: ``None``); the
-      vectors connecting the vertices of the polygon
+      vectors connecting the vertices of the polygon. A hyperbolic polygon has
+      no edge vectors and refuses them.
 
     - ``angles`` -- a sequence of numbers that prescribe the inner angles of
-      the polygon or ``None`` (default: ``None``); the angles are rescaled so
-      that their sum matches the sum of the angles in an ngon.
+      the polygon or ``None`` (default: ``None``). For a Euclidean polygon,
+      angles summing to `(n - 2)/2` are read as multiples of `2\pi` and other
+      angles are rescaled so that their sum matches the sum of the angles in
+      an ngon. For a hyperbolic polygon, the angles are multiples of `2\pi`
+      and only triangles can be built from their angles.
 
     - ``lengths`` -- a sequence of numbers that prescribe the lengths of the
-      edges of the polygon or ``None`` (default: ``None``)
+      edges of the polygon or ``None`` (default: ``None``); not supported for
+      a hyperbolic polygon.
 
     - ``base_ring`` -- a ring or ``None`` (default: ``None``); the ring over
-      which the polygon will be defined
+      which the polygon will be defined. For a hyperbolic polygon, the base
+      ring of the hyperbolic plane containing it; it must be the base ring of
+      ``parent`` when both are given.
 
     - ``category`` -- a category or ``None`` (default: ``None``); the category
       the polygon will be in (further refined from the features of the polygon
-      that are found during the construction).
+      that are found during the construction). The category of a hyperbolic
+      polygon is fixed and cannot be given.
 
     - ``check`` -- a boolean (default: ``True``); whether to check the
       consistency of the parameters or blindly trust them. Setting this to
       ``False`` allows creation of degenerate polygons in some cases. While
       they might be somewhat functional, no guarantees are made about such
       polygons.
+
+    - ``geometry`` -- ``"euclidean"``, ``"hyperbolic"`` or ``None`` (default:
+      ``None``); the geometry of the polygon, deduced from the other
+      arguments when ``None``. This is a string, unlike the ``geometry`` of
+      :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane` which fixes the
+      numerics of a plane.
+
+    - ``parent`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane`
+      or ``None`` (default: ``None``); the hyperbolic plane containing the
+      polygon. When ``None``, the plane is deduced from the base ring and
+      from the vertices.
+
+    - ``model`` -- ``"klein"``, ``"half_plane"`` or ``None`` (default:
+      ``None``, meaning ``"klein"``); the model of the hyperbolic plane in
+      which vertices given as pairs of numbers are read. Only for a
+      hyperbolic polygon given by its vertices.
+
+    OUTPUT:
+
+    A :class:`~flatsurf.geometry.polygon.EuclideanPolygon` or a
+    :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`.
 
     EXAMPLES:
 
@@ -1475,6 +1515,91 @@ def Polygon(
         ...
         ValueError: the ring must be exact, not Real Field with 53 bits of precision
 
+    The same vertices give a Euclidean or a hyperbolic polygon, read in the
+    Klein model::
+
+        sage: Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+        Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+        sage: P = Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)], geometry="hyperbolic")
+        sage: P
+        Hyperbolic polygon with vertices [I, (1/2, 0), (0, 1/2)]
+        sage: P.parent()
+        Hyperbolic Plane over Rational Field
+
+    Euclidean angles are rescaled, hyperbolic angles are multiples of `2\pi`::
+
+        sage: Polygon(angles=(1/6, 1/8, 1/8)).angles()
+        (1/5, 3/20, 3/20)
+        sage: Polygon(angles=(1/6, 1/8, 1/8), geometry="hyperbolic").angles()
+        (1/6, 1/8, 1/8)
+
+    The hyperbolic plane can be given; otherwise it is deduced from the
+    coordinates and from the planes of the vertices that are points::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: K.<s> = QuadraticField(2)
+        sage: HK = HyperbolicPlane(K)
+        sage: Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)], parent=HK).parent()
+        Hyperbolic Plane over Number Field in s with defining polynomial x^2 - 2 with s = 1.414213562373095?
+
+        sage: H = HyperbolicPlane(QQ)
+        sage: p0 = H.point(0, 0, model="klein")
+        sage: pK = HK.point(s/4, 0, model="klein")
+        sage: qK = HK.point(0, s/4, model="klein")
+        sage: Polygon(vertices=[p0, pK, qK]).parent()
+        Hyperbolic Plane over Number Field in s with defining polynomial x^2 - 2 with s = 1.414213562373095?
+
+    Coordinates can be read in the upper half plane model::
+
+        sage: Polygon(vertices=[(0, 1), (1, 1), (0, 2)], model="half_plane", geometry="hyperbolic")
+        Hyperbolic polygon with vertices [I, 1 + I, 2*I]
+
+    TESTS::
+
+        sage: V = [(0, 0), (1/2, 0), (0, 1/2)]
+        sage: Polygon(vertices=V, geometry="spherical")
+        Traceback (most recent call last):
+        ...
+        ValueError: geometry must be "euclidean" or "hyperbolic", not 'spherical'
+        sage: Polygon(vertices=V, geometry="euclidean", parent=H)
+        Traceback (most recent call last):
+        ...
+        ValueError: parent is a hyperbolic plane but geometry is "euclidean"
+        sage: Polygon(vertices=V, parent=QQ)
+        Traceback (most recent call last):
+        ...
+        ValueError: parent must be a HyperbolicPlane, not Rational Field
+        sage: p1 = H.point(1/2, 0, model="klein")
+        sage: p2 = H.point(0, 1/2, model="klein")
+        sage: Polygon(vertices=[p0, p1, p2], geometry="euclidean")
+        Traceback (most recent call last):
+        ...
+        ValueError: the vertices are hyperbolic points but geometry is "euclidean"
+        sage: Polygon(vertices=[p0, pK, qK], parent=H)
+        Traceback (most recent call last):
+        ...
+        ValueError: the vertices do not convert into Hyperbolic Plane over Rational Field
+        sage: Polygon(edges=[(1, 0), (-1, 1), (0, -1)], geometry="hyperbolic")
+        Traceback (most recent call last):
+        ...
+        ValueError: a hyperbolic polygon has no edge vectors; give its vertices
+        sage: L.<t> = QuadraticField(3)
+        sage: qL = HyperbolicPlane(L).point(0, t/4, model="klein")
+        sage: Polygon(vertices=[p0, pK, qL])
+        Traceback (most recent call last):
+        ...
+        ValueError: the vertices lie in hyperbolic planes with no common base ring
+
+    Coordinates given as numbers must be exact, while an inexact plane is
+    accepted::
+
+        sage: Polygon(vertices=[(0, 0), (0.5, 0), (0, 0.5)], geometry="hyperbolic")
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Field with 53 bits of precision
+        sage: Polygon(vertices=V, parent=HyperbolicPlane(RR)).parent()
+        Hyperbolic Plane over Real Field with 53 bits of precision
+
     """
     if "base_point" in kwds:
         base_point = kwds.pop("base_point")
@@ -1491,6 +1616,9 @@ def Polygon(
             lengths=lengths,
             base_ring=base_ring,
             category=category,
+            geometry=geometry,
+            parent=parent,
+            model=model,
             **kwds,
         ).translate(base_point)
 
@@ -1545,6 +1673,21 @@ def Polygon(
 
     if kwds:
         raise ValueError("keyword argument not supported by Polygon()")
+
+    hyperbolic = _Polygon_hyperbolic(
+        vertices,
+        edges,
+        angles,
+        lengths,
+        base_ring,
+        category,
+        check,
+        geometry,
+        parent,
+        model,
+    )
+    if hyperbolic is not None:
+        return hyperbolic
 
     # Determine the number of sides of this polygon.
     if angles:
@@ -1604,6 +1747,139 @@ def Polygon(
         _Polygon_check(p, vertices, edges, angles, lengths, convex)
 
     return p
+
+
+def _Polygon_hyperbolic(
+    vertices,
+    edges,
+    angles,
+    lengths,
+    base_ring,
+    category,
+    check,
+    geometry,
+    parent,
+    model,
+):
+    r"""
+    Return the hyperbolic polygon described by the arguments of
+    :func:`Polygon`, or ``None`` when they describe a Euclidean polygon.
+
+    This is a helper function for :func:`Polygon`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import _Polygon_hyperbolic
+        sage: _Polygon_hyperbolic(vertices=[(0, 0), (1/2, 0), (0, 1/2)], edges=None, angles=None, lengths=None, base_ring=None, category=None, check=True, geometry="hyperbolic", parent=None, model=None)
+        Hyperbolic polygon with vertices [I, (1/2, 0), (0, 1/2)]
+        sage: _Polygon_hyperbolic(vertices=[(0, 0), (1/2, 0), (0, 1/2)], edges=None, angles=None, lengths=None, base_ring=None, category=None, check=True, geometry=None, parent=None, model=None) is None
+        True
+
+    """
+    from sage.categories.pushout import pushout
+    from sage.structure.coerce_exceptions import CoercionException
+
+    from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPoint
+
+    if geometry is not None:
+        if not isinstance(geometry, str) or geometry not in (
+            "euclidean",
+            "Euclidean",
+            "hyperbolic",
+            "Hyperbolic",
+        ):
+            raise ValueError(
+                f'geometry must be "euclidean" or "hyperbolic", not {geometry!r}'
+            )
+        geometry = geometry.lower()
+
+    if parent is not None:
+        if not isinstance(parent, HyperbolicPlane):
+            raise ValueError(f"parent must be a HyperbolicPlane, not {parent}")
+        if geometry == "euclidean":
+            raise ValueError('parent is a hyperbolic plane but geometry is "euclidean"')
+
+    points = [v for v in vertices or [] if isinstance(v, HyperbolicPoint)]
+    if points and geometry == "euclidean":
+        raise ValueError(
+            'the vertices are hyperbolic points but geometry is "euclidean"'
+        )
+
+    if geometry != "hyperbolic" and parent is None and not points:
+        if model is not None:
+            raise ValueError("model can only be used with a hyperbolic polygon")
+        return None
+
+    if edges:
+        raise ValueError("a hyperbolic polygon has no edge vectors; give its vertices")
+    if lengths:
+        raise NotImplementedError("a hyperbolic polygon cannot be built from lengths")
+    if category is not None:
+        raise ValueError("the category of a hyperbolic polygon cannot be chosen")
+    if not vertices and not angles:
+        raise NotImplementedError("one of vertices or angles must be set")
+    if vertices and angles:
+        raise ValueError(
+            "a hyperbolic polygon is built from vertices or from angles, not both"
+        )
+    if angles and model is not None:
+        raise ValueError("model can only be used with vertices")
+
+    if parent is not None:
+        if base_ring is not None and base_ring is not parent.base_ring():
+            raise ValueError(f"base_ring is {base_ring} but parent is {parent}")
+        H = parent
+    elif angles:
+        if base_ring is None:
+            # The triangle chooses the number field of its coordinates, which
+            # HyperbolicPlane.polygon cannot do without a plane; the length
+            # checks of HyperbolicPlane.polygon are repeated here.
+            angles = list(angles)
+            if len(angles) > 3:
+                raise NotImplementedError(
+                    "only triangles can be built from their angles"
+                )
+            if len(angles) < 3:
+                raise ValueError("a polygon has at least three angles")
+            from flatsurf.geometry.hyperbolic_surface_generators import (
+                hyperbolic_polygons,
+            )
+
+            return hyperbolic_polygons.triangle(*angles)
+        _check_exact(base_ring)
+        H = HyperbolicPlane(base_ring)
+    else:
+        ring = base_ring
+        if ring is None:
+            ring = QQ
+            numbers = [
+                c for v in vertices if not isinstance(v, HyperbolicPoint) for c in v
+            ]
+            if numbers:
+                ring = pushout(ring, Sequence(numbers).universe())
+        # Only the coordinates given as numbers must be exact; the planes of
+        # the points may be inexact, as HyperbolicPlane.polygon accepts them.
+        _check_exact(ring)
+        try:
+            for p in points:
+                ring = pushout(ring, p.parent().base_ring())
+        except CoercionException as e:
+            raise ValueError(
+                "the vertices lie in hyperbolic planes with no common base ring"
+            ) from e
+        H = HyperbolicPlane(ring)
+
+    if angles:
+        return H.polygon(angles=angles)
+
+    try:
+        vertices = [H(v) if isinstance(v, HyperbolicPoint) else v for v in vertices]
+    except (TypeError, ValueError) as e:
+        raise ValueError(f"the vertices do not convert into {H}") from e
+
+    return H.polygon(
+        vertices=vertices, model="klein" if model is None else model, check=check
+    )
 
 
 def _Polygon_base_ring(vertices, edges, angles, lengths):
