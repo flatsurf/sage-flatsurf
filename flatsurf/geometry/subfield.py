@@ -421,3 +421,29 @@ def cos_minpoly(n, var="x"):
         M = M(chebyshev_T(nn, var))
 
     return M
+
+
+def _check_exact(ring):
+    r"""
+    Raise a ``ValueError`` if ``ring`` is an inexact ring.
+
+    The closure, convexity and angle checks of a polygon, and the checks on
+    gluings and fields, are unreliable after rounding.
+
+    INPUT:
+
+    - ``ring`` -- a ring or ``None``
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import _check_exact
+        sage: _check_exact(None)
+        sage: _check_exact(QQ)
+        sage: _check_exact(RDF)
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Double Field
+
+    """
+    if ring is not None and not ring.is_exact():
+        raise ValueError(f"the ring must be exact, not {ring}")

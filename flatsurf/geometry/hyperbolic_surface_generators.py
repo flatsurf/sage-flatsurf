@@ -41,6 +41,8 @@ from sage.matrix.constructor import matrix
 from sage.matrix.special import diagonal_matrix, identity_matrix
 from sage.modules.free_module_element import vector
 
+from flatsurf.geometry.subfield import _check_exact
+
 
 def _angle(angle, name="angle"):
     r"""
@@ -170,32 +172,6 @@ def _walk(sides, angles):
             cos, sin = angles[i]
             frame = frame * matrix(AA, [[-cos, -sin, 0], [sin, -cos, 0], [0, 0, 1]])
     return vertices
-
-
-def _check_exact(ring):
-    r"""
-    Raise a ``ValueError`` if ``ring`` is an inexact ring.
-
-    The polygons are computed exactly in ``AA`` and the checks on their
-    gluings and fields assume an exact base ring.
-
-    INPUT:
-
-    - ``ring`` -- a ring or ``None``
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.hyperbolic_surface_generators import _check_exact
-        sage: _check_exact(None)
-        sage: _check_exact(QQ)
-        sage: _check_exact(RDF)
-        Traceback (most recent call last):
-        ...
-        ValueError: the ring must be exact, not Real Double Field
-
-    """
-    if ring is not None and not ring.is_exact():
-        raise ValueError(f"the ring must be exact, not {ring}")
 
 
 def _polygon(vertices, base_ring):

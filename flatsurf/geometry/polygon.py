@@ -52,6 +52,7 @@ from sage.structure.sequence import Sequence
 
 from flatsurf.geometry.subfield import (
     number_field_elements_from_algebraics,
+    _check_exact,
 )
 
 from flatsurf.geometry.categories import EuclideanPolygons
@@ -498,6 +499,13 @@ class EuclideanPolygon(Parent):
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: S.change_ring(K).base_ring()
             Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.4142...
+
+        The ring must be exact::
+
+            sage: S.change_ring(RDF)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Double Field
 
         """
         if ring is self.base_ring():
@@ -1089,6 +1097,19 @@ def Polygon(
         ...
         NotImplementedError: each angle must be in (0, 2π)
 
+    The base ring must be exact, whether it is given or computed from the
+    coordinates::
+
+        sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)], base_ring=RDF)
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Double Field
+
+        sage: Polygon(vertices=[(0, 0), (1.0, 0), (0, 1)])
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
     """
     if "base_point" in kwds:
         base_point = kwds.pop("base_point")
@@ -1176,6 +1197,8 @@ def Polygon(
     # Determine the base ring of the polygon
     if base_ring is None:
         base_ring = _Polygon_base_ring(vertices, edges, angles, lengths)
+
+    _check_exact(base_ring)
 
     if category is None:
         from flatsurf.geometry.categories import EuclideanPolygons

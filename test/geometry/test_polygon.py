@@ -116,3 +116,58 @@ def test_edge_deprecated(P):
 
     with pytest.warns(UserWarning, match="edge_vector"):
         assert P.edges() == P.edge_vectors()
+
+
+def _inexact_polygons():
+    from sage.all import RDF, RR
+
+    from flatsurf import Polygon, polygons
+
+    return {
+        "vertices-RDF": lambda: Polygon(
+            vertices=[(0, 0), (1, 0), (0, 1)], base_ring=RDF
+        ),
+        "vertices-RDF-unchecked": lambda: Polygon(
+            vertices=[(0, 0), (1, 0), (0, 1)], base_ring=RDF, check=False
+        ),
+        "edges-RR": lambda: Polygon(edges=[(1, 0), (-1, 1), (0, -1)], base_ring=RR),
+        "vertices-RR-computed": lambda: Polygon(vertices=[(0, 0), (1.0, 0), (0, 1)]),
+        "vertices-RDF-computed": lambda: Polygon(
+            vertices=[(0, 0), (float(1), 0), (0, 1)]
+        ),
+        "angles-RR": lambda: Polygon(angles=(1, 1, 1), base_ring=RR),
+        "change_ring-RDF": lambda: polygons.square().change_ring(RDF),
+        "square-RDF": lambda: polygons.square(base_ring=RDF),
+        "regular_ngon-RR": lambda: polygons.regular_ngon(8, field=RR),
+    }
+
+
+@pytest.mark.filterwarnings("ignore::UserWarning")
+@pytest.mark.parametrize(
+    "name",
+    [
+        "vertices-RDF",
+        "vertices-RDF-unchecked",
+        "edges-RR",
+        "vertices-RR-computed",
+        "vertices-RDF-computed",
+        "angles-RR",
+        "change_ring-RDF",
+        "square-RDF",
+        "regular_ngon-RR",
+    ],
+)
+def test_inexact_ring_refused(name):
+    with pytest.raises(ValueError, match="the ring must be exact, not"):
+        _inexact_polygons()[name]()
+
+
+def test_exact_rings_accepted():
+    from sage.all import AA, QQ
+
+    from flatsurf import Polygon, polygons
+
+    assert polygons.square().change_ring(AA).base_ring() is AA
+    assert (
+        Polygon(vertices=[(0, 0), (1.0, 0), (0, 1)], base_ring=QQ).base_ring() is QQ
+    )
