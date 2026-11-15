@@ -52,6 +52,7 @@ Demos of some of the capabilities of sage-flatsurf:
    examples/tour
    examples/defining_surfaces
    examples/hyperbolic_surfaces
+   examples/surfaces_as_classes
    examples/graphics_configuration
    examples/linear_action_and_delaunay
    examples/rel_deformations
