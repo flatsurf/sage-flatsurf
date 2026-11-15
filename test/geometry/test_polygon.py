@@ -788,3 +788,93 @@ def test_polygon_hyperbolic_no_common_base_ring():
     pK = HyperbolicPlane(K).point(K.gen() / 4, 0, model="klein")
     qL = HyperbolicPlane(L).point(0, L.gen() / 4, model="klein")
     assert Polygon(vertices=[p0, pK, qL]).parent() is HyperbolicPlane(AA)
+
+
+def _transformation_data():
+    from sage.all import QQ, QuadraticField
+
+    from flatsurf import Polygon, euclidean_polygons
+    from flatsurf.geometry.similarity import SimilarityGroup
+
+    G = SimilarityGroup(QQ)
+    K = QuadraticField(2, "a")
+    GK = SimilarityGroup(K)
+    S = euclidean_polygons.square()
+    N = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (1, 1), (0, 2)])
+    T = Polygon(angles=(1, 1, 1))
+    return G, GK, K, S, N, T
+
+
+def test_apply_similarity():
+    from flatsurf import Polygon
+
+    G, _, _, S, N, T = _transformation_data()
+    g = G((1, 2))
+    rot = G((0, 1, 0, 0))
+
+    assert S.apply_similarity(g) == Polygon(
+        vertices=[(1, 2), (2, 2), (2, 3), (1, 3)]
+    )
+    assert S.apply_similarity(rot) == Polygon(
+        vertices=[(0, 0), (0, 1), (-1, 1), (-1, 0)]
+    )
+    assert N.apply_similarity(g) == Polygon(
+        vertices=[(1, 2), (3, 2), (3, 4), (2, 3), (1, 4)]
+    )
+    assert g(N) == g * N == N.translate((1, 2))
+
+    image = T.apply_similarity(rot)
+    assert image.base_ring() is T.base_ring()
+    assert image.vertices() == tuple(rot(v) for v in T.vertices())
+
+
+def test_apply_transformation():
+    from flatsurf import Polygon
+
+    G, _, _, S, N, T = _transformation_data()
+    g = G((1, 2))
+    rot = G((0, 1, 0, 0))
+
+    assert S.apply_transformation(g) == Polygon(
+        vertices=[(1, 2), (2, 2), (2, 3), (1, 3)]
+    )
+    assert S.apply_transformation((1, 2)) == S.translate((1, 2))
+    assert N.apply_transformation(g) == Polygon(
+        vertices=[(1, 2), (3, 2), (3, 4), (2, 3), (1, 4)]
+    )
+
+    image = T.apply_transformation(rot)
+    assert image.base_ring() is T.base_ring()
+    assert image == T.apply_similarity(rot)
+
+
+def test_similarity_group_conversion():
+    from sage.all import vector
+
+    G, GK, _, _, _, _ = _transformation_data()
+    g = G((1, 2))
+
+    converted = GK(g)
+    assert converted.parent() is GK
+    assert converted(vector((1, 1))) == vector((2, 3))
+    assert G(GK((2, 0, 0, 0))) == G((2, 0, 0, 0))
+
+
+def test_transformation_errors():
+    from sage.all import QQ, matrix
+
+    from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+
+    G, GK, K, S, _, _ = _transformation_data()
+    gK = GK((K.gen(), 0, 0, 0))
+    r = G((1, 0, 0, 0, -1))
+    h = HyperbolicIsometryGroup(QQ)(matrix(QQ, [[0, -1, 0], [1, 0, 0], [0, 0, 1]]))
+
+    with pytest.raises(ValueError, match="similarity must preserve the orientation"):
+        S.apply_similarity(r)
+    with pytest.raises(ValueError, match="cannot be used to create element in"):
+        S.apply_transformation(h)
+    with pytest.raises(TypeError, match="Unable to coerce a to a rational"):
+        S.apply_transformation(gK)
+    with pytest.raises(TypeError, match="Unable to coerce a to a rational"):
+        G(gK)

@@ -1003,6 +1003,65 @@ class HyperbolicPolygon(Parent):
             vertices=[centre.coordinates(model="klein")] + list(vertices[: k + 1])
         )
 
+    def _transformation_group(self):
+        r"""
+        Return the group of the orientation preserving isometries of the
+        hyperbolic plane, over the base ring of this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])._transformation_group()
+            Group of orientation preserving isometries of the hyperbolic plane over Rational Field
+
+        """
+        from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+
+        return HyperbolicIsometryGroup(self.parent().base_ring())
+
+    def _mul_(self, g, switch_sides=None):
+        r"""
+        Return the image of this polygon under the hyperbolic isometry ``g``.
+
+        A matrix is refused since it is ambiguous between the models; use
+        :meth:`apply_isometry` for it.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: H = HyperbolicPlane(QQ)
+            sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: M = matrix([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+            sage: h = HyperbolicIsometryGroup(QQ)(M)
+            sage: h * P
+            Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+            sage: P * h
+            Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+
+            sage: K.<a> = QuadraticField(2)
+            sage: hK = HyperbolicIsometryGroup(K)(matrix(K, [[a/2, -a/2, 0], [a/2, a/2, 0], [0, 0, 1]]))
+            sage: hK * P
+            Hyperbolic polygon with vertices [I, (1/4*a, 1/4*a), (-1/4*a, 1/4*a)]
+
+            sage: M * P
+            Traceback (most recent call last):
+            ...
+            TypeError: cannot multiply a hyperbolic polygon with an object of type <class 'sage.matrix.matrix_integer_dense.Matrix_integer_dense'>; use apply_isometry() to apply a matrix
+
+        """
+        from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometry
+
+        if isinstance(g, HyperbolicIsometry):
+            return g(self)
+
+        raise TypeError(
+            "cannot multiply a hyperbolic polygon with an object of type {}; use apply_isometry() to apply a matrix".format(
+                type(g)
+            )
+        )
+
     def apply_isometry(self, isometry, model="klein"):
         r"""
         Return the image of this polygon under the orientation preserving

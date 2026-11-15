@@ -306,3 +306,38 @@ def test_constructor_errors(G):
         G([[1, 0, 0], [0, 1, 0], [0, 0, -1]])
     with pytest.raises(ValueError):
         G(matrix(QQ, [[1, 0], [0, -1]]))
+
+
+def test_polygon_transformations(H, G):
+    from sage.all import QuadraticField
+
+    from flatsurf.geometry.similarity import SimilarityGroup
+
+    P = H.polygon(vertices=[(0, 0), (QQ(1) / 2, 0), (0, QQ(1) / 2)])
+    M = matrix(QQ, QUARTER_TURN)
+    h = G(M)
+    expected = H.polygon(vertices=[(0, 0), (0, QQ(1) / 2), (-QQ(1) / 2, 0)])
+
+    assert P.apply_transformation(h) == expected
+    assert h(P) == expected
+    assert h * P == expected
+    assert P * h == expected
+    assert P.apply_transformation(M) == expected
+    assert P.apply_transformation(M.rows()) == expected
+
+    K = QuadraticField(2, "a")
+    a = K.gen()
+    hK = HyperbolicIsometryGroup(K)(
+        matrix(K, [[a / 2, -a / 2, 0], [a / 2, a / 2, 0], [0, 0, 1]])
+    )
+    assert hK * P == hK(P)
+
+    g = SimilarityGroup(QQ)((1, 2))
+    with pytest.raises(ValueError, match="cannot be used to create element in"):
+        P.apply_transformation(g)
+    with pytest.raises(ValueError, match="cannot be used to create element in"):
+        G(2)
+    with pytest.raises(TypeError, match="Unable to coerce 1/2\\*a to a rational"):
+        P.apply_transformation(hK)
+    with pytest.raises(TypeError):
+        M * P

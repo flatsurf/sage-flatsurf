@@ -573,6 +573,97 @@ class Polygons(Category_over_base_ring):
 
             return Polygons._describe_polygon(len(self.vertices()), **properties)
 
+        @abstract_method(optional=True)
+        def _transformation_group(self):
+            r"""
+            Return the group of the transformations of the plane of this
+            polygon, over the base ring of this polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import euclidean_polygons
+                sage: S = euclidean_polygons.square()
+                sage: S._transformation_group()
+                Similarity group over Rational Field
+
+            """
+
+        def apply_transformation(self, g):
+            r"""
+            Return the image of this polygon under the transformation ``g``.
+
+            INPUT:
+
+            - ``g`` -- a similarity for a Euclidean polygon, an orientation
+              preserving isometry for a hyperbolic polygon, or anything that
+              the group of such transformations over the base ring of this
+              polygon converts (a tuple for a ``SimilarityGroup``, a matrix
+              for a ``HyperbolicIsometryGroup``)
+
+            OUTPUT:
+
+            A polygon over the base ring of this polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import euclidean_polygons, Polygon, HyperbolicPlane
+                sage: from flatsurf.geometry.similarity import SimilarityGroup
+                sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+                sage: S = euclidean_polygons.square()
+                sage: G = SimilarityGroup(QQ)
+                sage: g = G((1, 2))
+                sage: S.apply_transformation(g)
+                Polygon(vertices=[(1, 2), (2, 2), (2, 3), (1, 3)])
+                sage: S.apply_transformation((1, 2))
+                Polygon(vertices=[(1, 2), (2, 2), (2, 3), (1, 3)])
+
+            The image is over the base ring of the polygon::
+
+                sage: T = Polygon(angles=(1, 1, 1))
+                sage: rot = G((0, 1, 0, 0))
+                sage: T.apply_transformation(rot).base_ring() is T.base_ring()
+                True
+
+            Hyperbolic polygons are moved by hyperbolic isometries::
+
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+                sage: M = matrix([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+                sage: h = HyperbolicIsometryGroup(QQ)(M)
+                sage: P.apply_transformation(h)
+                Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+                sage: P.apply_transformation(M)
+                Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+
+            A transformation of the other geometry is refused::
+
+                sage: S.apply_transformation(h)
+                Traceback (most recent call last):
+                ...
+                ValueError: element in Group of orientation preserving isometries of the hyperbolic plane over Rational Field cannot be used to create element in Similarity group over Rational Field
+                sage: P.apply_transformation(g)
+                Traceback (most recent call last):
+                ...
+                ValueError: element in Similarity group over Rational Field cannot be used to create element in Group of orientation preserving isometries of the hyperbolic plane over Rational Field
+
+            So is a transformation over a ring that does not convert into the
+            base ring::
+
+                sage: K.<a> = QuadraticField(2)
+                sage: gK = SimilarityGroup(K)((a, 0, 0, 0))
+                sage: S.apply_transformation(gK)
+                Traceback (most recent call last):
+                ...
+                TypeError: Unable to coerce a to a rational
+
+            .. SEEALSO::
+
+                ``apply_similarity()`` for Euclidean polygons and
+                ``apply_isometry()`` for hyperbolic polygons
+
+            """
+            return self._transformation_group()(g)(self)
+
         def _test_refined_category(self, **options):
             r"""
             Verify that the polygon is in the smallest category that can be

@@ -207,6 +207,75 @@ class EuclideanPolygons(Category_over_base_ring):
                 category=self.category(),
             )
 
+        def _transformation_group(self):
+            r"""
+            Return the group of the similarities of the plane, over the base
+            ring of this polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import euclidean_polygons
+                sage: euclidean_polygons.square()._transformation_group()
+                Similarity group over Rational Field
+
+            """
+            from flatsurf.geometry.similarity import SimilarityGroup
+
+            return SimilarityGroup(self.base_ring())
+
+        def apply_similarity(self, similarity):
+            r"""
+            Return the image of this polygon under the orientation preserving
+            ``similarity``.
+
+            INPUT:
+
+            - ``similarity`` -- a similarity, or anything that the group of
+              similarities over the base ring of this polygon converts (such
+              as a tuple)
+
+            OUTPUT:
+
+            A polygon over the base ring of this polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import euclidean_polygons, Polygon
+                sage: from flatsurf.geometry.similarity import SimilarityGroup
+                sage: G = SimilarityGroup(QQ)
+                sage: S = euclidean_polygons.square()
+                sage: S.apply_similarity(G((1, 2)))
+                Polygon(vertices=[(1, 2), (2, 2), (2, 3), (1, 3)])
+                sage: S.apply_similarity(G((0, 1, 0, 0)))
+                Polygon(vertices=[(0, 0), (0, 1), (-1, 1), (-1, 0)])
+
+            A non-convex polygon::
+
+                sage: N = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (1, 1), (0, 2)])
+                sage: N.apply_similarity(G((1, 2)))
+                Polygon(vertices=[(1, 2), (3, 2), (3, 4), (2, 3), (1, 4)])
+
+            The image is over the base ring of the polygon::
+
+                sage: T = Polygon(angles=(1, 1, 1))
+                sage: T.apply_similarity(G((0, 1, 0, 0))).base_ring() is T.base_ring()
+                True
+
+            The similarity must preserve the orientation::
+
+                sage: S.apply_similarity(G((1, 0, 0, 0, -1)))
+                Traceback (most recent call last):
+                ...
+                ValueError: similarity must preserve the orientation
+
+            """
+            similarity = self._transformation_group()(similarity)
+
+            if similarity._sign == -1:
+                raise ValueError("similarity must preserve the orientation")
+
+            return similarity(self)
+
         @cached_method
         def is_rational(self):
             r"""

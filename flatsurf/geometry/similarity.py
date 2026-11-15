@@ -256,7 +256,7 @@ class Similarity(MultiplicativeGroupElement):
     def __call__(self, w, ring=None):
         r"""
         Return the image of ``w`` under the similarity. Here ``w`` may be a
-        convex polygon or a vector (or something that can be indexed in the
+        polygon or a vector (or something that can be indexed in the
         same way as a vector). If a ring is provided, the objects returned will
         be defined over this ring.
 
@@ -295,13 +295,19 @@ class Similarity(MultiplicativeGroupElement):
             sage: g(p, ring=AA).category()
             Category of convex simple euclidean polygons over Algebraic Real Field
 
+        A non-convex polygon is moved as well::
+
+            sage: N = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (1, 1), (0, 2)])
+            sage: SG((1, 2))(N)
+            Polygon(vertices=[(1, 2), (3, 2), (3, 4), (2, 3), (1, 4)])
+
         """
         if ring is not None and ring not in Rings():
             raise TypeError("ring must be a ring")
 
         from flatsurf.geometry.polygon import EuclideanPolygon
 
-        if isinstance(w, EuclideanPolygon) and w.is_convex():
+        if isinstance(w, EuclideanPolygon):
             if ring is None:
                 ring = self.parent().base_ring()
 
@@ -623,6 +629,22 @@ class SimilarityGroup(UniqueRepresentation, Group):
 
             sage: S(vector((1,1)))
             (x, y) |-> (x + 1, y + 1)
+
+        A similarity over another ring is converted coefficient by
+        coefficient::
+
+            sage: K.<a> = QuadraticField(2)
+            sage: SK = SimilarityGroup(K)
+            sage: SK(S((1, 2)))
+            (x, y) |-> (x + 1, y + 2)
+            sage: SK(S((1, 2))).parent() is SK
+            True
+            sage: S(SK((2, 0, 0, 0)))
+            (x, y) |-> (2*x, 2*y)
+            sage: S(SK((a, 0, 0, 0)))
+            Traceback (most recent call last):
+            ...
+            TypeError: Unable to coerce a to a rational
         """
         if len(args) == 1:
             x = args[0]
@@ -672,6 +694,9 @@ class SimilarityGroup(UniqueRepresentation, Group):
                     s, t = map(self._ring, x)
             else:
                 raise ValueError("invalid dimension for vector input")
+        elif isinstance(x, Similarity):
+            a, b, s, t = map(self._ring, (x._a, x._b, x._s, x._t))
+            sign = x._sign
         else:
             p = parent(x)
             if self._ring.has_coerce_map_from(p):

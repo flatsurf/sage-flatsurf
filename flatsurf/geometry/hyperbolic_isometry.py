@@ -1639,7 +1639,8 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
         - ``x`` -- an isometry, a 3×3 matrix of `\mathrm{SO}(2, 1)^+`, or a
           2×2 matrix of positive determinant acting on the upper half plane
           as in
-          :meth:`~flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry`
+          :meth:`~flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry`;
+          a matrix may be given as the list (or tuple) of its rows
 
         ALGORITHM:
 
@@ -1676,6 +1677,18 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             Traceback (most recent call last):
             ...
             ValueError: matrix must be 2×2 or 3×3
+            sage: G([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+            [ 0 -1  0]
+            [ 1  0  0]
+            [ 0  0  1]
+
+        Something that is neither an isometry nor a matrix is refused::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: G(SimilarityGroup(QQ)((1, 2)))
+            Traceback (most recent call last):
+            ...
+            ValueError: element in Similarity group over Rational Field cannot be used to create element in Group of orientation preserving isometries of the hyperbolic plane over Rational Field
 
         """
         from sage.matrix.constructor import matrix
@@ -1688,6 +1701,15 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             return self.element_class(self, M)
 
         if not isinstance(x, Matrix):
+            if not isinstance(x, (list, tuple)):
+                from sage.structure.element import parent
+
+                raise ValueError(
+                    "element in {} cannot be used to create element in {}".format(
+                        parent(x), self
+                    )
+                )
+
             x = matrix(K, x)
 
         if x.dimensions() == (2, 2):
