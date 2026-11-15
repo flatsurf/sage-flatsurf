@@ -1608,7 +1608,7 @@ def Polygon(
         warnings.warn(
             "base_point has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead"
         )
-        return Polygon(
+        polygon = Polygon(
             *args,
             vertices=vertices,
             edges=edges,
@@ -1620,7 +1620,10 @@ def Polygon(
             parent=parent,
             model=model,
             **kwds,
-        ).translate(base_point)
+        )
+        if not isinstance(polygon, EuclideanPolygon):
+            raise ValueError("base_point can only be used with a Euclidean polygon")
+        return polygon.translate(base_point)
 
     if "ring" in kwds:
         import warnings
@@ -1826,7 +1829,7 @@ def _Polygon_hyperbolic(
         raise ValueError("model can only be used with vertices")
 
     if parent is not None:
-        if base_ring is not None and base_ring is not parent.base_ring():
+        if base_ring is not None and base_ring != parent.base_ring():
             raise ValueError(f"base_ring is {base_ring} but parent is {parent}")
         H = parent
     elif angles:

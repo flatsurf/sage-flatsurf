@@ -286,7 +286,11 @@ def _euclidean_errors():
             "angles must be positive rationals",
         ),
         "triangle-float": (lambda: E.triangle(1.0, 2.0, 3.0), TypeError, None),
-        "triangle-QQ": (lambda: E.triangle(1, 2, 3, base_ring=QQ), ValueError, not_in_QQ),
+        "triangle-QQ": (
+            lambda: E.triangle(1, 2, 3, base_ring=QQ),
+            ValueError,
+            not_in_QQ,
+        ),
         "triangle-RR": (
             lambda: E.triangle(1, 2, 3, base_ring=RR),
             ValueError,
@@ -457,7 +461,10 @@ def _hyperbolic_in():
 
     return {
         "W": (lambda: Polygon(vertices=W, geometry="hyperbolic"), "HK"),
-        "V-AA": (lambda: Polygon(vertices=V, geometry="hyperbolic", base_ring=AA), "HA"),
+        "V-AA": (
+            lambda: Polygon(vertices=V, geometry="hyperbolic", base_ring=AA),
+            "HA",
+        ),
         "angles-AA": (
             lambda: Polygon(angles=A, geometry="hyperbolic", base_ring=AA),
             "HA",
@@ -501,6 +508,7 @@ def test_polygon_hyperbolic_in(name):
     P = call()
     assert isinstance(P, HyperbolicPolygon)
     assert P.parent() is _both_geometries()[plane]
+    assert P.is_convex() == (name != "non-convex")
 
 
 def test_polygon_hyperbolic_half_plane_vertices():
@@ -557,7 +565,7 @@ def _hyperbolic_errors():
     half = QQ(1) / 2
     edges = [(1, 0), (-1, 1), (0, -1)]
     not_in_QQ = "do not lie in Rational Field"
-    inexact = "the ring must be exact, not Real"
+    inexact = "the ring must be exact, not Real Field with 53 bits of precision"
 
     def hyp(**kwds):
         return lambda: Polygon(geometry="hyperbolic", **kwds)
@@ -618,49 +626,55 @@ def _hyperbolic_errors():
         "parent-base_ring": (
             lambda: Polygon(vertices=V, parent=H1, base_ring=AA),
             ValueError,
-            "base_ring is Algebraic Real Field but parent is Hyperbolic Plane over Rational Field",
+            "base_ring is Algebraic Real Field but parent is Hyperbolic Plane over "
+            "Rational Field",
         ),
         "points-infinite": (
             lambda: Polygon(vertices=[H1(0), p1, p2]),
             ValueError,
             "vertex 0 is not a finite point",
         ),
-        "a": (
+        "geometry-unknown": (
             lambda: Polygon(vertices=V, geometry="spherical"),
             ValueError,
-            re.escape("geometry must be \"euclidean\" or \"hyperbolic\", not 'spherical'"),
+            re.escape(
+                "geometry must be \"euclidean\" or \"hyperbolic\", not 'spherical'"
+            ),
         ),
-        "a-object": (
+        "geometry-object": (
             lambda: Polygon(vertices=V, geometry=H1.geometry),
             ValueError,
-            "not Exact geometry over Rational Field",
+            re.escape(
+                'geometry must be "euclidean" or "hyperbolic", not '
+                "Exact geometry over Rational Field"
+            ),
         ),
-        "b": (
+        "geometry-parent": (
             lambda: Polygon(vertices=V, geometry="euclidean", parent=H1),
             ValueError,
             re.escape('parent is a hyperbolic plane but geometry is "euclidean"'),
         ),
-        "c": (
+        "parent-not-a-plane": (
             lambda: Polygon(vertices=V, parent=QQ),
             ValueError,
             "parent must be a HyperbolicPlane, not Rational Field",
         ),
-        "d": (
+        "points-euclidean": (
             lambda: Polygon(vertices=[p0, p1, p2], geometry="euclidean"),
             ValueError,
             re.escape('the vertices are hyperbolic points but geometry is "euclidean"'),
         ),
-        "e": (
+        "points-not-in-parent": (
             lambda: Polygon(vertices=[p0, pK, qK], parent=H1),
             ValueError,
             "the vertices do not convert into Hyperbolic Plane over Rational Field",
         ),
-        "f": (
+        "edges": (
             hyp(edges=edges),
             ValueError,
             re.escape("a hyperbolic polygon has no edge vectors; give its vertices"),
         ),
-        "f-parent": (
+        "edges-parent": (
             lambda: Polygon(edges=edges, parent=H1),
             ValueError,
             re.escape("a hyperbolic polygon has no edge vectors; give its vertices"),
@@ -700,8 +714,58 @@ def test_polygon_hyperbolic_errors(name):
         call()
 
 
+def _hyperbolic_base_point():
+    r"""
+    Return the calls of ``Polygon`` with the deprecated ``base_point`` that
+    describe a hyperbolic polygon.
+    """
+    from flatsurf import Polygon
+
+    d = _both_geometries()
+    V, H1 = d["V"], d["H1"]
+    p0, p1, p2 = d["p"]
+
+    return {
+        "geometry": lambda: Polygon(
+            vertices=V, base_point=(1, 1), geometry="hyperbolic"
+        ),
+        "parent": lambda: Polygon(vertices=V, base_point=(1, 1), parent=H1),
+        "points": lambda: Polygon(vertices=[p0, p1, p2], base_point=(1, 1)),
+    }
+
+
+@pytest.mark.parametrize("name", list(_hyperbolic_base_point()))
+def test_polygon_hyperbolic_base_point(name):
+    call = _hyperbolic_base_point()[name]
+    with pytest.warns(UserWarning, match="base_point has been deprecated"):
+        with pytest.raises(
+            ValueError, match="base_point can only be used with a Euclidean polygon"
+        ):
+            call()
+
+
+def test_polygon_euclidean_base_point():
+    from flatsurf import Polygon
+
+    V = _both_geometries()["V"]
+    with pytest.warns(UserWarning, match="base_point has been deprecated"):
+        P = Polygon(vertices=V, base_point=(1, 1))
+    assert P == Polygon(vertices=V).translate((1, 1))
+
+
+def test_polygon_hyperbolic_not_in_parent_cause():
+    from flatsurf import Polygon
+
+    d = _both_geometries()
+    H1, (p0, _, _), pK, qK = d["H1"], d["p"], d["pK"], d["qK"]
+    with pytest.raises(ValueError, match="the vertices do not convert") as excinfo:
+        Polygon(vertices=[p0, pK, qK], parent=H1)
+    assert isinstance(excinfo.value.__cause__, TypeError)
+
+
 def test_polygon_hyperbolic_no_common_base_ring():
     from sage.all import AA, QQ, NumberField, QuadraticField, polygen
+    from sage.structure.coerce_exceptions import CoercionException
 
     from flatsurf import HyperbolicPlane, Polygon
 
@@ -714,8 +778,9 @@ def test_polygon_hyperbolic_no_common_base_ring():
     with pytest.raises(
         ValueError,
         match="the vertices lie in hyperbolic planes with no common base ring",
-    ):
+    ) as excinfo:
         Polygon(vertices=[p0, pK, qL])
+    assert isinstance(excinfo.value.__cause__, CoercionException)
 
     x = polygen(QQ)
     K = NumberField(x**2 - 2, "s", embedding=AA(2).sqrt())

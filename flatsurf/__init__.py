@@ -13,6 +13,8 @@ from flatsurf.geometry.polygon import (
     EuclideanPolygons as Polygons,
     ConvexPolygons,
 )
+from flatsurf.geometry.categories import EuclideanPolygons, HyperbolicPolygons
+from flatsurf.geometry.polygon import EuclideanPolygon
 
 from flatsurf.geometry.similarity_surface_generators import (
     similarity_surfaces,
