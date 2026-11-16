@@ -2174,7 +2174,9 @@ def _triangle_group_degree_bound(m1, m2, m3):
     c_j^2 \cdot 4 \Delta`, `\Delta = c_1^2 + c_2^2 + c_3^2 + 2 c_1 c_2 c_3 -
     1`, by Maclachlan and Reid, The Arithmetic of Hyperbolic 3-Manifolds
     (2003), Theorem 3.6.2 and the Fricke identity. A hyperbolic triangle
-    group has at most one period 2.
+    group has at most one period 2. The splitting is decided by the global
+    Hilbert symbol of `a` and `b` over `k_0`, which is 1 exactly when `A_0`
+    is a matrix algebra.
 
     If the Klein coordinates of a triangle lie in a real field `F`, the
     pairings of its pillowcase lie over `F`, so `\Gamma` lies in the
@@ -2185,7 +2187,7 @@ def _triangle_group_degree_bound(m1, m2, m3):
     algebra.
 
     """
-    from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
+    from sage.arith.misc import hilbert_conductor
     from flatsurf.geometry.subfield import number_field_elements_from_algebraics
 
     periods = (m1, m2, m3)
@@ -2201,7 +2203,11 @@ def _triangle_group_degree_bound(m1, m2, m3):
     b = 16 * squares[i] * squares[j] * 4 * delta
 
     degree = k0.degree()
-    if QuaternionAlgebra(k0, a, b).is_matrix_ring():
+    if k0 is QQ:
+        splits = hilbert_conductor(a, b) == 1
+    else:
+        splits = k0.hilbert_symbol(a, b) == 1
+    if splits:
         return degree
     return 2 * degree
 

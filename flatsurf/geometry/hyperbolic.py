@@ -9317,7 +9317,7 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: p.coordinates()
             Traceback (most recent call last):
             ...
-            ValueError: square root of 3/4 not in Rational Field
+            ValueError: square root of 3/4 not a rational number
 
             sage: K.<a> = NumberField(x^2 - 3/4)
             sage: p.coordinates(ring=K)
@@ -9367,9 +9367,9 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
 
             square = 1 - x * x - y * y
             try:
-                sqrt = square.sqrt()
-                if sqrt not in x.parent():
-                    raise ValueError(f"square root of {square} not in {x.parent()}")
+                # Without extend=False, the square root of a non-square is a
+                # symbolic expression instead of an error.
+                sqrt = square.sqrt(extend=False)
             except ValueError:
                 if ring == "maybe":
                     return None
