@@ -16,7 +16,10 @@ kernelspec:
 
 sage-flatsurf handles flat and hyperbolic surfaces. Both are built the same
 way, either from collections of pre-built surfaces or by gluing polygons, and
-they share many methods.
+they share many methods. A surface with infinitely many polygons is written as
+a class that computes its polygons and their gluings. This is explained, for a
+flat and for a hyperbolic example, in
+[Building finite and infinite surfaces as classes](./surfaces_as_classes).
 
 ## Built in surfaces
 
@@ -125,11 +128,15 @@ X
 
 ## Minimal translation surface covers
 
-Continuing the billiard example above, we get an infinite translation surface
-below:
+The minimal translation cover of the flat pillowcase `F` built above is a
+translation surface:
 
 ```{code-cell}
-ss = s.minimal_cover(cover_type="translation")
+ss = F.minimal_cover(cover_type="translation")
+```
+
+```{code-cell}
+ss
 ```
 
 ```{code-cell}
@@ -313,7 +320,7 @@ S
 [S(0, i).angle(numerical=True) for i in range(3)]
 ```
 
-## Methods in common
+## Basic geometric invariants
 
 Flat and hyperbolic surfaces share many methods. Here they are compared on the
 flat pillowcase `F` and the hyperbolic pillowcase `X` built above. Angles are
@@ -425,7 +432,7 @@ s
 s.plot()
 ```
 
-## From polyhedra
+## Flat surface of a polyhedron
 
 ```{code-cell}
 from flatsurf.geometry.polyhedra import platonic_dodecahedron
@@ -467,11 +474,3 @@ s
 ```{code-cell}
 s.plot()
 ```
-
-## Defining an infinite surface from scratch
-
-Finite surfaces can be built by gluing polygons into a
-``MutableOrientedSimilaritySurface``. A surface with infinitely many polygons
-is written as a class that computes its polygons and their gluings. This is
-explained, for a flat and for a hyperbolic example, in
-[Building finite and infinite surfaces as classes](./surfaces_as_classes).

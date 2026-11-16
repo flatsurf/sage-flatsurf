@@ -80,12 +80,11 @@ axioms it satisfies:
 The methods that a surface offers come from its category. A category that is
 too weak gives fewer methods: only a translation surface has the methods of
 translation surfaces. A category that is wrong gives wrong answers, since the
-methods trust it. For
-a finite surface, the category can be computed from the polygons and the
-gluings, which is what happens when a mutable surface is made immutable. For
-an infinite surface nothing can be computed, since only finitely many polygons
-can ever be looked at, so the category is stated explicitly. The examples
-below show the category of the surface with `category()`.
+methods trust it. For a finite surface, the category can be computed from the
+polygons and the gluings, which is what happens when a mutable surface is made
+immutable. For an infinite surface nothing can be computed, since only finitely
+many polygons can ever be looked at, so the category is stated explicitly. The
+examples below show the category of the surface with `category()`.
 
 ## A flat example: the parabola surface
 
@@ -94,10 +93,10 @@ stack up inside the parabola $y = x^2$. The polygon with label $1$ is the
 triangle with vertices $(0, 0)$, $(1, 1)$ and $(-1, 1)$. For a label $n > 1$ it
 is the quadrilateral of the points inside the parabola between the heights
 $(n-1)^2$ and $n^2$. A negative label $-n$ is the polygon $n$ rotated by a
-half-turn. The class implements the mandatory methods above,
-and `graphical_surface()` so that the first six polygons are shown when
-plotting. We state the category explicitly: a translation surface of infinite
-type, without boundary and connected.
+half-turn. The class implements the mandatory methods above, and
+`graphical_surface()` so that the first six polygons are shown when plotting.
+We state the category explicitly: a translation surface of infinite type,
+without boundary and connected.
 
 ```{code-cell}
 from sage.all import QQ, ZZ, matrix, TestSuite
@@ -151,7 +150,7 @@ class ParabolaSurface(OrientedSimilaritySurface):
 
     def __hash__(self):
         r"""
-        Return a hash value for this surface that is compatible with ``__eq``.
+        Return a hash value for this surface that is compatible with ``__eq__``.
         """
         return hash(type(self))
 
@@ -231,14 +230,13 @@ TestSuite(s).run(verbose=True)
 ## A hyperbolic example: a tree of pants
 
 The hyperbolic example is an infinite surface, as above but in the hyperbolic
-plane: pairs of pants glued along
-their boundary components so that the gluing pattern is the infinite
-3-regular tree. A pair of pants of `hyperbolic_surfaces.pants` is two
-right-angled hexagons, with labels 0 (the front one) and 1 (its mirror image).
-They are glued along three edges, the *seams*; the three other edges of each
-hexagon are not glued. The unglued edges form the three boundary geodesics of
-the pants, the *cuffs*, each made of one edge of each hexagon. Here the three
-cuffs have the same trace $t = 21/4$:
+plane: pairs of pants glued along their boundary components so that the gluing
+pattern is the infinite 3-regular tree. A pair of pants of
+`hyperbolic_surfaces.pants` is two right-angled hexagons, with labels 0 (the
+front one) and 1 (its mirror image). They are glued along three edges, the
+*seams*; the three other edges of each hexagon are not glued. The unglued
+edges form the three boundary geodesics of the pants, the *cuffs*, each made of
+one edge of each hexagon. Here the three cuffs have the same trace $t = 21/4$:
 
 ```{code-cell}
 from sage.all import QQ
