@@ -563,6 +563,129 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 "the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()"
             )
 
+    def isomorphism(self, other, matrix=None, check=True):
+        r"""
+        Return the orientation preserving isometry from this plane to the
+        hyperbolic plane ``other`` given by ``matrix``.
+
+        INPUT:
+
+        - ``other`` -- a hyperbolic plane over the same base ring
+
+        - ``matrix`` -- a 3×3 matrix `A` or ``None`` (default: ``None``); `A`
+          must satisfy `A^T Q_2 A = \lambda Q_1` with `\lambda > 0` for the
+          form `Q_1` of this plane and `Q_2` of ``other``, have a positive
+          determinant and send `(0, 0, 1)` to a vector with a positive last
+          coordinate. If ``None``, the diagonal matrix `\mathrm{diag}(1, s,
+          t)` that rescales the axes, when it exists over the base ring.
+
+        - ``check`` -- a boolean (default: ``True``); whether to check the
+          conditions on ``matrix``
+
+        OUTPUT:
+
+        A
+        :class:`~flatsurf.geometry.hyperbolic_plane_morphism.HyperbolicPlaneIsomorphism`.
+
+        EXAMPLES:
+
+        The coefficients of `y^2` and `z^2` in the forms `x^2 + 8y^2 - 12z^2`
+        and `x^2 + 2y^2 - 3z^2` differ by the square `4`, so that the
+        isomorphism is the rescaling `\mathrm{diag}(1, 2, 2)`::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H8 = HyperbolicPlane(QQ, form=[1, 8, -12])
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: f = H8.isomorphism(H3)
+            sage: f.matrix()
+            [1 0 0]
+            [0 2 0]
+            [0 0 2]
+            sage: f(H8.point(1/4, 1/8, model="klein"))
+            (1/8, 1/8)
+
+        The forms `x^2 + 2y^2 - 3z^2` and `x^2 + y^2 - z^2` do not differ by
+        squares of rationals; an isomorphism is given by its matrix::
+
+            sage: H = HyperbolicPlane(QQ)
+            sage: H3.isomorphism(H)
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry is not defined over Rational Field; adjoin a square root of 2
+            sage: A3 = matrix([[25/4, 23/2, -69/4], [0, 6, -6], [-23/4, -25/2, 75/4]])
+            sage: H3.isomorphism(H, matrix=A3)
+            Hyperbolic plane morphism:
+              From: Hyperbolic Plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+              To:   Hyperbolic Plane over Rational Field
+              Defn: [ 25/4  23/2 -69/4]
+                    [    0     6    -6]
+                    [-23/4 -25/2  75/4]
+
+        The identity of a plane::
+
+            sage: H3.isomorphism(H3)
+            Hyperbolic plane endomorphism of Hyperbolic Plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+              Defn: [1 0 0]
+                    [0 1 0]
+                    [0 0 1]
+            sage: H3.isomorphism(H3).is_identity()
+            True
+
+        TESTS:
+
+        The matrix is checked::
+
+            sage: H8.isomorphism(H3, matrix=identity_matrix(3))
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix must send the form of the codomain to a positive multiple of the form of the domain
+            sage: H8.isomorphism(H3, matrix=-diagonal_matrix([1, 2, 2]))
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix must send the point (0, 0, 1) to a positive last coordinate
+            sage: H8.isomorphism(H3, matrix=diagonal_matrix([1, -2, 2]))
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix must have a positive determinant
+
+        The planes have the same base ring::
+
+            sage: H3.isomorphism(HyperbolicPlane(AA))
+            Traceback (most recent call last):
+            ...
+            ValueError: the planes must have the same base ring but Rational Field is not Algebraic Real Field
+
+        """
+        from sage.categories.homset import Hom
+
+        from flatsurf.geometry.hyperbolic_plane_morphism import (
+            HyperbolicPlaneIsomorphism,
+        )
+
+        if other.base_ring() is not self.base_ring():
+            raise ValueError(
+                f"the planes must have the same base ring but {self.base_ring()} is not {other.base_ring()}"
+            )
+
+        if matrix is None:
+            from sage.matrix.constructor import diagonal_matrix
+
+            from flatsurf.geometry.hyperbolic_isometry import (
+                _not_defined_over,
+                _positive_sqrt,
+            )
+
+            diagonal = [self.base_ring().one()]
+            for i in (1, 2):
+                square = self.quadratic_form()[i, i] / other.quadratic_form()[i, i]
+                root = _positive_sqrt(square)
+                if root is None:
+                    raise _not_defined_over(self.base_ring(), square)
+                diagonal.append(root)
+            matrix = diagonal_matrix(self.base_ring(), diagonal)
+
+        return HyperbolicPlaneIsomorphism(Hom(self, other), matrix, check=check)
+
     def _plot_point(self, point):
         r"""
         Return the image of ``point`` in the standard hyperbolic plane over
@@ -5889,7 +6012,7 @@ class HyperbolicConvexSet(SageObject):
 
         raise NotImplementedError("cannot apply isometries in this model yet")
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the result of applying the ``isometry`` to this hyperbolic set.
 
@@ -5904,6 +6027,9 @@ class HyperbolicConvexSet(SageObject):
 
         - ``on_right`` -- a boolean (default: ``False``); whether to return the
           result of the right action.
+
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this set if ``None``.
 
         EXAMPLES::
 
@@ -7301,7 +7427,7 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         """
         return self.boundary().vertices()
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the image of this half space under ``isometry``.
 
@@ -7316,6 +7442,9 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
 
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this half space if ``None``.
+
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
@@ -7326,8 +7455,8 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             {x - 1 ≤ 0}
 
         """
-        return self._geodesic.apply_isometry(
-            isometry, model="klein", on_right=on_right
+        return self._geodesic._apply_isometry_klein(
+            isometry, on_right=on_right, codomain=codomain
         ).left_half_space()
 
     def __hash__(self):
@@ -8711,7 +8840,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         return self.parent().point(*xy, model="klein", check=False)
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the result of applying the ``isometry`` to this geodesic.
 
@@ -8725,6 +8854,9 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         - ``on_right`` -- a boolean (default: ``False``); whether to return the
           result of the right action.
+
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this geodesic if ``None``.
 
         EXAMPLES::
 
@@ -8787,12 +8919,13 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         if not on_right:
             isometry = isometry.inverse()
 
+        if codomain is None:
+            codomain = self.parent()
+
         b, c, a = (
             vector(self.parent().base_ring(), [self._b, self._c, self._a]) * isometry
         )
-        return self.parent().geodesic(
-            a, b, c, model="klein", oriented=self.is_oriented()
-        )
+        return codomain.geodesic(a, b, c, model="klein", oriented=self.is_oriented())
 
     def _isometry_equations(self, isometry, image, λ):
         r"""
@@ -10795,7 +10928,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
 
         return self
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the result of applying the ``isometry`` to this hyperbolic
         point.
@@ -10811,6 +10944,9 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
 
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this point if ``None``.
+
         TESTS::
 
             sage: from flatsurf import HyperbolicPlane
@@ -10824,13 +10960,16 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
         """
         from sage.modules.free_module_element import vector
 
+        if codomain is None:
+            codomain = self.parent()
+
         x, y = self.coordinates(model="klein")
 
         if on_right:
             isometry = isometry.inverse()
 
         x, y, z = isometry * vector(self.parent().base_ring(), [x, y, 1])
-        return self.parent().point(x / z, y / z, model="klein")
+        return codomain.point(x / z, y / z, model="klein")
 
     @classmethod
     def random_set(cls, parent):
@@ -11380,7 +11519,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             )
         return hash((type(self), self._geodesic))
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the result of applying the ``isometry`` to this hyperbolic
         point.
@@ -11395,6 +11534,9 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
+
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this point if ``None``.
 
         EXAMPLES::
 
@@ -11418,8 +11560,8 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             1.41421356237310
 
         """
-        image = self._geodesic.apply_isometry(
-            isometry, model="klein", on_right=on_right
+        image = self._geodesic._apply_isometry_klein(
+            isometry, on_right=on_right, codomain=codomain
         )
 
         if isometry.det().sign() == -1:
@@ -13177,7 +13319,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         """
         return hash((self._half_spaces, self._marked_vertices))
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the image of this polygon under ``isometry``.
 
@@ -13191,6 +13333,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
+
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this polygon if ``None``.
 
         EXAMPLES::
 
@@ -13206,16 +13351,19 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
             {(x^2 + y^2) - 2*x - 3 ≥ 0} ∩ {x - 1 ≥ 0} ∪ {1 + 4*I}
 
         """
+        if codomain is None:
+            codomain = self.parent()
+
         half_spaces = [
-            h.apply_isometry(isometry, model="klein", on_right=on_right)
+            h._apply_isometry_klein(isometry, on_right=on_right, codomain=codomain)
             for h in self._half_spaces
         ]
         marked_vertices = [
-            p.apply_isometry(isometry, model="klein", on_right=on_right)
+            p._apply_isometry_klein(isometry, on_right=on_right, codomain=codomain)
             for p in self._marked_vertices
         ]
 
-        return self.parent().polygon(
+        return codomain.polygon(
             half_spaces=half_spaces,
             check=False,
             assume_minimal=True,
@@ -13675,7 +13823,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             oriented=self.is_oriented(),
         )
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the image of this segment under ``isometry``.
 
@@ -13689,6 +13837,9 @@ class HyperbolicSegment(HyperbolicConvexFacade):
 
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
+
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this segment if ``None``.
 
         EXAMPLES::
 
@@ -13732,23 +13883,32 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             True
 
         """
-        geodesic = self.geodesic()._apply_isometry_klein(isometry, on_right=on_right)
+        if codomain is None:
+            codomain = self.parent()
+
+        geodesic = self.geodesic()._apply_isometry_klein(
+            isometry, on_right=on_right, codomain=codomain
+        )
 
         if isometry.det().sign() == -1 and geodesic.is_oriented():
             geodesic = -geodesic
 
         start = (
-            self._start.apply_isometry(isometry, model="klein", on_right=on_right)
+            self._start._apply_isometry_klein(
+                isometry, on_right=on_right, codomain=codomain
+            )
             if self._start is not None
             else None
         )
         end = (
-            self._end.apply_isometry(isometry, model="klein", on_right=on_right)
+            self._end._apply_isometry_klein(
+                isometry, on_right=on_right, codomain=codomain
+            )
             if self._end is not None
             else None
         )
 
-        return self.parent().segment(
+        return codomain.segment(
             geodesic, start=start, end=end, oriented=self.is_oriented()
         )
 
@@ -14617,7 +14777,7 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
         """
         return "{}"
 
-    def _apply_isometry_klein(self, isometry, on_right=False):
+    def _apply_isometry_klein(self, isometry, on_right=False, codomain=None):
         r"""
         Return the result of applying the ``isometry`` to the empty set, i.e.,
         the empty set.
@@ -14633,6 +14793,9 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
         - ``on_right`` -- a boolean (default: ``False``) whether to return the
           result of the right action.
 
+        - ``codomain`` -- a hyperbolic plane or ``None`` (default: ``None``);
+          the plane of the result, the plane of this set if ``None``.
+
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
@@ -14643,7 +14806,9 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
             True
 
         """
-        return self
+        if codomain is None:
+            return self
+        return codomain.empty_set()
 
     def plot(self, model="half_plane", **kwds):
         r"""

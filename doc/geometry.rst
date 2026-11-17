@@ -18,6 +18,7 @@ The flatsurf.geometry Package
    geometry/homology
    geometry/hyperbolic
    geometry/hyperbolic_isometry
+   geometry/hyperbolic_plane_morphism
    geometry/hyperbolic_polygon
    geometry/hyperbolic_surface
    geometry/hyperbolic_surface_generators

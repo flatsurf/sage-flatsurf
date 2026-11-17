@@ -1258,6 +1258,11 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             ...
             TypeError: the isometry preserves x^2 + 2*y^2 - 3*z^2 and the plane has the form x^2 + y^2 - z^2
 
+        .. SEEALSO::
+
+            :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.isomorphism`
+            to map a set or an isometry to a hyperbolic plane of another form
+
         """
         from flatsurf.geometry.hyperbolic import HyperbolicConvexSet
         from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon

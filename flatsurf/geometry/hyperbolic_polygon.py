@@ -1295,6 +1295,11 @@ class HyperbolicPolygon(Parent):
             ...
             ValueError: matrix does not define an isometry
 
+        .. SEEALSO::
+
+            :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.isomorphism`
+            to map a polygon to a hyperbolic plane of another form
+
         """
         from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometry
 
