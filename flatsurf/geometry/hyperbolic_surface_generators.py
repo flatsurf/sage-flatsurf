@@ -802,11 +802,12 @@ class HyperbolicPolygonsConstructor:
 hyperbolic_polygons = HyperbolicPolygonsConstructor()
 
 
-def _reflection(p, q):
+def _reflection(p, q, form=None):
     r"""
     Return the matrix of the reflection in the hyperbolic line through the
     points of Klein coordinates ``p`` and ``q``, acting on the Klein lifts
-    `(x, y, 1)`.
+    `(x, y, 1)`; ``form`` is the quadratic form as in
+    :func:`~flatsurf.geometry.hyperbolic_isometry.tangent_vector_isometry`.
 
     EXAMPLES:
 
@@ -824,18 +825,37 @@ def _reflection(p, q):
         sage: R * vector((1/2, 0, 1))
         (1/2, 0, 1)
 
+    With the form `Q = \mathrm{diag}(1, 2, -3)`, the reflection in the line
+    through `(1, 0)` and `(0, 1)`, which fixes `(1, 0, 1)`::
+
+        sage: R = _reflection((1, 0), (0, 1), diagonal_matrix([1, 2, -3]))
+        sage: R
+        [ -5/7 -12/7  12/7]
+        [ -6/7   1/7   6/7]
+        [ -4/7  -4/7  11/7]
+        sage: Q = diagonal_matrix([1, 2, -3])
+        sage: R.determinant(), (R^2).is_one(), R.transpose() * Q * R == Q
+        (-1, True, True)
+        sage: R * vector((1, 0, 1))
+        (1, 0, 1)
+
     ALGORITHM:
 
-    With `J = \mathrm{diag}(1, 1, -1)` and `n = J (\hat p \times \hat q)`
-    the Minkowski normal of the plane of the lifts `\hat p, \hat q`, the
-    reflection is `R = I - 2 n (J n)^T / \langle n, n \rangle`, where
-    `\langle n, n \rangle = n^T J n` is positive. Its coefficients are
-    rational in the coordinates of ``p`` and ``q``.
+    With the matrix `Q` of the form (default: `\mathrm{diag}(1, 1, -1)`) and
+    `n = Q^{-1} (\hat p \times \hat q)` the normal, for the form, of the plane
+    of the lifts `\hat p, \hat q`, the reflection is `R = I - 2 n (Q n)^T /
+    \langle n, n \rangle`, where `\langle n, n \rangle = n^T Q n` is positive.
+    Its coefficients are rational in the coordinates of ``p`` and ``q`` and
+    the entries of the form.
 
     """
-    J = diagonal_matrix([1, 1, -1])
-    n = J * vector((p[0], p[1], 1)).cross_product(vector((q[0], q[1], 1)))
-    return identity_matrix(3) - 2 * matrix(n).transpose() * matrix(J * n) / (n * J * n)
+    from flatsurf.geometry.hyperbolic_isometry import _minkowski_form
+
+    p_hat = vector((p[0], p[1], 1))
+    q_hat = vector((q[0], q[1], 1))
+    Q = _minkowski_form(p_hat.base_ring().fraction_field(), form)
+    n = Q.inverse() * p_hat.cross_product(q_hat)
+    return identity_matrix(3) - 2 * matrix(n).transpose() * matrix(Q * n) / (n * Q * n)
 
 
 def _optimize_placement(vertices):

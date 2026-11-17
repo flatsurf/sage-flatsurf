@@ -66,10 +66,22 @@ from sage.structure.unique_representation import UniqueRepresentation
 from flatsurf.geometry.hyperbolic_polygon import _cosh2, _lift, _minkowski
 
 
-def _minkowski_form(ring):
+def _minkowski_form(ring, form=None):
     r"""
-    Return the matrix `J = \mathrm{diag}(1, 1, -1)` of the Minkowski form
-    over ``ring``.
+    Return the immutable matrix of the quadratic form over ``ring``.
+
+    INPUT:
+
+    - ``ring`` -- a ring
+
+    - ``form`` -- ``None``, a 3×3 diagonal matrix or the list of its three
+      diagonal coefficients (default: ``None``); the diagonal must be `(a, b,
+      -c)` with `a, b, c` positive. ``None`` is `\mathrm{diag}(1, 1, -1)`.
+
+    OUTPUT:
+
+    The matrix of the form divided by its entry `(0, 0)`: a positive scaling
+    changes neither the cone of the form nor its isometries.
 
     EXAMPLES::
 
@@ -78,11 +90,44 @@ def _minkowski_form(ring):
         [ 1  0  0]
         [ 0  1  0]
         [ 0  0 -1]
+        sage: _minkowski_form(QQ, [2, 4, -6])
+        [ 1  0  0]
+        [ 0  2  0]
+        [ 0  0 -3]
+        sage: _minkowski_form(QQ, diagonal_matrix([2, 4, -6])) == _minkowski_form(QQ, [1, 2, -3])
+        True
+
+    TESTS::
+
+        sage: _minkowski_form(QQ, [1, 1, 1])
+        Traceback (most recent call last):
+        ...
+        ValueError: the form must be diag(a, b, -c) with a, b, c positive
+        sage: _minkowski_form(QQ, matrix([[1, 1, 0], [1, 2, 0], [0, 0, -3]]))
+        Traceback (most recent call last):
+        ...
+        ValueError: the form must be diagonal
 
     """
     from sage.matrix.constructor import diagonal_matrix
 
-    return diagonal_matrix(ring, [1, 1, -1])
+    if form is None:
+        diagonal = [1, 1, -1]
+    elif isinstance(form, (list, tuple)):
+        diagonal = list(form)
+    else:
+        if not form.is_diagonal():
+            raise ValueError("the form must be diagonal")
+        diagonal = [form[i, i] for i in range(3)]
+
+    if len(diagonal) != 3 or not (
+        diagonal[0] > 0 and diagonal[1] > 0 and diagonal[2] < 0
+    ):
+        raise ValueError("the form must be diag(a, b, -c) with a, b, c positive")
+
+    matrix = diagonal_matrix(ring, [ring(c) / ring(diagonal[0]) for c in diagonal])
+    matrix.set_immutable()
+    return matrix
 
 
 def _positive_sqrt(x):
@@ -197,7 +242,7 @@ def _common_ring(vectors, ring):
     return ring.fraction_field()
 
 
-def tangent_vector_isometry(u, v, ring=None):
+def tangent_vector_isometry(u, v, ring=None, form=None):
     r"""
     Return the matrix of the orientation preserving isometry of the
     hyperbolic plane that sends the tangent vector ``u`` to the tangent
@@ -214,22 +259,29 @@ def tangent_vector_isometry(u, v, ring=None):
       result, by default the fraction field of the pushout of the rings of
       the coordinates
 
+    - ``form`` -- a diagonal 3×3 matrix `\mathrm{diag}(a, b, -c)` with `a, b,
+      c` positive, or the list of its diagonal, or ``None`` (default:
+      ``None``) for `x^2 + y^2 - z^2`; the quadratic form whose cone is the
+      hyperbolic plane
+
     OUTPUT:
 
-    An immutable 3×3 matrix of `\mathrm{SO}(2, 1)^+` over ``ring``. The group
-    `\mathrm{SO}(2, 1)^+` acts simply transitively on the unit tangent
+    An immutable 3×3 matrix of determinant `1` over ``ring`` that preserves
+    the form, `M^T Q M = Q`; for the default form it lies in `\mathrm{SO}(2,
+    1)^+`. The group acts simply transitively on the unit tangent
     bundle; the Klein chart preserves the orientation, so that a ray in the
     chart is a unit tangent vector: the matrix is unique.
 
     ALGORITHM:
 
+    Write `Q` for the matrix of the form and `\langle u, v\rangle = u^T Q v`.
     The point `p` lifts to `P = (p, 1)` on the cone of timelike vectors, and
     the direction `d` to the tangent vector `T = D - \langle P, D\rangle /
-    \langle P, P\rangle P` of the hyperboloid, the Minkowski projection of
-    `D = (d, 0)` onto `P^\perp`. The vector `N = J (P \times T)` satisfies
+    \langle P, P\rangle P` of the hyperboloid, the projection of
+    `D = (d, 0)` onto `P^\perp`. The vector `N = Q^{-1} (P \times T)` satisfies
     `\langle N, X\rangle = \det(P, T, X)`, so that `(P, T, N)` is an
-    orthogonal basis with `\langle N, N\rangle = \det(P, T, N) = -\langle P,
-    P\rangle \langle T, T\rangle`. With the same construction at the image,
+    orthogonal basis with `\langle N, N\rangle = \langle P, P\rangle \langle
+    T, T\rangle / \det Q`. With the same construction at the image,
     the isometry is
 
     .. MATH::
@@ -241,7 +293,7 @@ def tangent_vector_isometry(u, v, ring=None):
     0`; its determinant is `\lambda^2 \mu^2 \langle N', N'\rangle / \langle
     N, N\rangle = 1`. The inverse of the orthogonal basis is
     `\mathrm{diag}(1/\langle P, P\rangle, 1/\langle T, T\rangle, 1/\langle
-    N, N\rangle) (P, T, N)^T J`. Since `\lambda` is the last entry of `M P`
+    N, N\rangle) (P, T, N)^T Q`. Since `\lambda` is the last entry of `M P`
     and `\mu T' = M T`, the matrix is defined over ``ring`` if and only if
     `\lambda` and `\mu` are.
 
@@ -282,6 +334,28 @@ def tangent_vector_isometry(u, v, ring=None):
         [ 0 -1  0]
         [ 0  0  1]
 
+    The form can be changed; the hyperbolic plane is then the disk `x^2 + 2
+    y^2 < 3`::
+
+        sage: Q = diagonal_matrix([1, 2, -3])
+        sage: M = tangent_vector_isometry(((0, 0), (1, 0)), ((0, 0), (1, 2)), form=Q)
+        sage: M
+        [ 1/3 -4/3    0]
+        [ 2/3  1/3    0]
+        [   0    0    1]
+        sage: M.transpose() * Q * M == Q
+        True
+        sage: M.determinant()
+        1
+        sage: tangent_vector_isometry(((-1, 0), (1, 0)), ((1, 0), (1, 0)), form=Q)
+        [2 0 3]
+        [0 1 0]
+        [1 0 2]
+        sage: tangent_vector_isometry(((1, 1), (1, 0)), ((0, 0), (1, 0)), form=Q)
+        Traceback (most recent call last):
+        ...
+        ValueError: (1, 1) is not a finite point of the hyperbolic plane
+
     TESTS::
 
         sage: tangent_vector_isometry(((0, 0), (0, 0)), ((0, 0), (0, 1)))
@@ -309,8 +383,10 @@ def tangent_vector_isometry(u, v, ring=None):
 
     p, q, d, e = (w.change_ring(ring) for w in (p, q, d, e))
 
+    Q = _minkowski_form(ring, form)
+
     for point in (p, q):
-        if not point[0] ** 2 + point[1] ** 2 < 1:
+        if not _minkowski(_lift(point), _lift(point), Q) < 0:
             raise ValueError(f"{point} is not a finite point of the hyperbolic plane")
 
     for direction in (d, e):
@@ -319,23 +395,24 @@ def tangent_vector_isometry(u, v, ring=None):
         if direction.is_zero():
             raise ValueError("direction must be nonzero")
 
+    Q_inverse = Q.inverse()
+
     def frame(point, direction):
         P = vector(ring, _lift(point))
         D = vector(ring, (direction[0], direction[1], 0))
-        T = D - (_minkowski(P, D) / _minkowski(P, P)) * P
-        cross = P.cross_product(T)
-        N = vector(ring, (cross[0], cross[1], -cross[2]))
+        T = D - (_minkowski(P, D, Q) / _minkowski(P, P, Q)) * P
+        N = Q_inverse * P.cross_product(T)
         return P, T, N
 
     P, T, N = frame(p, d)
     P_, T_, N_ = frame(q, e)
 
-    lambda2 = _minkowski(P, P) / _minkowski(P_, P_)
+    lambda2 = _minkowski(P, P, Q) / _minkowski(P_, P_, Q)
     lam = _positive_sqrt(lambda2)
     if lam is None:
         raise _not_defined_over(ring, lambda2)
 
-    mu2 = _minkowski(T, T) / _minkowski(T_, T_)
+    mu2 = _minkowski(T, T, Q) / _minkowski(T_, T_, Q)
     mu = _positive_sqrt(mu2)
     if mu is None:
         raise _not_defined_over(ring, mu2)
@@ -346,10 +423,14 @@ def tangent_vector_isometry(u, v, ring=None):
     inverse = (
         diagonal_matrix(
             ring,
-            [1 / _minkowski(P, P), 1 / _minkowski(T, T), 1 / _minkowski(N, N)],
+            [
+                1 / _minkowski(P, P, Q),
+                1 / _minkowski(T, T, Q),
+                1 / _minkowski(N, N, Q),
+            ],
         )
         * source.transpose()
-        * _minkowski_form(ring)
+        * Q
     )
 
     M = target * inverse
@@ -386,7 +467,7 @@ def _segment_endpoints(segment):
     return start, end
 
 
-def segment_isometry(source, target, ring=None):
+def segment_isometry(source, target, ring=None, form=None):
     r"""
     Return the matrix of the orientation preserving isometry of the
     hyperbolic plane that sends the start of ``source`` to the start of
@@ -400,9 +481,13 @@ def segment_isometry(source, target, ring=None):
     - ``ring`` -- a field or ``None`` (default: ``None``); as in
       :func:`tangent_vector_isometry`
 
+    - ``form`` -- a quadratic form or ``None`` (default: ``None``); as in
+      :func:`tangent_vector_isometry`
+
     OUTPUT:
 
-    An immutable 3×3 matrix of `\mathrm{SO}(2, 1)^+` over ``ring``.
+    An immutable 3×3 matrix of `\mathrm{SO}(2, 1)^+` over ``ring``, or of the
+    group of the form.
 
     ALGORITHM:
 
@@ -482,6 +567,15 @@ def segment_isometry(source, target, ring=None):
         sage: M * vector((0, 0, 1)), M * vector((1/2, 0, 1))
         ((1/3*r, 0, 2/3*r), (0, 0, 1/2*r))
 
+    With another form, the rotation of the corresponding example of
+    :func:`tangent_vector_isometry`::
+
+        sage: Q = diagonal_matrix([1, 2, -3])
+        sage: segment_isometry(((0, 0), (1, 0)), ((0, 0), (1/3, 2/3)), form=Q)
+        [ 1/3 -4/3    0]
+        [ 2/3  1/3    0]
+        [   0    0    1]
+
     TESTS::
 
         sage: segment_isometry(((0, 0), (1/2, 0)), ((0, 0), (0, 1/3)))
@@ -504,19 +598,21 @@ def segment_isometry(source, target, ring=None):
     ring = _common_ring([a, b, c, d], ring)
     a, b, c, d = (w.change_ring(ring) for w in (a, b, c, d))
 
-    # The Minkowski norm of the lift of a point of the boundary vanishes, so
-    # the lengths can only be compared for points inside the disk.
+    Q = _minkowski_form(ring, form)
+
+    # The norm of the lift of a point of the boundary vanishes, so the lengths
+    # can only be compared for points inside the disk.
     for point in (a, b, c, d):
-        if not point[0] ** 2 + point[1] ** 2 < 1:
+        if not _minkowski(_lift(point), _lift(point), Q) < 0:
             raise ValueError(f"{point} is not a finite point of the hyperbolic plane")
 
-    if _cosh2(a, b) != _cosh2(c, d):
+    if _cosh2(a, b, Q) != _cosh2(c, d, Q):
         raise ValueError("segments do not have the same length")
 
-    return tangent_vector_isometry((a, b - a), (c, d - c), ring=ring)
+    return tangent_vector_isometry((a, b - a), (c, d - c), ring=ring, form=Q)
 
 
-def segment_midpoint(a, b, ring=None):
+def segment_midpoint(a, b, ring=None, form=None):
     r"""
     Return the Klein coordinates of the hyperbolic midpoint of the segment
     from ``a`` to ``b``.
@@ -530,6 +626,9 @@ def segment_midpoint(a, b, ring=None):
       result, by default the fraction field of the pushout of the rings of
       the coordinates
 
+    - ``form`` -- a quadratic form or ``None`` (default: ``None``); as in
+      :func:`tangent_vector_isometry`
+
     OUTPUT:
 
     An immutable vector of length two over ``ring``. A :class:`ValueError` is
@@ -538,10 +637,12 @@ def segment_midpoint(a, b, ring=None):
 
     ALGORITHM:
 
-    The lifts `(a, 1)/\sqrt{1 - |a|^2}` and `(b, 1)/\sqrt{1 - |b|^2}` lie on
-    the hyperboloid and their sum is the lift of the midpoint. With
-    `\lambda^2 = (1 - |a|^2) / (1 - |b|^2)` and `\lambda > 0`, the midpoint
-    is `(a + \lambda b) / (1 + \lambda)`.
+    With `\langle u, v\rangle = u^T Q v` for the matrix `Q` of the form, the
+    lifts `A = (a, 1)` and `B = (b, 1)` are rescaled to `A/\sqrt{\langle A,
+    A\rangle}` and `B/\sqrt{\langle B, B\rangle}`, which lie on the
+    hyperboloid, and their sum is the lift of the midpoint. With
+    `\lambda^2 = \langle A, A\rangle / \langle B, B\rangle` and `\lambda >
+    0`, the midpoint is `(a + \lambda b) / (1 + \lambda)`.
 
     EXAMPLES::
 
@@ -558,6 +659,16 @@ def segment_midpoint(a, b, ring=None):
         sage: segment_midpoint((0, 0), (1/2, 0), ring=AA)
         (0.2679491924311227?, 0)
 
+    With another form::
+
+        sage: Q = diagonal_matrix([1, 2, -3])
+        sage: segment_midpoint((-1, 0), (-1/3, -1), form=Q)
+        (-3/5, -3/5)
+        sage: segment_midpoint((0, 0), (1, 0), form=Q)
+        Traceback (most recent call last):
+        ...
+        ValueError: isometry is not defined over Rational Field; adjoin a square root of 3/2
+
     """
     a = _klein_vector(a)
     b = _klein_vector(b)
@@ -565,11 +676,13 @@ def segment_midpoint(a, b, ring=None):
     ring = _common_ring([a, b], ring)
     a, b = (w.change_ring(ring) for w in (a, b))
 
+    Q = _minkowski_form(ring, form)
+
     for point in (a, b):
-        if not point[0] ** 2 + point[1] ** 2 < 1:
+        if not _minkowski(_lift(point), _lift(point), Q) < 0:
             raise ValueError(f"{point} is not a finite point of the hyperbolic plane")
 
-    lambda2 = (1 - a.dot_product(a)) / (1 - b.dot_product(b))
+    lambda2 = _minkowski(_lift(a), _lift(a), Q) / _minkowski(_lift(b), _lift(b), Q)
     lam = _positive_sqrt(lambda2)
     if lam is None:
         raise _not_defined_over(ring, lambda2)
@@ -768,7 +881,7 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
         from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
         v = self._fixed_vector()
-        norm = v[0] ** 2 + v[1] ** 2 - v[2] ** 2
+        norm = _minkowski(v, v)
         if norm > 0:
             raise NotImplementedError(
                 "the fixed point of a hyperbolic isometry is outside of the closed disk and cannot be represented yet"
@@ -814,7 +927,7 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
 
     def __invert__(self):
         r"""
-        Return the inverse of this isometry, `J M^T J`.
+        Return the inverse of this isometry, `Q^{-1} M^T Q`.
 
         EXAMPLES::
 
@@ -829,8 +942,8 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             True
 
         """
-        J = _minkowski_form(self.parent().base_ring())
-        M = J * self._matrix.transpose() * J
+        Q = _minkowski_form(self.parent().base_ring())
+        M = Q.inverse() * self._matrix.transpose() * Q
         M.set_immutable()
         return self.parent().element_class(self.parent(), M)
 

@@ -341,3 +341,96 @@ def test_polygon_transformations(H, G):
         P.apply_transformation(hK)
     with pytest.raises(TypeError):
         M * P
+
+
+# The form x^2 + 2 y^2 - 3 z^2; the hyperbolic plane is the disk
+# x^2 + 2 y^2 < 3.
+FORM = diagonal_matrix(QQ, [1, 2, -3])
+
+
+def test_form_tangent_vector_isometry():
+    rotation = matrix(QQ, [[QQ(1) / 3, -QQ(4) / 3, 0], [QQ(2) / 3, QQ(1) / 3, 0], [0, 0, 1]])
+    M = tangent_vector_isometry(((0, 0), (1, 0)), ((0, 0), (1, 2)), form=FORM)
+    assert M == rotation
+    assert M.transpose() * FORM * M == FORM
+    assert M.determinant() == 1
+
+    boost = matrix(QQ, [[2, 0, 3], [0, 1, 0], [1, 0, 2]])
+    M = tangent_vector_isometry(((-1, 0), (1, 0)), ((1, 0), (1, 0)), form=FORM)
+    assert M == boost
+    assert M.transpose() * FORM * M == FORM
+    assert M.determinant() == 1
+
+    with pytest.raises(ValueError, match="not a finite point"):
+        tangent_vector_isometry(((1, 1), (1, 0)), ((0, 0), (1, 0)), form=FORM)
+    with pytest.raises(ValueError, match="not a finite point"):
+        tangent_vector_isometry(((-1, 0), (1, 0)), ((0, 0), (1, 0)))
+
+
+def test_form_normalisation():
+    u = ((0, 0), (1, 0))
+    v = ((0, 0), (1, 2))
+    expected = tangent_vector_isometry(u, v, form=[1, 2, -3])
+    assert tangent_vector_isometry(u, v, form=[2, 4, -6]) == expected
+    assert tangent_vector_isometry(u, v, form=diagonal_matrix(QQ, [2, 4, -6])) == expected
+
+    u = ((QQ(1) / 2, 0), (1, 0))
+    v = ((0, 0), (1, 0))
+    assert tangent_vector_isometry(u, v, ring=AA, form=None) == tangent_vector_isometry(
+        u, v, ring=AA, form=[1, 1, -1]
+    )
+
+
+def test_form_errors():
+    u = ((0, 0), (1, 0))
+    v = ((0, 0), (0, 1))
+    with pytest.raises(ValueError, match="a, b, c positive"):
+        tangent_vector_isometry(u, v, form=[1, 1, 1])
+    with pytest.raises(ValueError, match="a, b, c positive"):
+        tangent_vector_isometry(u, v, form=[-1, 1, -1])
+    with pytest.raises(ValueError, match="the form must be diagonal"):
+        tangent_vector_isometry(
+            u, v, form=matrix(QQ, [[1, 1, 0], [1, 2, 0], [0, 0, -3]])
+        )
+
+
+def test_form_segment_isometry():
+    M = segment_isometry(
+        ((0, 0), (1, 0)), ((0, 0), (QQ(1) / 3, QQ(2) / 3)), form=FORM
+    )
+    assert M == matrix(QQ, [[QQ(1) / 3, -QQ(4) / 3, 0], [QQ(2) / 3, QQ(1) / 3, 0], [0, 0, 1]])
+    assert M.transpose() * FORM * M == FORM
+
+    with pytest.raises(ValueError, match="same length"):
+        segment_isometry(((0, 0), (1, 0)), ((0, 0), (QQ(1) / 3, 0)), form=FORM)
+
+
+def test_form_segment_midpoint():
+    assert segment_midpoint((-1, 0), (-QQ(1) / 3, -1), form=FORM) == vector(
+        QQ, (-QQ(3) / 5, -QQ(3) / 5)
+    )
+    with pytest.raises(ValueError, match="adjoin a square root of 3/2"):
+        segment_midpoint((0, 0), (1, 0), form=FORM)
+
+    m = segment_midpoint((QQ(3) / 2, 0), (-QQ(3) / 2, 0), form=[1, 2, -3])
+    assert m == vector(QQ, (0, 0))
+    with pytest.raises(ValueError, match="not a finite point"):
+        segment_midpoint((QQ(3) / 2, 0), (-QQ(3) / 2, 0))
+
+
+def test_form_reflection():
+    from flatsurf.geometry.hyperbolic_surface_generators import _reflection
+
+    R = _reflection((1, 0), (0, 1), FORM)
+    assert R == matrix(
+        QQ,
+        [
+            [-QQ(5) / 7, -QQ(12) / 7, QQ(12) / 7],
+            [-QQ(6) / 7, QQ(1) / 7, QQ(6) / 7],
+            [-QQ(4) / 7, -QQ(4) / 7, QQ(11) / 7],
+        ],
+    )
+    assert R.determinant() == -1
+    assert R * R == 1
+    assert R.transpose() * FORM * R == FORM
+    assert R * vector(QQ, (1, 0, 1)) == vector(QQ, (1, 0, 1))

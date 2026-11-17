@@ -53,19 +53,29 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 
-def _minkowski(u, v):
+def _minkowski(u, v, form=None):
     r"""
     Return the Minkowski product `u_0 v_0 + u_1 v_1 - u_2 v_2` of two vectors
-    of dimension three.
+    of dimension three, or `u^T Q v` for the diagonal matrix ``form`` `Q`.
+
+    The form is not validated: use
+    :func:`~flatsurf.geometry.hyperbolic_isometry._minkowski_form` to build it.
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.hyperbolic_polygon import _minkowski
         sage: _minkowski((1, 2, 3), (1, 1, 1))
         0
+        sage: _minkowski((1, 1, 1), (1, 1, 1), diagonal_matrix([1, 2, -3]))
+        0
 
     """
-    return u[0] * v[0] + u[1] * v[1] - u[2] * v[2]
+    if form is None:
+        return u[0] * v[0] + u[1] * v[1] - u[2] * v[2]
+
+    return (
+        form[0, 0] * u[0] * v[0] + form[1, 1] * u[1] * v[1] + form[2, 2] * u[2] * v[2]
+    )
 
 
 def _lift(v):
@@ -83,10 +93,11 @@ def _lift(v):
     return (v[0], v[1], v[0].parent().one())
 
 
-def _cosh2(p, q):
+def _cosh2(p, q, form=None):
     r"""
     Return the square of the hyperbolic cosine of the distance between the
-    points ``p`` and ``q`` of the Klein model.
+    points ``p`` and ``q`` of the Klein model, for the diagonal matrix
+    ``form`` (default: `\mathrm{diag}(1, 1, -1)`).
 
     EXAMPLES::
 
@@ -94,11 +105,18 @@ def _cosh2(p, q):
         sage: V = QQ**2
         sage: _cosh2(V((0, 0)), V((1/2, 0)))
         4/3
+        sage: Q = diagonal_matrix([1, 2, -3])
+        sage: _cosh2(V((0, 0)), V((1, 0)), Q)
+        3/2
+        sage: _cosh2(V((1, 0)), V((0, 1)), Q)
+        9/2
 
     """
     P = _lift(p)
-    Q = _lift(q)
-    return _minkowski(P, Q) ** 2 / (_minkowski(P, P) * _minkowski(Q, Q))
+    R = _lift(q)
+    return _minkowski(P, R, form) ** 2 / (
+        _minkowski(P, P, form) * _minkowski(R, R, form)
+    )
 
 
 def _rational_arccos(sign, cos2):
