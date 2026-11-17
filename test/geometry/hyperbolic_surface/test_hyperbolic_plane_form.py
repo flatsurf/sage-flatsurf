@@ -37,6 +37,7 @@ from sage.all import (
     dumps,
     loads,
     matrix,
+    polygen,
 )
 
 from flatsurf import HyperbolicPlane
@@ -160,7 +161,7 @@ def test_endpoints(H3):
     with pytest.raises(ValueError, match="square root"):
         g.start().coordinates(model="klein")
 
-    x = QQ["x"].gen()
+    x = polygen(QQ)
     K = NumberField(x**2 - 13, "s", embedding=AA(13).sqrt())
     s = K.gen()
     assert g.start().coordinates(model="klein", ring=K) == (QQ(1) / 3, s / 3)
@@ -258,7 +259,7 @@ def test_klein_ideal_point_small_disk():
 
 
 def test_conversion_between_rings_without_common_parent():
-    x = QQ["x"].gen()
+    x = polygen(QQ)
     K = NumberField(x**2 - 2, "a", embedding=RR(1.414))
     L = NumberField(x**2 - 3, "b", embedding=RR(1.732))
     HK = HyperbolicPlane(K, form=[1, 2, -3])
@@ -287,8 +288,8 @@ def test_endpoint_maybe_ring(H3):
 
 
 def test_form_with_leading_minus_sign_repr():
-    x = QQ["x"].gen()
-    K = NumberField(x**2 - 2, "a", embedding=RR(-1.414))
+    x = polygen(QQ)
+    K = NumberField(x**2 - 2, "a", embedding=-AA(2).sqrt())
     a = K.gen()
     prefix = "Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 2 with a = -1.414213562373095? with form "
     assert repr(HyperbolicPlane(K, form=[1, -a, -3])) == prefix + "x^2 + (-a)*y^2 - 3*z^2"

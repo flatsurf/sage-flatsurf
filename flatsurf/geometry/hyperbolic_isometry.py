@@ -8,7 +8,10 @@ acts on the hyperboloid model, and on the Klein model by sending the point
 `(x, y)` to `(X/Z, Y/Z)` where `(X, Y, Z) = M (x, y, 1)`.
 
 The :class:`HyperbolicIsometryGroup` over a field `K` is the group of those
-matrices with entries in `K`. The functions :func:`tangent_vector_isometry`
+matrices with entries in `K`. For a hyperbolic plane with another quadratic
+form `Q = \mathrm{diag}(1, b, -c)`, whose Klein model is the disk `x^2 + b
+y^2 < c`, the group is `\mathrm{SO}(Q)^+`, the matrices with `M^T Q M = Q`,
+determinant `1` and `M_{2,2} > 0`. The functions :func:`tangent_vector_isometry`
 and :func:`segment_isometry` build such matrices in closed form, and
 :func:`segment_midpoint` gives the midpoint of a segment.
 
@@ -32,6 +35,16 @@ side is a quarter turn about the origin::
     (0, 1/2)
     sage: g(P)
     Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 1/2), (-1/2, 0)]
+
+The group of the form `x^2 + 2y^2 - 3z^2` contains the boost that sends `(-1,
+0)` to `(1, 0)`::
+
+    sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+    sage: G3
+    Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+    sage: g = G3(matrix([[2, 0, 3], [0, 1, 0], [1, 0, 2]]))
+    sage: g * vector((-1, 0))
+    (1, 0)
 
 """
 
@@ -63,7 +76,7 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.element import Matrix, MultiplicativeGroupElement
 from sage.structure.unique_representation import UniqueRepresentation
 
-from flatsurf.geometry.hyperbolic_polygon import _cosh2, _lift, _minkowski
+from flatsurf.geometry.hyperbolic_polygon import _cosh2, _form_repr, _lift, _minkowski
 
 
 def _minkowski_form(ring, form=None):
@@ -242,6 +255,107 @@ def _common_ring(vectors, ring):
     return ring.fraction_field()
 
 
+def _points_form(points, form, ring):
+    r"""
+    Return the matrix over ``ring`` of the quadratic form of a computation on
+    ``points``: ``form`` if given, otherwise the form of the hyperbolic plane
+    of the points.
+
+    INPUT:
+
+    - ``points`` -- a list of points of hyperbolic planes, or of Klein
+      coordinates, which carry no form
+
+    - ``form`` -- a quadratic form as in :func:`tangent_vector_isometry`, or
+      ``None``; without it and without points of a hyperbolic plane, the form
+      is `x^2 + y^2 - z^2`
+
+    - ``ring`` -- the field of the computation
+
+    EXAMPLES::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic_isometry import _minkowski_form, _points_form
+        sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+        sage: p = H3.point(0, 0, model="klein")
+        sage: _points_form([p, (1, 0)], None, QQ)
+        [ 1  0  0]
+        [ 0  2  0]
+        [ 0  0 -3]
+        sage: _points_form([(0, 0), (1, 0)], None, QQ)
+        [ 1  0  0]
+        [ 0  1  0]
+        [ 0  0 -1]
+        sage: _points_form([p], [2, 4, -6], AA) == _minkowski_form(AA, [1, 2, -3])
+        True
+
+    TESTS::
+
+        sage: _points_form([p, HyperbolicPlane(QQ)(I)], None, QQ)
+        Traceback (most recent call last):
+        ...
+        ValueError: the points lie in hyperbolic planes of different forms
+        sage: _points_form([p], [1, 1, -1], QQ)
+        Traceback (most recent call last):
+        ...
+        ValueError: the form differs from the form of the hyperbolic plane of the points
+
+    """
+    from flatsurf.geometry.hyperbolic import HyperbolicPoint
+
+    forms = []
+    for point in points:
+        if isinstance(point, HyperbolicPoint):
+            Q = _minkowski_form(ring, point.parent().quadratic_form())
+            if Q not in forms:
+                forms.append(Q)
+
+    if len(forms) > 1:
+        raise ValueError("the points lie in hyperbolic planes of different forms")
+
+    if form is None:
+        return forms[0] if forms else _minkowski_form(ring)
+
+    Q = _minkowski_form(ring, form)
+    if forms and forms[0] != Q:
+        raise ValueError(
+            "the form differs from the form of the hyperbolic plane of the points"
+        )
+
+    return Q
+
+
+def _form_reflection(n, Q):
+    r"""
+    Return the matrix `1 - 2 n n^T Q / \langle n, n\rangle` of the reflection
+    of the quadratic form ``Q`` in the vector ``n`` with `\langle n, n\rangle
+    = n^T Q n > 0`.
+
+    The reflection fixes the plane `n^\perp`, whose trace on the Klein model
+    is the mirror, a geodesic since `n` is spacelike, and preserves the form;
+    its determinant is `-1`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_isometry import _form_reflection
+        sage: Q = diagonal_matrix(QQ, [1, 2, -3])
+        sage: R = _form_reflection(vector(QQ, (1, 1, 0)), Q)
+        sage: R
+        [ 1/3 -4/3    0]
+        [-2/3 -1/3    0]
+        [   0    0    1]
+        sage: R.transpose() * Q * R == Q, R.determinant()
+        (True, -1)
+
+    """
+    from sage.matrix.constructor import identity_matrix, matrix
+
+    N = matrix(Q.base_ring(), [n])
+    return identity_matrix(Q.base_ring(), 3) - 2 * N.transpose() * N * Q / _minkowski(
+        n, n, Q
+    )
+
+
 def tangent_vector_isometry(u, v, ring=None, form=None):
     r"""
     Return the matrix of the orientation preserving isometry of the
@@ -261,8 +375,10 @@ def tangent_vector_isometry(u, v, ring=None, form=None):
 
     - ``form`` -- a diagonal 3×3 matrix `\mathrm{diag}(a, b, -c)` with `a, b,
       c` positive, or the list of its diagonal, or ``None`` (default:
-      ``None``) for `x^2 + y^2 - z^2`; the quadratic form whose cone is the
-      hyperbolic plane
+      ``None``) for the form of the hyperbolic plane of the points, `x^2 +
+      y^2 - z^2` for Klein coordinates; the quadratic form whose cone is the
+      hyperbolic plane. The points of hyperbolic planes must all have this
+      form.
 
     OUTPUT:
 
@@ -373,6 +489,7 @@ def tangent_vector_isometry(u, v, ring=None, form=None):
 
     p, d = u
     q, e = v
+    points = [p, q]
 
     p = _klein_vector(p)
     q = _klein_vector(q)
@@ -383,7 +500,7 @@ def tangent_vector_isometry(u, v, ring=None, form=None):
 
     p, q, d, e = (w.change_ring(ring) for w in (p, q, d, e))
 
-    Q = _minkowski_form(ring, form)
+    Q = _points_form(points, form, ring)
 
     for point in (p, q):
         if not _minkowski(_lift(point), _lift(point), Q) < 0:
@@ -576,7 +693,35 @@ def segment_isometry(source, target, ring=None, form=None):
         [ 2/3  1/3    0]
         [   0    0    1]
 
-    TESTS::
+    Points of a hyperbolic plane bring its form::
+
+        sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+        sage: p0 = H3.point(0, 0, model="klein")
+        sage: p1 = H3.point(1, 0, model="klein")
+        sage: p2 = H3.point(1/3, 2/3, model="klein")
+        sage: segment_isometry((p0, p1), (p0, p2))
+        [ 1/3 -4/3    0]
+        [ 2/3  1/3    0]
+        [   0    0    1]
+        sage: segment_isometry((p0, H3.point(1/2, 0, model="klein")), (p0, H3.point(0, 1/2, model="klein")))
+        Traceback (most recent call last):
+        ...
+        ValueError: segments do not have the same length
+
+    TESTS:
+
+    The points must have the form of the computation::
+
+        sage: segment_isometry((p0, p1), (H(I), H(2*I)))
+        Traceback (most recent call last):
+        ...
+        ValueError: the points lie in hyperbolic planes of different forms
+        sage: segment_isometry((p0, p1), (p0, p2), form=[1, 1, -1])
+        Traceback (most recent call last):
+        ...
+        ValueError: the form differs from the form of the hyperbolic plane of the points
+
+    Other refusals::
 
         sage: segment_isometry(((0, 0), (1/2, 0)), ((0, 0), (0, 1/3)))
         Traceback (most recent call last):
@@ -592,13 +737,13 @@ def segment_isometry(source, target, ring=None, form=None):
         ValueError: (1, 0) is not a finite point of the hyperbolic plane
 
     """
-    a, b = (_klein_vector(point) for point in _segment_endpoints(source))
-    c, d = (_klein_vector(point) for point in _segment_endpoints(target))
+    points = list(_segment_endpoints(source)) + list(_segment_endpoints(target))
+    a, b, c, d = (_klein_vector(point) for point in points)
 
     ring = _common_ring([a, b, c, d], ring)
     a, b, c, d = (w.change_ring(ring) for w in (a, b, c, d))
 
-    Q = _minkowski_form(ring, form)
+    Q = _points_form(points, form, ring)
 
     # The norm of the lift of a point of the boundary vanishes, so the lengths
     # can only be compared for points inside the disk.
@@ -670,13 +815,14 @@ def segment_midpoint(a, b, ring=None, form=None):
         ValueError: isometry is not defined over Rational Field; adjoin a square root of 3/2
 
     """
+    points = [a, b]
     a = _klein_vector(a)
     b = _klein_vector(b)
 
     ring = _common_ring([a, b], ring)
     a, b = (w.change_ring(ring) for w in (a, b))
 
-    Q = _minkowski_form(ring, form)
+    Q = _points_form(points, form, ring)
 
     for point in (a, b):
         if not _minkowski(_lift(point), _lift(point), Q) < 0:
@@ -695,15 +841,16 @@ def segment_midpoint(a, b, ring=None, form=None):
 class HyperbolicIsometry(MultiplicativeGroupElement):
     r"""
     An orientation preserving isometry of the hyperbolic plane, given by a
-    matrix of `\mathrm{SO}(2, 1)^+`.
+    matrix of `\mathrm{SO}(2, 1)^+`, or of `\mathrm{SO}(Q)^+` for the
+    quadratic form `Q` of its group.
 
     INPUT:
 
     - ``parent`` -- a :class:`HyperbolicIsometryGroup`
 
-    - ``matrix`` -- a 3×3 matrix of `\mathrm{SO}(2, 1)^+` over the base ring
-      of ``parent``, immutable; not checked: isometries are built by calling
-      the group, which checks its input
+    - ``matrix`` -- a 3×3 matrix of the group of ``parent`` over its base
+      ring, immutable; not checked: isometries are built by calling the
+      group, which checks its input
 
     EXAMPLES::
 
@@ -877,17 +1024,25 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             ...
             ValueError: every point is fixed by the identity
 
-        """
-        from flatsurf.geometry.hyperbolic import HyperbolicPlane
+        With another form, the point lies in the hyperbolic plane of that
+        form::
 
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: p = G3([[-1/3, 4/3, 0], [-2/3, -1/3, 0], [0, 0, 1]]).fixed_point()
+            sage: p
+            (0, 0)
+            sage: p.parent()
+            Hyperbolic Plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+
+        """
         v = self._fixed_vector()
-        norm = _minkowski(v, v)
+        norm = _minkowski(v, v, self.parent()._form)
         if norm > 0:
             raise NotImplementedError(
                 "the fixed point of a hyperbolic isometry is outside of the closed disk and cannot be represented yet"
             )
 
-        H = HyperbolicPlane(self.parent().base_ring())
+        H = self.parent().hyperbolic_plane()
         return H.point(v[0] / v[2], v[1] / v[2], model="klein")
 
     def _repr_(self):
@@ -941,8 +1096,16 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             sage: ~g * g == G.one()
             True
 
+        With another form::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: ~G3(matrix([[2, 0, 3], [0, 1, 0], [1, 0, 2]]))
+            [ 2  0 -3]
+            [ 0  1  0]
+            [-1  0  2]
+
         """
-        Q = _minkowski_form(self.parent().base_ring())
+        Q = self.parent().quadratic_form()
         M = Q.inverse() * self._matrix.transpose() * Q
         M.set_immutable()
         return self.parent().element_class(self.parent(), M)
@@ -1083,6 +1246,18 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             ...
             TypeError: no common base ring for the isometry over Number Field in s3 with defining polynomial x^2 - 3 with s3 = 1.732050807568878? and the set over Number Field in s2 with defining polynomial x^2 - 2 with s2 = 1.414213562373095?
 
+        The set must lie in a hyperbolic plane of the form of the isometry::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: B = G3(matrix([[2, 0, 3], [0, 1, 0], [1, 0, 2]]))
+            sage: B(H3.point(0, 0, model="klein"))
+            (3/2, 0)
+            sage: B(H(I))
+            Traceback (most recent call last):
+            ...
+            TypeError: the isometry preserves x^2 + 2*y^2 - 3*z^2 and the plane has the form x^2 + y^2 - z^2
+
         """
         from flatsurf.geometry.hyperbolic import HyperbolicConvexSet
         from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
@@ -1100,12 +1275,14 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
                     f"no common base ring for the isometry over {K_g} and the set over {K_x}"
                 ) from error
 
+            self.parent()._require_form_of(x.parent())
+
             if R is not K_x and R != K_x:
                 x = x.change_ring(R)
 
             g = self
             if R is not K_g and R != K_g:
-                g = HyperbolicIsometryGroup(R)(self)
+                g = HyperbolicIsometryGroup(R, form=self.parent()._form)(self)
 
             if isinstance(x, HyperbolicPolygon):
                 return x.apply_isometry(g)
@@ -1155,8 +1332,23 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             True
             sage: B / AA(s).sqrt() == g.psl2_matrix(AA)
             True
+
+        TESTS::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: G3.one()._half_lift()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: the lift to SL(2, R) needs the form x^2 + y^2 - z^2
         """
         from sage.matrix.constructor import matrix
+
+        if self.parent()._form is not None:
+            # The formula inverts the spinor map of x^2 + y^2 - z^2; another
+            # form needs the even Clifford algebra of that form.
+            raise NotImplementedError(
+                "the lift to SL(2, R) needs the form x^2 + y^2 - z^2"
+            )
 
         K = self.parent().base_ring()
         m00, m01, m02, m10, m11, m12, m20, m21, m22 = self._matrix.list()
@@ -1265,8 +1457,18 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             ...
             ValueError: isometry is not defined over Rational Field
 
+        The upper half plane model needs the form `x^2 + y^2 - z^2`::
+
+            sage: HyperbolicIsometryGroup(QQ, form=[1, 2, -3]).one().psl2_matrix()
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
         """
         from sage.matrix.constructor import matrix
+
+        if self.parent()._form is not None:
+            self.parent().hyperbolic_plane()._require_standard_form()
 
         K = self.parent().base_ring()
         if ring is None:
@@ -1395,7 +1597,8 @@ class HyperbolicIsometryPlaneAction(Action):
     - ``G`` -- a :class:`HyperbolicIsometryGroup`
 
     - ``H`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane` whose
-      base ring has a pushout with the base ring of ``G``
+      base ring has a pushout with the base ring of ``G``, with the quadratic
+      form of ``G``
 
     EXAMPLES::
 
@@ -1413,13 +1616,16 @@ class HyperbolicIsometryPlaneAction(Action):
 
         from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
-        self._codomain = HyperbolicPlane(pushout(G.base_ring(), H.base_ring()))
+        self._codomain = HyperbolicPlane(
+            pushout(G.base_ring(), H.base_ring()), form=G._form
+        )
         super().__init__(G, H, True, operator.mul)
 
     def codomain(self):
         r"""
         Return the parent of the images of this action: the hyperbolic plane
-        over the pushout of the base rings of the group and of the plane.
+        over the pushout of the base rings of the group and of the plane,
+        with the quadratic form of the group.
 
         EXAMPLES::
 
@@ -1428,6 +1634,9 @@ class HyperbolicIsometryPlaneAction(Action):
             sage: A = HyperbolicIsometryPlaneAction(HyperbolicIsometryGroup(QQ), HyperbolicPlane(AA))
             sage: A.codomain()
             Hyperbolic Plane over Algebraic Real Field
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: HyperbolicIsometryPlaneAction(G3, HyperbolicPlane(AA, form=[1, 2, -3])).codomain()
+            Hyperbolic Plane over Algebraic Real Field with form x^2 + 2*y^2 - 3*z^2
 
         """
         return self._codomain
@@ -1468,19 +1677,31 @@ class HyperbolicIsometryGroupFunctor(ConstructionFunctor):
         sage: F(AA)
         Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
 
+    The functor of a group with another quadratic form carries the form::
+
+        sage: F, K = HyperbolicIsometryGroup(QQ, form=[1, 2, -3]).construction()
+        sage: F
+        HyperbolicIsometryGroupFunctor(x^2 + 2*y^2 - 3*z^2)
+        sage: F(AA)
+        Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field with form x^2 + 2*y^2 - 3*z^2
+
     """
 
     rank = 10
 
-    def __init__(self):
+    def __init__(self, form=None):
         from sage.categories.fields import Fields
         from sage.categories.groups import Groups
 
+        # None for the standard form, otherwise the normalised matrix of the
+        # form over the base ring of the group.
+        self._form = form
         super().__init__(Fields(), Groups())
 
     def _apply_functor(self, R):
         r"""
-        Return the group of isometries over ``R``.
+        Return the group of isometries over ``R``, with the quadratic form of
+        this functor.
 
         EXAMPLES::
 
@@ -1488,13 +1709,20 @@ class HyperbolicIsometryGroupFunctor(ConstructionFunctor):
             sage: F = HyperbolicIsometryGroup(QQ).construction()[0]
             sage: F(QQ) is HyperbolicIsometryGroup(QQ)
             True
+            sage: F = HyperbolicIsometryGroup(QQ, form=[1, 2, -3]).construction()[0]
+            sage: F(AA) is HyperbolicIsometryGroup(AA, form=[1, 2, -3])
+            True
 
         """
-        return HyperbolicIsometryGroup(R)
+        if self._form is None:
+            return HyperbolicIsometryGroup(R)
+
+        return HyperbolicIsometryGroup(R, form=self._form.diagonal())
 
     def __eq__(self, other):
         r"""
-        Return whether ``other`` is such a functor; all of them are equal.
+        Return whether ``other`` is such a functor with the same quadratic
+        form.
 
         EXAMPLES::
 
@@ -1504,9 +1732,20 @@ class HyperbolicIsometryGroupFunctor(ConstructionFunctor):
             True
             sage: F == 1
             False
+            sage: F3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3]).construction()[0]
+            sage: F3 == F
+            False
+            sage: F3 == HyperbolicIsometryGroup(AA, form=[1, 2, -3]).construction()[0]
+            True
 
         """
-        return isinstance(other, HyperbolicIsometryGroupFunctor)
+        if not isinstance(other, HyperbolicIsometryGroupFunctor):
+            return False
+
+        if self._form is None or other._form is None:
+            return self._form is None and other._form is None
+
+        return self._form == other._form
 
     def __ne__(self, other):
         r"""
@@ -1547,17 +1786,29 @@ class HyperbolicIsometryGroupFunctor(ConstructionFunctor):
             HyperbolicIsometryGroupFunctor
 
         """
-        return "HyperbolicIsometryGroupFunctor"
+        if self._form is None:
+            return "HyperbolicIsometryGroupFunctor"
+
+        return f"HyperbolicIsometryGroupFunctor({_form_repr(self._form)})"
 
 
 class HyperbolicIsometryGroup(UniqueRepresentation, Group):
     r"""
     The group of orientation preserving isometries of the hyperbolic plane
-    whose matrices in `\mathrm{SO}(2, 1)^+` have entries in ``base_ring``.
+    whose matrices in `\mathrm{SO}(Q)^+` have entries in ``base_ring``.
+
+    `\mathrm{SO}(Q)^+` is the group of the matrices `M` with `M^T Q M = Q`,
+    determinant `1` and `M_{2,2} > 0`, for the matrix `Q` of the quadratic
+    form, `\mathrm{SO}(2, 1)^+` for the default form `x^2 + y^2 - z^2`.
 
     INPUT:
 
     - ``base_ring`` -- an ordered field
+
+    - ``form`` -- a diagonal 3×3 matrix `\mathrm{diag}(a, b, -c)` with `a, b,
+      c` positive, or the list of its diagonal, or ``None`` (default:
+      ``None``) for `x^2 + y^2 - z^2`; normalised as in
+      :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane`
 
     EXAMPLES::
 
@@ -1566,19 +1817,70 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
         sage: G
         Group of orientation preserving isometries of the hyperbolic plane over Rational Field
 
+    The group of the form `x^2 + 2y^2 - 3z^2`, whose Klein model is the disk
+    `x^2 + 2y^2 < 3`::
+
+        sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+        sage: G3
+        Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+        sage: G3.hyperbolic_plane()
+        Hyperbolic Plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+        sage: [g.trace() for g in G3.some_elements()]
+        [3, -1, 1/3, 51/13]
+
     TESTS::
 
         sage: TestSuite(G).run()
         sage: TestSuite(HyperbolicIsometryGroup(AA)).run()
+        sage: TestSuite(G3).run()
+        sage: TestSuite(HyperbolicIsometryGroup(QQ, form=[1, 3, -1])).run()
+
+    The form is normalised::
+
+        sage: HyperbolicIsometryGroup(QQ, form=[2, 2, -2]) is G
+        True
+        sage: HyperbolicIsometryGroup(QQ, form=[2, 4, -6]) is G3
+        True
+        sage: loads(dumps(G3)) is G3
+        True
 
     """
 
     Element = HyperbolicIsometry
 
-    def __init__(self, base_ring):
+    @staticmethod
+    def __classcall__(cls, base_ring, form=None):
+        r"""
+        Create the group with a normalised form, ``None`` for the form `x^2 +
+        y^2 - z^2` so that the standard group keeps its key.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: HyperbolicIsometryGroup(QQ, form=diagonal_matrix([1, 2, -3])) is HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            True
+
+        """
+        if form is not None:
+            if isinstance(form, (list, tuple)):
+                form = [base_ring(c) for c in form]
+            form = _minkowski_form(base_ring, form)
+            if form == _minkowski_form(base_ring):
+                form = None
+
+        if form is None:
+            return super().__classcall__(cls, base_ring)
+
+        return super().__classcall__(cls, base_ring, form)
+
+    def __init__(self, base_ring, form=None):
         from sage.categories.groups import Groups
 
         self._base_ring = base_ring
+        # None for the standard form, so that the helpers of hyperbolic_polygon
+        # evaluate it without any division.
+        self._form = form
+        self._quadratic_form = _minkowski_form(base_ring, form)
         Group.__init__(self, category=Groups().Infinite())
 
     def base_ring(self):
@@ -1594,6 +1896,70 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
         """
         return self._base_ring
 
+    def quadratic_form(self):
+        r"""
+        Return the matrix of the quadratic form preserved by the matrices of
+        this group.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: HyperbolicIsometryGroup(QQ).quadratic_form()
+            [ 1  0  0]
+            [ 0  1  0]
+            [ 0  0 -1]
+            sage: HyperbolicIsometryGroup(QQ, form=[2, 4, -6]).quadratic_form()
+            [ 1  0  0]
+            [ 0  2  0]
+            [ 0  0 -3]
+
+        """
+        return self._quadratic_form
+
+    def hyperbolic_plane(self):
+        r"""
+        Return the hyperbolic plane over the base ring with the quadratic form
+        of this group, on which this group acts.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: HyperbolicIsometryGroup(QQ).hyperbolic_plane()
+            Hyperbolic Plane over Rational Field
+            sage: HyperbolicIsometryGroup(AA, form=[1, 2, -3]).hyperbolic_plane()
+            Hyperbolic Plane over Algebraic Real Field with form x^2 + 2*y^2 - 3*z^2
+
+        """
+        from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+        return HyperbolicPlane(self._base_ring, form=self._form)
+
+    def _require_form_of(self, plane):
+        r"""
+        Raise an error if the hyperbolic ``plane`` does not have the quadratic
+        form of this group, on a base ring that has a pushout with the base
+        ring of this group.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: G3._require_form_of(HyperbolicPlane(AA, form=[1, 2, -3]))
+            sage: G3._require_form_of(HyperbolicPlane(QQ))
+            Traceback (most recent call last):
+            ...
+            TypeError: the isometry preserves x^2 + 2*y^2 - 3*z^2 and the plane has the form x^2 + y^2 - z^2
+
+        """
+        if self._form is None and plane._form is None:
+            return
+
+        if self._form is None or plane._form is None or self._form != plane._form:
+            raise TypeError(
+                f"the isometry preserves {_form_repr(self._quadratic_form)} and the plane has the form {_form_repr(plane.quadratic_form())}"
+            )
+
     def _repr_(self):
         r"""
         Return a printable representation of this group.
@@ -1603,8 +1969,13 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
             sage: HyperbolicIsometryGroup(AA)
             Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
+            sage: HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
 
         """
+        if self._form is not None:
+            return f"Group of orientation preserving isometries of the hyperbolic plane over {self._base_ring} with form {_form_repr(self._quadratic_form)}"
+
         return f"Group of orientation preserving isometries of the hyperbolic plane over {self._base_ring}"
 
     @cached_method
@@ -1629,6 +2000,9 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
         Return an isometry of this group, the image of the matrix `(2, 3; 1,
         2)` acting on the upper half plane.
 
+        With another form `\mathrm{diag}(1, b, -c)`, the hyperbolic isometry
+        of :meth:`some_elements`.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
@@ -1636,8 +2010,15 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             [ 7 -4  8]
             [ 4 -1  4]
             [ 8 -4  9]
+            sage: HyperbolicIsometryGroup(QQ, form=[1, 2, -3]).an_element()
+            [ 19/13      0 -24/13]
+            [     0      1      0]
+            [ -8/13      0  19/13]
 
         """
+        if self._form is not None:
+            return self.some_elements()[-1]
+
         return self([[7, -4, 8], [4, -1, 4], [8, -4, 9]])
 
     def some_elements(self):
@@ -1645,14 +2026,50 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
         Return some isometries of this group: the identity, an elliptic, a
         parabolic and two hyperbolic isometries.
 
+        With another form `\mathrm{diag}(1, b, -c)`: the identity, the half
+        turn about the origin, a rotation and a hyperbolic isometry. An
+        anisotropic form has no ideal point over the base ring, so that there
+        is no parabolic isometry in general.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
             sage: [g.trace() for g in HyperbolicIsometryGroup(QQ).some_elements()]
             [3, 1, 3, 15, 7/2]
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: G3.some_elements()[2]
+            [-1/3  4/3    0]
+            [-2/3 -1/3    0]
+            [   0    0    1]
+            sage: [g.trace() for g in G3.some_elements()]
+            [3, -1, 1/3, 51/13]
+
+        ALGORITHM:
+
+        With another form, the rotation and the hyperbolic isometry are
+        products of two reflections `R_n = 1 - 2 n n^T Q / \langle n,
+        n\rangle` in spacelike vectors `n`: `R_{e_1} R_{(1, 1, 0)}`, whose
+        mirrors meet at the origin, and `R_{e_1} R_{(1, 0, x_0/c)}` with `x_0
+        = c/(1 + c)`, whose mirrors are the disjoint lines `x = 0` and `x =
+        x_0`, since `x_0^2 < c`. Both are defined over every base ring.
 
         """
         from sage.all import QQ
+
+        if self._form is not None:
+            from sage.modules.free_module_element import vector
+
+            K = self._base_ring
+            Q = self._quadratic_form
+            c = -Q[2, 2]
+            x0 = c / (1 + c)
+            mirror = _form_reflection(vector(K, (1, 0, 0)), Q)
+            return [
+                self.one(),
+                self([[-1, 0, 0], [0, -1, 0], [0, 0, 1]]),
+                self(mirror * _form_reflection(vector(K, (1, 1, 0)), Q)),
+                self(mirror * _form_reflection(vector(K, (1, 0, x0 / c)), Q)),
+            ]
 
         return [
             self.one(),
@@ -1692,14 +2109,22 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             sage: (G_L.one() * G_M.one()).parent()
             Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
 
+        The functor carries the quadratic form::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: F, K = G3.construction()
+            sage: F(K) is G3
+            True
+
         """
-        return HyperbolicIsometryGroupFunctor(), self._base_ring
+        return HyperbolicIsometryGroupFunctor(self._form), self._base_ring
 
     def _pushout_(self, other):
         r"""
         Return the group of isometries over the pushout of the base rings of
         this group and of ``other``, or ``None`` if ``other`` is not a group
-        of isometries.
+        of isometries or if the two groups do not have the same quadratic
+        form.
 
         The base rings are joined directly: the generic pushout of the two
         constructions applies the functors of the fields in an order it
@@ -1713,18 +2138,48 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             sage: HyperbolicIsometryGroup(QQ)._pushout_(QQ) is None
             True
 
+        With another form::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: G3._pushout_(HyperbolicIsometryGroup(AA, form=[1, 2, -3]))
+            Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field with form x^2 + 2*y^2 - 3*z^2
+            sage: (G3.one() * HyperbolicIsometryGroup(AA, form=[1, 2, -3]).one()).parent()
+            Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field with form x^2 + 2*y^2 - 3*z^2
+            sage: G3._pushout_(HyperbolicIsometryGroup(QQ)) is None
+            True
+
+        Isometries of different forms do not multiply::
+
+            sage: G3.one() * HyperbolicIsometryGroup(QQ).one()
+            Traceback (most recent call last):
+            ...
+            TypeError: unsupported operand parent(s) for *: ...
+
         """
         if not isinstance(other, HyperbolicIsometryGroup):
             return None
 
         from sage.categories.pushout import pushout
 
-        return HyperbolicIsometryGroup(pushout(self._base_ring, other.base_ring()))
+        R = pushout(self._base_ring, other.base_ring())
+
+        if self._form is None and other._form is None:
+            return HyperbolicIsometryGroup(R)
+
+        if self._form is None or other._form is None:
+            return None
+
+        form = self.hyperbolic_plane()._diagonal_form_in(R)
+        if form is None or form != other.hyperbolic_plane()._diagonal_form_in(R):
+            return None
+
+        return HyperbolicIsometryGroup(R, form=form)
 
     def _coerce_map_from_(self, other):
         r"""
         Return whether there is a coercion from ``other`` to this group: the
-        groups of isometries over a field that coerces into the base ring.
+        groups of isometries with the same quadratic form over a field that
+        coerces into the base ring.
 
         EXAMPLES::
 
@@ -1737,9 +2192,23 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             sage: (HyperbolicIsometryGroup(AA).one() * G.an_element()).parent()
             Group of orientation preserving isometries of the hyperbolic plane over Algebraic Real Field
 
+        With another form::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: HyperbolicIsometryGroup(AA, form=[1, 2, -3]).has_coerce_map_from(G3)
+            True
+            sage: HyperbolicIsometryGroup(AA).has_coerce_map_from(G3)
+            False
+
         """
         if isinstance(other, HyperbolicIsometryGroup):
-            return self._base_ring.has_coerce_map_from(other.base_ring())
+            if not self._base_ring.has_coerce_map_from(other.base_ring()):
+                return False
+
+            if self._form is None or other._form is None:
+                return self._form is None and other._form is None
+
+            return other.quadratic_form().change_ring(self._base_ring) == self._form
 
         return False
 
@@ -1803,15 +2272,50 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             ...
             ValueError: element in Similarity group over Rational Field cannot be used to create element in Group of orientation preserving isometries of the hyperbolic plane over Rational Field
 
+        With another form, the matrix must preserve that form; a 2×2 matrix
+        acts on the upper half plane, which needs the form `x^2 + y^2 -
+        z^2`::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: B = matrix([[2, 0, 3], [0, 1, 0], [1, 0, 2]])
+            sage: G3(B).trace()
+            5
+            sage: G(B)
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix is not in SO(2, 1)+
+            sage: G3([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix is not in SO(x^2 + 2*y^2 - 3*z^2)+
+            sage: G3(matrix([[2, 0], [0, 1]]))
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
+        An isometry of another form is refused::
+
+            sage: G3(G.an_element())
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix is not in SO(x^2 + 2*y^2 - 3*z^2)+
+            sage: G(G3(B))
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix is not in SO(2, 1)+
+
         """
         from sage.matrix.constructor import matrix
 
         K = self._base_ring
 
         if isinstance(x, HyperbolicIsometry):
-            M = x.matrix().change_ring(K)
-            M.set_immutable()
-            return self.element_class(self, M)
+            if self._form is None and x.parent()._form is None:
+                M = x.matrix().change_ring(K)
+                M.set_immutable()
+                return self.element_class(self, M)
+
+            x = x.matrix()
 
         if not isinstance(x, Matrix):
             if not isinstance(x, (list, tuple)):
@@ -1826,6 +2330,9 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             x = matrix(K, x)
 
         if x.dimensions() == (2, 2):
+            if self._form is not None:
+                self.hyperbolic_plane()._require_standard_form()
+
             det = x.determinant()
             if not det > 0:
                 raise ValueError(
@@ -1837,9 +2344,11 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             M = HyperbolicPlane(K)._isometry_gl2_to_sim12(x.change_ring(K)) / K(det)
         elif x.dimensions() == (3, 3):
             M = x.change_ring(K)
-            J = _minkowski_form(K)
+            J = self._quadratic_form
             if M.transpose() * J * M != J or M.determinant() != 1 or not M[2, 2] > 0:
-                raise ValueError("matrix is not in SO(2, 1)+")
+                if self._form is None:
+                    raise ValueError("matrix is not in SO(2, 1)+")
+                raise ValueError(f"matrix is not in SO({_form_repr(J)})+")
         else:
             raise ValueError("matrix must be 2×2 or 3×3")
 
@@ -1901,6 +2410,17 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             ...
             TypeError: ...
 
+        A group with another form acts on the planes of that form only::
+
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: B = G3(matrix([[2, 0, 3], [0, 1, 0], [1, 0, 2]]))
+            sage: B * HyperbolicPlane(QQ, form=[1, 2, -3]).point(0, 0, model="klein")
+            (3/2, 0)
+            sage: B * HyperbolicPlane(QQ)(I)
+            Traceback (most recent call last):
+            ...
+            TypeError: the isometry preserves x^2 + 2*y^2 - 3*z^2 and the plane has the form x^2 + y^2 - z^2
+
         """
         if self_on_left and op is operator.mul:
             from sage.modules.free_module import FreeModule_generic
@@ -1930,6 +2450,8 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
                     raise TypeError(
                         f"no common base ring for the isometry over {self._base_ring} and the set over {S.base_ring()}"
                     ) from error
+
+                self._require_form_of(S)
 
                 return HyperbolicIsometryPlaneAction(self, S)
 

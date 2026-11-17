@@ -4,11 +4,12 @@ Compact polygons in the hyperbolic plane, given by their vertices.
 A :class:`HyperbolicPolygon` is a possibly non-convex polygon of the
 :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane` whose vertices are
 finite points. Its vertices are stored in the Klein model, where geodesics are
-straight lines: the polygon is a Euclidean polygon inside the unit disk, so
-that its combinatorics (orientation, convexity, simplicity, position of a
-point) are those of that Euclidean polygon. Its metric quantities (side
-lengths and angles) are decided exactly in the base ring through the
-Minkowski bilinear form of the hyperboloid model.
+straight lines: the polygon is a Euclidean polygon inside the disk of the
+quadratic form of the plane, so that its combinatorics (orientation,
+convexity, simplicity, position of a point) are those of that Euclidean
+polygon. Its metric quantities (side lengths and angles) are decided exactly
+in the base ring through that quadratic form, the Minkowski bilinear form of
+the hyperboloid model for the unit disk.
 
 EXAMPLES::
 
@@ -325,6 +326,17 @@ def hyperbolic_polygon(plane, vertices, model="klein", check=True):
         ...
         NotImplementedError: unsupported model 'poincare'
 
+    The vertices must lie in the disk of the quadratic form of the plane,
+    here `x^2 + 2y^2 < 3`::
+
+        sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+        sage: hyperbolic_polygon(H3, [(0, 0), (1, 0), (0, 1/2)])
+        Hyperbolic polygon with vertices [(0, 0), (1, 0), (0, 1/2)]
+        sage: hyperbolic_polygon(H3, [(0, 0), (2, 0), (0, 1/2)])
+        Traceback (most recent call last):
+        ...
+        ValueError: vertex (2, 0) is not a finite point of the hyperbolic plane
+
     """
     from flatsurf.geometry.hyperbolic import HyperbolicPoint
 
@@ -353,7 +365,7 @@ def hyperbolic_polygon(plane, vertices, model="klein", check=True):
                 x, y = point.coordinates(model="klein")
         x = K(x)
         y = K(y)
-        if not x * x + y * y < 1:
+        if not _minkowski(_lift((x, y)), _lift((x, y)), plane._form) < 0:
             raise ValueError(
                 f"vertex {(x, y)} is not a finite point of the hyperbolic plane"
             )
@@ -381,7 +393,8 @@ class HyperbolicPolygon(Parent):
     - ``parent`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane`
 
     - ``vertices`` -- a sequence of pairs of elements of the base ring, the
-      Klein coordinates of the vertices, each strictly inside the unit disk
+      Klein coordinates of the vertices, each strictly inside the disk of the
+      quadratic form of ``parent``, the unit disk for `x^2 + y^2 - z^2`
 
     - ``category`` -- a category or ``None`` (default: ``None``); refined to
       convex and simple polygons when the vertices describe such a polygon
@@ -940,13 +953,18 @@ class HyperbolicPolygon(Parent):
             sage: Q.parent()
             Hyperbolic Plane over Algebraic Real Field
 
+        The quadratic form of the plane is kept::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: W = H3.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+            sage: W.change_ring(AA).parent()
+            Hyperbolic Plane over Algebraic Real Field with form x^2 + 2*y^2 - 3*z^2
+
         """
         if ring is self.base_ring():
             return self
 
-        from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
-        return HyperbolicPolygon(HyperbolicPlane(ring), self._v)
+        return HyperbolicPolygon(self.parent().change_ring(ring), self._v)
 
     def erase_marked_vertices(self):
         r"""
@@ -986,8 +1004,9 @@ class HyperbolicPolygon(Parent):
         midpoint `c`.
 
         The rotation permutes the vertices, so its matrix in
-        `\mathrm{SO}(2, 1)^+` and its centre `c` are defined over the base
-        ring: so is the result.
+        `\mathrm{SO}(2, 1)^+`, or in the group of the quadratic form of the
+        plane, and its centre `c` are defined over the base ring: so is the
+        result.
 
         INPUT:
 
@@ -1065,6 +1084,21 @@ class HyperbolicPolygon(Parent):
             ...
             ValueError: polygon is not invariant under a rotation of order 2
 
+        The rotation is an isometry of the quadratic form of the plane: this
+        triangle is invariant under a rotation of order 3 for the form `x^2 +
+        3y^2 - z^2`, not for `x^2 + y^2 - z^2`::
+
+            sage: H31 = HyperbolicPlane(QQ, form=[1, 3, -1])
+            sage: T = H31.polygon(vertices=[(1/2, 0), (-1/4, 1/4), (-1/4, -1/4)])
+            sage: T._cosh2_sides()
+            (9/4, 9/4, 9/4)
+            sage: T.cyclic_quotient(3)
+            Hyperbolic polygon with vertices [(0, 0), (1/2, 0), (-1/4, 1/4)]
+            sage: H.polygon(vertices=[(1/2, 0), (-1/4, 1/4), (-1/4, -1/4)]).cyclic_quotient(3)
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon is not invariant under a rotation of order 3
+
         """
         from sage.all import ZZ
 
@@ -1089,11 +1123,13 @@ class HyperbolicPolygon(Parent):
         k = n // m
 
         K = self.base_ring()
+        form = self.parent()._form
         try:
             M = segment_isometry(
                 (vertices[0], vertices[1]),
                 (vertices[k], vertices[(k + 1) % n]),
                 ring=K,
+                form=form,
             )
         except ValueError as error:
             raise ValueError(refused) from error
@@ -1108,7 +1144,7 @@ class HyperbolicPolygon(Parent):
         if m == 2:
             return self.parent().polygon(vertices=vertices[: k + 1])
 
-        centre = HyperbolicIsometryGroup(K)(M).fixed_point()
+        centre = HyperbolicIsometryGroup(K, form=form)(M).fixed_point()
         return self.parent().polygon(
             vertices=[centre.coordinates(model="klein")] + list(vertices[: k + 1])
         )
@@ -1116,7 +1152,8 @@ class HyperbolicPolygon(Parent):
     def _transformation_group(self):
         r"""
         Return the group of the orientation preserving isometries of the
-        hyperbolic plane, over the base ring of this polygon.
+        hyperbolic plane, over the base ring of this polygon, with the
+        quadratic form of its plane.
 
         EXAMPLES::
 
@@ -1124,11 +1161,16 @@ class HyperbolicPolygon(Parent):
             sage: H = HyperbolicPlane(QQ)
             sage: H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])._transformation_group()
             Group of orientation preserving isometries of the hyperbolic plane over Rational Field
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])._transformation_group()
+            Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
 
         """
         from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
 
-        return HyperbolicIsometryGroup(self.parent().base_ring())
+        return HyperbolicIsometryGroup(
+            self.parent().base_ring(), form=self.parent()._form
+        )
 
     def _mul_(self, g, switch_sides=None):
         r"""
@@ -1184,8 +1226,8 @@ class HyperbolicPolygon(Parent):
           or a matrix as in
           :meth:`~flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry`:
           a 2×2 matrix of positive determinant if ``model`` is
-          ``"half_plane"``, a 3×3 matrix preserving the Minkowski form up to a
-          positive factor if ``model`` is ``"klein"``
+          ``"half_plane"``, a 3×3 matrix preserving the quadratic form of the
+          plane up to a positive factor if ``model`` is ``"klein"``
 
         - ``model`` -- ``"klein"`` or ``"half_plane"`` (default:
           ``"klein"``); the model in which a matrix ``isometry`` acts, ignored
@@ -1234,9 +1276,26 @@ class HyperbolicPolygon(Parent):
             ...
             ValueError: isometry in Klein model must be given as a 3×3 matrix
 
-        """
-        from sage.matrix.constructor import diagonal_matrix
+        On a plane with another form, the isometry preserves that form::
 
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: W = H3.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+            sage: B = matrix([[2, 0, 3], [0, 1, 0], [1, 0, 2]])
+            sage: W.apply_isometry(B)
+            Hyperbolic polygon with vertices [(3/2, 0), (8/5, 0), (8/5, 1/5), (3/2, 1/4)]
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: W.apply_isometry(B) == G3(B)(W) == G3(B) * W
+            True
+            sage: P.apply_isometry(G3(B))
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix does not define an isometry
+            sage: W.apply_isometry(g)
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix does not define an isometry
+
+        """
         from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometry
 
         H = self.parent()
@@ -1262,7 +1321,7 @@ class HyperbolicPolygon(Parent):
             raise NotImplementedError(f"unsupported model {model!r}")
 
         M = M.change_ring(K)
-        J = diagonal_matrix(K, [1, 1, -1])
+        J = H.quadratic_form()
         D = M.transpose() * J * M
         if not D[0, 0] > 0 or D != D[0, 0] * J:
             raise ValueError("matrix does not define an isometry")
@@ -1352,7 +1411,7 @@ class HyperbolicPolygon(Parent):
                 f"the edge {i} is not an edge of a polygon with {n} vertices"
             )
         i = int(i)
-        return _cosh2(self._v[i], self._v[(i + 1) % n])
+        return _cosh2(self._v[i], self._v[(i + 1) % n], self.parent()._form)
 
     def _cosh2_sides(self):
         r"""
@@ -1369,7 +1428,8 @@ class HyperbolicPolygon(Parent):
 
         """
         n = len(self._v)
-        return tuple(_cosh2(self._v[i], self._v[(i + 1) % n]) for i in range(n))
+        form = self.parent()._form
+        return tuple(_cosh2(self._v[i], self._v[(i + 1) % n], form) for i in range(n))
 
     def _angle_key(self, i):
         r"""
@@ -1416,13 +1476,15 @@ class HyperbolicPolygon(Parent):
         Q = _lift(q)
         R = _lift(r)
 
-        QQ_ = _minkowski(Q, Q)
-        RQ = _minkowski(R, Q)
-        PQ = _minkowski(P, Q)
+        form = self.parent()._form
 
-        product = _minkowski(R, P) - RQ * PQ / QQ_
-        norm_r = _minkowski(R, R) - RQ * RQ / QQ_
-        norm_p = _minkowski(P, P) - PQ * PQ / QQ_
+        QQ_ = _minkowski(Q, Q, form)
+        RQ = _minkowski(R, Q, form)
+        PQ = _minkowski(P, Q, form)
+
+        product = _minkowski(R, P, form) - RQ * PQ / QQ_
+        norm_r = _minkowski(R, R, form) - RQ * RQ / QQ_
+        norm_p = _minkowski(P, P, form) - PQ * PQ / QQ_
 
         sign = (product > 0) - (product < 0)
 
@@ -1571,6 +1633,20 @@ class HyperbolicPolygon(Parent):
             0.0540867239846964
             sage: H.convex_hull(*P.vertices()).area()  # abs tol 1e-12
             0.0540867239846964
+
+        A Lambert quadrilateral of the plane of the form `x^2 + 2y^2 - 3z^2`,
+        whose vertex `(1, 0)` lies outside of the unit disk::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: L = H3.polygon(vertices=[(0, 0), (1, 0), (1, 1/2), (0, 1/2)])
+            sage: [L.edge_cosh_squared(i) for i in range(4)]
+            [3/2, 4/3, 5/3, 6/5]
+            sage: L.angles(numerical=True)  # abs tol 1e-12
+            (0.25, 0.25, 0.198791808825217, 0.25)
+            sage: L.area(numerical=True)  # abs tol 1e-12
+            0.0512081911747834
+            sage: H3.convex_hull(*L.vertices()).area()  # abs tol 1e-12
+            0.0512081911747834
 
         """
         from sage.all import QQ
