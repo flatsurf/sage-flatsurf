@@ -326,6 +326,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
       are convex subsets of the hyperbolic plane and not just points and do
       therefore not satisfy the assumptions of a metric space.
 
+    - ``form`` -- ``None``, a 3×3 diagonal matrix or the list of its three
+      diagonal coefficients `(a, b, -c)` with `a, b, c` positive elements of
+      the base ring (default: ``None``, the form `x^2 + y^2 - z^2`). The
+      Klein model is the disk `a x^2 + b y^2 < c`. The form is normalized by
+      dividing it by `a`, which changes neither its cone nor its isometries.
+      A plane with another form than `x^2 + y^2 - z^2` takes and returns
+      coordinates in the Klein model only: the map to the upper half plane
+      is defined for the unit disk.
+
     EXAMPLES::
 
         sage: from flatsurf import HyperbolicPlane
@@ -343,10 +352,27 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         sage: HyperbolicPlane(RR)
         Hyperbolic Plane over Real Field with 53 bits of precision
 
+    A hyperbolic plane whose Klein model is the ellipse `x^2 + 2y^2 < 3`::
+
+        sage: H = HyperbolicPlane(QQ, form=[1, 2, -3])
+        sage: H
+        Hyperbolic Plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+        sage: H.point(1/2, 1/2, model="klein")
+        (1/2, 1/2)
+        sage: H.point(1, 1, model="klein").is_ideal()
+        True
+
+    Such a plane has no upper half plane model::
+
+        sage: H.point(0, 1, model="half_plane")
+        Traceback (most recent call last):
+        ...
+        ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
     """
 
     @staticmethod
-    def __classcall__(cls, base_ring=None, geometry=None, category=None):
+    def __classcall__(cls, base_ring=None, geometry=None, category=None, form=None):
         r"""
         Create the hyperbolic plane with normalized arguments to make it a
         unique SageMath parent.
@@ -362,10 +388,39 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane() is HyperbolicPlane(geometry=HyperbolicExactGeometry(QQ))
             True
 
+        The form is normalized::
+
+            sage: HyperbolicPlane(QQ, form=[2, 2, -2]) is HyperbolicPlane(QQ)
+            True
+            sage: HyperbolicPlane(QQ, form=[2, 4, -6]) is HyperbolicPlane(QQ, form=[1, 2, -3])
+            True
+            sage: HyperbolicPlane(QQ, form=diagonal_matrix([1, 2, -3])) is HyperbolicPlane(QQ, form=[1, 2, -3])
+            True
+
+        The form must be diagonal of signature `(2, 1)`::
+
+            sage: HyperbolicPlane(QQ, form=[1, 1, 1])
+            Traceback (most recent call last):
+            ...
+            ValueError: the form must be diag(a, b, -c) with a, b, c positive
+            sage: HyperbolicPlane(QQ, form=matrix([[1, 1, 0], [1, 2, 0], [0, 0, -3]]))
+            Traceback (most recent call last):
+            ...
+            ValueError: the form must be diagonal
+
         """
         from sage.all import QQ
 
         base_ring = base_ring or QQ
+
+        if form is not None:
+            from flatsurf.geometry.hyperbolic_isometry import _minkowski_form
+
+            if isinstance(form, (list, tuple)):
+                form = [base_ring(c) for c in form]
+            form = _minkowski_form(base_ring, form)
+            if form == _minkowski_form(base_ring):
+                form = None
 
         if geometry is None:
             from sage.all import RR
@@ -383,11 +438,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         category = category or Sets()
 
+        if form is None:
+            return super().__classcall__(
+                cls, base_ring=base_ring, geometry=geometry, category=category
+            )
+
         return super().__classcall__(
-            cls, base_ring=base_ring, geometry=geometry, category=category
+            cls, base_ring=base_ring, geometry=geometry, category=category, form=form
         )
 
-    def __init__(self, base_ring, geometry, category):
+    def __init__(self, base_ring, geometry, category, form=None):
         r"""
         Create the hyperbolic plane over ``base_ring``.
 
@@ -398,6 +458,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: TestSuite(HyperbolicPlane(QQ)).run()
             sage: TestSuite(HyperbolicPlane(AA)).run()  # long time (.5s)
             sage: TestSuite(HyperbolicPlane(RR)).run()
+            sage: TestSuite(HyperbolicPlane(QQ, form=[1, 2, -3])).run()
+            sage: TestSuite(HyperbolicPlane(QQ, form=[1, 6, -10])).run()
 
         """
         from sage.all import RR
@@ -414,6 +476,123 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         super().__init__(category=category)
         self._base_ring = geometry.base_ring()
         self.geometry = geometry
+
+        from flatsurf.geometry.hyperbolic_isometry import _minkowski_form
+
+        # The form passed to the helpers of hyperbolic_polygon, None for the
+        # standard form so that they evaluate it without any division.
+        self._form = form
+        self._standard = form is None
+        self._quadratic_form = _minkowski_form(self._base_ring, form)
+
+    def quadratic_form(self):
+        r"""
+        Return the matrix of the quadratic form whose projectivized cone of
+        negative vectors is the Klein model of this plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: HyperbolicPlane(QQ).quadratic_form()
+            [ 1  0  0]
+            [ 0  1  0]
+            [ 0  0 -1]
+            sage: HyperbolicPlane(QQ, form=[2, 4, -6]).quadratic_form()
+            [ 1  0  0]
+            [ 0  2  0]
+            [ 0  0 -3]
+
+        """
+        return self._quadratic_form
+
+    def _require_standard_form(self):
+        r"""
+        Raise an error if this plane does not have the form `x^2 + y^2 - z^2`.
+
+        The upper half plane model, and with it the ideal points given by
+        their real coordinate, is defined through the unit disk of the Klein
+        model.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: HyperbolicPlane(QQ)._require_standard_form()
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3])._require_standard_form()
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
+        """
+        if not self._standard:
+            raise ValueError(
+                "the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()"
+            )
+
+    def _plot_point(self, point):
+        r"""
+        Return the image of ``point`` in the standard hyperbolic plane over
+        ``RR`` under the diagonal map `(x, y) \mapsto (x / \sqrt{c}, y
+        \sqrt{b / c})` of the Klein model, the identity on a plane with the
+        form `x^2 + y^2 - z^2`.
+
+        The map sends the disk `x^2 + b y^2 < c` to the unit disk and is an
+        isometry, so that the plotting code, written for the unit disk,
+        draws the image instead of the point.
+
+        An endpoint of a geodesic without coordinates over the base ring is
+        carried through its geodesic: the line `a + b' x + c' y = 0` goes to
+        the line `a + b' \sqrt{c} X + c' \sqrt{c / b} Y = 0`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H._plot_point(H.point(1/2, 1/2, model="klein"))
+            0.487831517751085 + 1.46349455325325*I
+            sage: H._plot_point(H.point(1/2, 1/2, model="klein")).coordinates(model="klein")
+            (0.288675134594813, 0.408248290463863)
+
+        The endpoints of the line `x = 1/3`, whose coordinates involve
+        `\sqrt{13}`::
+
+            sage: g = H.geodesic(-1/3, 1, 0, model="klein")
+            sage: H._plot_point(g.start()).coordinates(model="klein")  # abs tol 1e-12
+            (0.192450089729875, 0.981306762925316)
+            sage: H._plot_point(g.end()).coordinates(model="klein")  # abs tol 1e-12
+            (0.192450089729876, -0.981306762925316)
+
+        On the standard plane, this is the identity::
+
+            sage: H = HyperbolicPlane(QQ)
+            sage: p = H(I)
+            sage: H._plot_point(p) is p
+            True
+
+        """
+        if self._standard:
+            return point
+
+        from sage.all import RR
+
+        b = RR(self._quadratic_form[1, 1])
+        c = -RR(self._quadratic_form[2, 2])
+        plane = HyperbolicPlane(RR)
+
+        coordinates = point.coordinates(model="klein", ring="maybe")
+        if coordinates is not None:
+            x, y = coordinates
+            return plane.point(
+                RR(x) / c.sqrt(), RR(y) * (b / c).sqrt(), model="klein", check=False
+            )
+
+        geodesic = point._geodesic
+        return plane.geodesic(
+            RR(geodesic._a),
+            RR(geodesic._b) * c.sqrt(),
+            RR(geodesic._c) * (c / b).sqrt(),
+            model="klein",
+            check=False,
+        ).start()
 
     def _coerce_map_from_(self, other):
         r"""
@@ -446,12 +625,29 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane(RR).has_coerce_map_from(CC)
             False
 
+        Planes coerce into each other when their forms agree::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: HyperbolicPlane(AA, form=[1, 2, -3]).has_coerce_map_from(H3)
+            True
+            sage: HyperbolicPlane(AA).has_coerce_map_from(H3)
+            False
+
+        A plane with another form than `x^2 + y^2 - z^2` has no real line
+        for base ring elements to coerce to::
+
+            sage: H3.has_coerce_map_from(QQ)
+            False
+
         """
         if self.base_ring().has_coerce_map_from(other):
-            return True
+            return self._standard
 
         if isinstance(other, HyperbolicPlane):
-            return self.base_ring().has_coerce_map_from(other.base_ring())
+            return self.base_ring().has_coerce_map_from(other.base_ring()) and (
+                other.quadratic_form().change_ring(self.base_ring())
+                == self.quadratic_form()
+            )
 
         return False
 
@@ -509,7 +705,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         # Note that in old versions of SageMath (e.g. Sage 9.1), I
         # is not a number field element but a symbolic ring element.
         # The "parent is SR" part can probably removed at some point.
-        if isinstance(parent, Parent) and parent in NumberFields() or parent is SR:
+        if self._standard and (
+            isinstance(parent, Parent) and parent in NumberFields() or parent is SR
+        ):
             if (
                 x.real() in self.base_ring()
                 and x.imag() in self.base_ring()
@@ -559,6 +757,19 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane(RR).change_ring(QQ, geometry=HyperbolicExactGeometry(QQ)) is HyperbolicPlane(QQ)
             True
 
+        The quadratic form is kept::
+
+            sage: H = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H.change_ring(AA)
+            Hyperbolic Plane over Algebraic Real Field with form x^2 + 2*y^2 - 3*z^2
+
+        It must lie in the new ring::
+
+            sage: HyperbolicPlane(QQ, form=[1, 1/2, -3]).change_ring(ZZ, geometry=HyperbolicExactGeometry(ZZ))
+            Traceback (most recent call last):
+            ...
+            ValueError: the form does not lie in Integer Ring
+
         .. SEEALSO::
 
             :meth:`HyperbolicConvexSet.change_ring` or more generally
@@ -575,7 +786,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if geometry is None:
             geometry = self.geometry.change_ring(ring)
 
-        return HyperbolicPlane(ring, geometry)
+        form = None
+        if not self._standard:
+            form = [self._quadratic_form[i, i] for i in range(3)]
+            if any(c not in ring for c in form):
+                raise ValueError(f"the form does not lie in {ring}")
+            form = [ring(c) for c in form]
+
+        return HyperbolicPlane(ring, geometry, form=form)
 
     def _an_element_(self):
         r"""
@@ -588,8 +806,73 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane().an_element()
             0
 
+        A plane with another form than `x^2 + y^2 - z^2` returns the center of
+        its Klein model::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3]).an_element()
+            (0, 0)
+
         """
+        if not self._standard:
+            return self.point(0, 0, model="klein")
+
         return self.real(0)
+
+    def _klein_samples(self):
+        r"""
+        Return the coordinates `x_1` and `y_1` of the finite points `(x_1, 0)`
+        and `(0, y_1)` of the Klein model, for the elements of a plane with
+        another form than `x^2 + y^2 - z^2`.
+
+        For the disk `x^2 + b y^2 < c`, `x_1 = c / (c + 1)` and `y_1 = c / (c +
+        b)` lie in the base ring and satisfy `x_1^2 < c` and `b y_1^2 < c`
+        whatever `b` and `c`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3])._klein_samples()
+            (3/4, 3/5)
+
+        """
+        b = self._quadratic_form[1, 1]
+        c = -self._quadratic_form[2, 2]
+        return c / (c + 1), c / (c + b)
+
+    def _klein_ideal_point(self):
+        r"""
+        Return the coordinates `(x_0, y_0)` of an ideal point of the Klein
+        model with `x_0` one of `1, \dots, 9` and `y_0 > 0` in the base ring,
+        or ``None`` if there is none.
+
+        The vertices of a set are sorted by their coordinates, so that the
+        unbounded sets of :meth:`some_subsets` need ideal points with
+        coordinates in the base ring, which the ellipse `x^2 + b y^2 = c`
+        might not have.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3])._klein_ideal_point()
+            (1, 1)
+            sage: HyperbolicPlane(QQ, form=[1, 6, -10])._klein_ideal_point()
+            (2, 1)
+            sage: HyperbolicPlane(QQ, form=[1, 1, -3])._klein_ideal_point() is None
+            True
+
+        """
+        from flatsurf.geometry.hyperbolic_isometry import _positive_sqrt
+
+        b = self._quadratic_form[1, 1]
+        c = -self._quadratic_form[2, 2]
+        for x0 in range(1, 10):
+            x0 = self.base_ring()(x0)
+            if x0 * x0 >= c:
+                return None
+            y0 = _positive_sqrt((c - x0 * x0) / b)
+            if y0 is not None:
+                return x0, y0
+        return None
 
     def some_subsets(self):
         r"""
@@ -605,10 +888,103 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane().some_elements()
             [∞, 0, 1, -1, ...]
 
+        A plane with another form than `x^2 + y^2 - z^2` builds them from
+        Klein coordinates. The unbounded polygons and segments need ideal
+        vertices with coordinates in the base ring, here `(\pm 1, \pm 1)`,
+        and are left out when no such point is found::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3]).some_subsets()
+            [(0, 0),
+             (3/4, 0),
+             (0, 3/5),
+             (-1.73205080756888, 0.000000000000000),
+             (1.73205080756888, 0.000000000000000),
+             {},
+             {y = 0},
+             {x = 0},
+             {-3 + 4*x = 0},
+             {x = 0},
+             {3 + -5*y = 0},
+             {x ≥ 0},
+             {3 + -4*x ≥ 0},
+             {3 + -8*x ≥ 0} ∩ {3 + -10*y ≥ 0} ∩ {3 + 8*x ≥ 0} ∩ {3 + 10*y ≥ 0},
+             {y = 0} ∩ {3 + 8*x ≥ 0} ∩ {3 + -8*x ≥ 0},
+             {y = 0} ∩ {x ≥ 0} ∩ {3 + -4*x ≥ 0},
+             {1 + -x ≥ 0} ∩ {1 + x ≥ 0},
+             {1 + -x ≥ 0} ∩ {1 + -y ≥ 0} ∩ {1 + x ≥ 0} ∩ {1 + y ≥ 0},
+             {-x + y = 0} ∩ {x + y ≥ 0},
+             {-x + y = 0} ∩ {x + y ≥ 0}]
+
         """
         from sage.all import ZZ
 
         elements = self.some_elements()
+
+        if not self._standard:
+            x1, y1 = self._klein_samples()
+            origin = self.point(0, 0, model="klein")
+            x_axis = self.geodesic(0, 0, 1, model="klein")
+            y_axis = self.geodesic(0, 1, 0, model="klein")
+
+            def left(a, b, c):
+                return self.half_space(a, b, c, model="klein")
+
+            elements += [
+                self.empty_set(),
+                # Oriented geodesics
+                x_axis,
+                y_axis,
+                self.geodesic(-x1, 1, 0, model="klein"),
+                # Unoriented geodesics
+                y_axis.unoriented(),
+                self.geodesic(-y1, 0, 1, model="klein", oriented=False),
+                # Half spaces
+                y_axis.left_half_space(),
+                left(x1, -1, 0),
+                # A bounded polygon
+                self.polygon(
+                    [
+                        left(x1 / 2, -1, 0),
+                        left(x1 / 2, 1, 0),
+                        left(y1 / 2, 0, -1),
+                        left(y1 / 2, 0, 1),
+                    ]
+                ),
+                # A bounded oriented segment
+                self.segment(
+                    x_axis,
+                    start=self.point(-x1 / 2, 0, model="klein"),
+                    end=self.point(x1 / 2, 0, model="klein"),
+                ),
+                # A bounded unoriented segment
+                self.segment(
+                    x_axis, start=origin, end=self.point(x1, 0, model="klein")
+                ).unoriented(),
+            ]
+
+            ideal = self._klein_ideal_point()
+            if ideal is not None:
+                x0, y0 = ideal
+                diagonal = self.geodesic(0, -y0, x0, model="klein")
+                elements += [
+                    # An unbounded polygon
+                    self.polygon([left(x0, -1, 0), left(x0, 1, 0)]),
+                    # An unbounded polygon which is bounded in the Euclidean plane
+                    self.polygon(
+                        [
+                            left(x0, -1, 0),
+                            left(x0, 1, 0),
+                            left(y0, 0, -1),
+                            left(y0, 0, 1),
+                        ]
+                    ),
+                    # An unbounded oriented segment
+                    self.segment(diagonal, start=origin),
+                    # An unbounded unoriented segment
+                    self.segment(diagonal, start=origin).unoriented(),
+                ]
+
+            return elements
 
         elements += [
             self.empty_set(),
@@ -673,7 +1049,29 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane().some_elements()
             [∞, 0, 1, -1, ...]
 
+        A plane with another form than `x^2 + y^2 - z^2` builds them from
+        Klein coordinates; the ends of the chord `y = 0` are `(\pm\sqrt{3},
+        0)` here::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3]).some_elements()
+            [(0, 0),
+             (3/4, 0),
+             (0, 3/5),
+             (-1.73205080756888, 0.000000000000000),
+             (1.73205080756888, 0.000000000000000)]
+
         """
+        if not self._standard:
+            x1, y1 = self._klein_samples()
+            x_axis = self.geodesic(0, 0, 1, model="klein")
+            return [
+                self.point(0, 0, model="klein"),
+                self.point(x1, 0, model="klein"),
+                self.point(0, y1, model="klein"),
+                x_axis.start(),
+                x_axis.end(),
+            ]
+
         return [
             self.infinity(),
             self.real(0),
@@ -757,6 +1155,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.random_element("polygon")
             {56766100*(x^2 + y^2) - 244977117*x + 57459343 ≥ 0} ∩ {822002048*(x^2 + y^2) - 3988505279*x + 2596487836 ≥ 0} ∩ {464*(x^2 + y^2) + 9760*x + 11359 ≥ 0} ∩ {4*(x^2 + y^2) + 45*x + 49 ≥ 0}
+
+        On a plane with another form than `x^2 + y^2 - z^2`, the sets are
+        built from finite points of the Klein model::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.random_element("point").is_finite()
+            True
+            sage: H3.random_element("oriented segment").dimension()
+            1
+            sage: H3.random_element("polygon").dimension()
+            2
 
         .. SEEALSO::
 
@@ -858,6 +1267,34 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: point (0, -1) not in the upper half plane
 
+        A plane with another form than `x^2 + y^2 - z^2` has no upper half
+        plane to take numbers to::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3(I)
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+            sage: H3(1)
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
+        Sets do not convert between planes of different forms::
+
+            sage: H3(H(I))
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot convert a set between hyperbolic planes of different forms
+
+        Sets convert between planes without a form whose base rings have no
+        common parent::
+
+            sage: K.<a> = NumberField(x^2 - 2, embedding=1.414)
+            sage: L.<b> = NumberField(x^2 - 3, embedding=1.732)
+            sage: HyperbolicPlane(L)(HyperbolicPlane(K)(I))
+            I
+
         """
         from sage.all import parent
 
@@ -872,6 +1309,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return self.infinity()
 
         if isinstance(x, HyperbolicConvexSet):
+            # The forms of two planes over rings without a common parent
+            # compare as different, also when both are x^2 + y^2 - z^2.
+            if (
+                not (self._standard and x.parent()._standard)
+                and x.parent().quadratic_form() != self.quadratic_form()
+            ):
+                raise ValueError(
+                    "cannot convert a set between hyperbolic planes of different forms"
+                )
             return x.change(ring=self.base_ring(), geometry=self.geometry)
 
         if x in self.base_ring():
@@ -1032,11 +1478,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: one of p and q must not be zero
 
+        The ideal points of the upper half plane model, and with them
+        :meth:`infinity` and :meth:`real`, need the form `x^2 + y^2 - z^2`::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3]).infinity()
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
         .. SEEALSO::
 
             :meth:`point` to create points in general.
 
         """
+        self._require_standard_form()
+
         p = self.base_ring()(p)
         q = self.base_ring()(q)
 
@@ -1157,6 +1613,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 self, x, y
             )
         elif model == "half_plane":
+            self._require_standard_form()
+
             if self.geometry.classify_point(x, y, model="half_plane") < 0:
                 raise ValueError(f"point {x, y} not in the upper half plane")
 
@@ -1230,6 +1688,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             interface, producing a geodesic from an equation.
 
         """
+        self._require_standard_form()
+
         center = self.base_ring()(center)
         radius_squared = self.base_ring()(radius_squared)
 
@@ -1278,6 +1738,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             a geodesic from an equation.
 
         """
+        self._require_standard_form()
+
         real = self.base_ring()(real)
 
         return self.geometry.vertical(real, self.geodesic)
@@ -1432,6 +1894,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             )
 
         if model == "half_plane":
+            self._require_standard_form()
+
             # Convert to the Klein model.
             return self.geodesic(
                 a + c, b, a - c, model="klein", oriented=oriented, check=check
@@ -2084,6 +2548,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 HyperbolicPolygon,
                 hyperbolic_polygon,
             )
+
+            if model == "half_plane":
+                self._require_standard_form()
 
             if marked_vertices or assume_sorted or assume_minimal:
                 raise ValueError(
@@ -2739,6 +3206,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             isometry to a convex set.
 
         """
+        self._require_standard_form()
+
         if normalized:
             isometry = self.isometry(
                 preimage=preimage,
@@ -2876,6 +3345,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         from sage.matrix.constructor import matrix
 
+        self._require_standard_form()
+
         if isometry.dimensions() != (2, 2):
             raise ValueError(
                 "matrix does not encode an isometry in the half plane model"
@@ -2933,6 +3404,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         from sage.matrix.constructor import matrix
+
+        self._require_standard_form()
 
         if isometry.dimensions() != (3, 3):
             raise ValueError("matrix does not encode an isometry in the Klein model")
@@ -3458,6 +3931,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         from sage.all import PolynomialRing, matrix
 
+        self._require_standard_form()
+
         # Over the reals, the equations are different depending on whether we
         # send a geodesic to -another geodesic or +another geodesic. We try
         # both cases to see which one yields a system that we can solve over
@@ -3614,8 +4089,31 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane(AA)
             Hyperbolic Plane over Algebraic Real Field
 
+        The form is printed when it is not `x^2 + y^2 - z^2`::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3])
+            Hyperbolic Plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+            sage: HyperbolicPlane(QQ, form=[1, 1, -2])
+            Hyperbolic Plane over Rational Field with form x^2 + y^2 - 2*z^2
+            sage: K.<a> = NumberField(x^2 - 2, embedding=1.414)
+            sage: HyperbolicPlane(K, form=[1, a + 1, -a])
+            Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095? with form x^2 + (a + 1)*y^2 - a*z^2
+
         """
-        return f"Hyperbolic Plane over {repr(self.base_ring())}"
+        if self._standard:
+            return f"Hyperbolic Plane over {repr(self.base_ring())}"
+
+        def monomial(coefficient, variable):
+            if coefficient == 1:
+                return variable
+            coefficient = repr(coefficient)
+            if "+" in coefficient or " - " in coefficient:
+                coefficient = f"({coefficient})"
+            return f"{coefficient}*{variable}"
+
+        b = self._quadratic_form[1, 1]
+        c = -self._quadratic_form[2, 2]
+        return f"Hyperbolic Plane over {repr(self.base_ring())} with form x^2 + {monomial(b, 'y^2')} - {monomial(c, 'z^2')}"
 
 
 class HyperbolicGeometry:
@@ -5098,7 +5596,19 @@ class HyperbolicConvexSet(SageObject):
         from sage.all import Graphics
 
         tester = self._tester(**options)
-        if self != self.parent().infinity():
+
+        # A point at infinity of the upper half plane cannot be plotted there.
+        if self.parent()._standard:
+            plottable = self != self.parent().infinity()
+        else:
+            from sage.all import RR
+
+            plottable = (
+                not isinstance(self, HyperbolicPoint)
+                or self.parent()._plot_point(self) != HyperbolicPlane(RR).infinity()
+            )
+
+        if plottable:
             tester.assertIsInstance(self.plot(), Graphics)
             tester.assertIsInstance(self.plot(model="half_plane"), Graphics)
         tester.assertIsInstance(self.plot(model="klein"), Graphics)
@@ -5236,6 +5746,31 @@ class HyperbolicConvexSet(SageObject):
             sage: segment.apply_isometry(isometry)
             {-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0} ∩ {(x^2 + y^2) - 3*x - 2 ≤ 0}
 
+        On a plane with the form `Q`, an isometry of the Klein model is a
+        matrix `M` with `M^T Q M` a positive multiple of `Q`. This boost
+        preserves `x^2 + 2y^2 - 3z^2`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: M = matrix([[2, 0, 3], [0, 1, 0], [1, 0, 2]])
+            sage: H3.point(-1, 0, model="klein").apply_isometry(M, model="klein")
+            (1, 0)
+            sage: H3.point(0, 0, model="klein").apply_isometry(M, model="klein")
+            (3/2, 0)
+
+        It does not preserve `x^2 + y^2 - z^2`::
+
+            sage: H.point(0, 0, model="klein").apply_isometry(M, model="klein")
+            Traceback (most recent call last):
+            ...
+            ValueError: matrix does not define an isometry
+
+        Such a plane has no isometries of the upper half plane::
+
+            sage: H3.point(0, 0, model="klein").apply_isometry(matrix([[1, 1], [0, 1]]))
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
         REFERENCES:
 
         - Svetlana Katok, "Fuchsian Groups", Chicago University Press, Section
@@ -5247,6 +5782,7 @@ class HyperbolicConvexSet(SageObject):
 
         """
         if model == "half_plane":
+            self.parent()._require_standard_form()
             isometry = self.parent()._isometry_gl2_to_sim12(isometry)
             model = "klein"
 
@@ -5259,14 +5795,10 @@ class HyperbolicConvexSet(SageObject):
             isometry = isometry.change_ring(self.parent().base_ring())
 
             # Check that the matrix defines an isometry in the hyperboloid
-            # model, see CFJK "Hyperbolic Geometry" Theorem 10.1
-            from sage.all import diagonal_matrix
-
-            D = (
-                isometry.transpose()
-                * diagonal_matrix(isometry.parent().base_ring(), [1, 1, -1])
-                * isometry
-            )
+            # model, see CFJK "Hyperbolic Geometry" Theorem 10.1. The factor
+            # D[0, 0] of D = λQ is positive: M^T Q M has the signature of Q.
+            Q = self.parent().quadratic_form()
+            D = isometry.transpose() * Q * isometry
 
             # These checks should use a specialized predicate of the geometry
             # of this space so they are more robust over inexact rings.
@@ -5275,10 +5807,10 @@ class HyperbolicConvexSet(SageObject):
                     if (i == j) == self.parent().geometry._zero(entry):
                         raise ValueError("matrix does not define an isometry")
 
-            if not self.parent().geometry._equal(D[0, 0], D[1, 1]):
+            if not self.parent().geometry._equal(D[0, 0] * Q[1, 1], D[1, 1]):
                 raise ValueError("matrix does not define an isometry")
 
-            if not self.parent().geometry._equal(D[0, 0], -D[2, 2]):
+            if not self.parent().geometry._equal(D[0, 0] * -Q[2, 2], -D[2, 2]):
                 raise ValueError("matrix does not define an isometry")
 
             return self._apply_isometry_klein(isometry, on_right=on_right)
@@ -6553,6 +7085,17 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
                 CartesianPathPlotCommand(code='RAYTO', args=(-1, 0)),
                 CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
 
+        A half space of a plane with another form than `x^2 + y^2 - z^2` is
+        drawn through a diagonal isometry of its Klein model to the unit
+        disk::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: h = H3.geodesic(-1/3, 1, 0, model="klein").left_half_space()
+            sage: h.plot()
+            Graphics object consisting of 2 graphics primitives
+            sage: h.plot(model="klein")
+            Graphics object consisting of 3 graphics primitives
+
         """
         return (
             self.parent()
@@ -6939,6 +7482,16 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             sage: geodesic.is_ideal()
             False
 
+        On a plane with another form, the line touches the ellipse of the
+        Klein model; the line `-3 + x + 2y = 0` touches `x^2 + 2y^2 = 3` at
+        `(1, 1)`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.geodesic(-3, 1, 2, model="klein", check=False).is_ideal()
+            True
+            sage: H3.geodesic(-1/3, 1, 0, model="klein").is_ideal()
+            False
+
         .. NOTE::
 
             The implementation of this predicate is not numerically robust over inexact rings.
@@ -6949,6 +7502,14 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             touch the Klein disk
 
         """
+        if not self.parent()._standard:
+            from flatsurf.geometry.hyperbolic_polygon import _dual_minkowski
+
+            line = (self._b, self._c, self._a)
+            return self.parent().geometry._zero(
+                _dual_minkowski(line, line, self.parent()._form)
+            )
+
         # We should probably use a specialized predicate of the geometry to
         # make this more robust over inexact rings.
         return self.parent().geometry._equal(
@@ -6979,6 +7540,20 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             sage: geodesic.is_ultra_ideal()
             True
 
+        On a plane with another form, the line misses the ellipse of the
+        Klein model; the line `x = 2` misses `x^2 + 2y^2 = 3`, the line `y = 1`
+        crosses it::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.geodesic(-2, 1, 0, model="klein", check=False).is_ultra_ideal()
+            True
+            sage: H3.geodesic(-1, 0, 1, model="klein").is_ultra_ideal()
+            False
+            sage: H3.geodesic(-2, 1, 0, model="klein")
+            Traceback (most recent call last):
+            ...
+            ValueError: equation -2 + (1)*x + (0)*y = 0 does not define a chord in the Klein model
+
         .. NOTE::
 
             The implementation of this predicate is not numerically robust over inexact rings.
@@ -6988,6 +7563,17 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             :meth:`is_ideal` to detect whether a geodesic touches the Klein disk
 
         """
+        if not self.parent()._standard:
+            from flatsurf.geometry.hyperbolic_polygon import _dual_minkowski
+
+            line = (self._b, self._c, self._a)
+            return (
+                self.parent().geometry._sgn(
+                    _dual_minkowski(line, line, self.parent()._form)
+                )
+                < 0
+            )
+
         # We should probably use a specialized predicate of the geometry to
         # make this more robust over inexact rings.
         return (
@@ -7035,6 +7621,12 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             sage: H.geodesic(2, 0, 1, model="klein", check=False)
             {2 + y = 0}
 
+        and for all the geodesics of a plane with another form than `x^2 +
+        y^2 - z^2`::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3]).geodesic(-1, 0, 1, model="klein")
+            {-1 + y = 0}
+
         .. SEEALSO::
 
             :meth:`equation` to access the coefficients of the equation
@@ -7043,7 +7635,11 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         """
         if model is None:
             model = (
-                "klein" if self.is_ultra_ideal() or self.is_ideal() else "half_plane"
+                "klein"
+                if not self.parent()._standard
+                or self.is_ultra_ideal()
+                or self.is_ideal()
+                else "half_plane"
             )
 
         if model == "half_plane":
@@ -7166,6 +7762,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         if model == "klein":
             a, b, c = a, b, c
         elif model == "half_plane":
+            self.parent()._require_standard_form()
             a, b, c = a + c, 2 * b, a - c
         else:
             raise NotImplementedError("cannot determine equation for this model yet")
@@ -7307,6 +7904,18 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             sage: H.vertical(0).plot()
             ...Graphics object consisting of 1 graphics primitive
 
+        A geodesic of a plane with another form than `x^2 + y^2 - z^2` is drawn
+        through a diagonal isometry of its Klein model to the unit disk:
+
+        .. jupyter-execute::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: g = H3.geodesic(-1/3, 1, 0, model="klein")
+            sage: g.plot()
+            ...Graphics object consisting of 1 graphics primitive
+            sage: g.plot(model="klein")
+            ...Graphics object consisting of 2 graphics primitives
+
         """
         return (
             self.parent()
@@ -7356,10 +7965,31 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             ...
             ValueError: square root of 32 not in Rational Field
 
+        On a plane with the form `Q`, the pole of the line `a + bx + cy = 0` is
+        the point `Q^{-1}(b, c, a)` of the projective plane, which needs no
+        square root; for `x^2 + 2y^2 - 3z^2`, the poles of the lines `x = 1/3`,
+        `y = 1` and `-3 + x + 2y = 0` are `(1 : 0 : 1/9)`, `(0 : 1/2 : 1/3)`
+        and the point `(1 : 1 : 1)` where the line touches the ellipse::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.geodesic(-1/3, 1, 0, model="klein").pole()
+            (9, 0)
+            sage: H3.geodesic(-1, 0, 1, model="klein").pole()
+            (0, 3/2)
+            sage: H3.geodesic(-3, 1, 2, model="klein", check=False).pole()
+            (1, 1)
+
         """
         if self.is_diameter():
             raise NotImplementedError(
                 "can only compute pole if geodesic is a not a diameter in the Klein model"
+            )
+
+        if not self.parent()._standard:
+            Q = self.parent().quadratic_form()
+            z = self._a / Q[2, 2]
+            return self.parent().point(
+                self._b / Q[0, 0] / z, self._c / Q[1, 1] / z, model="klein", check=False
             )
 
         def tangent(endpoint):
@@ -7469,6 +8099,17 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             ...
             ValueError: no geodesic perpendicular to both {-x = 0} and {(x^2 + y^2) - 1 = 0}
 
+        On a plane with another form, perpendicularity is the one of that
+        form; on `x^2 + 2y^2 - 3z^2`, the perpendicular to the diameter `x - y
+        = 0` at `(1/2, 1/2)` is `x + 2y = 3/2`, and the perpendicular to `x =
+        1/3` through the origin is `y = 0`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.geodesic(0, 1, -1, model="klein").perpendicular(H3.point(1/2, 1/2, model="klein"))
+            {3 + -2*x - 4*y = 0}
+            sage: H3.geodesic(-1/3, 1, 0, model="klein").perpendicular(H3.point(0, 0, model="klein"))
+            {y = 0}
+
         .. NOTE::
 
             Currently, the orientation of the returned geodesic is somewhat
@@ -7495,8 +8136,11 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
             if self.is_diameter():
                 # Construct the line a + bx + cy = 0 perpendicular to the
-                # diameter through the pole of the other geodesic.
-                b, c = (-self._c, self._b)
+                # diameter through the pole of the other geodesic. For the
+                # form x^2 + B y^2 - C z^2, the lines perpendicular to the
+                # diameter b x + c y = 0 are those with coefficients
+                # proportional to (-c/B, b), scaled by B to avoid a division.
+                b, c = (-self._c, self.parent().quadratic_form()[1, 1] * self._b)
                 x, y = other.pole().coordinates(model="klein")
                 a = -(b * x + c * y)
 
@@ -7512,8 +8156,8 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             point = point_or_geodesic
             if self.is_diameter():
                 # Construct the line a + bx + cy = 0 perpendicular to the
-                # diameter through the given point.
-                b, c = (-self._c, self._b)
+                # diameter through the given point, scaled as above.
+                b, c = (-self._c, self.parent().quadratic_form()[1, 1] * self._b)
                 x, y = point.coordinates(model="klein")
                 a = -(b * x + c * y)
 
@@ -7561,6 +8205,8 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             :meth:`HyperbolicSegment.midpoint`
 
         """
+        self.parent()._require_standard_form()
+
         a, b = self.vertices()
 
         if self.is_vertical():
@@ -7608,6 +8254,8 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             False
 
         """
+        self.parent()._require_standard_form()
+
         return self.parent().infinity() in self
 
     def __eq__(self, other):
@@ -8095,6 +8743,8 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             [-b*c - a*d + λ, -a*c + b*d + λ, -a*c - b*d - λ]
 
         """
+        self.parent()._require_standard_form()
+
         R = λ.parent()
 
         a, b, c = self.equation(model="klein")
@@ -8112,7 +8762,9 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         We take the chord in the Klein model that intersects this geodesic
         perpendicularly and passes through the origin. The point of
-        intersection must be a finite point.
+        intersection must be a finite point. For the form `x^2 + B y^2 - C
+        z^2`, that chord goes through the pole `(b, c / B)` of the line `a +
+        bx + cy = 0`, at infinity when the line is a diameter.
 
         EXAMPLES::
 
@@ -8125,8 +8777,20 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             sage: H.half_circle(0, 2).an_element()
             (0, 1/3)
 
+        ::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.geodesic(-3/2, 1, 2, model="klein").an_element()
+            (1/2, 1/2)
+
         """
-        other = self.parent().geodesic(0, -self._c, self._b, model="klein", check=False)
+        other = self.parent().geodesic(
+            0,
+            -self._c,
+            self.parent().quadratic_form()[1, 1] * self._b,
+            model="klein",
+            check=False,
+        )
         cross = other._intersection(self)
         assert cross
         return cross
@@ -8917,6 +9581,23 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             ...
             ValueError: geodesics do not intersect
 
+        On a plane with another form, the angle is measured with that form;
+        on `x^2 + 2y^2 - 3z^2`, the lines `x = 1/3` and `y = 0` are
+        perpendicular, and so are `x - y = 0` and `x + 2y = 3/2`, while `x -
+        y = 0` and `x = 0` meet at an angle of cosine `\sqrt{2/3}`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.geodesic(-1/3, 1, 0, model="klein").angle(H3.geodesic(0, 0, 1, model="klein"), numerical=False)
+            1/4
+            sage: H3.geodesic(0, 1, -1, model="klein").angle(H3.geodesic(-3/2, 1, 2, model="klein"), numerical=False)
+            1/4
+            sage: H3.geodesic(-3/2, 1, 2, model="klein").angle(H3.geodesic(0, 1, -1, model="klein"), numerical=False)
+            3/4
+            sage: angle = H3.geodesic(0, 1, -1, model="klein").angle(H3.geodesic(0, 1, 0, model="klein"))
+            sage: import math
+            sage: math.cos(2 * math.pi * angle)**2  # abs tol 1e-12
+            0.666666666666667
+
         """
         if not isinstance(other, HyperbolicOrientedGeodesic):
             raise NotImplementedError(
@@ -8941,21 +9622,21 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
             return ring(0)
 
-        a1 = self._a
-        b1 = self._b
-        c1 = self._c
-        n1_squared = b1 * b1 + c1 * c1 - a1 * a1
+        from flatsurf.geometry.hyperbolic_polygon import _dual_minkowski
 
-        a2 = other._a
-        b2 = other._b
-        c2 = other._c
-        n2_squared = b2 * b2 + c2 * c2 - a2 * a2
+        form = self.parent()._form
+
+        line1 = (self._b, self._c, self._a)
+        n1_squared = _dual_minkowski(line1, line1, form)
+
+        line2 = (other._b, other._c, other._a)
+        n2_squared = _dual_minkowski(line2, line2, form)
 
         import math
 
         n12 = math.sqrt(abs(n1_squared * n2_squared))
 
-        cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
+        cos_angle = _dual_minkowski(line1, line2, form) / n12
 
         from flatsurf.geometry.euclidean import acos
 
@@ -9088,6 +9769,17 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: H(I).is_ideal()
             False
 
+        On a plane with the form `x^2 + 2y^2 - 3z^2`, the ideal points are
+        on the ellipse `x^2 + 2y^2 = 3`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.point(1, 1, model="klein").is_ideal()
+            True
+            sage: H3.point(-1, 1, model="klein").is_ideal()
+            True
+            sage: H3.point(1/2, 1/2, model="klein").is_ideal()
+            False
+
         .. NOTE::
 
             This check is not very robust over inexact rings and should be improved.
@@ -9098,9 +9790,10 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
 
         """
         x, y = self.coordinates(model="klein")
+        Q = self.parent().quadratic_form()
         # We should use a specialized predicate from the geometry here to be
         # more robust over inexact rings.
-        return self.parent().geometry._cmp(x * x + y * y, 1) == 0
+        return self.parent().geometry._cmp(x * x + Q[1, 1] * y * y, -Q[2, 2]) == 0
 
     def is_ultra_ideal(self):
         r"""
@@ -9124,6 +9817,17 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: H.point(2, 0, model="klein", check=False).is_ultra_ideal()
             True
 
+        On a plane with the form `x^2 + 2y^2 - 3z^2`, the ultra-ideal points
+        are outside the ellipse `x^2 + 2y^2 = 3`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.point(2, 0, model="klein", check=False).is_ultra_ideal()
+            True
+            sage: H.point(1, 1, model="klein", check=False).is_ultra_ideal()
+            True
+            sage: H3.point(1, 1, model="klein").is_ultra_ideal()
+            False
+
         .. NOTE::
 
             This check is not very robust over inexact rings and should be improved.
@@ -9134,9 +9838,10 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
 
         """
         x, y = self.coordinates(model="klein")
+        Q = self.parent().quadratic_form()
         # We should use a specialized predicate from the geometry here to be
         # more robust over inexact rings.
-        return self.parent().geometry._cmp(x * x + y * y, 1) > 0
+        return self.parent().geometry._cmp(x * x + Q[1, 1] * y * y, -Q[2, 2]) > 0
 
     def is_finite(self):
         r"""
@@ -9156,6 +9861,15 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: H.half_circle(0, 2).start().is_finite()
             False
 
+        On a plane with the form `x^2 + 2y^2 - 3z^2`, the finite points are
+        inside the ellipse `x^2 + 2y^2 = 3`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.point(1/2, 1/2, model="klein").is_finite()
+            True
+            sage: H3.point(1, 1, model="klein").is_finite()
+            False
+
         .. NOTE::
 
             Currently, the implementation is not robust over inexact rings.
@@ -9166,9 +9880,10 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
 
         """
         x, y = self.coordinates(model="klein")
+        Q = self.parent().quadratic_form()
         # We should use specialized predicate from the geometry implementation
         # here to make this more robust over inexact rings.
-        return self.parent().geometry._cmp(x * x + y * y, 1) < 0
+        return self.parent().geometry._cmp(x * x + Q[1, 1] * y * y, -Q[2, 2]) < 0
 
     def half_spaces(self):
         r"""
@@ -9232,6 +9947,24 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: H(0).half_spaces()
             {{(x^2 + y^2) + x ≤ 0}, {x ≥ 0}}
 
+        On a plane with another form, the half spaces of an ideal point are
+        bounded by its diameter and by the line through the point and a finite
+        point right of that diameter::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: p = H3.point(1, 1, model="klein")
+            sage: p.half_spaces()
+            {{x - y ≤ 0}, {6 + -17*x + 11*y ≤ 0}}
+            sage: H3.intersection(*p.half_spaces()) == p
+            True
+
+        ::
+
+            sage: H = HyperbolicPlane(QQ, form=[1, 6, -10])
+            sage: p = H.point(-2, 1, model="klein")
+            sage: H.intersection(*p.half_spaces()) == p
+            True
+
         .. SEEALSO::
 
             :meth:`HyperbolicPlane.intersection` and
@@ -9251,7 +9984,7 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
                     self.parent().half_space(x0 + y0, -1, -1, model="klein"),
                 ]
             )
-        else:
+        elif self.parent()._standard:
             return HyperbolicHalfSpaces(
                 # left of the line from (0, 0) to this point
                 [
@@ -9259,6 +9992,31 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
                     # right of a line to this point with a starting point right of (0, 0)
                     self.parent().half_space(
                         -x0 * x0 - y0 * y0, y0 + x0, y0 - x0, model="klein"
+                    ),
+                ]
+            )
+        else:
+            # The line above goes through P/2 + t JP for t = 1/2, with P this
+            # point and JP = (y0, -x0) its clockwise rotation; it can be
+            # tangent to the ellipse x^2 + B y^2 = C at P. With
+            # n = y0^2 + B x0^2 and m = (1 - B) x0 y0, the quadratic form of
+            # P/2 + t JP is C/4 + t m + t^2 n, which is less than C for
+            # t = C / (4 (n + C + |m|)) since then t < 1/4, |t m| < C/4 and
+            # t n < C/4.
+            Q = self.parent().quadratic_form()
+            B = Q[1, 1]
+            C = -Q[2, 2]
+            n = y0 * y0 + B * x0 * x0
+            m = (1 - B) * x0 * y0
+            t = C / (4 * (n + C + abs(m)))
+            return HyperbolicHalfSpaces(
+                [
+                    self.parent().half_space(0, -y0, x0, model="klein"),
+                    self.parent().half_space(
+                        -2 * t * (x0 * x0 + y0 * y0),
+                        2 * t * x0 + y0,
+                        2 * t * y0 - x0,
+                        model="klein",
                     ),
                 ]
             )
@@ -9345,6 +10103,18 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: p.coordinates(ring=K, model="klein")
             (-2/3*a, 1/3)
 
+        A plane with another form than `x^2 + y^2 - z^2` has coordinates in
+        the Klein model only::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: p = H3.point(1/2, 1/2, model="klein")
+            sage: p.coordinates(model="klein")
+            (1/2, 1/2)
+            sage: p.coordinates()
+            Traceback (most recent call last):
+            ...
+            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+
         """
         coordinates = self._coordinates_klein(ring=ring)
 
@@ -9355,6 +10125,8 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
         if model == "klein":
             pass
         elif model == "half_plane":
+            self.parent()._require_standard_form()
+
             x, y = coordinates
 
             if self == self.parent().infinity() or self.is_ultra_ideal():
@@ -9484,7 +10256,20 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: H(I).plot()
             ...Graphics object consisting of 1 graphics primitive
 
+        A point of a plane with another form than `x^2 + y^2 - z^2` is drawn
+        through a diagonal isometry of its Klein model to the unit disk:
+
+        .. jupyter-execute::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.point(1/2, 1/2, model="klein").plot()
+            ...Graphics object consisting of 1 graphics primitive
+            sage: H3.point(1/2, 1/2, model="klein").plot(model="klein")
+            ...Graphics object consisting of 2 graphics primitives
+
         """
+        self = self.parent()._plot_point(self)
+
         coordinates = self.coordinates(model=model, ring="maybe")
         if not coordinates:
             from sage.all import RR
@@ -9616,6 +10401,8 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
              -4/5*a^2 - 1/5*b^2 - 4/5*c^2 - 1/5*d^2 + λ]
 
         """
+        self.parent()._require_standard_form()
+
         R = λ.parent()
 
         x, y, z = (*self.coordinates(model="klein"), R.one())
@@ -9838,7 +10625,16 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             sage: H.point(1/2, 0, model="klein")
             (1/2, 0)
 
+        A plane with another form than `x^2 + y^2 - z^2` always shows the
+        coordinates in the Klein model::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3]).point(1/2, 1/2, model="klein")
+            (1/2, 1/2)
+
         """
+        if not self.parent()._standard:
+            return repr(self.coordinates(model="klein"))
+
         if self == self.parent().infinity():
             return "∞"
 
@@ -9974,11 +10770,27 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             sage: x.dimension()
             0
 
+        On a plane with another form, the point is a finite point of the
+        Klein model::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: HyperbolicPointFromCoordinates.random_set(H3).is_finite()
+            True
+
         .. SEEALSO::
 
             :meth:`HyperbolicPlane.random_element`
 
         """
+        if not parent._standard:
+            # Halving brings any point of the plane into the disk.
+            Q = parent.quadratic_form()
+            x = parent.base_ring().random_element()
+            y = parent.base_ring().random_element()
+            while x * x + Q[1, 1] * y * y >= -Q[2, 2]:
+                x, y = x / 2, y / 2
+            return parent.point(x, y, model="klein")
+
         return parent.point(
             parent.base_ring().random_element(),
             parent.base_ring().random_element().abs(),
@@ -10133,12 +10945,64 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             sage: p._coordinates_klein(ring=K)
             (-2/3*a, 1/3)
 
+        On a plane with the form `x^2 + B y^2 - C z^2`, the endpoints of the
+        line `a + bx + cy = 0` are
+
+        .. MATH::
+
+            \frac{1}{c^2 + B b^2}\left(-Bab \mp c\sqrt{D}, -ac \pm b\sqrt{D}\right)
+
+        with `D = BC b^2 + C c^2 - B a^2`, the start with the upper signs.
+        On `x^2 + 2y^2 - 3z^2`, the line `y = 1` ends at `(-1, 1)` and `(1,
+        1)`, and the line `x = 1/3` at `(1/3, \pm\sqrt{13}/3)`::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: g = H3.geodesic(-1, 0, 1, model="klein")
+            sage: g.start(), g.end()
+            ((-1, 1), (1, 1))
+            sage: g = H3.geodesic(-1/3, 1, 0, model="klein")
+            sage: g.start()._coordinates_klein(ring=None)
+            Traceback (most recent call last):
+            ...
+            ValueError: square root of 52/9 not a rational number
+            sage: K.<s> = NumberField(x^2 - 13, embedding=3.606)
+            sage: g.start()._coordinates_klein(ring=K), g.end()._coordinates_klein(ring=K)
+            ((1/3, 1/3*s), (1/3, -1/3*s))
+
         .. NOTE::
 
             The implementation of this predicate is not numerically robust over
             inexact rings and should be improved.
 
         """
+        if not self.parent()._standard:
+            if ring is None or ring == "maybe":
+                sqrt_ring = self.parent().base_ring()
+            else:
+                sqrt_ring = ring
+
+            Q = self.parent().quadratic_form()
+            B = sqrt_ring(Q[1, 1])
+            C = -sqrt_ring(Q[2, 2])
+            a = sqrt_ring(self._geodesic._a)
+            b = sqrt_ring(self._geodesic._b)
+            c = sqrt_ring(self._geodesic._c)
+
+            discriminant = B * C * b * b + C * c * c - B * a * a
+            try:
+                sqrt = discriminant.sqrt(extend=False)
+            except ValueError:
+                if ring == "maybe":
+                    return None
+                raise
+            if sqrt < 0:
+                sqrt = -sqrt
+
+            # The start is the endpoint before the other one in the
+            # direction (c, -b) of the oriented line.
+            N = c * c + B * b * b
+            return ((-B * a * b - c * sqrt) / N, (-a * c + b * sqrt) / N)
+
         a, b, c = self._geodesic.equation(model="half_plane")
 
         # We should probably use a specialized predicate of the geometry to make this
@@ -10296,7 +11160,26 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             sage: geodesic.start()
             3.03625883227966
 
+        A plane with another form than `x^2 + y^2 - z^2` shows the
+        coordinates in the Klein model, approximate ones when they are not
+        in the base ring::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H3.geodesic(-1, 0, 1, model="klein").start()
+            (-1, 1)
+            sage: H3.geodesic(-1/3, 1, 0, model="klein").start()
+            (0.333333333333333, 1.20185042515466)
+
         """
+        if not self.parent()._standard:
+            coordinates = self.coordinates(model="klein", ring="maybe")
+            if coordinates is not None:
+                return repr(coordinates)
+
+            from sage.all import RR
+
+            return repr(self.change_ring(RR))
+
         if self == self.parent().infinity():
             return "∞"
 
@@ -12081,6 +12964,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         if pos != edges[0].start():
             commands.append(HyperbolicPathPlotCommand("MOVETO", edges[0].start()))
 
+        commands = [
+            HyperbolicPathPlotCommand(
+                command.code, self.parent()._plot_point(command.target)
+            )
+            for command in commands
+        ]
+
         from flatsurf.graphical.hyperbolic import hyperbolic_path
 
         plot = hyperbolic_path(commands, model=model, **kwds)
@@ -12876,6 +13766,18 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: segment.plot()  # long time (.25s)
             ...Graphics object consisting of 1 graphics primitive
 
+        A segment of a plane with another form than `x^2 + y^2 - z^2` is drawn
+        through a diagonal isometry of its Klein model to the unit disk:
+
+        .. jupyter-execute::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: segment = H3.point(0, 0, model="klein").segment(H3.point(1/2, 1/2, model="klein"))
+            sage: segment.plot()
+            ...Graphics object consisting of 1 graphics primitive
+            sage: segment.plot(model="klein")
+            ...Graphics object consisting of 2 graphics primitives
+
         """
         self = self.change(oriented=True)
 
@@ -12892,8 +13794,12 @@ class HyperbolicSegment(HyperbolicConvexFacade):
 
         plot = hyperbolic_path(
             [
-                HyperbolicPathPlotCommand("MOVETO", self.start()),
-                HyperbolicPathPlotCommand("LINETO", self.end()),
+                HyperbolicPathPlotCommand(
+                    "MOVETO", self.parent()._plot_point(self.start())
+                ),
+                HyperbolicPathPlotCommand(
+                    "LINETO", self.parent()._plot_point(self.end())
+                ),
             ],
             model=model,
             **kwds,
@@ -13716,7 +14622,22 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
             sage: H.empty_set().half_spaces()
             {{(x^2 + y^2) + 4*x + 3 ≤ 0}, {(x^2 + y^2) - 4*x + 3 ≤ 0}}
 
+        On a plane with another form, the half spaces are given in the Klein
+        model::
+
+            sage: HyperbolicPlane(QQ, form=[1, 2, -3]).empty_set().half_spaces()
+            {{3 + 4*x ≤ 0}, {3 + -4*x ≤ 0}}
+
         """
+        if not self.parent()._standard:
+            x1, _ = self.parent()._klein_samples()
+            return HyperbolicHalfSpaces(
+                [
+                    self.parent().half_space(-x1, -1, 0, model="klein"),
+                    self.parent().half_space(-x1, 1, 0, model="klein"),
+                ]
+            )
+
         return HyperbolicHalfSpaces(
             [
                 self.parent().half_circle(-2, 1).right_half_space(),

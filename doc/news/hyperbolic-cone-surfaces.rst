@@ -27,6 +27,9 @@
   invariant.
 * Added ``orbifold_points()`` and ``is_orbifold()`` of immutable cone
   surfaces, and ``boundary_components()`` of polygonal surfaces.
+* Added a quadratic form ``form=`` to ``HyperbolicPlane``, whose Klein model
+  is the ellipse ``x^2 + b y^2 < c``; a plane with another form than
+  ``x^2 + y^2 - z^2`` works in Klein coordinates only.
 * Exported ``SurfaceSignature`` and ``MutableOrientedHyperbolicSurface``
   from ``flatsurf``.
 

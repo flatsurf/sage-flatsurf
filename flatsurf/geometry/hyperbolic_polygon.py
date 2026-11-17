@@ -78,6 +78,64 @@ def _minkowski(u, v, form=None):
     )
 
 
+def _dual_minkowski(u, v, form=None):
+    r"""
+    Return the product `u^T Q^{-1} v` of the dual form of the diagonal
+    matrix ``form`` `Q` (default: `\mathrm{diag}(1, 1, -1)`) on two triples of
+    coefficients.
+
+    The line `a + bx + cy = 0` of the Klein model is the triple `(b, c, a)`,
+    so that it vanishes on the lift `(x, y, 1)` of its points. The dual
+    product of a geodesic with itself is positive, zero or negative when
+    the line crosses, touches or misses the disk of the form; two geodesics
+    are perpendicular when their dual product vanishes.
+
+    The form is not validated: use
+    :func:`~flatsurf.geometry.hyperbolic_isometry._minkowski_form` to build it.
+    Without a form, no division takes place.
+
+    EXAMPLES:
+
+    For `Q = \mathrm{diag}(1, 2, -3)`, the line `x = 1/3` crosses the disk,
+    the line `-3 + x + 2y = 0` touches it, and the line `x = 2` misses it::
+
+        sage: from flatsurf.geometry.hyperbolic_polygon import _dual_minkowski
+        sage: Q = diagonal_matrix(QQ, [1, 2, -3])
+        sage: _dual_minkowski((1, 0, -1/3), (1, 0, -1/3), Q)
+        26/27
+        sage: _dual_minkowski((1, 2, -3), (1, 2, -3), Q)
+        0
+        sage: _dual_minkowski((1, 0, -2), (1, 0, -2), Q)
+        -1/3
+        sage: _dual_minkowski((0, 1, -1), (0, 1, -1), Q)
+        1/6
+        sage: _dual_minkowski((1, -1, 0), (1, -1, 0), Q)
+        3/2
+        sage: _dual_minkowski((1, 2, -3/2), (1, 2, -3/2), Q)
+        9/4
+
+    The lines `x = 1/3` and `y = 0` are perpendicular, and so are the lines
+    `x - y = 0` and `x + 2y = 3/2`::
+
+        sage: _dual_minkowski((1, 0, -1/3), (0, 1, 0), Q)
+        0
+        sage: _dual_minkowski((1, -1, 0), (1, 2, -3/2), Q)
+        0
+
+    Without a form, this is the product of the standard plane::
+
+        sage: _dual_minkowski((1, 2, 3), (1, 1, 1))
+        0
+
+    """
+    if form is None:
+        return u[0] * v[0] + u[1] * v[1] - u[2] * v[2]
+
+    return (
+        u[0] * v[0] / form[0, 0] + u[1] * v[1] / form[1, 1] + u[2] * v[2] / form[2, 2]
+    )
+
+
 def _lift(v):
     r"""
     Return the lift `(x, y, 1)` of the point ``v`` of the Klein model to the
