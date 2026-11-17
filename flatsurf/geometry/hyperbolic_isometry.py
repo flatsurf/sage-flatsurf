@@ -1298,23 +1298,53 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
 
     def _half_lift(self):
         r"""
-        Return the matrix of this isometry in `\mathrm{SL}(2, \RR)` up to a
-        scalar whose square lies in the base ring, and that square.
+        Return a lift of this isometry to the spin group of the quadratic
+        form, up to a scalar whose square lies in the base ring, and that
+        square.
 
         OUTPUT:
 
-        A pair ``(B, s)`` of a 2×2 matrix ``B`` over the base ring and a
-        nonzero element ``s`` of the base ring such that ``B = aA`` and
-        ``s = a^2``, where `A` is the matrix of :meth:`psl2_matrix` and `a`
-        a nonzero scalar. In particular ``B.det() == s``.
+        For the form `x^2 + y^2 - z^2`, a pair ``(B, s)`` of a 2×2 matrix
+        ``B`` over the base ring and a nonzero element ``s`` of the base ring
+        such that ``B = aA`` and ``s = a^2``, where `A` is the matrix of
+        :meth:`psl2_matrix` and `a` a nonzero scalar. In particular
+        ``B.det() == s``.
+
+        For the form `x^2 + b y^2 - c z^2`, a pair ``(x, s)`` of a nonzero
+        element ``x`` of the even Clifford algebra of the form, the
+        quaternion algebra `(-b, bc)` over the base ring, and its reduced
+        norm ``s``. The element `x / \sqrt{s}` of reduced norm `1` acts on the
+        vectors of the form by the conjugation `v \mapsto x v x^{-1}` as this
+        isometry; the lifts of the isometries `g` and `h` multiply to a
+        nonzero scalar times the lift of `gh`. Its reduced trace `t`
+        satisfies `t^2 / s = \mathrm{tr}(M) + 1` for the matrix `M` of this
+        isometry, as the trace of `A` on the standard form.
 
         ALGORITHM:
 
-        The matrix of this isometry is quadratic in the entries `a, b, c, d`
-        of `A`: its entries give `a^2, b^2, c^2, d^2` and the products of
-        two of them. As `ad - bc = 1`, either `a` or `b` is nonzero. If
-        `s = a^2` is nonzero, then `aA = (a^2, ab; ac, ad)`; otherwise
-        `bA = (ab, b^2; bc, bd)` and `s = b^2`. No square root is taken.
+        For the form `x^2 + y^2 - z^2`, the matrix of this isometry is
+        quadratic in the entries `a, b, c, d` of `A`: its entries give `a^2,
+        b^2, c^2, d^2` and the products of two of them. As `ad - bc = 1`,
+        either `a` or `b` is nonzero. If `s = a^2` is nonzero, then `aA =
+        (a^2, ab; ac, ad)`; otherwise `bA = (ab, b^2; bc, bd)` and `s = b^2`.
+        No square root is taken.
+
+        For another form, with `e_1, e_2, e_3` the basis of the vectors, the
+        generators of the even Clifford algebra are `i = e_1 e_2`, `j = e_2
+        e_3` and `k = ij = b e_1 e_3`. The element
+
+        .. MATH::
+
+            x = (1 + \mathrm{tr} M) + (M_{01}/b - M_{10}) i
+            - (M_{21}/b + M_{12}/c) j - (M_{20}/b + M_{02}/(bc)) k
+
+        (indices from `0`) is a multiple of the lift, by the classical
+        formula of a lift as `1` plus the sum of the products of the dual
+        basis vectors with their images by `M`, read in the basis `1, i, j,
+        k`. It vanishes exactly for a half turn, when `\mathrm{tr} M = -1`
+        and `QM` is symmetric: the lift of the half turn about the point `v`
+        is then the product of `v` with the volume element, `v_0 j - v_1 k -
+        c v_2 i`, for a nonzero vector `v` of the kernel of `M - 1`.
 
         EXAMPLES::
 
@@ -1333,24 +1363,50 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             sage: B / AA(s).sqrt() == g.psl2_matrix(AA)
             True
 
-        TESTS::
+        With the form `x^2 + 2y^2 - 3z^2`, the lifts of the identity, of the
+        half turn about the origin, of a rotation about the origin and of a
+        hyperbolic isometry::
 
             sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
             sage: G3.one()._half_lift()
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: the lift to SL(2, R) needs the form x^2 + y^2 - z^2
+            (4, 16)
+            sage: G3(diagonal_matrix([-1, -1, 1]))._half_lift()
+            (-3*i, 18)
+            sage: G3(matrix([[-1/3, 4/3, 0], [-2/3, -1/3, 0], [0, 0, 1]]))._half_lift()
+            (4/3 + 4/3*i, 16/3)
+            sage: h = G3(matrix([[19/13, 0, -24/13], [0, 1, 0], [-8/13, 0, 19/13]]))
+            sage: x, s = h._half_lift()
+            sage: x, s
+            (64/13 + 8/13*k, 256/13)
+            sage: x.parent()
+            Quaternion Algebra (-2, 6) with base ring Rational Field
+            sage: x.reduced_trace()^2 / s == h.trace() + 1
+            True
+
         """
         from sage.matrix.constructor import matrix
 
-        if self.parent()._form is not None:
-            # The formula inverts the spinor map of x^2 + y^2 - z^2; another
-            # form needs the even Clifford algebra of that form.
-            raise NotImplementedError(
-                "the lift to SL(2, R) needs the form x^2 + y^2 - z^2"
-            )
-
         K = self.parent().base_ring()
+
+        if self.parent()._form is not None:
+            from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
+
+            Q = self.parent().quadratic_form()
+            b, c = Q[1, 1], -Q[2, 2]
+            i, j, k = QuaternionAlgebra(K, -b, b * c).gens()
+            M = self._matrix
+            t = 1 + M.trace()
+            x = (
+                t
+                + (M[0, 1] / b - M[1, 0]) * i
+                - (M[2, 1] / b + M[1, 2] / c) * j
+                - (M[2, 0] / b + M[0, 2] / (b * c)) * k
+            )
+            if not t:
+                v = (M - 1).right_kernel().basis()[0]
+                x = v[0] * j - v[1] * k - c * v[2] * i
+            return x, x.reduced_norm()
+
         m00, m01, m02, m10, m11, m12, m20, m21, m22 = self._matrix.list()
         two = K(2)
 

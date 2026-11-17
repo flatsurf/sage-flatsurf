@@ -161,8 +161,9 @@ def test_action(G3, H3, B):
 def test_lift_to_sl2_refused(G3, B):
     with pytest.raises(ValueError, match=HALF_PLANE):
         G3(B).psl2_matrix()
-    with pytest.raises(NotImplementedError, match=re.escape("needs the form x^2 + y^2 - z^2")):
-        G3(B)._half_lift()
+    # The lift to the even Clifford algebra exists for any form.
+    x, s = G3(B)._half_lift()
+    assert x.reduced_trace() ** 2 / s == G3(B).trace() + 1
 
 
 def test_segment_isometry_on_points(H3):

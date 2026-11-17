@@ -1115,6 +1115,16 @@ def _mirror(P, glued_edges, mirror_edge):
         sage: gluings
         [((0, 0), (1, 2)), ((0, 1), (1, 1)), ((0, 2), (1, 0))]
 
+    The reflection preserves the quadratic form of the plane of ``P``::
+
+        sage: H = HyperbolicPlane(QQ, form=[1, 3, -1])
+        sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (-1/4, 1/4)])
+        sage: Q, _ = _mirror(P, None, 1)
+        sage: [v.coordinates(model="klein") for v in Q.vertices()]
+        [(4/17, 4/17), (-1/4, 1/4), (1/2, 0)]
+        sage: P._cosh2_sides(), Q._cosh2_sides()
+        ((4/3, 9/4, 4/3), (4/3, 9/4, 4/3))
+
     """
     from flatsurf.geometry.similarity_surface_generators import _pillowcase_gluings
 
@@ -1123,7 +1133,9 @@ def _mirror(P, glued_edges, mirror_edge):
         len(vertices), glued_edges, mirror_edge
     )
 
-    reflection = _reflection(vertices[m], vertices[(m + 1) % len(vertices)])
+    reflection = _reflection(
+        vertices[m], vertices[(m + 1) % len(vertices)], P.parent()._form
+    )
 
     mirrored = []
     for j in permutation:
@@ -1192,8 +1204,9 @@ class HyperbolicSurfaceGenerators:
 
         An immutable
         :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
-        over the base ring of ``P``: a reflection in a line through two
-        points has rational coefficients in their Klein coordinates.
+        in the hyperbolic plane of ``P``, over its base ring: a reflection in
+        a line through two points has rational coefficients in their Klein
+        coordinates and in the coefficients of the quadratic form.
 
         EXAMPLES:
 
@@ -1262,6 +1275,22 @@ class HyperbolicSurfaceGenerators:
             SurfaceSignature(g=0, boundary_traces=(21/4, 21/4, 20881/144))
             sage: TestSuite(S).run()
 
+        A triangle of the plane with the form `x^2 + 3y^2 - z^2`, reflected
+        in its edge 1 with that form::
+
+            sage: H = HyperbolicPlane(QQ, form=[1, 3, -1])
+            sage: C = H.polygon(vertices=[(0, 0), (1/2, 0), (-1/4, 1/4)])
+            sage: T = hyperbolic_surfaces.pillowcase(C, mirror_edge=1)
+            sage: T.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field with form x^2 + 3*y^2 - z^2
+            sage: [v.coordinates(model="klein") for v in T.polygon(1).vertices()]
+            [(4/17, 4/17), (-1/4, 1/4), (1/2, 0)]
+            sage: sorted(T.angles(numerical=True))  # abs tol 1e-12
+            [0.147583617650433, 0.147583617650433, 0.666666666666667]
+            sage: T.holonomy_representation().invariant_trace_field()
+            Rational Field
+            sage: TestSuite(T).run()
+
         The mirror edge must be glued, and the glued edges distinct edges of
         ``P``::
 
@@ -1303,7 +1332,7 @@ class HyperbolicSurfaceGenerators:
 
         Q, gluings = _mirror(P, glued_edges, mirror_edge)
 
-        surface = MutableOrientedHyperbolicSurface(P.parent().base_ring())
+        surface = MutableOrientedHyperbolicSurface(P.parent())
         surface.add_polygon(P, label=0)
         surface.add_polygon(Q, label=1)
         for x, y in gluings:

@@ -136,7 +136,9 @@ class OrientedHyperbolicSurface(Surface_base):
     INPUT:
 
     - ``base`` -- a ring, the base ring of the hyperbolic plane of the
-      polygons
+      polygons, or a
+      :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane`, the plane of
+      the polygons, whose quadratic form may differ from `x^2 + y^2 - z^2`
 
     - ``category`` -- a category or ``None`` (default: ``None``); refined to
       a subcategory of oriented hyperbolic cone surfaces
@@ -160,6 +162,13 @@ class OrientedHyperbolicSurface(Surface_base):
     def __init__(self, base, category=None):
         from sage.categories.all import Rings
 
+        from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+        plane = None
+        if isinstance(base, HyperbolicPlane):
+            plane = base
+            base = plane.base_ring()
+
         if base not in Rings():
             raise TypeError("base ring must be a ring")
 
@@ -170,7 +179,74 @@ class OrientedHyperbolicSurface(Surface_base):
 
         category &= HyperbolicConeSurfaces().Oriented()
 
+        # A plane of the form x^2 + y^2 - z^2 is not stored, so that a surface
+        # given by its plane equals the surface given by its base ring. The
+        # plane is not built from a ring, which may have no hyperbolic plane,
+        # such as CC.
+        self._hyperbolic_plane = None if plane is None or plane._standard else plane
+
         super().__init__(base, category=category)
+
+    def hyperbolic_plane(self):
+        r"""
+        Return the hyperbolic plane that the polygons of this surface live
+        in.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: MutableOrientedHyperbolicSurface(QQ).hyperbolic_plane()
+            Hyperbolic Plane over Rational Field
+
+        A sphere glued from a triangle of the plane with the form `x^2 + 3y^2 -
+        z^2`, whose Klein model is the disk `x^2 + 3y^2 < 1`; its edge 1 is
+        folded at its midpoint, an orbifold point of order 2::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ, form=[1, 3, -1])
+            sage: C = H.polygon(vertices=[(1/2, 0), (-1/4, 1/4), (-1/4, -1/4)]).cyclic_quotient(3)
+            sage: C
+            Hyperbolic polygon with vertices [(0, 0), (1/2, 0), (-1/4, 1/4)]
+            sage: S = MutableOrientedHyperbolicSurface(H)
+            sage: S.add_polygon(C)
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 1))
+            sage: S.set_immutable()
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field with form x^2 + 3*y^2 - z^2
+            sage: S.edge_transformation(0, 0)
+            [-1/2 -3/2    0]
+            [ 1/2 -1/2    0]
+            [   0    0    1]
+            sage: S.edge_transformation(0, 0).parent()
+            Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - z^2
+            sage: S(0, 0).angle()
+            1/3
+            sage: S(0, 1).angle(numerical=True)  # abs tol 1e-12
+            0.147583617650433
+            sage: S.holonomy_representation().invariant_trace_field()
+            Rational Field
+            sage: TestSuite(S).run()
+
+        TESTS:
+
+        The plane is kept by pickling and by a change of ring::
+
+            sage: loads(dumps(S)).hyperbolic_plane() is H
+            True
+            sage: loads(dumps(S)) == S
+            True
+            sage: S.change_ring(AA).hyperbolic_plane()
+            Hyperbolic Plane over Algebraic Real Field with form x^2 + 3*y^2 - z^2
+
+        """
+        if self._hyperbolic_plane is not None:
+            return self._hyperbolic_plane
+
+        from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+        return HyperbolicPlane(self.base_ring())
 
 
 class MutableOrientedHyperbolicSurface(
@@ -183,7 +259,9 @@ class MutableOrientedHyperbolicSurface(
     INPUT:
 
     - ``base`` -- a ring, the base ring of the hyperbolic plane of the
-      polygons
+      polygons, or a
+      :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane`, the plane of
+      the polygons
 
     - ``category`` -- a category or ``None`` (default: ``None``); refined to
       a subcategory of finite type oriented hyperbolic cone surfaces
@@ -258,6 +336,35 @@ class MutableOrientedHyperbolicSurface(
         category &= HyperbolicConeSurfaces().Oriented().FiniteType()
 
         super().__init__(base, category=category)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        Surfaces in hyperbolic planes of different quadratic forms differ,
+        also when they have no polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: S = MutableOrientedHyperbolicSurface(QQ)
+            sage: S == MutableOrientedHyperbolicSurface(HyperbolicPlane(QQ))
+            True
+            sage: S == MutableOrientedHyperbolicSurface(HyperbolicPlane(QQ, form=[1, 2, -3]))
+            False
+            sage: S != MutableOrientedHyperbolicSurface(HyperbolicPlane(QQ, form=[1, 2, -3]))
+            True
+
+        """
+        if not super().__eq__(other):
+            return False
+
+        return self._hyperbolic_plane == getattr(other, "_hyperbolic_plane", None)
+
+    # Defining __eq__ drops the inherited __hash__, which is compatible with
+    # this equality: it does not depend on the plane.
+    __hash__ = MutablePolygonalSurface.__hash__
 
     def add_polygon(self, polygon, *, label=None):
         r"""
@@ -502,9 +609,10 @@ class MutableOrientedHyperbolicSurface(
 
         - ``minimal_field`` -- a boolean (default: ``False``); whether to
           first move the surface to the number field generated by the Klein
-          coordinates of its vertices and by its side pairings, which needs
-          the base ring to coerce into ``AA``. The base ring is kept if it is
-          a number field, or ``QQ``, of the degree of that field.
+          coordinates of its vertices, by its side pairings and by the
+          coefficients of the quadratic form of its hyperbolic plane, which
+          needs the base ring to coerce into ``AA``. The base ring is kept if
+          it is a number field, or ``QQ``, of the degree of that field.
 
         EXAMPLES:
 
@@ -572,6 +680,27 @@ class MutableOrientedHyperbolicSurface(
             True
             sage: TestSuite(S).run()
 
+        The plane moves with the polygons; the octagon above, stretched into
+        the disk `x^2 + 2y^2 < 3`::
+
+            sage: H = HyperbolicPlane(AA, form=[1, 2, -3])
+            sage: O = H.polygon(vertices=[(AA(3).sqrt() * AA(v.coordinates(model="klein")[0]), AA(3/2).sqrt() * AA(v.coordinates(model="klein")[1])) for v in P.vertices()])
+            sage: S = MutableOrientedHyperbolicSurface(H)
+            sage: S.add_polygon(O)
+            0
+            sage: for i in range(4):
+            ....:     S.glue((0, i), (0, i + 4))
+            sage: S.edge_transformation(0, 0).trace()
+            22.31370849898476?
+            sage: S.set_immutable(minimal_field=True)
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^4 - 18 with a = 2.059767143907118?
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Number Field in a with defining polynomial y^4 - 18 with a = 2.059767143907118? with form x^2 + 2*y^2 - 3*z^2
+            sage: S.edge_transformation(0, 0).trace()
+            8/3*a^2 + 11
+            sage: TestSuite(S).run()
+
         TESTS::
 
             sage: S.set_immutable(minimal_field=True)
@@ -604,6 +733,9 @@ class MutableOrientedHyperbolicSurface(
             )
 
         elements = []
+        if self._hyperbolic_plane is not None:
+            form = self._hyperbolic_plane.quadratic_form()
+            elements.extend(AA(form[i, i]) for i in range(3))
         for label, polygon in self._polygons.items():
             for vertex in polygon.vertices():
                 elements.extend(AA(c) for c in vertex.coordinates(model="klein"))
@@ -632,6 +764,10 @@ class MutableOrientedHyperbolicSurface(
             and base.degree() == field.degree()
         ):
             self._base = field
+            if self._hyperbolic_plane is not None:
+                self._hyperbolic_plane = self._hyperbolic_plane.change_ring(
+                    AA
+                ).change_ring(field)
             for label in list(self._polygons):
                 self._polygons[label] = (
                     self._polygons[label].change_ring(AA).change_ring(field)
@@ -662,6 +798,33 @@ class MutableOrientedHyperbolicSurface(
             ...
             ValueError: polygon is defined over Algebraic Real Field, which does not coerce into Rational Field
 
+        TESTS:
+
+        The polygon must lie in a hyperbolic plane of the quadratic form of the
+        plane of the surface::
+
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: P = H3.polygon(vertices=[(0, 0), (1/2, -1/2), (3/4, 0), (1/2, 1/2)])
+            sage: S.add_polygon(P)
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon lies in a hyperbolic plane with form x^2 + 2*y^2 - 3*z^2, the surface in a hyperbolic plane with form x^2 + y^2 - z^2
+            sage: T = MutableOrientedHyperbolicSurface(H3)
+            sage: T.add_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon lies in a hyperbolic plane with form x^2 + y^2 - z^2, the surface in a hyperbolic plane with form x^2 + 2*y^2 - 3*z^2
+            sage: T.add_polygon(P)
+            0
+
+        A polygon over a smaller ring with the same form is accepted::
+
+            sage: U = MutableOrientedHyperbolicSurface(H3.change_ring(AA))
+            sage: U.add_polygon(P)
+            0
+            sage: U.polygon(0).parent() is H3.change_ring(AA)
+            True
+
         """
         from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
 
@@ -673,4 +836,23 @@ class MutableOrientedHyperbolicSurface(
         if not self.base_ring().has_coerce_map_from(polygon.base_ring()):
             raise ValueError(
                 f"polygon is defined over {polygon.base_ring()}, which does not coerce into {self.base_ring()}"
+            )
+
+        plane = polygon.parent()
+        if self._hyperbolic_plane is None:
+            same_form = plane._standard
+        else:
+            ring = self.base_ring()
+            same_form = plane._diagonal_form_in(
+                ring
+            ) == self._hyperbolic_plane._diagonal_form_in(ring)
+        if not same_form:
+            from flatsurf.geometry.hyperbolic_isometry import _minkowski_form
+            from flatsurf.geometry.hyperbolic_polygon import _form_repr
+
+            form = _minkowski_form(self.base_ring())
+            if self._hyperbolic_plane is not None:
+                form = self._hyperbolic_plane.quadratic_form()
+            raise ValueError(
+                f"polygon lies in a hyperbolic plane with form {_form_repr(plane.quadratic_form())}, the surface in a hyperbolic plane with form {_form_repr(form)}"
             )

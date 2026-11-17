@@ -570,6 +570,16 @@ def _immutable_copy(surface):
         sage: list(T.gluings()) == list(S.gluings())
         True
 
+    A hyperbolic surface keeps its plane::
+
+        sage: H = HyperbolicPlane(QQ, form=[1, 3, -1])
+        sage: S = MutableOrientedHyperbolicSurface(H)
+        sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (-1/4, 1/4)]))
+        0
+        sage: S.glue((0, 0), (0, 2))
+        sage: _immutable_copy(S).hyperbolic_plane() is H
+        True
+
     """
     from flatsurf.geometry.categories import HyperbolicConeSurfaces
 
@@ -578,7 +588,12 @@ def _immutable_copy(surface):
             MutableOrientedHyperbolicSurface,
         )
 
-        copy = MutableOrientedHyperbolicSurface(surface.base_ring())
+        # A surface of the form x^2 + y^2 - z^2 stores no plane and is copied
+        # from its base ring, which may have no hyperbolic plane.
+        plane = getattr(surface, "_hyperbolic_plane", None)
+        copy = MutableOrientedHyperbolicSurface(
+            surface.base_ring() if plane is None else plane
+        )
         for label in surface.labels():
             copy.add_polygon(surface.polygon(label), label=label)
         for (label, edge), opposite in surface.gluings():

@@ -606,7 +606,14 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                     MutableOrientedHyperbolicSurface,
                 )
 
-                S = MutableOrientedHyperbolicSurface(ring)
+                # A surface of the form x^2 + y^2 - z^2 stores no plane and is
+                # copied from the ring alone: hyperbolic_plane() would build a
+                # plane over the base ring, which some rings, such as CC, have
+                # not.
+                plane = getattr(self, "_hyperbolic_plane", None)
+                S = MutableOrientedHyperbolicSurface(
+                    ring if plane is None else plane.change_ring(ring)
+                )
 
                 for label in self.labels():
                     try:
@@ -648,7 +655,9 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 OUTPUT:
 
                 A :class:`~flatsurf.geometry.hyperbolic_isometry.HyperbolicIsometry`
-                over the base ring of this surface.
+                over the base ring of this surface, of the group of the
+                quadratic form of
+                :meth:`~flatsurf.geometry.categories.hyperbolic_cone_surfaces.HyperbolicConeSurfaces.ParentMethods.hyperbolic_plane`.
 
                 EXAMPLES::
 
@@ -669,6 +678,26 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                     [-4/3    0  5/3]
                     sage: g * vector((1/2, 0)), g * vector((1/2, 1/2))
                     ((0, 1/2), (1/2, 1/2))
+
+                A kite of the plane with the form `x^2 + 2y^2 - 3z^2`::
+
+                    sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+                    sage: S = MutableOrientedHyperbolicSurface(H3)
+                    sage: S.add_polygon(H3.polygon(vertices=[(0, 0), (1/2, -1/2), (3/4, 0), (1/2, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.glue((0, 1), (0, 2))
+                    sage: S.set_immutable()
+                    sage: g = S.edge_transformation(0, 0)
+                    sage: g
+                    [-1/3 -4/3    0]
+                    [ 2/3 -1/3    0]
+                    [   0    0    1]
+                    sage: g.parent()
+                    Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+                    sage: S.edge_transformation(0, 1).trace()
+                    -7/15
+                    sage: TestSuite(S).run()
 
                 TESTS::
 
@@ -692,7 +721,9 @@ class HyperbolicConeSurfaces(SurfaceCategory):
 
                 matrix = self._side_pairing_matrix(label, edge, *cross)
 
-                return HyperbolicIsometryGroup(self.base_ring())(matrix)
+                return HyperbolicIsometryGroup(
+                    self.base_ring(), form=self.hyperbolic_plane()._form
+                )(matrix)
 
             def _side_pairing_matrix(self, label, edge, cross_label, cross_edge):
                 r"""
@@ -749,8 +780,9 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             def edge_matrix(self, label, edge):
                 r"""
                 Return the matrix of
-                `\mathrm{SO}(2, 1)^+` of the isometry that sends the ``edge``
-                of the polygon ``label`` to the edge it is glued to.
+                `\mathrm{SO}(Q)^+`, for the quadratic form `Q` of the
+                hyperbolic plane, of the isometry that sends the ``edge`` of
+                the polygon ``label`` to the edge it is glued to.
 
                 See :meth:`edge_transformation` for the isometry itself.
 
@@ -822,7 +854,7 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                     [15, 15, 15]
 
                 """
-                # The side pairings lie in SO(2, 1), so does their product,
+                # The side pairings lie in SO(Q), so does their product,
                 # whose trace is then invariant under conjugation.
                 return self.holonomy_representation()(loop).matrix().trace()
 
