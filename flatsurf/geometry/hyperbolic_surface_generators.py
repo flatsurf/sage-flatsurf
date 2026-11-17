@@ -342,7 +342,7 @@ class HyperbolicPolygonsConstructor:
 
         A ring that contains the coordinates is accepted::
 
-            sage: K.<a> = QuadraticField(6)
+            sage: K.<a> = NumberField(x^2 - 6, embedding=AA(6).sqrt())
             sage: T = hyperbolic_polygons.triangle(1/4, 1/12, 1/12, base_ring=K)
             sage: T.vertex(1).coordinates(model="klein")
             (1/3*a, 0)

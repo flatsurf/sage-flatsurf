@@ -309,7 +309,7 @@ def test_constructor_errors(G):
 
 
 def test_polygon_transformations(H, G):
-    from sage.all import QuadraticField
+    from sage.all import AA, NumberField, polygen
 
     from flatsurf.geometry.similarity import SimilarityGroup
 
@@ -325,7 +325,8 @@ def test_polygon_transformations(H, G):
     assert P.apply_transformation(M) == expected
     assert P.apply_transformation(M.rows()) == expected
 
-    K = QuadraticField(2, "a")
+    x = polygen(QQ)
+    K = NumberField(x**2 - 2, "a", embedding=AA(2).sqrt())
     a = K.gen()
     hK = HyperbolicIsometryGroup(K)(
         matrix(K, [[a / 2, -a / 2, 0], [a / 2, a / 2, 0], [0, 0, 1]])

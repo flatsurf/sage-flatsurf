@@ -228,3 +228,75 @@ def test_plot(H3):
     x, y = carried.coordinates(model="klein")
     assert abs(x - RR(0.288675134594813)) < 1e-12
     assert abs(y - RR(0.408248290463863)) < 1e-12
+
+
+def test_inexact_geodesic_predicates_are_scaled():
+    HR = HyperbolicPlane(RR, form=[1, 2, -3])
+    scale = RR(1e-9)
+
+    crossing = HR.geodesic(
+        -scale / 3, scale, 0, model="klein", oriented=False
+    )
+    assert not crossing.is_ideal() and not crossing.is_ultra_ideal()
+
+    tangent = HR.geodesic(-3 * scale, scale, 2 * scale, model="klein", check=False)
+    assert tangent.is_ideal() and not tangent.is_ultra_ideal()
+
+    outside = HR.geodesic(-2 * scale, scale, 0, model="klein", check=False)
+    assert outside.is_ultra_ideal() and not outside.is_ideal()
+
+
+def test_klein_ideal_point_small_disk():
+    H = HyperbolicPlane(QQ, form=[1, QQ(3) / 4, -1])
+    assert H._klein_ideal_point() == (QQ(1) / 2, 1)
+    assert len(H.some_subsets()) == 20
+    assert HyperbolicPlane(QQ, form=[1, 1, -3])._klein_ideal_point() is None
+    assert HyperbolicPlane(QQ, form=[1, 2, -QQ(1) / 2])._klein_ideal_point() == (
+        QQ(2) / 3,
+        QQ(1) / 6,
+    )
+
+
+def test_conversion_between_rings_without_common_parent():
+    x = QQ["x"].gen()
+    K = NumberField(x**2 - 2, "a", embedding=RR(1.414))
+    L = NumberField(x**2 - 3, "b", embedding=RR(1.732))
+    HK = HyperbolicPlane(K, form=[1, 2, -3])
+    HL = HyperbolicPlane(L, form=[1, 2, -3])
+    p = HK.point(QQ(1) / 2, QQ(1) / 2, model="klein")
+
+    assert HL(p) == HL.point(QQ(1) / 2, QQ(1) / 2, model="klein")
+    assert HL(p).parent() is HL
+    assert HK.change_ring(L) is HL
+
+    with pytest.raises(ValueError, match="different forms"):
+        HyperbolicPlane(L, form=[1, 2, -5])(p)
+
+    HKa = HyperbolicPlane(K, form=[1, K.gen(), -3])
+    with pytest.raises(ValueError, match="different forms"):
+        HL(HKa.point(QQ(1) / 2, QQ(1) / 2, model="klein"))
+    with pytest.raises(ValueError, match="the form does not lie in"):
+        HKa.change_ring(L)
+
+
+def test_endpoint_maybe_ring(H3):
+    g = line(H3, -QQ(1) / 3, 1, 0)
+    assert g.start()._coordinates_klein(ring="maybe") is None
+    with pytest.raises(ValueError, match="square root of 52/9 not a rational"):
+        g.start()._coordinates_klein(ring=None)
+
+
+def test_form_with_leading_minus_sign_repr():
+    x = QQ["x"].gen()
+    K = NumberField(x**2 - 2, "a", embedding=RR(-1.414))
+    a = K.gen()
+    prefix = "Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 2 with a = -1.414213562373095? with form "
+    assert repr(HyperbolicPlane(K, form=[1, -a, -3])) == prefix + "x^2 + (-a)*y^2 - 3*z^2"
+    assert (
+        repr(HyperbolicPlane(K, form=[1, -a, 2 * a]))
+        == prefix + "x^2 + (-a)*y^2 - (-2*a)*z^2"
+    )
+    assert (
+        repr(HyperbolicPlane(K, form=[1, -a / 2, -3]))
+        == prefix + "x^2 + (-1/2*a)*y^2 - 3*z^2"
+    )

@@ -78,6 +78,40 @@ def _minkowski(u, v, form=None):
     )
 
 
+def _form_repr(form):
+    r"""
+    Return the printed form `x^2 + b y^2 - c z^2` of the diagonal matrix
+    ``form`` `\mathrm{diag}(1, b, -c)`.
+
+    A coefficient is put in parentheses when it prints with a sum, a
+    difference or a leading minus sign, so that the signs of the form stay
+    readable.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_polygon import _form_repr
+        sage: _form_repr(diagonal_matrix(QQ, [1, 2, -3]))
+        'x^2 + 2*y^2 - 3*z^2'
+        sage: _form_repr(diagonal_matrix(QQ, [1, 1, -1]))
+        'x^2 + y^2 - z^2'
+
+        sage: K.<a> = NumberField(x^2 - 2, embedding=-1.414)
+        sage: _form_repr(diagonal_matrix(K, [1, -a, 2*a]))
+        'x^2 + (-a)*y^2 - (-2*a)*z^2'
+
+    """
+
+    def monomial(coefficient, variable):
+        if coefficient == 1:
+            return variable
+        coefficient = repr(coefficient)
+        if "+" in coefficient or " - " in coefficient or coefficient.startswith("-"):
+            coefficient = f"({coefficient})"
+        return f"{coefficient}*{variable}"
+
+    return f"x^2 + {monomial(form[1, 1], 'y^2')} - {monomial(-form[2, 2], 'z^2')}"
+
+
 def _dual_minkowski(u, v, form=None):
     r"""
     Return the product `u^T Q^{-1} v` of the dual form of the diagonal
@@ -1116,7 +1150,7 @@ class HyperbolicPolygon(Parent):
             sage: P * h
             Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
 
-            sage: K.<a> = QuadraticField(2)
+            sage: K.<a> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
             sage: hK = HyperbolicIsometryGroup(K)(matrix(K, [[a/2, -a/2, 0], [a/2, a/2, 0], [0, 0, 1]]))
             sage: hK * P
             Hyperbolic polygon with vertices [I, (1/4*a, 1/4*a), (-1/4*a, 1/4*a)]

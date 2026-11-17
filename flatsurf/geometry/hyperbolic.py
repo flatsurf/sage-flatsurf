@@ -460,6 +460,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: TestSuite(HyperbolicPlane(RR)).run()
             sage: TestSuite(HyperbolicPlane(QQ, form=[1, 2, -3])).run()
             sage: TestSuite(HyperbolicPlane(QQ, form=[1, 6, -10])).run()
+            sage: TestSuite(HyperbolicPlane(QQ, form=[1, 3/4, -1])).run()
 
         """
         from sage.all import RR
@@ -504,6 +505,40 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         """
         return self._quadratic_form
+
+    def _diagonal_form_in(self, ring):
+        r"""
+        Return the three diagonal coefficients of the quadratic form converted
+        into ``ring``, or ``None`` if one of them does not lie in ``ring``.
+
+        A coefficient that is a rational number is converted from the
+        rationals, since two number fields embedded in the reals without a
+        common parent do not see the same rational number as one of their
+        elements.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: H._diagonal_form_in(AA)
+            [1, 2, -3]
+            sage: H._diagonal_form_in(ZZ)
+            [1, 2, -3]
+            sage: HyperbolicPlane(QQ, form=[1, 1/2, -3])._diagonal_form_in(ZZ) is None
+            True
+
+        """
+        from sage.all import QQ
+
+        form = []
+        for i in range(3):
+            c = self._quadratic_form[i, i]
+            if c in QQ:
+                c = QQ(c)
+            if c not in ring:
+                return None
+            form.append(ring(c))
+        return form
 
     def _require_standard_form(self):
         r"""
@@ -770,6 +805,21 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: the form does not lie in Integer Ring
 
+        Rational coefficients lie in every ring that contains the rationals,
+        also when it has no common parent with the base ring, whereas other
+        coefficients must lie in the new ring::
+
+            sage: K.<a> = NumberField(x^2 - 2, embedding=1.414)
+            sage: L.<b> = NumberField(x^2 - 3, embedding=1.732)
+            sage: HyperbolicPlane(K, form=[1, 2, -3]).change_ring(L) is HyperbolicPlane(L, form=[1, 2, -3])
+            True
+            sage: HyperbolicPlane(K, form=[1, a, -3]).change_ring(L)
+            Traceback (most recent call last):
+            ...
+            ValueError: the form does not lie in Number Field in b with defining polynomial x^2 - 3 with b = 1.732050807568878?
+            sage: HyperbolicPlane(K, form=[1, a, -3]).change_ring(AA)
+            Hyperbolic Plane over Algebraic Real Field with form x^2 + 1.414213562373095?*y^2 - 3*z^2
+
         .. SEEALSO::
 
             :meth:`HyperbolicConvexSet.change_ring` or more generally
@@ -788,10 +838,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         form = None
         if not self._standard:
-            form = [self._quadratic_form[i, i] for i in range(3)]
-            if any(c not in ring for c in form):
+            form = self._diagonal_form_in(ring)
+            if form is None:
                 raise ValueError(f"the form does not lie in {ring}")
-            form = [ring(c) for c in form]
 
         return HyperbolicPlane(ring, geometry, form=form)
 
@@ -842,8 +891,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     def _klein_ideal_point(self):
         r"""
         Return the coordinates `(x_0, y_0)` of an ideal point of the Klein
-        model with `x_0` one of `1, \dots, 9` and `y_0 > 0` in the base ring,
-        or ``None`` if there is none.
+        model with `y_0 > 0` in the base ring, or ``None`` if there is none.
+        The candidates are `x_0 = k/d` for `d = 1, \dots, 4` (outer loop) and
+        `k = 1, \dots, 9` (inner loop), with `x_0^2 < c`, the quotient taken
+        in the base ring.
 
         The vertices of a set are sorted by their coordinates, so that the
         unbounded sets of :meth:`some_subsets` need ideal points with
@@ -859,19 +910,22 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             (2, 1)
             sage: HyperbolicPlane(QQ, form=[1, 1, -3])._klein_ideal_point() is None
             True
+            sage: HyperbolicPlane(QQ, form=[1, 3/4, -1])._klein_ideal_point()
+            (1/2, 1)
 
         """
         from flatsurf.geometry.hyperbolic_isometry import _positive_sqrt
 
         b = self._quadratic_form[1, 1]
         c = -self._quadratic_form[2, 2]
-        for x0 in range(1, 10):
-            x0 = self.base_ring()(x0)
-            if x0 * x0 >= c:
-                return None
-            y0 = _positive_sqrt((c - x0 * x0) / b)
-            if y0 is not None:
-                return x0, y0
+        for d in range(1, 5):
+            for k in range(1, 10):
+                x0 = self.base_ring()(k) / d
+                if x0 * x0 >= c:
+                    continue
+                y0 = _positive_sqrt((c - x0 * x0) / b)
+                if y0 is not None:
+                    return x0, y0
         return None
 
     def some_subsets(self):
@@ -1295,6 +1349,25 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane(L)(HyperbolicPlane(K)(I))
             I
 
+        Sets also convert between planes of the same form whose base rings
+        have no common parent, but not between planes of different forms::
+
+            sage: HK = HyperbolicPlane(K, form=[1, 2, -3])
+            sage: HL = HyperbolicPlane(L, form=[1, 2, -3])
+            sage: p = HK.point(1/2, 1/2, model="klein")
+            sage: HL(p)
+            (1/2, 1/2)
+            sage: HL(p).parent() is HL
+            True
+            sage: HyperbolicPlane(L, form=[1, 2, -5])(p)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot convert a set between hyperbolic planes of different forms
+            sage: HL(HyperbolicPlane(K, form=[1, a, -3]).point(1/2, 1/2, model="klein"))
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot convert a set between hyperbolic planes of different forms
+
         """
         from sage.all import parent
 
@@ -1311,9 +1384,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if isinstance(x, HyperbolicConvexSet):
             # The forms of two planes over rings without a common parent
             # compare as different, also when both are x^2 + y^2 - z^2.
-            if (
-                not (self._standard and x.parent()._standard)
-                and x.parent().quadratic_form() != self.quadratic_form()
+            if not (self._standard and x.parent()._standard) and (
+                x.parent()._diagonal_form_in(self.base_ring())
+                != self._diagonal_form_in(self.base_ring())
             ):
                 raise ValueError(
                     "cannot convert a set between hyperbolic planes of different forms"
@@ -4099,21 +4172,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: HyperbolicPlane(K, form=[1, a + 1, -a])
             Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095? with form x^2 + (a + 1)*y^2 - a*z^2
 
+        A coefficient that prints with a leading minus sign is put in
+        parentheses::
+
+            sage: K.<a> = NumberField(x^2 - 2, embedding=-1.414)
+            sage: HyperbolicPlane(K, form=[1, -a, -3])
+            Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 2 with a = -1.414213562373095? with form x^2 + (-a)*y^2 - 3*z^2
+
         """
         if self._standard:
             return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
-        def monomial(coefficient, variable):
-            if coefficient == 1:
-                return variable
-            coefficient = repr(coefficient)
-            if "+" in coefficient or " - " in coefficient:
-                coefficient = f"({coefficient})"
-            return f"{coefficient}*{variable}"
+        from flatsurf.geometry.hyperbolic_polygon import _form_repr
 
-        b = self._quadratic_form[1, 1]
-        c = -self._quadratic_form[2, 2]
-        return f"Hyperbolic Plane over {repr(self.base_ring())} with form x^2 + {monomial(b, 'y^2')} - {monomial(c, 'z^2')}"
+        return f"Hyperbolic Plane over {repr(self.base_ring())} with form {_form_repr(self._quadratic_form)}"
 
 
 class HyperbolicGeometry:
@@ -7492,6 +7564,13 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             sage: H3.geodesic(-1/3, 1, 0, model="klein").is_ideal()
             False
 
+        Over an inexact ring, the two sides of the equation are compared, so
+        that the answer does not depend on the scaling of the equation::
+
+            sage: HR = HyperbolicPlane(RR, form=[1, 2, -3])
+            sage: HR.geodesic(-1e-9/3, 1e-9, 0, model="klein").is_ideal()
+            False
+
         .. NOTE::
 
             The implementation of this predicate is not numerically robust over inexact rings.
@@ -7503,11 +7582,10 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         """
         if not self.parent()._standard:
-            from flatsurf.geometry.hyperbolic_polygon import _dual_minkowski
-
-            line = (self._b, self._c, self._a)
-            return self.parent().geometry._zero(
-                _dual_minkowski(line, line, self.parent()._form)
+            form = self.parent()._form
+            return self.parent().geometry._equal(
+                self._b * self._b + self._c * self._c / form[1, 1],
+                self._a * self._a / -form[2, 2],
             )
 
         # We should probably use a specialized predicate of the geometry to
@@ -7554,6 +7632,13 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             ...
             ValueError: equation -2 + (1)*x + (0)*y = 0 does not define a chord in the Klein model
 
+        Over an inexact ring, the two sides of the inequality are compared, so
+        that the answer does not depend on the scaling of the equation::
+
+            sage: HR = HyperbolicPlane(RR, form=[1, 2, -3])
+            sage: HR.geodesic(-2e-9, 1e-9, 0, model="klein", check=False).is_ultra_ideal()
+            True
+
         .. NOTE::
 
             The implementation of this predicate is not numerically robust over inexact rings.
@@ -7564,12 +7649,11 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         """
         if not self.parent()._standard:
-            from flatsurf.geometry.hyperbolic_polygon import _dual_minkowski
-
-            line = (self._b, self._c, self._a)
+            form = self.parent()._form
             return (
-                self.parent().geometry._sgn(
-                    _dual_minkowski(line, line, self.parent()._form)
+                self.parent().geometry._cmp(
+                    self._b * self._b + self._c * self._c / form[1, 1],
+                    self._a * self._a / -form[2, 2],
                 )
                 < 0
             )
@@ -10989,12 +11073,9 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             c = sqrt_ring(self._geodesic._c)
 
             discriminant = B * C * b * b + C * c * c - B * a * a
-            try:
-                sqrt = discriminant.sqrt(extend=False)
-            except ValueError:
-                if ring == "maybe":
-                    return None
-                raise
+            if ring == "maybe" and not discriminant.is_square():
+                return None
+            sqrt = discriminant.sqrt(extend=False)
             if sqrt < 0:
                 sqrt = -sqrt
 

@@ -39,7 +39,6 @@ from sage.all import (
     RDF,
     RR,
     NumberField,
-    QuadraticField,
     RealField,
     polygen,
 )
@@ -206,7 +205,8 @@ def test_ring():
 def test_ring_conversion():
     # The triangle (1/4, 1/12, 1/12) is over y^2 - 6 by default; vertex 1 is
     # (a/3, 0) with a the square root of 6, computed with sage-flatsurf.
-    K = QuadraticField(6, "a")
+    x = polygen(QQ)
+    K = NumberField(x**2 - 6, "a", embedding=AA(6).sqrt())
     a = K.gen()
     T = hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 12, QQ(1) / 12, base_ring=K)
     assert T.base_ring() is K
@@ -249,10 +249,10 @@ def test_regular_ngon_non_integral(n):
 
 
 def test_polygon_coordinates_error_suppresses_context():
+    x = polygen(QQ)
+    K = NumberField(x**2 - 2, "a", embedding=AA(2).sqrt())
     with pytest.raises(ValueError, match="do not lie in") as error:
-        hyperbolic_polygons.regular_ngon(
-            8, QQ(1) / 16, base_ring=QuadraticField(2, "a")
-        )
+        hyperbolic_polygons.regular_ngon(8, QQ(1) / 16, base_ring=K)
     assert error.value.__suppress_context__
 
 
