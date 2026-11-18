@@ -490,10 +490,11 @@ class HyperbolicPlaneIsomorphism(Morphism):
 
         - ``x`` -- a point or a convex set of the domain, a
           :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`, an
-          isometry of the group of the domain, or a hyperbolic surface whose
-          polygons live in the domain; an object of a plane with the form of
-          the domain over a subring of the base ring is moved to the domain
-          first
+          isometry of the group of the domain, a
+          :class:`~flatsurf.geometry.hyperbolic_isometry.HyperbolicIsometrySubgroup`
+          of that group, or a hyperbolic surface whose polygons live in the
+          domain; an object of a plane with the form of the domain over a
+          subring of the base ring is moved to the domain first
 
         EXAMPLES::
 
@@ -524,6 +525,34 @@ class HyperbolicPlaneIsomorphism(Morphism):
             sage: f(H8.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
             Hyperbolic polygon with vertices [(0, 0), (1/4, 0), (0, 1/2)]
 
+        Subgroups of isometries; a subgroup over `\QQ` is moved to the group
+        over `\QQ(\sqrt{3})` first::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup, _form_reflection
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: Q = G3.quadratic_form()
+            sage: r = G3.some_elements()[2]
+            sage: n = Q.inverse() * vector(QQ, (1/2, 0, 1)).cross_product(vector(QQ, (0, 1/2, 1)))
+            sage: s = G3(_form_reflection(vector(QQ, (0, 1, 0)), Q) * _form_reflection(n, Q))
+            sage: K.<a> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+            sage: g = H3.standard_form_isometry(K)
+            sage: g.matrix()
+            [ 7/12*a       0    -5/4]
+            [      0       1       0]
+            [-5/12*a       0     7/4]
+            sage: G = g(G3.subgroup([r, s]))
+            sage: G
+            Subgroup with 2 generators of Group of orientation preserving isometries of the hyperbolic plane over Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878?
+            sage: G.gens()
+            ([-31/18  7/9*a -35/18]
+             [-7/9*a   -1/3 -5/9*a]
+             [ 35/18 -5/9*a  43/18],
+             [ 35/51*a - 409/204    -14/17*a + 5/17  37/51*a - 455/204]
+             [    14/17*a - 5/17              -5/17     10/17*a - 7/17]
+             [-37/51*a + 455/204     10/17*a - 7/17 -35/51*a + 553/204])
+            sage: [h.trace() for h in G.gens()]
+            [1/3, 7/17]
+
         TESTS::
 
             sage: f(42)
@@ -534,11 +563,18 @@ class HyperbolicPlaneIsomorphism(Morphism):
             Traceback (most recent call last):
             ...
             ValueError: (0, 0) does not lie in the domain of this isomorphism
+            sage: f(G3.subgroup([r]))
+            Traceback (most recent call last):
+            ...
+            ValueError: Subgroup with 1 generator of Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2 does not lie in the domain of this isomorphism
 
         """
         from flatsurf.geometry.categories import HyperbolicConeSurfaces
         from flatsurf.geometry.hyperbolic import HyperbolicConvexSet
-        from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometry
+        from flatsurf.geometry.hyperbolic_isometry import (
+            HyperbolicIsometry,
+            HyperbolicIsometrySubgroup,
+        )
         from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
         from flatsurf.geometry.surface import Surface_base
 
@@ -554,6 +590,14 @@ class HyperbolicPlaneIsomorphism(Morphism):
         if isinstance(x, HyperbolicIsometry):
             self._require_domain(x, x.parent().hyperbolic_plane())
             return self._image_isometry(x)
+
+        if isinstance(x, HyperbolicIsometrySubgroup):
+            self._require_domain(x, x.hyperbolic_plane())
+            if x.base_ring() is not F:
+                x = x.change_ring(F)
+            return self._isometry_groups()[1].subgroup(
+                [self._image_isometry(g) for g in x.gens()]
+            )
 
         if isinstance(x, Surface_base) and x in HyperbolicConeSurfaces().Oriented():
             self._require_domain(x, x.hyperbolic_plane())
