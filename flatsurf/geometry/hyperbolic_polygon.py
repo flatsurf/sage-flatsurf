@@ -598,7 +598,7 @@ class HyperbolicPolygon(Parent):
 
     def __eq__(self, other):
         r"""
-        Return whether this polygon has the same base ring and the same
+        Return whether this polygon lies in the same plane and has the same
         vertices, in the same order, as ``other``.
 
         EXAMPLES::
@@ -615,11 +615,17 @@ class HyperbolicPolygon(Parent):
             sage: P == P.change_ring(AA)
             False
 
+        Polygons with the same Klein coordinates in planes of different forms
+        differ::
+
+            sage: P == HyperbolicPlane(QQ, form=[1, 2, -3]).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            False
+
         """
         if not isinstance(other, HyperbolicPolygon):
             return False
 
-        return self.base_ring() == other.base_ring() and self._v == other._v
+        return self.parent() == other.parent() and self._v == other._v
 
     def __ne__(self, other):
         r"""
@@ -649,7 +655,7 @@ class HyperbolicPolygon(Parent):
             True
 
         """
-        return hash((self.base_ring(), self._v))
+        return hash((self.parent(), self._v))
 
     def _repr_(self):
         r"""

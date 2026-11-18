@@ -193,6 +193,19 @@ def test_from_hyperbolic_polygon(H):
     assert R == H.polygon(vertices=QUADRILATERAL)
 
 
+def test_equality_of_planes(H):
+    triangle = [(0, 0), (QQ(1) / 2, 0), (0, QQ(1) / 2)]
+    P = H.polygon(vertices=triangle)
+    P3 = HyperbolicPlane(QQ, form=[1, 2, -3]).polygon(vertices=triangle)
+    assert P != P3
+    assert P == H.polygon(vertices=triangle)
+    assert P3 == HyperbolicPlane(QQ, form=[1, 2, -3]).polygon(vertices=triangle)
+    assert hash(P3) == hash(
+        HyperbolicPlane(QQ, form=[1, 2, -3]).polygon(vertices=triangle)
+    )
+    assert len({P, P3}) == 2
+
+
 def boosted_cell(name):
     K, vertices = cell_vertices(name)
     boost = HyperbolicIsometryGroup(K)(matrix(K, BOOST))
