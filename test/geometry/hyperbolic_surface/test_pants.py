@@ -82,10 +82,10 @@ def test_signature_round_trip(boundary_traces, cone_orders, polynomial, area):
 
 
 # The plane of x^2 + y^2 - z^2: over the base ring when c or c/b is a square
-# (21/4 three times, and two cuffs with a cone point of angle pi) or when the
-# line of a half-cuff has its ends over it (the cuff of trace 21/4 in the
-# first slot), otherwise over a quadratic extension of degree twice its
-# degree.
+# (21/4 three times, two cuffs with a cone point of angle pi, and 4, 5, 21/4,
+# where c/b is a square) or when the line of a half-cuff has its ends over it
+# (the cuff of trace 21/4 in the first slot), otherwise over a quadratic
+# extension of degree twice its degree.
 @pytest.mark.parametrize(
     "boundary_traces,cone_orders,degree",
     [

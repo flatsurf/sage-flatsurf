@@ -92,6 +92,24 @@ def _cos_sin(angle):
     return AA(z.real()), AA(z.imag())
 
 
+def _cos(angle):
+    r"""
+    Return the cosine of `2\pi` ``angle`` in ``AA``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _cos
+        sage: _cos(1/8)
+        0.7071067811865475?
+        sage: _cos(1/3)
+        -0.500000000000000?
+
+    """
+    angle = QQ(angle)
+    z = QQbar.zeta(angle.denominator()) ** angle.numerator()
+    return AA(z.real())
+
+
 def _from_cosh(cosh, name="cosh"):
     r"""
     Return the hyperbolic cosine and sine in ``AA`` of the side of
@@ -859,7 +877,7 @@ class HyperbolicPolygonsConstructor:
                 f"the angle of a regular hyperbolic polygon with {n} vertices must be in (0, {bound})"
             )
 
-        cos_centre, _ = _cos_sin(QQ((1, n)))
+        cos_centre = _cos(QQ((1, n)))
         cos_half, sin_half = _cos_sin(angle / 2)
         side = _from_cosh((cos_half**2 + cos_centre) / sin_half**2)
 
@@ -1074,7 +1092,7 @@ class HyperbolicPolygonsConstructor:
             raise ValueError("the angle must be in (0, 1/2)")
         h0 = _from_cosh(c0, "c0")
         h1 = _from_cosh(c1, "c1")
-        cos, _ = _cos_sin(angle)
+        cos = _cos(angle)
 
         if not h1[0] + h0[0] * cos > 0:
             raise ValueError(
@@ -1188,8 +1206,8 @@ class HyperbolicPolygonsConstructor:
         if not (angle0 > 0 and angle1 > 0 and angle0 + angle1 < QQ((1, 2))):
             raise ValueError("the two angles must be positive and sum to less than 1/2")
         h = _from_cosh(c, "c")
-        cos0, _ = _cos_sin(angle0)
-        cos1, _ = _cos_sin(angle1)
+        cos0 = _cos(angle0)
+        cos1 = _cos(angle1)
 
         if not cos1 + h[0] * cos0 > 0:
             raise ValueError(
@@ -1515,31 +1533,289 @@ def _standard_surface(surface, half_cuffs):
     return H.standard_form_isometry(algorithm="extension")(surface)
 
 
-def _develop(chain, half_cuffs, placed, i, plane, form, vertices):
+def _adjoin_root(K, f, approximation):
     r"""
-    Return the Klein coordinates in ``AA`` of the front polygon of the pants
-    ``i`` of :meth:`HyperbolicSurfaceGenerators.from_signature`, developed
-    into the seam plane of the pants 0.
+    Return a field that contains ``K`` and the real root of ``f`` enclosed
+    by ``approximation``.
 
     INPUT:
+
+    - ``K`` -- ``QQ`` or a number field embedded in ``AA``
+
+    - ``f`` -- a squarefree polynomial over ``K``
+
+    - ``approximation`` -- a function that returns, for a precision, a real
+      interval of this precision that contains the root; the intervals
+      shrink to the root as the precision grows
+
+    OUTPUT:
+
+    A triple ``(L, embed, root)``: ``L`` is ``K`` when the root lies in
+    ``K``, otherwise an absolute number field embedded in ``AA``; ``embed``
+    is a function from ``K`` to ``L`` compatible with the embeddings, and
+    ``root`` the root in ``L``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _adjoin_root
+        sage: x = polygen(QQ)
+        sage: L, embed, root = _adjoin_root(QQ, x^2 - 6, lambda prec: RealIntervalField(prec)(6).sqrt())
+        sage: L, root
+        (Number Field in a with defining polynomial x^2 - 6 with a = 2.449489742783178?, a)
+        sage: M, embed, r = _adjoin_root(L, x^2 - (root + 3), lambda prec: RealIntervalField(prec)(root + 3).sqrt())
+        sage: M
+        Number Field in a with defining polynomial x^4 - 6*x^2 + 3 with a = 2.334414218338977?
+        sage: embed(root), r^2 == embed(root) + 3
+        (a^2 - 3, True)
+
+    A root that lies in ``K``, here `-\sqrt{6}`, gives ``K`` back::
+
+        sage: M, embed, r = _adjoin_root(L, x^2 - 6, lambda prec: -RealIntervalField(prec)(6).sqrt())
+        sage: M is L, r
+        (True, -a)
+
+    ALGORITHM:
+
+    The factors of ``f`` over ``K`` are evaluated in interval arithmetic on
+    ``approximation``, with the precision doubled until a single one may
+    vanish there, the factor of the root. The extension of ``K`` by this
+    factor is turned into an absolute field, embedded at the real root of
+    its polynomial that encloses the value of its generator, computed from
+    ``approximation`` and the embedding of ``K``.
+
+    """
+    from sage.rings.number_field.number_field import NumberField
+    from sage.rings.real_mpfi import RealIntervalField
+
+    def evaluate(coefficients, value, prec):
+        R = RealIntervalField(prec)
+        return sum(R(c) * value**k for k, c in enumerate(coefficients))
+
+    factors = [h for h, _ in K["x"](f).factor()]
+    prec = 64
+    while True:
+        value = approximation(prec)
+        candidates = [
+            h for h in factors if evaluate(h.list(), value, prec).contains_zero()
+        ]
+        if len(candidates) == 1:
+            break
+        prec *= 2
+    h = candidates[0]
+
+    if h.degree() == 1:
+        return K, K, -h[0] / h[1]
+
+    if K is QQ:
+        # the generator of the absolute field is the root itself
+        absolute, generator, root = h, [0, 1], [0, 1]
+
+        def to_absolute(c):
+            return c
+
+    else:
+        relative = K.extension(h, "b")
+        A = relative.absolute_field("a")
+        absolute_to_relative, relative_to_absolute = A.structure()
+        absolute = A.polynomial()
+        generator = absolute_to_relative(A.gen()).list()
+        root = relative_to_absolute(relative.gen()).polynomial()
+
+        def to_absolute(c):
+            return relative_to_absolute(relative(c)).polynomial()
+
+    roots = absolute.roots(AA, multiplicities=False)
+    while True:
+        value = evaluate(generator, approximation(prec), prec)
+        close = [r for r in roots if RealIntervalField(prec)(r).overlaps(value)]
+        if len(close) == 1:
+            break
+        prec *= 2
+    L = NumberField(absolute, "a", embedding=close[0])
+
+    def embed(c):
+        return L(to_absolute(c))
+
+    return L, embed, L(root)
+
+
+def _composite(K, L):
+    r"""
+    Return the composite of the fields ``K`` and ``L`` in ``AA``.
+
+    INPUT:
+
+    - ``K``, ``L`` -- ``QQ`` or number fields embedded in ``AA``
+
+    OUTPUT:
+
+    A triple ``(M, embed_K, embed_L)``: ``M`` is ``K`` when it contains
+    ``L``, ``L`` when ``K`` is ``QQ``, otherwise a number field embedded in
+    ``AA``; ``embed_K`` and ``embed_L`` are functions from ``K`` and ``L``
+    to ``M`` compatible with the embeddings.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _composite
+        sage: x = polygen(QQ)
+        sage: K.<a> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: L.<b> = NumberField(x^2 - 8, embedding=-AA(8).sqrt())
+        sage: M, embed_K, embed_L = _composite(K, L)
+        sage: M is K, embed_L(b)
+        (True, -2*a)
+        sage: L.<b> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+        sage: M, embed_K, embed_L = _composite(K, L)
+        sage: M.degree(), AA(embed_K(a)) == AA(2).sqrt(), AA(embed_L(b)) == AA(3).sqrt()
+        (4, True, True)
+
+    """
+    from sage.rings.real_mpfi import RealIntervalField
+
+    if L is QQ:
+        return K, K, K
+    if K is QQ:
+        return L, L, L
+
+    M, embed, root = _adjoin_root(
+        K, L.polynomial(), lambda prec: RealIntervalField(prec)(L.gen())
+    )
+    return M, embed, lambda c: c.polynomial()(root)
+
+
+def _coordinate_field(K, elements):
+    r"""
+    Return the field generated by ``elements`` with a positive generator,
+    and the elements in it.
+
+    INPUT:
+
+    - ``K`` -- ``QQ`` or a number field embedded in ``AA``
+
+    - ``elements`` -- a list of elements of ``K``
+
+    OUTPUT:
+
+    A pair ``(F, elements)``: ``F`` is ``QQ`` or a number field embedded in
+    ``AA`` whose generator is positive, the subfield of ``K`` generated by
+    ``elements``, whose defining polynomial is reduced as in ``QQbar``;
+    ``elements`` is the list of the elements in ``F``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _coordinate_field
+        sage: x = polygen(QQ)
+        sage: K.<a> = NumberField(x^4 - 6*x^2 + 3, embedding=AA.polynomial_root(x^4 - 6*x^2 + 3, RIF(2.3, 2.4)))
+        sage: _coordinate_field(K, [a^2 - 3, 1/2])
+        (Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?, [a, 1/2])
+        sage: _coordinate_field(K, [3 - a^2])
+        (Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?, [-a])
+        sage: _coordinate_field(K, [QQ(1), QQ(2)])
+        (Rational Field, [1, 2])
+
+    The field of `(1 - \sqrt{5}) / 2` is generated by the root `(1 +
+    \sqrt{5}) / 2` of the same polynomial::
+
+        sage: K.<a> = NumberField(x^2 - x - 1, embedding=(1 - AA(5).sqrt()) / 2)
+        sage: _coordinate_field(K, [a])
+        (Number Field in a with defining polynomial y^2 - y - 1 with a = 1.618033988749895?, [-a + 1])
+
+    ALGORITHM:
+
+    The generator `\gamma` of the subfield, scaled to an algebraic integer,
+    is reduced by ``do_polred`` of ``QQbar`` (PARI's ``polredbest`` when
+    the coefficients are below its cost threshold, otherwise unchanged)
+    into `\delta` of polynomial `g`. When
+    `\delta` is negative, the generator is a positive root of `g` in
+    `\QQ(\delta)` if there is one, which keeps the polynomial, otherwise
+    `-\delta`. The elements are expressed in the powers of the generator by
+    linear algebra over `\QQ`.
+
+    """
+    from sage.matrix.constructor import matrix
+    from sage.rings.number_field.number_field import NumberField
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+    from sage.rings.qqbar import do_polred
+    from sage.rings.real_mpfi import RealIntervalField
+
+    from flatsurf.geometry.subfield import subfield_from_elements
+
+    if all(c in QQ for c in elements):
+        return QQ, [QQ(c) for c in elements]
+
+    _, _, inclusion = subfield_from_elements(K, elements, polred=False)
+    gamma = inclusion(inclusion.domain().gen())
+    p = gamma.minpoly()
+    d = p.degree()
+    denominator = ZZ.one()
+    for c in p.list():
+        denominator = denominator.lcm(c.denominator())
+    fwd, _, g = do_polred(p(p.parent().gen() / denominator) * denominator**d)
+    delta = fwd(denominator * gamma)
+
+    if delta < 0:
+        F = NumberField(g, "c")
+        positive = [
+            r.polynomial()(delta)
+            for r in g.roots(F, multiplicities=False)
+            if r.polynomial()(delta) > 0
+        ]
+        if positive:
+            delta = positive[0]
+        else:
+            delta = -delta
+            g = g(-g.parent().gen()) * (-1) ** d
+
+    powers = matrix(QQ, [(delta**k).vector() for k in range(d)])
+    coordinates = powers.solve_left(matrix(QQ, [K(c).vector() for c in elements]))
+
+    roots = g.roots(AA, multiplicities=False)
+    prec = 64
+    while True:
+        close = [
+            r
+            for r in roots
+            if RealIntervalField(prec)(r).overlaps(RealIntervalField(prec)(delta))
+        ]
+        if len(close) == 1:
+            break
+        prec *= 2
+    F = NumberField(PolynomialRing(QQ, "y")(g.list()), "a", embedding=close[0])
+    return F, [F(list(row)) for row in coordinates.rows()]
+
+
+def _develop(K, chain, half_cuffs, placed, i, plane, form, vertices):
+    r"""
+    Return the Klein coordinates of the front polygon of the pants ``i`` of
+    :meth:`HyperbolicSurfaceGenerators.from_signature`, developed into the
+    seam plane of the pants 0, and the field that holds them.
+
+    INPUT:
+
+    - ``K`` -- ``QQ`` or a number field embedded in ``AA`` that contains
+      the coordinates and the forms below
 
     - ``chain``, ``half_cuffs`` -- the slots of the pants and the half-cuff
       edges of their slots, as in
       :meth:`HyperbolicSurfaceGenerators.from_signature`
 
-    - ``placed`` -- the list of the Klein coordinates in ``AA`` of the front
-      polygons of the pants before ``i``, in the seam plane of the pants 0
+    - ``placed`` -- the list of the Klein coordinates of the front polygons
+      of the pants before ``i``, in the seam plane of the pants 0
 
     - ``i`` -- the index of the pants
 
-    - ``plane`` -- the pair ``(b, c)`` of elements of ``AA`` of the seam
-      plane of the pants 0
+    - ``plane`` -- the pair ``(b, c)`` of the seam plane of the pants 0
 
-    - ``form`` -- the pair ``(b, c)`` of elements of ``AA`` of the seam plane
-      of the pants ``i``
+    - ``form`` -- the pair ``(b, c)`` of the seam plane of the pants ``i``
 
     - ``vertices`` -- the Klein coordinates of the front polygon of the
       pants ``i`` in its seam plane
+
+    OUTPUT:
+
+    A triple ``(L, embed, developed)``: ``L`` is ``K`` or an extension of
+    ``K`` by a square root, embedded in ``AA``, ``embed`` the function from
+    ``K`` to ``L``, and ``developed`` the list of the Klein coordinates in
+    ``L`` of the developed polygon.
 
     EXAMPLES:
 
@@ -1550,28 +1826,36 @@ def _develop(chain, half_cuffs, placed, i, plane, form, vertices):
         sage: from flatsurf.geometry.hyperbolic_surface_generators import _develop, _pants_polygon
         sage: chain = [[("cuff", "l"), ("cuff", "l"), ("cuff", "c")], [("cuff", "c"), ("cuff", "m"), ("cuff", "m")]]
         sage: half_cuffs = {(0, 0): 1, (0, 1): 3, (0, 2): 5, (1, 0): 1, (1, 1): 3, (1, 2): 5}
-        sage: _, form, vertices, _ = _pants_polygon((21/4, 21/4, 21/4), ())
-        sage: form = [AA(t) for t in form]
-        sage: first = _develop(chain, half_cuffs, [], 0, form, form, vertices)
-        sage: second = _develop(chain, half_cuffs, [first], 1, form, form, vertices)
+        sage: K, form, vertices, _ = _pants_polygon((21/4, 21/4, 21/4), ())
+        sage: _, _, first = _develop(K, chain, half_cuffs, [], 0, form, form, vertices)
+        sage: L, _, second = _develop(K, chain, half_cuffs, [first], 1, form, form, vertices)
+        sage: L
+        Rational Field
         sage: second[1] == first[0] and second[2] == first[5]
         True
 
     ALGORITHM:
 
     The first slot of the pants ``i`` is a cuff shared with an earlier
-    pants. The isometry that sends the half-cuff edge of the pants ``i``
-    onto the matching edge of the earlier front polygon, reversed, is
-    computed between the planes of the form `x^2 + y^2 - z^2` over ``AA``
-    of the two seam planes, where the square roots of the forms exist.
+    pants. The isometry `M` sends the half-cuff edge `pq` of the pants
+    ``i`` onto the matching edge `p'q'` of the earlier front polygon,
+    reversed, from the plane of the form `Q_i` to the one of `Q_0`, with
+    `M^T Q_0 M = \lambda Q_i`. On the Klein lifts, `M` sends `p` to `p'`,
+    the tangent `t = q - (\langle p, q\rangle / \langle p, p\rangle) p` to
+    `\mu t'`, and the normal `n = Q_i^{-1} (p \times q)` of the line `pq` to
+    `\nu n'`. Then `\lambda = \langle p', p'\rangle / \langle p,
+    p\rangle`, and `\mu = \kappa / \kappa'`, with `\kappa = \langle p, q
+    \rangle / \langle p, p\rangle`, sends `q` to a multiple of `q'`, the two
+    edges having the same length. The scale `\nu = \sqrt{\lambda \langle n,
+    n\rangle / \langle n', n'\rangle}` is positive, so that `M` sends the
+    side of the polygon ``i`` to the other side of the edge `p'q'`; it is
+    the only square root, adjoined to ``K`` when it is not there.
 
     """
-    from flatsurf.geometry.hyperbolic import HyperbolicPlane
-    from flatsurf.geometry.hyperbolic_isometry import segment_isometry
+    from sage.rings.real_mpfi import RealIntervalField
 
-    points = [(AA(x), AA(y)) for x, y in vertices]
     if i == 0:
-        return points
+        return K, K, vertices
 
     j, s = next(
         (j, s) for j in range(i) for s in range(3) if chain[j][s] == chain[i][0]
@@ -1580,33 +1864,41 @@ def _develop(chain, half_cuffs, placed, i, plane, form, vertices):
     a = half_cuffs[j, s]
     e = half_cuffs[i, 0]
 
-    H0 = HyperbolicPlane(AA, form=[1, plane[0], -plane[1]])
-    Hi = HyperbolicPlane(AA, form=[1, form[0], -form[1]])
-    f0 = H0.standard_form_isometry()
-    fi = Hi.standard_form_isometry()
+    def lift(point):
+        return vector(K, (point[0], point[1], 1))
 
-    def standard(f, H, point):
-        return f(H.point(point[0], point[1], model="klein"))
+    def frame(Q, p, q):
+        t = q - (p * Q * q) / (p * Q * p) * p
+        return t, Q.inverse() * p.cross_product(q)
 
-    M = segment_isometry(
-        (
-            standard(fi, Hi, points[e]),
-            standard(fi, Hi, points[(e + 1) % len(points)]),
-        ),
-        (
-            standard(f0, H0, target[(a + 1) % len(target)]),
-            standard(f0, H0, target[a]),
-        ),
-        ring=AA,
+    Qi = diagonal_matrix(K, [1, form[0], -form[1]])
+    Q0 = diagonal_matrix(K, [1, plane[0], -plane[1]])
+    p, q = lift(vertices[e]), lift(vertices[(e + 1) % len(vertices)])
+    p0, q0 = lift(target[(a + 1) % len(target)]), lift(target[a])
+    t, n = frame(Qi, p, q)
+    t0, n0 = frame(Q0, p0, q0)
+
+    scale = (p0 * Q0 * p0) / (p * Qi * p)
+    mu = ((p * Qi * q) / (p * Qi * p)) / ((p0 * Q0 * q0) / (p0 * Q0 * p0))
+    nu2 = scale * (n * Qi * n) / (n0 * Q0 * n0)
+
+    x = K["x"].gen()
+    L, embed, nu = _adjoin_root(
+        K, x**2 - nu2, lambda prec: RealIntervalField(prec)(nu2).sqrt()
     )
 
+    def column(v, factor=1):
+        return [factor * embed(c) for c in v]
+
+    source = matrix(L, [column(p), column(t), column(n)]).transpose()
+    image = matrix(L, [column(p0), column(mu * t0), column(n0, nu)]).transpose()
+    M = image * source.inverse()
+
     developed = []
-    for point in points:
-        x, y = standard(fi, Hi, point).coordinates(model="klein")
-        X, Y, Z = M * vector(AA, (x, y, 1))
-        image = (~f0)(f0.codomain().point(X / Z, Y / Z, model="klein"))
-        developed.append(image.coordinates(model="klein"))
-    return developed
+    for point in vertices:
+        X, Y, Z = M * vector(L, (embed(point[0]), embed(point[1]), 1))
+        developed.append((X / Z, Y / Z))
+    return L, embed, developed
 
 
 class HyperbolicSurfaceGenerators:
@@ -2364,11 +2656,11 @@ class HyperbolicSurfaceGenerators:
             sage: S.signature()
             SurfaceSignature(g=2, cone_orders=(-1/2,))
             sage: S.base_ring()
-            Number Field in a with defining polynomial y^2 - 51 with a = -7.141428428542850?
+            Number Field in a with defining polynomial y^2 - 51 with a = 7.141428428542850?
             sage: S.area()
             5/2
             sage: S.holonomy_representation().invariant_trace_field()
-            Number Field in a with defining polynomial y^2 - 51 with a = -7.141428428542850?
+            Number Field in a with defining polynomial y^2 - 51 with a = 7.141428428542850?
             sage: S = hyperbolic_surfaces.from_signature(s, cuff_traces=(int(99),) * 4)
             sage: S.signature()
             SurfaceSignature(g=2, cone_orders=(-1/2,))
@@ -2443,6 +2735,19 @@ class HyperbolicSurfaceGenerators:
             Rational Field
             sage: check((4, 4, 4)).polynomial()
             y^2 - y - 1
+
+        With the cuff traces `4, 5, 21/4`, the two seam planes are over
+        `\QQ(\sqrt{6})` and the development across the cuff of trace `5`
+        adjoins a square root::
+
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), cuff_traces=(4, 5, 21/4))
+            sage: S.base_ring()
+            Number Field in a with defining polynomial y^4 - 552*y^2 - 1200*y + 54696 with a = 9.696518361151262?
+            sage: S.holonomy_representation().invariant_trace_field()
+            Number Field in a with defining polynomial y^4 - 552*y^2 - 1200*y + 54696 with a = 9.696518361151262?
+            sage: S.edge_transformation((0, 0), 5).matrix().is_one()
+            True
+            sage: TestSuite(S).run()
 
         The number of cuff traces, their values, and an explicit ring
         that does not hold the coordinates::
@@ -2530,14 +2835,20 @@ class HyperbolicSurfaceGenerators:
         its half-cuff edge onto the matching edge of the front polygon
         already placed, reversed, carries it into the seam plane of the
         pants 0, so that the two polygons lie on either side of the cuff and
-        are glued by the identity. The isometry is computed over ``AA``
-        between the planes of the form `x^2 + y^2 - z^2` of the two seam
-        planes.
+        are glued by the identity. The coordinates are computed in a number
+        field embedded in the reals, the composite of the fields of the seam
+        planes, to which each development adjoins the single square root it
+        needs: the isometry sends the lift of a vertex to the lift of its
+        image, the tangent of the edge to a multiple in the field of its
+        image, and the normal of the edge to the square root of a ratio of
+        their norms times its image.
 
-        With ``base_ring=None``, the polygons are built over the number
-        field of all their Klein coordinates and of the form of the seam
-        plane of the pants 0. The side pairings between two pants may need
-        square roots that this field does not hold: when a gluing is
+        With ``base_ring=None``, the polygons are built over the subfield
+        generated by all their Klein coordinates and by the form of the seam
+        plane of the pants 0, its polynomial reduced as in ``QQbar`` (by
+        PARI's ``polredbest`` when its coefficients are small enough) and
+        its generator positive. The side pairings between two pants may
+        need square roots that this field does not hold: when a gluing is
         refused, the surface is glued over ``AA`` and moved to the field of
         its coordinates and side pairings by
         :meth:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface.set_immutable`.
@@ -2691,10 +3002,19 @@ class HyperbolicSurfaceGenerators:
             ]
             seams = [[0, 1, 2]]
         else:
+            # A field that holds the seam fields of the pants met so far,
+            # the coordinates of the front polygons placed so far and the
+            # form of the seam plane of the pants 0.
+            field = QQ
             fronts = []
             seams = []
-            # the form of the seam plane of the pants 0, set by the first pants
             plane = None
+
+            def move(embed):
+                return [[(embed(x), embed(y)) for x, y in front] for front in fronts], [
+                    embed(t) for t in plane
+                ]
+
             for i, slots in enumerate(chain):
                 orders = []
                 cuffs = []
@@ -2711,7 +3031,7 @@ class HyperbolicSurfaceGenerators:
                         continue
                     cuffs.append(s)
                 try:
-                    _, form, vertices, pants_seams = _pants_polygon(
+                    K, form, vertices, pants_seams = _pants_polygon(
                         pants_traces, orders
                     )
                 except ValueError as error:
@@ -2721,29 +3041,28 @@ class HyperbolicSurfaceGenerators:
                 edges = [e for e in range(len(vertices)) if e not in pants_seams]
                 for s, e in zip(cuffs, edges):
                     half_cuffs[i, s] = e
-                form = [AA(t) for t in form]
+                field, embed, embed_K = _composite(field, K)
+                form = [embed_K(t) for t in form]
+                vertices = [(embed_K(x), embed_K(y)) for x, y in vertices]
                 if i == 0:
                     plane = form
-                fronts.append(
-                    _develop(chain, half_cuffs, fronts, i, plane, form, vertices)
+                else:
+                    fronts, plane = move(embed)
+                field, embed, front = _develop(
+                    field, chain, half_cuffs, fronts, i, plane, form, vertices
                 )
+                fronts, plane = move(embed)
+                fronts.append(front)
                 seams.append(pants_seams)
 
             coordinates = [
                 c for vertices in fronts for vertex in vertices for c in vertex
             ] + plane
-            if ring is AA:
-                field = AA
-            else:
-                from flatsurf.geometry.subfield import (
-                    number_field_elements_from_algebraics,
-                )
-
-                field, coordinates = number_field_elements_from_algebraics(coordinates)
-                if ring is not None:
-                    convert = _field_embedding(field, ring)
-                    field = ring
-                    coordinates = [convert(c) for c in coordinates]
+            field, coordinates = _coordinate_field(field, coordinates)
+            if ring is not None:
+                convert = _field_embedding(field, ring)
+                field = ring
+                coordinates = [convert(c) for c in coordinates]
             H = HyperbolicPlane(field, form=[1, coordinates[-2], -coordinates[-1]])
             coordinates = iter(coordinates)
             polygons = [
