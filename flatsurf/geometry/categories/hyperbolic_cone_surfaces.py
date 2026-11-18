@@ -517,6 +517,40 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             want to put it here.
             """
 
+            def _empty_mutable_surface(self):
+                r"""
+                Return an empty mutable surface in the hyperbolic plane of this
+                surface, in which surfaces of the same geometry are built.
+
+                The plane is kept with its quadratic form, so that the
+                polygons of this surface can be added to the new surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+                    sage: S = MutableOrientedHyperbolicSurface(H3)
+                    sage: S.add_polygon(H3.polygon(vertices=[(0, 0), (1/2, -1/2), (3/4, 0), (1/2, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.glue((0, 1), (0, 2))
+                    sage: S.set_immutable()
+                    sage: T = S._empty_mutable_surface()
+                    sage: T
+                    Empty Surface
+                    sage: T.is_mutable()
+                    True
+                    sage: T.hyperbolic_plane() is H3
+                    True
+
+                """
+                from flatsurf.geometry.hyperbolic_surface import (
+                    MutableOrientedHyperbolicSurface,
+                )
+
+                return MutableOrientedHyperbolicSurface(self.hyperbolic_plane())
+
             def change_ring(self, ring):
                 r"""
                 Return an immutable copy of this surface over ``ring``.

@@ -1119,6 +1119,28 @@ class SimilaritySurfaces(SurfaceCategory):
             want to put it here.
             """
 
+            def _empty_mutable_surface(self):
+                r"""
+                Return an empty mutable surface over the base ring of this
+                surface, in which surfaces of the same geometry are built.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: T = S._empty_mutable_surface()
+                    sage: T
+                    Empty Surface
+                    sage: T.base_ring()
+                    Rational Field
+                    sage: T.is_mutable()
+                    True
+
+                """
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+                return MutableOrientedSimilaritySurface(self.base_ring())
+
             def some_elements(self):
                 r"""
                 Return some typical points of this surface (for testing): a
@@ -3292,73 +3314,6 @@ class SimilaritySurfaces(SurfaceCategory):
                             )
                         )
                 return sc_list
-
-            def ramified_cover(self, d, data):
-                r"""
-                Return a ramified cover of this surface.
-
-                INPUT:
-
-                - ``d`` - integer (the degree of the cover)
-
-                - ``data`` - a dictionary which to a pair ``(label, edge_num)`` associates a permutation
-                  of {1,...,d}
-
-                EXAMPLES:
-
-                The L-shape origami::
-
-                    sage: import flatsurf
-                    sage: T = flatsurf.translation_surfaces.square_torus()
-                    sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
-                    Translation Surface in H_2(2) built from 3 squares
-                    sage: O = T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
-                    sage: O.stratum()
-                    H_2(2)
-
-                TESTS::
-
-                    sage: import flatsurf
-                    sage: T = flatsurf.translation_surfaces.square_torus()
-                    sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,2): '(1,3)'})
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: inconsistent covering data
-
-                """
-                from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-
-                G = SymmetricGroup(d)
-                for k in data:
-                    data[k] = G(data[k])
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-                cover = MutableOrientedSimilaritySurface(self.base_ring())
-                edges = set(self.edges())
-                cover_labels = {}
-                for i in range(1, d + 1):
-                    for lab in self.labels():
-                        cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
-                while edges:
-                    lab, e = elab = edges.pop()
-                    llab, ee = eelab = self.opposite_edge(lab, e)
-                    edges.remove(eelab)
-                    if elab in data:
-                        if eelab in data:
-                            if not (data[elab] * data[eelab]).is_one():
-                                raise ValueError("inconsistent covering data")
-                        s = data[elab]
-                    elif eelab in data:
-                        s = ~data[eelab]
-                    else:
-                        s = G.one()
-
-                    for i in range(1, d + 1):
-                        p0 = cover_labels[(lab, i)]
-                        p1 = cover_labels[(lab, s(i))]
-                        cover.glue((p0, e), (p1, ee))
-                cover.set_immutable()
-                return cover
 
             def subdivide(self):
                 r"""

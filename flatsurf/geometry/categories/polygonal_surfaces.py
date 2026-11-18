@@ -1520,6 +1520,187 @@ class PolygonalSurfaces(SurfaceCategory):
 
                     return FundamentalGroup(self, base_label, punctured_vertices)
 
+                def ramified_cover(self, d, data):
+                    r"""
+                    Return the cover of degree ``d`` of this surface given by
+                    the permutations ``data`` of its sheets.
+
+                    The cover is made of ``d`` copies of each polygon, the
+                    sheets ``1, ..., d``. The edge ``e`` of polygon ``label``
+                    of the sheet ``i`` is glued to the opposite edge ``e'`` of
+                    polygon ``label'`` of the sheet ``s(i)``, where ``s`` is
+                    ``data[(label, e)]``, or the inverse of ``data[(label',
+                    e')]``, or the identity when neither is given. An unglued
+                    edge stays unglued in every sheet.
+
+                    INPUT:
+
+                    - ``d`` -- a positive integer; the degree of the cover
+
+                    - ``data`` -- a dictionary; to an edge ``(label, e)`` of
+                      this surface it associates a permutation of ``{1, ...,
+                      d}``, as a string such as ``'(1,2)(3,4)'`` or an element
+                      of ``SymmetricGroup(d)``; a self-glued edge requires an
+                      involution. The dictionary is not changed.
+
+                    OUTPUT:
+
+                    An immutable surface of the geometry of this surface. The
+                    sheet ``i`` of the polygon at position ``k`` (counting
+                    from 0) in the
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`
+                    of this surface, which has ``n`` polygons, has label ``(i
+                    - 1) * n + k``.
+
+                    EXAMPLES:
+
+                    The L-shape origami::
+
+                        sage: import flatsurf
+                        sage: T = flatsurf.translation_surfaces.square_torus()
+                        sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
+                        Translation Surface in H_2(2) built from 3 squares
+                        sage: O = T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
+                        sage: O.stratum()
+                        H_2(2)
+
+                    A double cover of the pillowcase of an equilateral
+                    triangle, branched over two of its vertices::
+
+                        sage: from flatsurf import euclidean_polygons, similarity_surfaces
+                        sage: S = similarity_surfaces.pillowcase(euclidean_polygons.triangle(1, 1, 1))
+                        sage: C = S.ramified_cover(2, {(0, 0): '(1,2)'})
+                        sage: C
+                        Genus 0 Rational Cone Surface built from 4 equilateral triangles
+                        sage: C.signature()
+                        SurfaceSignature(g=0, cone_orders=(-2/3, -2/3, -1/3, -1/3))
+
+                    The same construction for a hyperbolic surface, the
+                    pillowcase of an equilateral triangle with angles `\pi/4`::
+
+                        sage: from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
+                        sage: H = hyperbolic_surfaces.pillowcase(hyperbolic_polygons.triangle(1/8, 1/8, 1/8))
+                        sage: C = H.ramified_cover(2, {(0, 0): '(1,2)'})
+                        sage: C
+                        Genus 0 Hyperbolic Surface built from 4 equilateral triangles
+                        sage: C.area()
+                        1/2
+                        sage: C.signature()
+                        SurfaceSignature(g=0, cone_orders=(-3/4, -3/4, -1/2, -1/2))
+
+                    TESTS::
+
+                        sage: import flatsurf
+                        sage: T = flatsurf.translation_surfaces.square_torus()
+                        sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,2): '(1,3)'})
+                        Traceback (most recent call last):
+                        ...
+                        ValueError: inconsistent covering data
+
+                    A self-glued edge glues the sheet ``i`` to the sheet
+                    ``s(i)``::
+
+                        sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(polygons.square())
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.glue((0, 1), (0, 1))
+                        sage: S.glue((0, 3), (0, 3))
+                        sage: S.set_immutable()
+                        sage: data = {(0, 0): '(1,2)'}
+                        sage: C = S.ramified_cover(2, data)
+                        sage: [C.opposite_edge(label, e) for label in C.labels() for e in range(4)]
+                        [(1, 2), (0, 1), (1, 0), (0, 3), (0, 2), (1, 1), (0, 0), (1, 3)]
+                        sage: data
+                        {(0, 0): '(1,2)'}
+                        sage: C = S.ramified_cover(2, {(0, 1): '(1,2)'})
+                        sage: [C.opposite_edge(label, 1) for label in C.labels()]
+                        [(1, 1), (0, 1)]
+
+                    The permutation of a self-glued edge must be an
+                    involution::
+
+                        sage: S.ramified_cover(3, {(0, 1): '(1,2,3)'})
+                        Traceback (most recent call last):
+                        ...
+                        ValueError: the permutation (1,2,3) of the self-glued edge (0, 1) is not an involution
+
+                    An unglued edge stays unglued; the double cover of a
+                    cylinder around its core curve is a cylinder twice as
+                    long::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(polygons.square())
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.set_immutable()
+                        sage: C = S.ramified_cover(2, {(0, 0): '(1,2)'})
+                        sage: C.boundary_components()
+                        [((0, 1), (1, 1)), ((0, 3), (1, 3))]
+
+                    The keys of ``data`` must be edges::
+
+                        sage: S.ramified_cover(2, {(0, 4): '(1,2)'})
+                        Traceback (most recent call last):
+                        ...
+                        ValueError: (0, 4) is not an edge of this surface
+
+                    """
+                    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+                    G = SymmetricGroup(d)
+
+                    edges = set(self.edges())
+                    permutations = {}
+                    for edge, permutation in data.items():
+                        if edge not in edges:
+                            raise ValueError(f"{edge} is not an edge of this surface")
+                        permutations[edge] = G(permutation)
+
+                    cover = self._empty_mutable_surface()
+                    sheets = {}
+                    for i in range(1, d + 1):
+                        for label in self.labels():
+                            sheets[(label, i)] = cover.add_polygon(self.polygon(label))
+
+                    seen = set()
+                    for edge in self.edges():
+                        if edge in seen:
+                            continue
+                        opposite = self.opposite_edge(*edge)
+                        if opposite is None:
+                            continue
+                        seen.add(edge)
+                        seen.add(opposite)
+
+                        s = permutations.get(edge)
+                        t = permutations.get(opposite)
+                        if edge == opposite:
+                            if s is None:
+                                s = G.one()
+                            elif not (s * s).is_one():
+                                raise ValueError(
+                                    f"the permutation {s} of the self-glued edge {edge} is not an involution"
+                                )
+                        elif s is None:
+                            s = G.one() if t is None else ~t
+                        elif t is not None and not (s * t).is_one():
+                            raise ValueError("inconsistent covering data")
+
+                        for i in range(1, d + 1):
+                            # A self-glued edge pairs the sheets i and s(i),
+                            # glued once from the smaller of the two.
+                            if edge == opposite and s(i) < i:
+                                continue
+                            cover.glue(
+                                (sheets[(edge[0], i)], edge[1]),
+                                (sheets[(opposite[0], s(i))], opposite[1]),
+                            )
+
+                    cover.set_immutable()
+                    return cover
+
         class ParentMethods:
             r"""
             Provides methods available to all surfaces built from finitely many polygons.
