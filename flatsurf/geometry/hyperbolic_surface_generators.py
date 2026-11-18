@@ -548,6 +548,15 @@ class HyperbolicPolygonsConstructor:
             sage: T.angles()
             (1/4, 1/16, 1/16)
 
+        A base ring embedded in the real lazy field::
+
+            sage: x = polygen(QQ, 'x')
+            sage: L = NumberField(x^4 - 2, 'r', embedding=1.18)
+            sage: L.coerce_embedding().codomain()
+            Real Lazy Field
+            sage: hyperbolic_polygons.triangle(1/6, 1/6, 1/8, base_ring=L).parent()
+            Hyperbolic Plane over Number Field in r with defining polynomial x^4 - 2 with r = 1.189207115002722? with form x^2 + 4/3*y^2 - r^2*z^2
+
         ALGORITHM:
 
         The unit normals `e_i` of the sides of the triangle, the side `i`

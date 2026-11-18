@@ -152,6 +152,53 @@ gs.make_all_visible(limit=12)
 gs.plot()
 ```
 
+## Ramified covers
+
+`ramified_cover(d, data)` builds a cover of degree `d` of a surface, in both
+geometries. It has `d` copies of each polygon, the sheets `1, ..., d`. The
+dictionary `data` maps an edge `(label, edge)` to a permutation of the sheets,
+given as a string in cycle notation: crossing this edge, one goes from the
+sheet `i` to the sheet `data[(label, edge)](i)`; crossing it backwards applies
+the inverse permutation. An edge without an entry does not permute the sheets.
+
+The signature of the flat pillowcase `F` and its area, in units of the area
+`c` of the triangle `(1, 2, 3)`:
+
+```{code-cell}
+F.signature(), F.area()
+```
+
+The cover of degree 2 whose sheets are exchanged across the edge 0 of the
+polygon 0, and the cover of degree 3 whose sheets are cycled across it:
+
+```{code-cell}
+F2 = F.ramified_cover(2, {(0, 0): "(1,2)"})
+F2, F2.signature(), F2.area()
+```
+
+```{code-cell}
+F3 = F.ramified_cover(3, {(0, 0): "(1,2,3)"})
+F3.signature(), F3.area()
+```
+
+The same calls on the hyperbolic pillowcase `X`:
+
+```{code-cell}
+X.signature(), X.area()
+```
+
+```{code-cell}
+X2 = X.ramified_cover(2, {(0, 0): "(1,2)"})
+X2, X2.signature(), X2.area()
+```
+
+```{code-cell}
+X3 = X.ramified_cover(3, {(0, 0): "(1,2,3)"})
+X3.signature(), X3.area()
+```
+
+In both geometries, the area is multiplied by the degree.
+
 ## Building surfaces from polygons
 
 This defines a regular 12-gon with algebraic real coordinates (AA) with first

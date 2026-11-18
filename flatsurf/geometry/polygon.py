@@ -1314,8 +1314,7 @@ def Polygon(
       the polygon or ``None`` (default: ``None``). For a Euclidean polygon,
       angles summing to `(n - 2)/2` are read as multiples of `2\pi` and other
       angles are rescaled so that their sum matches the sum of the angles in
-      an ngon. For a hyperbolic polygon, the angles are multiples of `2\pi`
-      and only triangles can be built from their angles.
+      an ngon. A hyperbolic polygon cannot be built from angles.
 
     - ``lengths`` -- a sequence of numbers that prescribe the lengths of the
       edges of the polygon or ``None`` (default: ``None``); not supported for
@@ -1526,12 +1525,15 @@ def Polygon(
         sage: P.parent()
         Hyperbolic Plane over Rational Field
 
-    Euclidean angles are rescaled, hyperbolic angles are multiples of `2\pi`::
+    Euclidean angles are rescaled; a hyperbolic polygon is not built from
+    angles, use ``hyperbolic_polygons.triangle`` for a triangle::
 
         sage: Polygon(angles=(1/6, 1/8, 1/8)).angles()
         (1/5, 3/20, 3/20)
-        sage: Polygon(angles=(1/6, 1/8, 1/8), geometry="hyperbolic").angles()
-        (1/6, 1/8, 1/8)
+        sage: Polygon(angles=(1/6, 1/8, 1/8), geometry="hyperbolic")
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: a hyperbolic polygon cannot be built from angles; use hyperbolic_polygons.triangle()
 
     The hyperbolic plane can be given; otherwise it is deduced from the
     coordinates and from the planes of the vertices that are points::
@@ -1817,40 +1819,19 @@ def _Polygon_hyperbolic(
         raise ValueError("a hyperbolic polygon has no edge vectors; give its vertices")
     if lengths:
         raise NotImplementedError("a hyperbolic polygon cannot be built from lengths")
+    if angles:
+        raise NotImplementedError(
+            "a hyperbolic polygon cannot be built from angles; use hyperbolic_polygons.triangle()"
+        )
     if category is not None:
         raise ValueError("the category of a hyperbolic polygon cannot be chosen")
-    if not vertices and not angles:
-        raise NotImplementedError("one of vertices or angles must be set")
-    if vertices and angles:
-        raise ValueError(
-            "a hyperbolic polygon is built from vertices or from angles, not both"
-        )
-    if angles and model is not None:
-        raise ValueError("model can only be used with vertices")
+    if not vertices:
+        raise NotImplementedError("the vertices of a hyperbolic polygon must be set")
 
     if parent is not None:
         if base_ring is not None and base_ring != parent.base_ring():
             raise ValueError(f"base_ring is {base_ring} but parent is {parent}")
         H = parent
-    elif angles:
-        if base_ring is None:
-            # The triangle chooses the number field of its coordinates, which
-            # HyperbolicPlane.polygon cannot do without a plane; the length
-            # checks of HyperbolicPlane.polygon are repeated here.
-            angles = list(angles)
-            if len(angles) > 3:
-                raise NotImplementedError(
-                    "only triangles can be built from their angles"
-                )
-            if len(angles) < 3:
-                raise ValueError("a polygon has at least three angles")
-            from flatsurf.geometry.hyperbolic_surface_generators import (
-                hyperbolic_polygons,
-            )
-
-            return hyperbolic_polygons.triangle(*angles)
-        _check_exact(base_ring)
-        H = HyperbolicPlane(base_ring)
     else:
         ring = base_ring
         if ring is None:
@@ -1871,9 +1852,6 @@ def _Polygon_hyperbolic(
                 "the vertices lie in hyperbolic planes with no common base ring"
             ) from e
         H = HyperbolicPlane(ring)
-
-    if angles:
-        return H.polygon(angles=angles)
 
     try:
         vertices = [H(v) if isinstance(v, HyperbolicPoint) else v for v in vertices]

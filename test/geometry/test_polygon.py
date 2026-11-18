@@ -401,12 +401,12 @@ def _both_geometries():
 def _hyperbolic_equal():
     r"""
     Return the calls of ``Polygon`` that give the same polygon as
-    ``HyperbolicPlane.polygon`` or ``hyperbolic_polygons.triangle``.
+    ``HyperbolicPlane.polygon``.
     """
-    from flatsurf import Polygon, hyperbolic_polygons
+    from flatsurf import Polygon
 
     d = _both_geometries()
-    H1, V, A, QQ = d["H1"], d["V"], d["A"], d["QQ"]
+    H1, V, QQ = d["H1"], d["V"], d["QQ"]
     p0, p1, p2 = d["p"]
     half = QQ(1) / 2
 
@@ -416,10 +416,6 @@ def _hyperbolic_equal():
     return {
         "geometry": (lambda: Polygon(vertices=V, geometry="hyperbolic"), expected),
         "Geometry": (lambda: Polygon(vertices=V, geometry="Hyperbolic"), expected),
-        "angles": (
-            lambda: Polygon(angles=A, geometry="hyperbolic"),
-            lambda: hyperbolic_polygons.triangle(*A),
-        ),
         "parent": (lambda: Polygon(vertices=V, parent=H1), expected),
         "parent-geometry": (
             lambda: Polygon(vertices=V, parent=H1, geometry="hyperbolic"),
@@ -452,7 +448,7 @@ def _hyperbolic_in():
     from flatsurf import Polygon
 
     d = _both_geometries()
-    V, W, A, AA, QQ, K, s = d["V"], d["W"], d["A"], d["AA"], d["QQ"], d["K"], d["s"]
+    V, W, AA, QQ, K, s = d["V"], d["W"], d["AA"], d["QQ"], d["K"], d["s"]
     HK, HA, HR = d["HK"], d["HA"], d["HR"]
     p0, p1, p2 = d["p"]
     r0, r1, r2 = d["r"]
@@ -463,10 +459,6 @@ def _hyperbolic_in():
         "W": (lambda: Polygon(vertices=W, geometry="hyperbolic"), "HK"),
         "V-AA": (
             lambda: Polygon(vertices=V, geometry="hyperbolic", base_ring=AA),
-            "HA",
-        ),
-        "angles-AA": (
-            lambda: Polygon(angles=A, geometry="hyperbolic", base_ring=AA),
             "HA",
         ),
         "half_plane": (
@@ -485,7 +477,6 @@ def _hyperbolic_in():
             "H1",
         ),
         "parent-K": (lambda: Polygon(vertices=V, parent=HK), "HK"),
-        "parent-angles-AA": (lambda: Polygon(angles=A, parent=HA), "HA"),
         "parent-K-points": (lambda: Polygon(vertices=[p0, p1, p2], parent=HK), "HK"),
         "parent-RR": (lambda: Polygon(vertices=V, parent=HR), "HR"),
         "parent-RR-points": (lambda: Polygon(vertices=[p0, p1, p2], parent=HR), "HR"),
@@ -527,9 +518,12 @@ def test_polygon_hyperbolic_angles():
     from flatsurf import Polygon
 
     d = _both_geometries()
-    A, AA, HA = d["A"], d["AA"], d["HA"]
-    assert Polygon(angles=A, geometry="hyperbolic", base_ring=AA).angles() == A
-    assert Polygon(angles=A, parent=HA).angles() == A
+    A, HA = d["A"], d["HA"]
+    message = "a hyperbolic polygon cannot be built from angles"
+    with pytest.raises(NotImplementedError, match=message):
+        Polygon(angles=A, geometry="hyperbolic")
+    with pytest.raises(NotImplementedError, match=message):
+        Polygon(angles=A, parent=HA)
 
 
 def test_polygon_euclidean_unchanged():
@@ -559,14 +553,14 @@ def _hyperbolic_errors():
 
     d = _both_geometries()
     V, W, A, AA = d["V"], d["W"], d["A"], d["AA"]
-    H1, HR = d["H1"], d["HR"]
+    H1, HA, HR = d["H1"], d["HA"], d["HR"]
     p0, p1, p2 = d["p"]
     pK, qK = d["pK"], d["qK"]
     half = QQ(1) / 2
     edges = [(1, 0), (-1, 1), (0, -1)]
-    not_in_QQ = "do not lie in Rational Field"
-    no_isometry = re.escape(
-        "isometry is not defined over Rational Field; adjoin a square root of 2/3"
+    no_angles = re.escape(
+        "a hyperbolic polygon cannot be built from angles; "
+        "use hyperbolic_polygons.triangle()"
     )
     inexact = "the ring must be exact, not Real Field with 53 bits of precision"
 
@@ -584,23 +578,19 @@ def _hyperbolic_errors():
             TypeError,
             re.escape("Unable to coerce 1/4*s to a rational"),
         ),
-        # The triangle lies in the plane of x^2 + 4/3 y^2 - 2/3 z^2 over QQ,
-        # which has no isotropic vector over QQ.
-        "angles-QQ": (hyp(angles=A, base_ring=QQ), ValueError, no_isometry),
+        "angles": (hyp(angles=A), NotImplementedError, no_angles),
+        "angles-AA": (hyp(angles=A, base_ring=AA), NotImplementedError, no_angles),
+        "angles-QQ": (hyp(angles=A, base_ring=QQ), NotImplementedError, no_angles),
         "angles-QQ-field": (
             hyp(angles=(QQ(1) / 4, QQ(1) / 6, QQ(1) / 14), base_ring=QQ),
-            ValueError,
-            not_in_QQ,
+            NotImplementedError,
+            no_angles,
         ),
-        "angles-sum": (
-            hyp(angles=(1, 2, 3)),
-            ValueError,
-            "must sum to less than 1/2",
-        ),
+        "angles-sum": (hyp(angles=(1, 2, 3)), NotImplementedError, no_angles),
         "angles-4": (
             hyp(angles=(QQ(1) / 8,) * 4),
             NotImplementedError,
-            "only triangles",
+            no_angles,
         ),
         "infinite": (
             hyp(vertices=[(0, 0), (2, 0), (0, 2)]),
@@ -625,13 +615,18 @@ def _hyperbolic_errors():
         ),
         "parent-angles-QQ": (
             lambda: Polygon(angles=A, parent=H1),
-            ValueError,
-            no_isometry,
+            NotImplementedError,
+            no_angles,
         ),
         "parent-angles-RR": (
             lambda: Polygon(angles=A, parent=HR),
-            ValueError,
-            inexact,
+            NotImplementedError,
+            no_angles,
+        ),
+        "parent-angles-AA": (
+            lambda: Polygon(angles=A, parent=HA),
+            NotImplementedError,
+            no_angles,
         ),
         "parent-base_ring": (
             lambda: Polygon(vertices=V, parent=H1, base_ring=AA),
@@ -702,17 +697,13 @@ def _hyperbolic_errors():
         "nothing": (
             hyp(),
             NotImplementedError,
-            "one of vertices or angles must be set",
+            "the vertices of a hyperbolic polygon must be set",
         ),
-        "both": (
-            hyp(vertices=V, angles=A),
-            ValueError,
-            "a hyperbolic polygon is built from vertices or from angles, not both",
-        ),
+        "both": (hyp(vertices=V, angles=A), NotImplementedError, no_angles),
         "angles-model": (
             hyp(angles=A, model="half_plane"),
-            ValueError,
-            "model can only be used with vertices",
+            NotImplementedError,
+            no_angles,
         ),
     }
 
