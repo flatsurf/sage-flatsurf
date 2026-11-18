@@ -29,9 +29,9 @@ below were computed with sage-flatsurf; the octagon gluings are those of
 
 import pytest
 
-from sage.all import AA, QQ, RDF, RR, polygen
+from sage.all import AA, QQ, RDF, RR, NumberField, polygen
 
-from flatsurf import hyperbolic_surfaces
+from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
 from flatsurf.geometry.signature import SurfaceSignature
 
 y = polygen(QQ, "y")
@@ -57,7 +57,8 @@ T = QQ(21) / 4
         ((T, T, QQ(20881) / 144), (), False, None, 1),
         ((4, 4, 4), (), True, y**4 - 2 * y**2 - 4, 1),
         ((T, T), (-QQ(1) / 4,), True, y**4 - 56 * y**2 - 72 * y + 414, QQ(1) / 4),
-        ((), (-QQ(1) / 2, -QQ(3) / 4, -QQ(7) / 8), True, y**4 - 2, QQ(1) / 8),
+        ((), (-QQ(1) / 2, -QQ(3) / 4, -QQ(7) / 8), True, y**2 - 2, QQ(1) / 8),
+        ((), (-QQ(1) / 2, -QQ(3) / 4, -QQ(7) / 8), False, y**2 - 2, QQ(1) / 8),
     ],
 )
 def test_signature_round_trip(
@@ -73,11 +74,26 @@ def test_signature_round_trip(
     if polynomial is None:
         assert S.base_ring() is QQ
     else:
-        assert S.base_ring().polynomial() == polynomial
+        assert S.base_ring().is_isomorphic(NumberField(polynomial, "b"))
     assert S.signature() == SurfaceSignature(
         0, cone_orders=cone_orders, boundary_traces=boundary_traces
     )
     assert S.area() == area
+
+
+def test_triangle():
+    # Three cone points: the pillowcase of the triangle of angles 1/16, 1/4,
+    # 1/8 at its vertices 0, 1, 2, in the plane of its form.
+    cone_orders = (-QQ(1) / 2, -QQ(3) / 4, -QQ(7) / 8)
+    T = hyperbolic_polygons.triangle(QQ(1) / 16, QQ(1) / 4, QQ(1) / 8)
+    S = hyperbolic_surfaces.pants(cone_orders=cone_orders)
+    assert S.hyperbolic_plane() is T.parent()
+    assert S.polygon(0) == T
+    S = hyperbolic_surfaces.pants(cone_orders=cone_orders, base_ring=AA)
+    assert S.hyperbolic_plane() is T.parent().change_ring(AA)
+    assert S.signature() == SurfaceSignature(0, cone_orders=cone_orders)
+    with pytest.raises(ValueError, match="do not lie in Rational Field"):
+        hyperbolic_surfaces.pants(cone_orders=cone_orders, base_ring=QQ)
 
 
 def klein_vertices(S, label):

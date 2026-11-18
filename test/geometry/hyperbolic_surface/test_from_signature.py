@@ -31,9 +31,9 @@ units of `\pi`, here halved to units of `2\pi`.
 
 import pytest
 
-from sage.all import AA, QQ, RR, polygen
+from sage.all import AA, QQ, RR, NumberField, polygen
 
-from flatsurf import hyperbolic_surfaces
+from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
 from flatsurf.geometry.signature import SurfaceSignature
 
 from hyperbolic_surface_oracles import COMPACT_SIGNATURES
@@ -54,14 +54,15 @@ def check(S, signature, area, polynomial, polygons):
     if polynomial is None:
         assert S.base_ring() is QQ
     else:
-        assert S.base_ring().polynomial() == polynomial
+        assert S.base_ring().is_isomorphic(NumberField(polynomial, "b"))
     assert len(S.labels()) == polygons
 
 
 # The polynomials of the base fields are regression values of the current
 # construction: they depend on the placement of each pair of pants and on the
 # order of the pairs of pants and of the slots in the chain, not only on the
-# signature.
+# signature. A triangle, from three cone points, is over the field k_0 of
+# its invariant form.
 @pytest.mark.parametrize(
     "signature,area,polynomial,polygons",
     [
@@ -79,14 +80,35 @@ def check(S, signature, area, polynomial, polygons):
             None,
             2,
         ),
-        (orbifold(0, (3, 3, 4)), QQ(1) / 12, y**4 - 2, 2),
-        (orbifold(0, (2, 4, 5)), QQ(1) / 20, y**4 - y**2 - 1, 2),
-        (orbifold(0, (3, 4, 4)), QQ(1) / 6, y**2 - 6, 2),
+        (orbifold(0, (3, 3, 4)), QQ(1) / 12, y**2 - 2, 2),
+        (orbifold(0, (2, 4, 5)), QQ(1) / 20, y**2 - y - 1, 2),
+        (orbifold(0, (3, 4, 4)), QQ(1) / 6, None, 2),
+        (orbifold(0, (2, 3, 7)), QQ(1) / 42, y**3 - 7 * y - 7, 2),
+        (
+            SurfaceSignature(0, cone_orders=(-QQ(1) / 3, -QQ(5) / 6, -QQ(7) / 8)),
+            QQ(1) / 24,
+            y**4 - 16 * y**2 - 24 * y - 2,
+            2,
+        ),
     ],
 )
 def test_signature_round_trip(signature, area, polynomial, polygons):
     S = hyperbolic_surfaces.from_signature(signature)
     check(S, signature, area, polynomial, polygons)
+
+
+def test_triangle_in_form_plane():
+    # The pillowcase of the triangle with the cone points of periods 3, 4, 3
+    # at its vertices 0, 1, 2, in the plane of its form.
+    S = hyperbolic_surfaces.from_signature(orbifold(0, (3, 3, 4)))
+    T = hyperbolic_polygons.triangle(QQ(1) / 6, QQ(1) / 8, QQ(1) / 6)
+    assert S.hyperbolic_plane() is T.parent()
+    assert S.polygon((0, 0)).angles() == T.angles()
+
+    S = hyperbolic_surfaces.from_signature(orbifold(0, (3, 3, 4)), base_ring=AA)
+    assert S.base_ring() is AA
+    assert S.hyperbolic_plane() is T.parent().change_ring(AA)
+    assert S.signature() == orbifold(0, (3, 3, 4))
 
 
 def test_labels():
@@ -109,7 +131,7 @@ def test_cuff_traces_99():
 
 @pytest.mark.parametrize(
     "g,periods,area",
-    [row for row in COMPACT_SIGNATURES if row[:2] != (0, (2, 3, 7))],
+    COMPACT_SIGNATURES,
 )
 def test_compact_signatures(g, periods, area):
     signature = orbifold(g, periods)

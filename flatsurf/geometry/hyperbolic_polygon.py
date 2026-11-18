@@ -1394,7 +1394,7 @@ class HyperbolicPolygon(Parent):
 
             sage: T = hyperbolic_polygons.triangle(QQ(1)/4, QQ(1)/12, QQ(1)/12)
             sage: T.base_ring()
-            Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
+            Rational Field
             sage: T.edge_cosh_squared(1)
             9
 

@@ -565,6 +565,9 @@ def _hyperbolic_errors():
     half = QQ(1) / 2
     edges = [(1, 0), (-1, 1), (0, -1)]
     not_in_QQ = "do not lie in Rational Field"
+    no_isometry = re.escape(
+        "isometry is not defined over Rational Field; adjoin a square root of 2/3"
+    )
     inexact = "the ring must be exact, not Real Field with 53 bits of precision"
 
     def hyp(**kwds):
@@ -581,7 +584,14 @@ def _hyperbolic_errors():
             TypeError,
             re.escape("Unable to coerce 1/4*s to a rational"),
         ),
-        "angles-QQ": (hyp(angles=A, base_ring=QQ), ValueError, not_in_QQ),
+        # The triangle lies in the plane of x^2 + 4/3 y^2 - 2/3 z^2 over QQ,
+        # which has no isotropic vector over QQ.
+        "angles-QQ": (hyp(angles=A, base_ring=QQ), ValueError, no_isometry),
+        "angles-QQ-field": (
+            hyp(angles=(QQ(1) / 4, QQ(1) / 6, QQ(1) / 14), base_ring=QQ),
+            ValueError,
+            not_in_QQ,
+        ),
         "angles-sum": (
             hyp(angles=(1, 2, 3)),
             ValueError,
@@ -616,7 +626,7 @@ def _hyperbolic_errors():
         "parent-angles-QQ": (
             lambda: Polygon(angles=A, parent=H1),
             ValueError,
-            not_in_QQ,
+            no_isometry,
         ),
         "parent-angles-RR": (
             lambda: Polygon(angles=A, parent=HR),
