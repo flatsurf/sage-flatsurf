@@ -410,7 +410,7 @@ class HyperbolicPlaneIsomorphism(Morphism):
         """
         from sage.categories.homset import Hom
 
-        A = self._matrix.inverse().change_ring(self.domain().base_ring())
+        A = self._matrix.inverse()
         return HyperbolicPlaneIsomorphism(
             Hom(self.codomain(), self.domain()), A, check=False
         )
@@ -730,3 +730,370 @@ class HyperbolicPlaneIsomorphism(Morphism):
             T.set_immutable()
 
         return T
+
+
+_ALGORITHMS = (None, "extension", "conic", "qfsolve", "norm_equation")
+
+
+def _isotropic_matrix(Q, n):
+    r"""
+    Return the matrix `A` of an isomorphism from the plane of the diagonal
+    form ``Q`` to the plane of `J = \mathrm{diag}(1, 1, -1)`, built from the
+    isotropic vector ``n`` of ``Q``.
+
+    INPUT:
+
+    - ``Q`` -- the diagonal matrix `\mathrm{diag}(1, b, -c)` over a field `K`
+
+    - ``n`` -- a nonzero vector of `K^3` with `n^T Q n = 0`
+
+    OUTPUT:
+
+    A 3×3 matrix `A` over `K` with `A^T J A = Q/d` for some `d > 0`, a
+    positive determinant and `A[2, 2] > 0`.
+
+    ALGORITHM:
+
+    For `v` the first basis vector with `\langle n, v \rangle \neq 0`, the
+    vector `m = v - \langle v, v \rangle / (2 \langle n, v \rangle) n` is
+    isotropic, and `n, m` span a plane of signature `(1, 1)`. A nonzero
+    vector `e` orthogonal to both is then positive, of square `d > 0`. With
+    `\beta = d / (2 \langle n, m \rangle)`, the vectors `n + \beta m, e, n -
+    \beta m` are orthogonal of squares `d, d, -d`, so that the matrix `P` of
+    these columns has `P^T Q P = d J` and `A = P^{-1}` has `A^T J A = Q/d`.
+    Replacing `A` by `-A` puts `A (0, 0, 1)` in the upper sheet of the cone
+    of `J`, and composing with the reflection `\mathrm{diag}(1, -1, 1)` makes
+    the determinant positive.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_plane_morphism import _isotropic_matrix
+        sage: Q = diagonal_matrix(QQ, [1, 2, -3])
+        sage: A = _isotropic_matrix(Q, vector(QQ, [1, 1, 1]))
+        sage: A
+        [  7/4   5/2 -15/4]
+        [    0     3    -3]
+        [ -5/4  -7/2  21/4]
+        sage: A.transpose() * diagonal_matrix(QQ, [1, 1, -1]) * A == 3/2 * Q
+        True
+
+    """
+    from sage.matrix.constructor import diagonal_matrix, identity_matrix
+    from sage.matrix.constructor import matrix as Matrix
+
+    K = Q.base_ring()
+
+    def product(u, v):
+        return u * Q * v
+
+    v = next(e for e in identity_matrix(K, 3).columns() if product(n, e) != 0)
+    m = v - product(v, v) / (2 * product(n, v)) * n
+    e = Matrix(K, [Q * n, Q * m]).right_kernel().basis()[0]
+    beta = product(e, e) / (2 * product(n, m))
+
+    A = Matrix(K, [n + beta * m, e, n - beta * m]).transpose().inverse()
+    if A[2, 2] < 0:
+        A = -A
+    if A.det() < 0:
+        A = diagonal_matrix(K, [1, -1, 1]) * A
+    return A
+
+
+def _square_root_matrix(Q):
+    r"""
+    Return the matrix of an isomorphism from the plane of the diagonal form
+    ``Q`` `= \mathrm{diag}(1, b, -c)` to the plane of `\mathrm{diag}(1, 1,
+    -1)` given by the square roots of `b`, `c` or `c/b` in the ring of ``Q``,
+    or ``None`` when none of them applies.
+
+    The matrix is `\mathrm{diag}(1, \sqrt{b}, \sqrt{c})` when both roots
+    exist; otherwise it comes from the isotropic vector `(\sqrt{c}, 0, 1)`
+    or `(0, \sqrt{c/b}, 1)`, see :func:`_isotropic_matrix`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_plane_morphism import _square_root_matrix
+        sage: _square_root_matrix(diagonal_matrix(QQ, [1, 4, -9]))
+        [1 0 0]
+        [0 2 0]
+        [0 0 3]
+        sage: _square_root_matrix(diagonal_matrix(QQ, [1, 2, -4]))
+        [ 9/8    0 -7/4]
+        [   0    1    0]
+        [-7/8    0  9/4]
+        sage: _square_root_matrix(diagonal_matrix(QQ, [1, 2, -8]))
+        [    0  33/8 -31/4]
+        [   -1     0     0]
+        [    0 -31/8  33/4]
+        sage: _square_root_matrix(diagonal_matrix(QQ, [1, 2, -3])) is None
+        True
+
+    """
+    from sage.matrix.constructor import diagonal_matrix
+    from sage.modules.free_module_element import vector
+
+    from flatsurf.geometry.hyperbolic_isometry import _positive_sqrt
+
+    K = Q.base_ring()
+    b = Q[1, 1]
+    c = -Q[2, 2]
+
+    root_b = _positive_sqrt(b)
+    root_c = _positive_sqrt(c)
+    if root_b is not None and root_c is not None:
+        return diagonal_matrix(K, [1, root_b, root_c])
+
+    if root_c is not None:
+        return _isotropic_matrix(Q, vector(K, [root_c, 0, 1]))
+
+    root = _positive_sqrt(c / b)
+    if root is not None:
+        return _isotropic_matrix(Q, vector(K, [0, root, 1]))
+
+    return None
+
+
+def _is_number_field(K):
+    r"""
+    Return whether ``K`` is the rational field or a number field.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_plane_morphism import _is_number_field
+        sage: _is_number_field(QQ)
+        True
+        sage: _is_number_field(AA)
+        False
+
+    """
+    from sage.categories.number_fields import NumberFields
+
+    return K in NumberFields()
+
+
+def _isotropic_vector(Q, algorithm):
+    r"""
+    Return a nonzero isotropic vector of the diagonal form ``Q``
+    `= \mathrm{diag}(1, b, -c)` over its ring `K`, found by ``algorithm``, or
+    ``None`` when the form is anisotropic over `K`.
+
+    INPUT:
+
+    - ``Q`` -- a diagonal matrix over the rational field or a number field
+
+    - ``algorithm`` -- ``"conic"``, ``"qfsolve"`` or ``"norm_equation"``
+
+    The algorithms are:
+
+    - ``"qfsolve"`` -- PARI's ``qfsolve`` on ``Q``, over the rationals; it
+      returns a vector, or a prime at which the form is anisotropic
+
+    - ``"conic"`` -- a rational point `(x : y : z)` of the conic `x^2 + b y^2
+      - c z^2 = 0`, the vector `(x, y, z)`
+
+    - ``"norm_equation"`` -- an element `x + y j` of `K(j)`, `j^2 = -b`, of
+      relative norm `x^2 + b y^2 = c`, the vector `(x, y, 1)`
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_plane_morphism import _isotropic_vector
+        sage: Q = diagonal_matrix(QQ, [1, 2, -3])
+        sage: _isotropic_vector(Q, "qfsolve")
+        (1, 1, 1)
+        sage: _isotropic_vector(Q, "conic")
+        (1, 1, 1)
+        sage: _isotropic_vector(Q, "norm_equation")
+        (-1, 1, 1)
+        sage: _isotropic_vector(diagonal_matrix(QQ, [1, 1, -3]), "qfsolve") is None
+        True
+
+    """
+    from sage.modules.free_module_element import vector
+
+    K = Q.base_ring()
+    b = Q[1, 1]
+    c = -Q[2, 2]
+
+    if algorithm == "qfsolve":
+        from sage.quadratic_forms.qfsolve import qfsolve
+        from sage.structure.element import Vector
+
+        solution = qfsolve(Q)
+        if not isinstance(solution, Vector):
+            return None
+        return vector(K, solution)
+
+    if algorithm == "conic":
+        from sage.schemes.plane_conics.constructor import Conic
+
+        solvable, point = Conic(K, [1, b, -c]).has_rational_point(point=True)
+        if not solvable:
+            return None
+        return vector(K, list(point))
+
+    if algorithm == "norm_equation":
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        y = PolynomialRing(K, "y").gen()
+        solvable, element = c.is_norm(K.extension(y**2 + b, "j"), element=True)
+        if not solvable:
+            return None
+        x, y = element.list()
+        return vector(K, [x, y, 1])
+
+    raise NotImplementedError(f"unsupported algorithm {algorithm!r}")
+
+
+def _square_root_extension(K, c):
+    r"""
+    Return the field `K(\sqrt{c})` as an absolute number field embedded in the
+    real algebraic numbers compatibly with the number field ``K``, with a
+    coercion from ``K``.
+
+    The embedding makes the coercion from ``K`` exist: SageMath coerces
+    between two number fields embedded in the reals when the generator of
+    one is an element of the other.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_plane_morphism import _square_root_extension
+        sage: _square_root_extension(QQ, 3)
+        Number Field in s with defining polynomial x^2 - 3 with s = 1.732050807568878?
+        sage: L.<r> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+        sage: F = _square_root_extension(L, r + 1)
+        sage: F
+        Number Field in s with defining polynomial x^4 - 2*x^2 - 1 with s = 1.553773974030038?
+        sage: F(r)
+        s^2 - 1
+
+    """
+    from sage.all import AA, QQ
+    from sage.rings.number_field.number_field import NumberField
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    root = AA(c).sqrt()
+
+    if K is QQ:
+        x = PolynomialRing(QQ, "x").gen()
+        return NumberField(x**2 - QQ(c), "s", embedding=root)
+
+    from sage.rings.qqbar import number_field_elements_from_algebraics
+
+    F, _, _ = number_field_elements_from_algebraics(
+        [AA(K.gen()), root], minimal=True, embedded=True
+    )
+    return NumberField(
+        F.polynomial().change_variable_name("x"), "s", embedding=F.gen_embedding()
+    )
+
+
+def _standard_form_matrix(plane, ring, isotropic_vector, algorithm):
+    r"""
+    Return the ring `F` and the matrix of the isomorphism from
+    ``plane.change_ring(F)`` to the plane of `x^2 + y^2 - z^2` over `F`.
+
+    This is a helper for
+    :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.standard_form_isometry`,
+    which documents the arguments.
+
+    EXAMPLES::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic_plane_morphism import _standard_form_matrix
+        sage: _standard_form_matrix(HyperbolicPlane(QQ, form=[1, 4, -9]), None, None, None)
+        (
+                         [1 0 0]
+                         [0 2 0]
+        Rational Field,  [0 0 3]
+        )
+
+    """
+    from sage.all import QQ
+    from sage.matrix.constructor import identity_matrix
+    from sage.modules.free_module_element import vector
+
+    from flatsurf.geometry.hyperbolic_isometry import _not_defined_over
+    from flatsurf.geometry.hyperbolic_polygon import _form_repr
+
+    if algorithm not in _ALGORITHMS:
+        raise ValueError(
+            'algorithm must be None, "extension", "conic", "qfsolve" or "norm_equation"'
+        )
+
+    if isotropic_vector is not None and algorithm is not None:
+        raise ValueError("isotropic_vector and algorithm are exclusive")
+
+    K = plane.base_ring() if ring is None else ring
+    if not K.is_exact():
+        # The isomorphism is checked by exact comparisons of A^T J A with the
+        # form, which rounded square roots do not satisfy.
+        raise NotImplementedError(
+            f"the isomorphism to the standard form needs an exact ring, not {K}"
+        )
+    Q = plane.change_ring(K).quadratic_form()
+    b = Q[1, 1]
+    c = -Q[2, 2]
+
+    if isotropic_vector is not None:
+        isotropic_vector = vector(K, isotropic_vector)
+        if (
+            len(isotropic_vector) != 3
+            or not isotropic_vector
+            or isotropic_vector * Q * isotropic_vector != 0
+        ):
+            raise ValueError(
+                f"the vector {isotropic_vector} is not isotropic for {_form_repr(Q)}"
+            )
+
+    if plane._standard:
+        return K, identity_matrix(K, 3)
+
+    if algorithm in ("conic", "qfsolve", "norm_equation"):
+        if algorithm == "qfsolve" and K is not QQ:
+            raise ValueError(f'algorithm "qfsolve" needs the rational field, not {K}')
+        if not _is_number_field(K):
+            raise ValueError(
+                f'algorithm "{algorithm}" needs the rational field or a number field, not {K}'
+            )
+        n = _isotropic_vector(Q, algorithm)
+        if n is None:
+            raise _not_defined_over(K, c)
+        return K, _isotropic_matrix(Q, n)
+
+    A = _square_root_matrix(Q)
+    if A is not None:
+        return K, A
+
+    if algorithm == "extension":
+        if not _is_number_field(K):
+            raise _not_defined_over(K, c)
+        F = _square_root_extension(K, c)
+        return F, _square_root_matrix(plane.change_ring(F).quadratic_form())
+
+    if isotropic_vector is not None:
+        return K, _isotropic_matrix(Q, isotropic_vector)
+
+    if K is QQ:
+        n = _isotropic_vector(Q, "qfsolve")
+    elif _is_number_field(K):
+        from sage.all import AA
+
+        for place in K.embeddings(AA):
+            if place(b) > 0 and place(c) < 0:
+                raise _not_defined_over(K, c)
+
+        degree = K.absolute_degree()
+        if degree > 8:
+            raise ValueError(
+                f"the search for an isotropic vector of {_form_repr(Q)} has no time "
+                f"bound over a number field of degree {degree}; pass "
+                f'algorithm="norm_equation", "conic" or "extension", an '
+                f"isotropic_vector, or a ring with a square root of {c} or of {c / b}"
+            )
+        n = _isotropic_vector(Q, "norm_equation")
+    else:
+        n = None
+
+    if n is None:
+        raise _not_defined_over(K, c)
+    return K, _isotropic_matrix(Q, n)

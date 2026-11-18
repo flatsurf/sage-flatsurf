@@ -655,12 +655,22 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: the planes must have the same base ring but Rational Field is not Algebraic Real Field
 
+        The target is a hyperbolic plane::
+
+            sage: H3.isomorphism(QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: other must be a hyperbolic plane, not Rational Field
+
         """
         from sage.categories.homset import Hom
 
         from flatsurf.geometry.hyperbolic_plane_morphism import (
             HyperbolicPlaneIsomorphism,
         )
+
+        if not isinstance(other, HyperbolicPlane):
+            raise ValueError(f"other must be a hyperbolic plane, not {other}")
 
         if other.base_ring() is not self.base_ring():
             raise ValueError(
@@ -685,6 +695,281 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             matrix = diagonal_matrix(self.base_ring(), diagonal)
 
         return HyperbolicPlaneIsomorphism(Hom(self, other), matrix, check=check)
+
+    def standard_form_isometry(self, ring=None, isotropic_vector=None, algorithm=None):
+        r"""
+        Return an isomorphism from this plane to the plane of the form `x^2 +
+        y^2 - z^2`.
+
+        For the form `Q = \mathrm{diag}(1, b, -c)` of this plane, the matrix
+        `A` of the isomorphism satisfies `A^T J A = \lambda Q` with `J =
+        \mathrm{diag}(1, 1, -1)` and `\lambda > 0`. Such a matrix exists over
+        a field `K` if and only if `Q` has a nonzero isotropic vector over
+        `K`, which is the case when `c` is a square in `K`.
+
+        INPUT:
+
+        - ``ring`` -- an exact ring `K` or ``None`` (default: ``None``); the
+          ring of the isomorphism, by default the base ring; it must contain
+          the form
+
+        - ``isotropic_vector`` -- a vector of `K^3` or ``None`` (default:
+          ``None``); a nonzero vector `n` with `n^T Q n = 0`, used when the
+          square roots of `b` and `c`, or of `c/b`, are not in `K`
+
+        - ``algorithm`` -- ``None``, ``"extension"``, ``"conic"``,
+          ``"qfsolve"`` or ``"norm_equation"`` (default: ``None``); the way an
+          isotropic vector is found, see below
+
+        OUTPUT:
+
+        A
+        :class:`~flatsurf.geometry.hyperbolic_plane_morphism.HyperbolicPlaneIsomorphism`
+        from ``self.change_ring(K)`` to ``HyperbolicPlane(K)``; with
+        ``algorithm="extension"``, `K` is replaced by a quadratic extension
+        `F = K(\sqrt{c})` when `K` does not contain the roots used. On a plane
+        of the form `x^2 + y^2 - z^2`, the identity.
+
+        EXAMPLES:
+
+        When `b` and `c` are squares, the isomorphism rescales the axes::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ, form=[1, 4, -9])
+            sage: H.standard_form_isometry()
+            Hyperbolic plane morphism:
+              From: Hyperbolic Plane over Rational Field with form x^2 + 4*y^2 - 9*z^2
+              To:   Hyperbolic Plane over Rational Field
+              Defn: [1 0 0]
+                    [0 2 0]
+                    [0 0 3]
+
+        Over `\QQ(\sqrt{3})`, the form `x^2 + 2y^2 - 3z^2` has the isotropic
+        vector `(\sqrt{3}, 0, 1)`::
+
+            sage: K.<a> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+            sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+            sage: f = H3.standard_form_isometry(K)
+            sage: f.matrix()
+            [ 7/12*a       0    -5/4]
+            [      0       1       0]
+            [-5/12*a       0     7/4]
+            sage: P = H3.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: Q = f(P)
+            sage: [v.coordinates(model="klein") for v in Q.vertices()]
+            [(-5/7, 0), (48/563*a - 385/563, 0), (-5/7, 2/7)]
+            sage: (~f)(Q) == P.change_ring(K)
+            True
+
+        Over the rationals, PARI finds the isotropic vector `(1, 1, 1)`::
+
+            sage: f = H3.standard_form_isometry()
+            sage: f.matrix()
+            [  7/4   5/2 -15/4]
+            [    0     3    -3]
+            [ -5/4  -7/2  21/4]
+            sage: f(P)
+            Hyperbolic polygon with vertices [(-5/7, -4/7), (-23/37, -24/37), (-5/7, -3/7)]
+
+        The form `x^2 + y^2 - 3z^2` has no isotropic vector over the
+        rationals; ``algorithm="extension"`` adjoins `\sqrt{3}`::
+
+            sage: H = HyperbolicPlane(QQ, form=[1, 1, -3])
+            sage: H.standard_form_isometry()
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry is not defined over Rational Field; adjoin a square root of 3
+            sage: f = H.standard_form_isometry(algorithm="extension")
+            sage: f
+            Hyperbolic plane morphism:
+              From: Hyperbolic Plane over Number Field in s with defining polynomial x^2 - 3 with s = 1.732050807568878? with form x^2 + y^2 - 3*z^2
+              To:   Hyperbolic Plane over Number Field in s with defining polynomial x^2 - 3 with s = 1.732050807568878?
+              Defn: [1 0 0]
+                    [0 1 0]
+                    [0 0 s]
+            sage: f(H.point(1/2, 1/2, model="klein"))
+            (1/6*s, 1/6*s)
+
+        An isotropic vector can be given::
+
+            sage: H3.standard_form_isometry(isotropic_vector=(1, 1, 1)) == H3.standard_form_isometry()
+            True
+            sage: H3.standard_form_isometry(isotropic_vector=(-1, 1, 1)).matrix()
+            [ -7/4   5/2 -15/4]
+            [    0    -3     3]
+            [  5/4  -7/2  21/4]
+
+        TESTS:
+
+        A number field with a real place where `x^2 + b y^2 - c z^2` is
+        definite has no isotropic vector::
+
+            sage: L.<r> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+            sage: HyperbolicPlane(L, form=[1, 1, -(r - 1)]).standard_form_isometry()
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry is not defined over Number Field in r with defining polynomial x^2 - 2 with r = 1.414213562373095?; adjoin a square root of r - 1
+
+        The norm equation and the conic over `\QQ(\sqrt{2})`; the solution
+        of the norm equation depends on the version of PARI::
+
+            sage: H = HyperbolicPlane(L, form=[1, 1, -3])
+            sage: f = H.standard_form_isometry()
+            sage: f.matrix()  # random
+            [-13/8*r   -11/8   -33/8]
+            [      0    -3/2    -3/2]
+            [ 11/8*r    13/8    39/8]
+            sage: f.codomain() is HyperbolicPlane(L)
+            True
+            sage: H.standard_form_isometry(algorithm="norm_equation") == f
+            True
+            sage: H.standard_form_isometry(algorithm="conic").codomain() is HyperbolicPlane(L)
+            True
+            sage: HyperbolicPlane(L, form=[1, 1, -(r - 1)]).standard_form_isometry(algorithm="norm_equation")
+            Traceback (most recent call last):
+            ...
+            ValueError: isometry is not defined over Number Field in r with defining polynomial x^2 - 2 with r = 1.414213562373095?; adjoin a square root of r - 1
+
+        The extension contains the base ring::
+
+            sage: f = HyperbolicPlane(L, form=[1, 1, -(r + 1)]).standard_form_isometry(algorithm="extension")
+            sage: F = f.domain().base_ring()
+            sage: F
+            Number Field in s with defining polynomial x^4 - 2*x^2 - 1 with s = 1.553773974030038?
+            sage: F.has_coerce_map_from(L)
+            True
+            sage: F(r)
+            s^2 - 1
+            sage: f.matrix()
+            [1 0 0]
+            [0 1 0]
+            [0 0 s]
+
+        Over a number field of large degree, the search for an isotropic
+        vector is not run by default::
+
+            sage: N.<a> = NumberField(x^9 - 2, embedding=AA(2).nth_root(9))
+            sage: H = HyperbolicPlane(N, form=[1, 1, -(1 + a^2)])
+            sage: H
+            Hyperbolic Plane over Number Field in a with defining polynomial x^9 - 2 with a = 1.080059738892307? with form x^2 + y^2 - (a^2 + 1)*z^2
+            sage: H.standard_form_isometry()
+            Traceback (most recent call last):
+            ...
+            ValueError: the search for an isotropic vector of x^2 + y^2 - (a^2 + 1)*z^2 has no time bound over a number field of degree 9; pass algorithm=..., or a ring with a square root of a^2 + 1 or of a^2 + 1
+
+        Errors in the arguments::
+
+            sage: H3.standard_form_isometry(ring=AA, algorithm="qfsolve")
+            Traceback (most recent call last):
+            ...
+            ValueError: algorithm "qfsolve" needs the rational field, not Algebraic Real Field
+            sage: H3.standard_form_isometry(ring=AA, algorithm="conic")
+            Traceback (most recent call last):
+            ...
+            ValueError: algorithm "conic" needs the rational field or a number field, not Algebraic Real Field
+            sage: H3.standard_form_isometry(algorithm="pari")
+            Traceback (most recent call last):
+            ...
+            ValueError: algorithm must be None, "extension", "conic", "qfsolve" or "norm_equation"
+            sage: H3.standard_form_isometry(isotropic_vector=(1, 0, 1))
+            Traceback (most recent call last):
+            ...
+            ValueError: the vector (1, 0, 1) is not isotropic for x^2 + 2*y^2 - 3*z^2
+            sage: H3.standard_form_isometry(isotropic_vector=(0, 0, 0))
+            Traceback (most recent call last):
+            ...
+            ValueError: the vector (0, 0, 0) is not isotropic for x^2 + 2*y^2 - 3*z^2
+            sage: H3.standard_form_isometry(isotropic_vector=(1, 1, 1), algorithm="qfsolve")
+            Traceback (most recent call last):
+            ...
+            ValueError: isotropic_vector and algorithm are exclusive
+            sage: H3.standard_form_isometry(RR)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: the isomorphism to the standard form needs an exact ring, not Real Field with 53 bits of precision
+
+        The named algorithms over the rationals::
+
+            sage: H3.standard_form_isometry(algorithm="qfsolve") == H3.standard_form_isometry()
+            True
+            sage: H3.standard_form_isometry(algorithm="conic") == H3.standard_form_isometry()
+            True
+            sage: H3.standard_form_isometry(algorithm="norm_equation").matrix()
+            [ -7/4   5/2 -15/4]
+            [    0    -3     3]
+            [  5/4  -7/2  21/4]
+
+        On the plane of `x^2 + y^2 - z^2`, the identity::
+
+            sage: HyperbolicPlane(QQ).standard_form_isometry().is_identity()
+            True
+            sage: HyperbolicPlane(QQ).standard_form_isometry(AA).codomain()
+            Hyperbolic Plane over Algebraic Real Field
+
+        Over the real algebraic numbers, the square roots always exist::
+
+            sage: H3.standard_form_isometry(AA).matrix()
+            [                 1                  0                  0]
+            [                 0 1.414213562373095?                  0]
+            [                 0                  0 1.732050807568878?]
+
+        ALGORITHM:
+
+        With ``algorithm=None``, the first of the following that applies:
+
+        1. the matrix `\mathrm{diag}(1, \sqrt{b}, \sqrt{c})`, when both roots
+           are in `K`;
+
+        2. the isotropic vector `(\sqrt{c}, 0, 1)`, then `(0, \sqrt{c/b},
+           1)`, when the root is in `K`;
+
+        3. ``isotropic_vector``, when given;
+
+        4. over `\QQ`, PARI's ``qfsolve``, which also decides that the form
+           is anisotropic;
+
+        5. over a number field, the form is anisotropic when it is definite
+           at a real place, that is `b > 0` and `c < 0` there;
+
+        6. over a number field of absolute degree at most `8`, an element of
+           relative norm `c` in `K(\sqrt{-b})`, see ``"norm_equation"``;
+
+        7. over a number field of larger degree, an error;
+
+        8. over any other ring, the square roots of steps 1 and 2 or an
+           error.
+
+        The ring of the result is always `K`, and the answer comes without a
+        search of unbounded time: PARI's norm equation is fast up to degree
+        `8` but may exhaust its stack beyond.
+
+        A named ``algorithm`` runs alone, without the square roots first:
+
+        - ``"extension"`` -- the steps 1 and 2 over `K` if they apply,
+          otherwise over the absolute number field `F = K(\sqrt{c})`, embedded
+          in the real algebraic numbers compatibly with `K`; over `\QQ` or a
+          number field
+
+        - ``"conic"`` -- a rational point of the conic `x^2 + b y^2 - c z^2
+          = 0`, found by SageMath's ``has_rational_point()``, over `\QQ` or a
+          number field
+
+        - ``"qfsolve"`` -- PARI's ``qfsolve``, over `\QQ`
+
+        - ``"norm_equation"`` -- an element `x + y j` of `K(j)`, `j^2 = -b`,
+          of relative norm `c`, giving the isotropic vector `(x, y, 1)`, over
+          `\QQ` or a number field
+
+        From an isotropic vector `n`, the matrix is the inverse of a matrix
+        whose columns `n + \beta m, e, n - \beta m` are orthogonal for `Q`, of
+        squares `d, d, -d`, with `m` a second isotropic vector and `e`
+        orthogonal to `n` and `m`.
+
+        """
+        from flatsurf.geometry.hyperbolic_plane_morphism import _standard_form_matrix
+
+        ring, matrix = _standard_form_matrix(self, ring, isotropic_vector, algorithm)
+        return self.change_ring(ring).isomorphism(HyperbolicPlane(ring), matrix=matrix)
 
     def _plot_point(self, point):
         r"""

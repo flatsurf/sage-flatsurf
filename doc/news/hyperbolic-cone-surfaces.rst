@@ -30,6 +30,10 @@
 * Added a quadratic form ``form=`` to ``HyperbolicPlane``, whose Klein model
   is the ellipse ``x^2 + b y^2 < c``; a plane with another form than
   ``x^2 + y^2 - z^2`` works in Klein coordinates only.
+* Added ``HyperbolicPlane.isomorphism()`` between planes of different forms,
+  which carries points, polygons, isometries and surfaces, and
+  ``standard_form_isometry()`` to the plane of ``x^2 + y^2 - z^2``, through
+  which ``psl2_matrix()`` works with any form.
 * Exported ``SurfaceSignature`` and ``MutableOrientedHyperbolicSurface``
   from ``flatsurf``.
 

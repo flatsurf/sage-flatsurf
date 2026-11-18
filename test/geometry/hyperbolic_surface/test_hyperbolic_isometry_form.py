@@ -159,7 +159,7 @@ def test_action(G3, H3, B):
 
 
 def test_lift_to_sl2_refused(G3, B):
-    with pytest.raises(ValueError, match=HALF_PLANE):
+    with pytest.raises(ValueError, match=re.escape("adjoin a square root of 1/24")):
         G3(B).psl2_matrix()
     # The lift to the even Clifford algebra exists for any form.
     x, s = G3(B)._half_lift()

@@ -1444,6 +1444,12 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
         :meth:`~flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry`
         with ``model="half_plane"``.
 
+        When the form of the plane is not `x^2 + y^2 - z^2`, the isometry is
+        first conjugated by the isomorphism
+        :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.standard_form_isometry`
+        with ``ring``, and `A` is the matrix of its image. It depends on that
+        isomorphism: `A` acts on the upper half plane of its codomain.
+
         ALGORITHM:
 
         The matrix of this isometry is quadratic in the entries `a, b, c, d`
@@ -1518,18 +1524,37 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             ...
             ValueError: isometry is not defined over Rational Field
 
-        The upper half plane model needs the form `x^2 + y^2 - z^2`::
+        Another form goes through the conversion to the form `x^2 + y^2 -
+        z^2`::
 
-            sage: HyperbolicIsometryGroup(QQ, form=[1, 2, -3]).one().psl2_matrix()
+            sage: G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
+            sage: G3.one().psl2_matrix()
+            [1 0]
+            [0 1]
+
+        The rotation of the kite of `x^2 + 2y^2 - 3z^2` that maps its edge 0
+        to its edge 3 needs `\sqrt{3}` after the conversion over the
+        rationals; over `\QQ(\sqrt{3})`, the conversion is another one::
+
+            sage: g = G3([[-1/3, -4/3, 0], [2/3, -1/3, 0], [0, 0, 1]])
+            sage: g.psl2_matrix()
             Traceback (most recent call last):
             ...
-            ValueError: the half-plane model needs the form x^2 + y^2 - z^2; see standard_form_isometry()
+            ValueError: isometry is not defined over Rational Field; adjoin a square root of 49/12
+            sage: K.<a> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+            sage: A = g.psl2_matrix(K)
+            sage: A
+            [1/3*a + 5/6         7/6]
+            [       -7/6 1/3*a - 5/6]
+            sage: A.trace()^2 - 1 == g.trace()
+            True
 
         """
         from sage.matrix.constructor import matrix
 
         if self.parent()._form is not None:
-            self.parent().hyperbolic_plane()._require_standard_form()
+            f = self.parent().hyperbolic_plane().standard_form_isometry(ring)
+            return f(self).psl2_matrix(ring)
 
         K = self.parent().base_ring()
         if ring is None:
