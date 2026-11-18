@@ -31,7 +31,7 @@ import pytest
 
 from sage.all import AA, QQ, RDF, RR, NumberField, polygen
 
-from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
+from flatsurf import HyperbolicPlane, hyperbolic_polygons, hyperbolic_surfaces
 from flatsurf.geometry.signature import SurfaceSignature
 
 y = polygen(QQ, "y")
@@ -39,35 +39,33 @@ y = polygen(QQ, "y")
 T = QQ(21) / 4
 
 
+# The base ring is the field Q(u_0, u_1, u_2, p) of the slots, u_k = t_k + 1
+# for a cuff of trace t_k and 4 cos^2 of the angle of a cone point.
 @pytest.mark.parametrize(
-    "boundary_traces,cone_orders,optimize_placement,polynomial,area",
+    "boundary_traces,cone_orders,polynomial,area",
     [
-        ((T, T, T), (), True, None, 1),
-        ((T, T), (-QQ(2) / 3,), True, None, QQ(2) / 3),
-        ((T, T), (-QQ(1) / 2,), True, None, QQ(1) / 2),
-        ((T,), (-QQ(2) / 3, -QQ(2) / 3), True, None, QQ(1) / 3),
-        ((T,), (-QQ(2) / 3, -QQ(1) / 2), True, None, QQ(1) / 6),
-        ((T,), (-QQ(1) / 2, -QQ(2) / 3), True, None, QQ(1) / 6),
-        ((T, T, T), (), False, y**2 - 6, 1),
-        ((T, T), (-QQ(2) / 3,), False, y**2 - 7, QQ(2) / 3),
-        ((T, T), (-QQ(1) / 2,), False, y**2 - 34, QQ(1) / 2),
-        ((T,), (-QQ(2) / 3, -QQ(2) / 3), False, y**2 - 3, QQ(1) / 3),
-        ((T,), (-QQ(2) / 3, -QQ(1) / 2), False, y**2 - y - 3, QQ(1) / 6),
-        ((T, T, QQ(20881) / 144), (), True, None, 1),
-        ((T, T, QQ(20881) / 144), (), False, None, 1),
-        ((4, 4, 4), (), True, y**4 - 2 * y**2 - 4, 1),
-        ((T, T), (-QQ(1) / 4,), True, y**4 - 56 * y**2 - 72 * y + 414, QQ(1) / 4),
-        ((), (-QQ(1) / 2, -QQ(3) / 4, -QQ(7) / 8), True, y**2 - 2, QQ(1) / 8),
-        ((), (-QQ(1) / 2, -QQ(3) / 4, -QQ(7) / 8), False, y**2 - 2, QQ(1) / 8),
+        ((T, T, T), (), None, 1),
+        ((T, T), (-QQ(2) / 3,), None, QQ(2) / 3),
+        ((T, T), (-QQ(1) / 2,), None, QQ(1) / 2),
+        ((T,), (-QQ(2) / 3, -QQ(2) / 3), None, QQ(1) / 3),
+        ((T,), (-QQ(2) / 3, -QQ(1) / 2), None, QQ(1) / 6),
+        ((T,), (-QQ(1) / 2, -QQ(2) / 3), None, QQ(1) / 6),
+        ((T, T, QQ(20881) / 144), (), None, 1),
+        ((4, 4, 4), (), y**2 - y - 1, 1),
+        ((5, 5, 5), (), y**2 - 6, 1),
+        ((4, 5, T), (), y**2 - 30, 1),
+        ((T, 4, 5), (), y**2 - 30, 1),
+        ((8, 8, 8), (), None, 1),
+        ((15, 15, 15), (), None, 1),
+        ((4, 5), (-QQ(2) / 3,), y**2 - 30, QQ(2) / 3),
+        ((4,), (-QQ(2) / 3, -QQ(4) / 5), y**2 - y - 1, QQ(7) / 15),
+        ((T, T), (-QQ(1) / 4,), y**2 - 2, QQ(1) / 4),
+        ((), (-QQ(1) / 2, -QQ(3) / 4, -QQ(7) / 8), y**2 - 2, QQ(1) / 8),
     ],
 )
-def test_signature_round_trip(
-    boundary_traces, cone_orders, optimize_placement, polynomial, area
-):
+def test_signature_round_trip(boundary_traces, cone_orders, polynomial, area):
     S = hyperbolic_surfaces.pants(
-        boundary_traces=boundary_traces,
-        cone_orders=cone_orders,
-        optimize_placement=optimize_placement,
+        boundary_traces=boundary_traces, cone_orders=cone_orders
     )
     assert not S.is_mutable()
     assert list(S.labels()) == [0, 1]
@@ -79,6 +77,37 @@ def test_signature_round_trip(
         0, cone_orders=cone_orders, boundary_traces=boundary_traces
     )
     assert S.area() == area
+    field = S.holonomy_representation().invariant_trace_field()
+    assert field is S.base_ring() or field.is_isomorphic(S.base_ring())
+
+
+# The plane of x^2 + y^2 - z^2: over the base ring when c or c/b is a square
+# (21/4 three times, and two cuffs with a cone point of angle pi) or when the
+# line of a half-cuff has its ends over it (the cuff of trace 21/4 in the
+# first slot), otherwise over a quadratic extension of degree twice its
+# degree.
+@pytest.mark.parametrize(
+    "boundary_traces,cone_orders,degree",
+    [
+        ((T, T, T), (), 1),
+        ((T, T), (-QQ(1) / 2,), 1),
+        ((4, 5, T), (), 2),
+        ((T, 4, 5), (), 2),
+        ((4,), (-QQ(2) / 3, -QQ(4) / 5), 2),
+        ((5, 5, 5), (), 4),
+        ((4, 5), (-QQ(2) / 3,), 4),
+        ((15, 15, 15), (), 2),
+    ],
+)
+def test_standard(boundary_traces, cone_orders, degree):
+    S = hyperbolic_surfaces.pants(
+        boundary_traces=boundary_traces, cone_orders=cone_orders, standard=True
+    )
+    assert S.hyperbolic_plane() is HyperbolicPlane(S.base_ring())
+    assert (1 if S.base_ring() is QQ else S.base_ring().degree()) == degree
+    assert S.signature() == SurfaceSignature(
+        0, cone_orders=cone_orders, boundary_traces=boundary_traces
+    )
 
 
 def test_triangle():
@@ -100,16 +129,20 @@ def klein_vertices(S, label):
     return [v.coordinates(model="klein") for v in S.polygon(label).vertices()]
 
 
-def test_moved_hexagon():
+def test_seam_plane_hexagon():
     S = hyperbolic_surfaces.pants(boundary_traces=(T, T, T))
+    assert S.hyperbolic_plane() is HyperbolicPlane(QQ, form=[1, 6, -6])
     assert klein_vertices(S, 0) == [
-        (-QQ(1) / 5, 0),
-        (-QQ(1) / 5, -QQ(24) / 25),
-        (-QQ(5) / 61, -QQ(60) / 61),
-        (QQ(23) / 65, -QQ(12) / 13),
-        (QQ(5) / 11, -QQ(48) / 55),
-        (QQ(5) / 11, 0),
+        (0, 0),
+        (QQ(12) / 5, 0),
+        (QQ(12) / 5, QQ(3) / 25),
+        (QQ(60) / 29, QQ(15) / 29),
+        (QQ(48) / 25, QQ(3) / 5),
+        (0, QQ(3) / 5),
     ]
+    assert S.polygon(0).angles() == (QQ(1) / 4,) * 6
+    # cosh^2 of the half-cuffs: (t + 1) / 4 = 25/16
+    assert S.polygon(0)._cosh2_sides()[1::2] == (QQ(25) / 16,) * 3
     assert S.boundary_components() == [
         ((0, 1), (1, 5)),
         ((0, 3), (1, 3)),
@@ -119,12 +152,12 @@ def test_moved_hexagon():
     assert S.edge_transformation(0, 0).is_one()
 
 
-def test_moved_quadrilateral():
+def test_seam_plane_quadrilateral():
     S = hyperbolic_surfaces.pants(
         boundary_traces=(T,), cone_orders=(-QQ(1) / 2, -QQ(2) / 3)
     )
-    assert klein_vertices(S, 0)[0] == (-QQ(6) / 7, 0)
-    assert klein_vertices(S, 0)[2:] == [(-QQ(9) / 17, -QQ(10) / 17), (-QQ(9) / 17, 0)]
+    assert S.hyperbolic_plane() is HyperbolicPlane(QQ, form=[1, 13, -13])
+    assert klein_vertices(S, 0) == [(0, 0), (2, 0), (2, QQ(3) / 5), (0, QQ(3) / 5)]
     assert S.polygon(0).angles() == (QQ(1) / 4, QQ(1) / 4, QQ(1) / 6, QQ(1) / 4)
 
 
@@ -133,14 +166,12 @@ def test_ring():
         hyperbolic_surfaces.pants(boundary_traces=(T, T, T), base_ring=QQ).base_ring()
         is QQ
     )
-    assert (
-        hyperbolic_surfaces.pants(boundary_traces=(T, T, T), base_ring=AA).base_ring()
-        is AA
-    )
+    S = hyperbolic_surfaces.pants(boundary_traces=(T, T, T), base_ring=AA)
+    assert S.hyperbolic_plane() is HyperbolicPlane(AA, form=[1, 6, -6])
+    S = hyperbolic_surfaces.pants(boundary_traces=(5, 5, 5), base_ring=AA, standard=True)
+    assert S.hyperbolic_plane() is HyperbolicPlane(AA)
     with pytest.raises(ValueError, match="do not lie in Rational Field"):
-        hyperbolic_surfaces.pants(
-            boundary_traces=(T, T, T), base_ring=QQ, optimize_placement=False
-        )
+        hyperbolic_surfaces.pants(boundary_traces=(5, 5, 5), base_ring=QQ)
 
 
 @pytest.mark.parametrize(

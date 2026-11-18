@@ -60,11 +60,13 @@ from hyperbolic_surface_oracles import (
 
 y = polygen(QQ, "y")
 
-# Rows: name, constructor, arguments, defining polynomial of the field of the
-# coordinates (None for QQ, an integer when only the degree is known), angles,
-# area, computed with sage-flatsurf from the formulas cited in the module
-# docstring (Katok, Thm 1.5.2; Buser, Chapter 2, Theorems 2.3.1 and 2.4.1,
-# Example 2.2.7).
+# Rows: name, constructor, arguments, defining polynomial of the base field
+# (None for QQ, an integer when only the degree is known), angles, area,
+# computed with sage-flatsurf from the formulas cited in the module docstring
+# (Katok, Thm 1.5.2; Buser, Chapter 2, Theorems 2.3.1 and 2.4.1, Example
+# 2.2.7). The base field is the one of the coordinates for the regular
+# polygon, and the field Q(u_0, u_1, u_2, p) of the plane of its own form
+# for the others.
 PRIMITIVES = [
     (
         "rational hexagon",
@@ -78,7 +80,7 @@ PRIMITIVES = [
         "equilateral hexagon",
         "right_angled_hexagon",
         (QQ(5) / 4, QQ(5) / 4, QQ(5) / 4),
-        y**2 - 6,
+        None,
         (QQ(1) / 4,) * 6,
         QQ(1) / 2,
     ),
@@ -102,7 +104,7 @@ PRIMITIVES = [
         "pentagon of angle 1/14",
         "right_angled_pentagon",
         (QQ(1) / 14, QQ(5) / 4, QQ(5) / 4),
-        6,
+        3,
         (QQ(1) / 4, QQ(1) / 14, QQ(1) / 4, QQ(1) / 4, QQ(1) / 4),
         QQ(3) / 7,
     ),
@@ -110,7 +112,7 @@ PRIMITIVES = [
         "pentagon of angle 3/8",
         "right_angled_pentagon",
         (QQ(3) / 8, QQ(5) / 4, QQ(5) / 4),
-        y**4 - 56 * y**2 - 72 * y + 414,
+        y**2 - 2,
         (QQ(1) / 4, QQ(3) / 8, QQ(1) / 4, QQ(1) / 4, QQ(1) / 4),
         QQ(1) / 8,
     ),
@@ -118,7 +120,7 @@ PRIMITIVES = [
         "quadrilateral (1/4, 1/8)",
         "right_angled_quadrilateral",
         (QQ(1) / 4, QQ(1) / 8, QQ(5) / 4),
-        y**2 - 34,
+        None,
         (QQ(1) / 4, QQ(1) / 4, QQ(1) / 8, QQ(1) / 4),
         QQ(1) / 8,
     ),
@@ -126,7 +128,7 @@ PRIMITIVES = [
         "quadrilateral (1/6, 1/6)",
         "right_angled_quadrilateral",
         (QQ(1) / 6, QQ(1) / 6, QQ(5) / 4),
-        y**2 - 3,
+        None,
         (QQ(1) / 4, QQ(1) / 6, QQ(1) / 6, QQ(1) / 4),
         QQ(1) / 6,
     ),
@@ -173,6 +175,8 @@ def test_equilateral_hexagon_seams():
     P = hyperbolic_polygons.right_angled_hexagon(QQ(5) / 4, QQ(5) / 4, QQ(5) / 4)
     assert [P.edge_cosh_squared(i) for i in range(6)] == [25, QQ(25) / 16] * 3
     assert P._cosh2_sides() == (25, QQ(25) / 16) * 3
+    # u_k = 25/4 and p = 125/8 are rational: the plane of its form is over QQ.
+    assert P.parent() is HyperbolicPlane(QQ, form=[1, 6, -6])
 
 
 def test_octagon_side_of_oracle():
@@ -191,9 +195,9 @@ def test_octagon_side_of_oracle():
 NO_FORM = (None, None)
 TRIANGLES = [
     ((QQ(1) / 4, QQ(1) / 14, QQ(1) / 6), y**3 - 7 * y - 7, NO_FORM, QQ(1) / 84, 6),
-    ((QQ(1) / 6, QQ(1) / 8, QQ(1) / 8), y, (QQ(4) / 3, QQ(2) / 3), QQ(1) / 12, 2),
+    ((QQ(1) / 6, QQ(1) / 8, QQ(1) / 8), y, (3, 6), QQ(1) / 12, 2),
     ((QQ(1) / 6, QQ(1) / 6, QQ(1) / 8), y**2 - 2, (QQ(4) / 3, None), QQ(1) / 24, None),
-    ((QQ(1) / 4, QQ(1) / 12, QQ(1) / 8), y, (QQ(3) / 2, QQ(2)), QQ(1) / 24, 2),
+    ((QQ(1) / 4, QQ(1) / 12, QQ(1) / 8), y, (6, 2), QQ(1) / 24, 2),
     ((QQ(1) / 4, QQ(1) / 10, QQ(1) / 8), y**2 - y - 1, NO_FORM, QQ(1) / 40, 4),
     ((QQ(1) / 16, QQ(1) / 8, QQ(1) / 4), y**2 - 2, (QQ(2), None), QQ(1) / 16, None),
     ((QQ(1) / 6, QQ(1) / 14, QQ(1) / 10), 6, (QQ(4) / 3, None), QQ(17) / 105, 12),
@@ -241,11 +245,11 @@ def test_triangle_vertices():
     assert [
         v.coordinates(model="klein")
         for v in hyperbolic_polygons.triangle(QQ(1) / 6, QQ(1) / 8, QQ(1) / 8).vertices()
-    ] == [(0, 0), (QQ(2) / 3, 0), (QQ(1) / 3, QQ(1) / 2)]
+    ] == [(0, 0), (2, 0), (1, 1)]
     assert [
         v.coordinates(model="klein")
         for v in hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 12, QQ(1) / 8).vertices()
-    ] == [(0, 0), (1, 0), (0, QQ(2) / 3)]
+    ] == [(0, 0), (1, 0), (0, QQ(1) / 3)]
 
 
 @pytest.mark.parametrize(
@@ -278,13 +282,13 @@ def test_ring():
 
 def test_ring_conversion():
     # The triangle (1/4, 1/12, 1/12) is over QQ by default, in the plane of
-    # x^2 + y^2 - 2/3 z^2; vertex 1 is (2/3, 0), computed with sage-flatsurf.
+    # x^2 + y^2 - 6 z^2; vertex 1 is (2, 0), computed with sage-flatsurf.
     x = polygen(QQ)
     K = NumberField(x**2 - 6, "a", embedding=AA(6).sqrt())
     T = hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 12, QQ(1) / 12, base_ring=K)
     assert T.base_ring() is K
-    assert T.parent() is HyperbolicPlane(K, form=[1, 1, -QQ(2) / 3])
-    assert T.vertices()[1].coordinates(model="klein") == (QQ(2) / 3, 0)
+    assert T.parent() is HyperbolicPlane(K, form=[1, 1, -6])
+    assert T.vertices()[1].coordinates(model="klein") == (2, 0)
     assert T.angles() == (QQ(1) / 4, QQ(1) / 12, QQ(1) / 12)
 
     # The field of x^4 - 2x^2 - 1 contains sqrt(2) = s^2 - 1, without a

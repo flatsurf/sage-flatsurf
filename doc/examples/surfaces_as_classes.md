@@ -286,7 +286,7 @@ class TreeOfPants(OrientedHyperbolicSurface):
             for side_edge in component
         }
         super().__init__(
-            self._pants.base_ring(),
+            self._pants.hyperbolic_plane(),
             category=HyperbolicConeSurfaces()
             .Oriented()
             .InfiniteType()
@@ -361,15 +361,15 @@ S = TreeOfPants()
 S
 ```
 
-The category states what we told the class, and the base ring is that of the
-pants:
+The category states what we told the class, and the hyperbolic plane is that
+of the pants, the plane of a quadratic form of its own over its base ring:
 
 ```{code-cell}
 S.category()
 ```
 
 ```{code-cell}
-S.base_ring()
+S.hyperbolic_plane()
 ```
 
 The surface has infinitely many labels, which are enumerated starting from the

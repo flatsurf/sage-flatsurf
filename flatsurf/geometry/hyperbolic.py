@@ -2949,26 +2949,26 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ValueError: the coordinates of the polygon do not lie in Rational Field
             sage: from flatsurf import hyperbolic_polygons
             sage: hyperbolic_polygons.triangle(1/4, 1/12, 1/8).parent()
-            Hyperbolic Plane over Rational Field with form x^2 + 3/2*y^2 - 2*z^2
+            Hyperbolic Plane over Rational Field with form x^2 + 6*y^2 - 2*z^2
             sage: K.<a> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
-            sage: HK = HyperbolicPlane(K, form=[1, 3/2, -2])
+            sage: HK = HyperbolicPlane(K, form=[1, 6, -2])
             sage: HK.polygon(angles=[1/4, 1/12, 1/8]).parent() is HK
             True
             sage: T = HyperbolicPlane(K).polygon(angles=[1/4, 1/12, 1/8])
             sage: T
-            Hyperbolic polygon with vertices [(-13/19, 0), (192/553*a - 247/553, 0), -13/11 + 8/11*a*I]
+            Hyperbolic polygon with vertices [(-1/7, 0), (48/97*a - 7/97, 0), -1/3 + 4/3*a*I]
             sage: T.parent()
             Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095?
             sage: T.angles()
             (1/4, 1/12, 1/8)
 
         The triangle of the triangle group `(3, 4, 4)` lies in the plane of
-        the form `x^2 + 4/3 y^2 - 2/3 z^2` over `\QQ`, which has no
+        the form `x^2 + 3 y^2 - 6 z^2` over `\QQ`, which has no
         isotropic vector over `\QQ`; the error of
         :meth:`standard_form_isometry` names a field that has one::
 
-            sage: HyperbolicPlane(QQ, form=[1, 4/3, -2/3]).polygon(angles=[1/6, 1/8, 1/8]).vertices()
-            ((0, 0), (2/3, 0), (1/3, 1/2))
+            sage: HyperbolicPlane(QQ, form=[1, 3, -6]).polygon(angles=[1/6, 1/8, 1/8]).vertices()
+            ((0, 0), (2, 0), (1, 1))
             sage: H.polygon(angles=[1/6, 1/8, 1/8])
             Traceback (most recent call last):
             ...

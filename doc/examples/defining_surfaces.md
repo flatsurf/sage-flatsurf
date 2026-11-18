@@ -115,7 +115,7 @@ F
 A hyperbolic triangle with angles $\pi/3, \pi/4, \pi/4$ gives a hyperbolic
 sphere. The hyperbolic triangle is built the same way, from its angles, which
 are multiples of $2\pi$; it lies in the hyperbolic plane of its invariant
-quadratic form, here $x^2 + \frac{4}{3} y^2 - \frac{2}{3} z^2$ over $\mathbb{Q}$:
+quadratic form, here $x^2 + 3 y^2 - 6 z^2$ over $\mathbb{Q}$:
 
 ```{code-cell}
 from sage.all import QQ

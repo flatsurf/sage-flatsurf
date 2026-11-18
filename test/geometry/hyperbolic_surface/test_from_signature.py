@@ -33,7 +33,7 @@ import pytest
 
 from sage.all import AA, QQ, RR, NumberField, polygen
 
-from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
+from flatsurf import HyperbolicPlane, hyperbolic_polygons, hyperbolic_surfaces
 from flatsurf.geometry.signature import SurfaceSignature
 
 from hyperbolic_surface_oracles import COMPACT_SIGNATURES
@@ -140,6 +140,39 @@ def test_compact_signatures(g, periods, area):
     assert S.area() == area / 2
 
 
+# Genus 2 from the pants (l, l, c) and (c, l', l'), the second developed
+# across the cuff c, the edge 5 of the polygon (0, 0) and the edge 1 of the
+# polygon (1, 0), into the seam plane of the first: the two front polygons
+# share the two ends of that edge, glued by the identity, and the base ring
+# is the invariant trace field.
+@pytest.mark.parametrize(
+    "cuff_traces,polynomial",
+    [
+        ((T, T, T), None),
+        ((4, 4, 4), y**2 - y - 1),
+        ((4, 5, T), y**4 - 552 * y**2 - 1200 * y + 54696),
+    ],
+)
+def test_developed_genus_2(cuff_traces, polynomial):
+    S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), cuff_traces=cuff_traces)
+    check(S, SurfaceSignature(2), 2, polynomial, 4)
+    front, developed = S.polygon((0, 0)), S.polygon((1, 0))
+    assert len([v for v in developed.vertices() if v in front.vertices()]) == 2
+    assert S.edge_transformation((0, 0), 5).matrix().is_one()
+    field = S.holonomy_representation().invariant_trace_field()
+    assert S.base_ring().degree() == field.degree()
+
+
+def test_standard():
+    S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), standard=True)
+    assert S.hyperbolic_plane() is HyperbolicPlane(QQ)
+    assert S.signature() == SurfaceSignature(2)
+    S = hyperbolic_surfaces.from_signature(
+        SurfaceSignature(2), base_ring=AA, standard=True
+    )
+    assert S.hyperbolic_plane() is HyperbolicPlane(AA)
+
+
 def test_ring():
     S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), base_ring=AA)
     assert S.base_ring() is AA
@@ -150,7 +183,7 @@ def test_ring():
         ).base_ring()
         is QQ
     )
-    with pytest.raises(ValueError, match="isometry is not defined over Rational Field"):
+    with pytest.raises(ValueError, match="do not lie in Rational Field"):
         hyperbolic_surfaces.from_signature(orbifold(2, (2,)), base_ring=QQ)
     with pytest.raises(ValueError, match="the ring must be exact, not Real Field"):
         hyperbolic_surfaces.from_signature(SurfaceSignature(2), base_ring=RR)

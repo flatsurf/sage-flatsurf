@@ -5,6 +5,8 @@ The polygons are built exactly from their interior angles, given as
 multiples of `2\pi`, and from the hyperbolic cosine of some of their sides.
 Each polygon has its vertex 0 at the origin of the Klein model and its edge
 0 on the positive `x`-axis, with its vertices in counterclockwise order.
+Every polygon except the regular one lies in the hyperbolic plane of a
+quadratic form of its own.
 
 EXAMPLES::
 
@@ -113,21 +115,6 @@ def _from_cosh(cosh, name="cosh"):
     if not cosh > 1:
         raise ValueError(f"{name} must be larger than 1")
     return cosh, (cosh * cosh - 1).sqrt()
-
-
-def _from_sinh(sinh):
-    r"""
-    Return the hyperbolic cosine and sine in ``AA`` of the side of positive
-    hyperbolic sine ``sinh``.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.hyperbolic_surface_generators import _from_sinh
-        sage: _from_sinh(AA(3/4))
-        (5/4, 3/4)
-
-    """
-    return (sinh * sinh + 1).sqrt(), sinh
 
 
 def _walk(sides, angles):
@@ -240,23 +227,25 @@ def _vinberg_triangle(angles):
     u_1, u_2, p)` with `u_k = 4 \cos^2 \alpha_k` and `p = 8 \cos \alpha_0
     \cos \alpha_1 \cos \alpha_2`, ``QQ`` or a number field embedded in the
     reals; the triangle lies in the hyperbolic plane of the form `x^2 + b
-    y^2 - c z^2`, with `b` and `c` positive elements of ``K``; ``vertices``
-    is the list of the Klein coordinates in ``K`` of the vertices 0, 1, 2,
+    y^2 - c z^2`, with `b` and `c` positive elements of ``K``, squarefree
+    integers when ``K`` is ``QQ``; ``vertices`` is the list of the Klein
+    coordinates in ``K`` of the vertices 0, 1, 2,
     counterclockwise, the vertex 0 at the origin and the vertex 1 on the
     positive `x`-axis.
 
     EXAMPLES:
 
-    The triangle of the triangle group `(3, 4, 4)` is over `\QQ`::
+    The triangle of the triangle group `(3, 4, 4)` is over `\QQ`, with a
+    form of squarefree integers::
 
         sage: from flatsurf.geometry.hyperbolic_surface_generators import _vinberg_triangle
         sage: K, (b, c), vertices = _vinberg_triangle([1/6, 1/8, 1/8])
         sage: K
         Rational Field
         sage: b, c
-        (4/3, 2/3)
+        (3, 6)
         sage: vertices
-        [(0, 0), (2/3, 0), (1/3, 1/2)]
+        [(0, 0), (2, 0), (1, 1)]
 
     The triangle of the triangle group `(2, 3, 7)` is over the cubic
     invariant trace field of the group::
@@ -271,66 +260,258 @@ def _vinberg_triangle(angles):
 
     ALGORITHM:
 
-    With `\alpha_k = 2\pi\theta_k`, `c_k = \cos \alpha_k` and the mirror `i`
-    the side opposite the vertex `i`, the unit normals `e_i` of the mirrors
-    have the Gram matrix `B_{ii} = 1`, `B_{ij} = -c_k` for `\{i, j, k\} =
-    \{0, 1, 2\}`, of signature `(2, 1)`. Vinberg's rescaling of the normals
-    takes a root mirror `r`, the mirror opposite the right angle if there
-    is one, the mirror 1 otherwise, so that `B(e_r, e_i)` is nonzero for
-    both other mirrors, and sets `f_r = e_r`, `f_i = 2 B(e_r, e_i) e_i`. The
-    Gram matrix `G` of the `f` has `G_{rr} = 1`, `G_{ii} = u_j` and `G_{ri} =
-    u_j / 2`, with `j` the vertex where the mirrors `r` and `i` meet, and
-    `G_{ij} = -p/2` for `i, j \neq r`: all its entries are in `k_0`. In the
-    basis `f`, the vertex `k`, orthogonal to the two mirrors through it, is
-    the column `k` of `G^{-1}`.
-
-    The basis `w_1 = f_1 - G(f_2, f_1) / G(f_2, f_2) f_2`, `w_2 = f_2`, `w_3`
-    the vertex 0, is orthogonal for `G`, so that the form is `\mathrm{diag}(1,
-    b, -c)` in it once divided by `G(w_1, w_1)`. The vertex 0 is the origin,
-    the vertex 1, orthogonal to `f_2`, is on the `x`-axis, and the signs of
-    `w_1` and `w_2` are chosen to put the vertex 1 on the positive `x`-axis
-    and the vertex 2 above it.
+    The triangle is the polygon of :func:`_seam_data` with three cone points,
+    the vertex `k` of the triangle in the slot `k - 1 \bmod 3`, so that its
+    edge 0 is on the mirror 1 of the slots. The root mirror is the one
+    opposite the right angle if there is one, otherwise the side opposite
+    the vertex 1 of the triangle, the mirror 0 of the slots.
 
     """
     from flatsurf.geometry.subfield import _triangle_invariant_trace_field
 
     K, u, p = _triangle_invariant_trace_field(angles)
 
-    # f_i vanishes when the vertex where the mirrors r and i meet has a right
-    # angle, so the root mirror is opposite the right angle.
     right = [k for k in range(3) if u[k] == 0]
-    r = right[0] if right else 1
+    root = (right[0] if right else 1) - 1
+    form, vertices = _seam_data(K, (u[1], u[2], u[0]), p, root % 3)
+    return K, form, vertices
+
+
+def _seam_field(cosines):
+    r"""
+    Return the field `\QQ(u_0, u_1, u_2, p)` of the generalized triangle
+    whose slots have the signed cosines ``cosines``, with these elements.
+
+    INPUT:
+
+    - ``cosines`` -- three elements `c_0, c_1, c_2` of ``AA``; `c_k = \cos
+      \theta_k` for a cone point of polygon angle `\theta_k`, `c_k = \cosh(\ell_k
+      / 2)` for a cuff of length `\ell_k`
+
+    OUTPUT:
+
+    A triple ``(K, u, p)``: ``K`` is ``QQ`` or a number field embedded in the
+    reals, ``u`` the tuple of the `u_k = 4 c_k^2` and ``p`` the element `8 c_0
+    c_1 c_2` of ``K``.
+
+    EXAMPLES:
+
+    Three cuffs of trace `5`, of `\cosh = \sqrt{6}/2`::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _seam_field
+        sage: c = AA(6).sqrt() / 2
+        sage: _seam_field([c, c, c])
+        (Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?,
+         (6, 6, 6),
+         6*a)
+        sage: _seam_field([AA(5/4), AA(5/4), AA(5/4)])
+        (Rational Field, (25/4, 25/4, 25/4), 125/8)
+
+    """
+    from flatsurf.geometry.subfield import number_field_elements_from_algebraics
+
+    u = [4 * c * c for c in cosines]
+    p = 8 * cosines[0] * cosines[1] * cosines[2]
+    K, elements = number_field_elements_from_algebraics(u + [p])
+    return K, tuple(elements[:3]), elements[3]
+
+
+def _seam_data(K, u, p, root=None):
+    r"""
+    Return the quadratic form and the Klein coordinates of the front polygon
+    of the generalized triangle with the data ``u``, ``p`` over ``K``.
+
+    A generalized triangle has three slots `k = 0, 1, 2`, each a cone point or
+    a cuff, and three mirrors, the mirror `k` opposite the slot `k`. The
+    mirrors `i` and `j` meet at the cone point of the slot `k` with the angle
+    `\theta_k`, or are disjoint, their common perpendicular being the half
+    of the cuff of the slot `k`, of length `\ell_k/2`. The front polygon has
+    the edges, counterclockwise, mirror 1, slot 0, mirror 2, slot 1, mirror
+    0, slot 2, a cone point being a vertex instead of an edge.
+
+    INPUT:
+
+    - ``K`` -- ``QQ`` or a number field embedded in the reals
+
+    - ``u`` -- three elements `u_k = 4 c_k^2` of ``K``, with `c_k = \cos
+      \theta_k` for a cone point and `c_k = \cosh(\ell_k / 2)` for a cuff, so
+      that the slot `k` is a cuff when `u_k > 4`
+
+    - ``p`` -- the element `8 c_0 c_1 c_2` of ``K``
+
+    - ``root`` -- ``0``, ``1``, ``2`` or ``None`` (default: ``None``); the root
+      mirror, by default the mirror opposite a right angle if there is one,
+      the mirror 1 otherwise
+
+    OUTPUT:
+
+    A pair ``((b, c), vertices)``: the polygon lies in the hyperbolic plane of
+    the form `x^2 + b y^2 - c z^2`, with `b` and `c` positive elements of
+    ``K``, squarefree integers when ``K`` is ``QQ``; ``vertices`` is the list
+    of the Klein coordinates in ``K`` of its vertices, counterclockwise, the
+    vertex 0 at the origin and the vertex 1 on the positive `x`-axis.
+
+    EXAMPLES:
+
+    The right-angled hexagon of the pair of pants with three cuffs of trace
+    `21/4`, `c_k = 5/4`::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _seam_data
+        sage: _seam_data(QQ, (25/4, 25/4, 25/4), 125/8)
+        ((6, 6),
+         [(0, 0), (12/5, 0), (12/5, 3/25), (60/29, 15/29), (48/25, 3/5), (0, 3/5)])
+
+    A cone point of angle `\pi/2` in the slot 0 gives a pentagon::
+
+        sage: _seam_data(QQ, (0, 25/4, 25/4), 0)
+        ((34, 34), [(0, 0), (5, 0), (5, 15/34), (544/125, 3/5), (0, 3/5)])
+
+    ALGORITHM:
+
+    The unit normals `e_k` of the mirrors have the Gram matrix `B_{kk} = 1`,
+    `B_{ij} = -c_k` for `\{i, j, k\} = \{0, 1, 2\}`, of signature `(2, 1)`.
+    Vinberg's rescaling of the normals takes the root mirror `r`, such that
+    `B(e_r, e_i)` is nonzero for both other mirrors, and sets `f_r = e_r`, `f_i
+    = 2 B(e_r, e_i) e_i`. The Gram matrix `G` of the `f` has `G_{rr} = 1`,
+    `G_{ii} = u_k` and `G_{ri} = u_k / 2`, with `k` the slot between the
+    mirrors `r` and `i`, and `G_{ij} = -p/2` for `i, j \neq r`: its entries are
+    in ``K``. In the basis `f`, the cone point of the slot `k`, orthogonal to
+    the two mirrors through it, is the column `v_k` of `G^{-1}`; for a cuff,
+    `v_k` is spacelike, the pole of the line of the cuff, and the corner of
+    the mirror `a` and the cuff `k`, orthogonal to `f_a` and to `v_k`, is the
+    cross product of the row `a` of `G` and of the `k`-th vector of the
+    canonical basis; its Klein coordinates do not depend on its sign.
+
+    The basis `b_1, b_2 = f_1, o` with `o` the vertex 0, and `b_1` the pole
+    `v_2` of the cuff of the slot 2, or `f_0 - G(f_1, f_0) / G(f_1, f_1) f_1`
+    when the slot 2 is a cone point, is orthogonal for `G`, so that the form
+    is `\mathrm{diag}(1, b, -c)` in it once divided by `G(b_1, b_1)`. The
+    vertex 1, on the mirror 1, is on the `x`-axis, and the signs of `b_1` and
+    `b_2` put it on its positive half and the vertex 2 above it.
+
+    Over `\QQ`, with `\lambda^2 = c / c'` and `\mu^2 = \lambda^2 b' / b`, `b'`
+    and `c'` the squarefree parts of `b` and `c`, the Klein coordinates `(x /
+    \lambda, y / \mu)` are those of the polygon in the plane of the form `x^2
+    + b' y^2 - c' z^2`.
+
+    """
+    if root is None:
+        # f_i vanishes when the slot between the mirrors r and i is a right
+        # angle, so the root mirror is opposite the right angle.
+        right = [k for k in range(3) if u[k] == 0]
+        root = right[0] if right else 1
 
     G = matrix(K, 3, 3)
     for i in range(3):
         for j in range(3):
             if i == j:
-                G[i, i] = 1 if i == r else u[3 - r - i]
-            elif r in (i, j):
-                # The mirrors i and j meet at the vertex 3 - i - j.
+                G[i, i] = 1 if i == root else u[3 - root - i]
+            elif root in (i, j):
+                # The mirrors i and j meet at the slot 3 - i - j.
                 G[i, j] = u[3 - i - j] / 2
             else:
                 G[i, j] = -p / 2
 
-    vertices = G.inverse().columns()
+    poles = G.inverse().columns()
+    cuff = [u[k] > 4 for k in range(3)]
 
+    corners = []
+    for a, k in [(1, 2), (1, 0), (2, 0), (2, 1), (0, 1), (0, 2)]:
+        if cuff[k]:
+            v = G.row(a).cross_product(vector(K, [int(i == k) for i in range(3)]))
+        elif (a, k) in [(0, 2), (2, 0), (0, 1)]:
+            # the second corner of a cone point, the same vertex as the first
+            continue
+        else:
+            v = poles[k]
+        corners.append(v)
+
+    f0 = vector(K, (1, 0, 0))
     f1 = vector(K, (0, 1, 0))
-    f2 = vector(K, (0, 0, 1))
-    w1 = f1 - (f2 * G * f1) / (f2 * G * f2) * f2
-    W = matrix(K, [w1, f2, vertices[0]]).transpose()
-    norm = w1 * G * w1
-    b = (f2 * G * f2) / norm
-    c = -(vertices[0] * G * vertices[0]) / norm
+    if cuff[2]:
+        b1 = poles[2]
+    else:
+        b1 = f0 - (f1 * G * f0) / (f1 * G * f1) * f1
+    W = matrix(K, [b1, f1, corners[0]]).transpose()
+    norm = b1 * G * b1
+    b = (f1 * G * f1) / norm
+    c = -(corners[0] * G * corners[0]) / norm
 
     W_inverse = W.inverse()
     coordinates = []
-    for v in vertices:
+    for v in corners:
         x, y, z = W_inverse * v
         coordinates.append((x / z, y / z))
 
     sx = 1 if coordinates[1][0] > 0 else -1
     sy = 1 if coordinates[2][1] > 0 else -1
-    return K, (b, c), [(sx * x, sy * y) for x, y in coordinates]
+    if K is QQ:
+        b_squarefree, c_squarefree = b.squarefree_part(), c.squarefree_part()
+        lambda_ = (c / c_squarefree).sqrt()
+        mu = (lambda_**2 * b_squarefree / b).sqrt()
+        sx, sy = sx / lambda_, sy / mu
+        b, c = QQ(b_squarefree), QQ(c_squarefree)
+    return (b, c), [(sx * x, sy * y) for x, y in coordinates]
+
+
+def _seam_polygon(cosines, base_ring):
+    r"""
+    Return the front polygon of the generalized triangle whose slots have the
+    signed cosines ``cosines``, in the plane of its form.
+
+    INPUT:
+
+    - ``cosines`` -- as in :func:`_seam_field`
+
+    - ``base_ring`` -- as in :func:`_plane_polygon`
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _seam_polygon
+        sage: _seam_polygon([AA(5/4), AA(5/4), AA(5/4)], None).parent()
+        Hyperbolic Plane over Rational Field with form x^2 + 6*y^2 - 6*z^2
+
+    """
+    K, u, p = _seam_field(cosines)
+    form, vertices = _seam_data(K, u, p)
+    return _plane_polygon(K, form, vertices, base_ring)
+
+
+def _plane_polygon(K, form, vertices, base_ring):
+    r"""
+    Return the polygon with the Klein coordinates ``vertices`` in the
+    hyperbolic plane of the form `x^2 + b y^2 - c z^2`, over ``base_ring``.
+
+    INPUT:
+
+    - ``K`` -- ``QQ`` or a number field embedded in the reals
+
+    - ``form`` -- a pair ``(b, c)`` of positive elements of ``K``
+
+    - ``vertices`` -- a list of pairs of elements of ``K``
+
+    - ``base_ring`` -- a field or ``None``; with ``None``, ``K``, otherwise an
+      exact field into which ``K`` converts along the embeddings in the
+      reals, see :func:`_field_embedding`
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _plane_polygon
+        sage: P = _plane_polygon(QQ, (3, 6), [(0, 0), (2, 0), (1, 1)], None)
+        sage: P.parent()
+        Hyperbolic Plane over Rational Field with form x^2 + 3*y^2 - 6*z^2
+        sage: _plane_polygon(QQ, (3, 6), [(0, 0), (2, 0), (1, 1)], AA).parent()
+        Hyperbolic Plane over Algebraic Real Field with form x^2 + 3*y^2 - 6*z^2
+
+    """
+    from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+    if base_ring is None:
+        base_ring = K
+    convert = _field_embedding(K, base_ring)
+
+    H = HyperbolicPlane(base_ring, form=[1, convert(form[0]), -convert(form[1])])
+    return H.polygon(vertices=[(convert(x), convert(y)) for x, y in vertices])
 
 
 def _field_embedding(K, ring):
@@ -388,9 +569,6 @@ def _field_embedding(K, ring):
     raise ValueError(f"the coordinates of the polygon do not lie in {ring}")
 
 
-_RIGHT_ANGLE = (AA.zero(), AA.one())
-
-
 class HyperbolicPolygonsConstructor:
     r"""
     Constructors of compact hyperbolic polygons from their angles and the
@@ -398,12 +576,17 @@ class HyperbolicPolygonsConstructor:
 
     Angles are multiples of `2\pi`, so that `1/4` is a right angle. Each
     polygon has its vertex 0 at the origin of the Klein model and its edge 0
-    on the positive `x`-axis. With ``base_ring=None``, the polygon is defined
-    over the number field generated by the Klein coordinates of its
-    vertices, ``QQ`` when they are rational; ``base_ring=AA`` keeps the
-    coordinates in ``AA``; any other ring receives the coordinates by
-    conversion. A triangle lies instead in the hyperbolic plane of a
-    quadratic form over its invariant field, see :meth:`triangle`.
+    on the positive `x`-axis. Every polygon but the regular one lies in the
+    hyperbolic plane of a quadratic form `x^2 + b y^2 - c z^2` of its own,
+    over the field `\QQ(u_0, u_1, u_2, p)` of :meth:`triangle` and
+    :meth:`right_angled_hexagon`, with `b` and `c` squarefree integers over
+    `\QQ`; ``base_ring`` is then an exact field into which that field
+    converts along the embeddings in the reals, such as ``AA``, which
+    receives the form and the coordinates. The regular polygon lies in the
+    plane of the form `x^2 + y^2 - z^2`: with ``base_ring=None``, over the
+    number field generated by the Klein coordinates of its vertices, ``QQ``
+    when they are rational; ``base_ring=AA`` keeps the coordinates in
+    ``AA``; any other ring receives the coordinates by conversion.
 
     EXAMPLES::
 
@@ -538,9 +721,9 @@ class HyperbolicPolygonsConstructor:
             sage: K.<a> = NumberField(x^2 - 6, embedding=AA(6).sqrt())
             sage: T = hyperbolic_polygons.triangle(1/4, 1/12, 1/12, base_ring=K)
             sage: T.vertex(1).coordinates(model="klein")
-            (2/3, 0)
+            (2, 0)
             sage: T.parent()
-            Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 6 with a = 2.449489742783178? with form x^2 + y^2 - 2/3*z^2
+            Hyperbolic Plane over Number Field in a with defining polynomial x^2 - 6 with a = 2.449489742783178? with form x^2 + y^2 - 6*z^2
             sage: L.<s> = NumberField(x^4 - 2*x^2 - 1, embedding=AA.polynomial_root(AA['x']([-1, 0, -2, 0, 1]), RIF(1.5, 1.6)))
             sage: T = hyperbolic_polygons.triangle(1/4, 1/16, 1/16, base_ring=L)
             sage: T.base_ring() is L
@@ -583,15 +766,8 @@ class HyperbolicPolygonsConstructor:
                 "the angles of a hyperbolic triangle must sum to less than 1/2"
             )
 
-        from flatsurf.geometry.hyperbolic import HyperbolicPlane
-
         K, form, vertices = _vinberg_triangle([a, b, c])
-        if base_ring is None:
-            base_ring = K
-        convert = _field_embedding(K, base_ring)
-
-        H = HyperbolicPlane(base_ring, form=[1, convert(form[0]), -convert(form[1])])
-        return H.polygon(vertices=[(convert(x), convert(y)) for x, y in vertices])
+        return _plane_polygon(K, form, vertices, base_ring)
 
     @staticmethod
     def regular_ngon(n, angle, base_ring=None):
@@ -703,23 +879,28 @@ class HyperbolicPolygonsConstructor:
 
         - ``c0``, ``c1``, ``c2`` -- real algebraic numbers larger than 1
 
-        - ``base_ring`` -- a ring or ``None`` (default: ``None``), the base ring
-          of the hexagon, see :class:`HyperbolicPolygonsConstructor`
+        - ``base_ring`` -- a field or ``None`` (default: ``None``); with
+          ``None``, the field `K` below, otherwise an exact field into which
+          `K` converts along the embeddings in the reals, such as ``AA``,
+          which receives the form and the coordinates
 
         OUTPUT:
 
         A :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
         with vertex 0 at the origin, edge 0 on the positive `x`-axis, and
-        edge 5 ending at vertex 0.
+        edge 5 ending at vertex 0, in the hyperbolic plane of the form `x^2
+        + b y^2 - c z^2` over the field `K = \QQ(u_0, u_1, u_2, p)`, with
+        `u_k = 4 c_k^2` and `p = 8 c_0 c_1 c_2`; over `\QQ`, `b` and `c` are
+        squarefree integers.
 
         EXAMPLES:
 
-        A hexagon with rational vertices::
+        A hexagon over `\QQ`::
 
             sage: from flatsurf import hyperbolic_polygons
             sage: P = hyperbolic_polygons.right_angled_hexagon(5/4, 5/4, 145/24)
-            sage: P.base_ring()
-            Rational Field
+            sage: P.parent()
+            Hyperbolic Plane over Rational Field
             sage: [v.coordinates(model="klein") for v in P.vertices()]
             [(0, 0), (56/65, 0), (56/65, 99/325), (840/4121, 4015/4121), (1344/9425, 143/145), (0, 143/145)]
             sage: P.angles()
@@ -727,11 +908,23 @@ class HyperbolicPolygonsConstructor:
             sage: P.area()
             1/2
 
-        The three alternate sides equal::
+        The three alternate sides equal, over `\QQ` where `u_k = 25/4` and `p
+        = 125/8`::
 
             sage: P = hyperbolic_polygons.right_angled_hexagon(5/4, 5/4, 5/4)
-            sage: P.base_ring()
-            Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
+            sage: P.parent()
+            Hyperbolic Plane over Rational Field with form x^2 + 6*y^2 - 6*z^2
+            sage: P.vertices()
+            ((0, 0), (12/5, 0), (12/5, 3/25), (60/29, 15/29), (48/25, 3/5), (0, 3/5))
+            sage: P._cosh2_sides()
+            (25, 25/16, 25, 25/16, 25, 25/16)
+
+        The plane of the form `x^2 + y^2 - z^2` may need a larger field,
+        see :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.standard_form_isometry`::
+
+            sage: f = P.parent().standard_form_isometry()
+            sage: f(P).base_ring()
+            Rational Field
 
         Python integers are accepted::
 
@@ -750,10 +943,14 @@ class HyperbolicPolygonsConstructor:
 
         Such a hexagon exists, and is unique, for any three lengths of its
         alternate sides, Buser, Geometry and spectra of compact Riemann
-        surfaces (1992), Theorem 2.4.2. The side `b_k` opposite the side
-        `a_k` has `\cosh b_k = (\cosh a_k + \cosh a_i \cosh a_j) / (\sinh a_i
-        \sinh a_j)`, which is Theorem 2.4.1 (i), p. 40, solved for the
-        hyperbolic cosine of the side opposite `a_k`.
+        surfaces (1992), Theorem 2.4.2. It is the front polygon of the pair
+        of pants whose cuffs have the half-lengths of the edges 1, 3, 5, the
+        slots 0, 1, 2: the lines of the edges 4, 0, 2, the mirrors 0, 1, 2,
+        have unit normals `e_k` with the Gram matrix `B_{kk} = 1`, `B_{ij} =
+        -c_k`, the mirrors `i` and `j` being disjoint with the half-cuff `k`
+        as common perpendicular. Vinberg's rescaling of these normals gives a
+        Gram matrix over `K`, in which the vertices and an orthogonal basis
+        at the vertex 0 are computed, see :meth:`triangle`.
 
         """
         _check_exact(base_ring)
@@ -761,17 +958,7 @@ class HyperbolicPolygonsConstructor:
         h1 = _from_cosh(c1, "c1")
         h2 = _from_cosh(c2, "c2")
 
-        def opposite(k, i, j):
-            return _from_cosh((k[0] + i[0] * j[0]) / (i[1] * j[1]))
-
-        sides = [
-            opposite(h1, h0, h2),
-            h0,
-            opposite(h2, h0, h1),
-            h1,
-            opposite(h0, h1, h2),
-        ]
-        return _polygon(_walk(sides, [_RIGHT_ANGLE] * 4), base_ring)
+        return _seam_polygon([h0[0], h1[0], h2[0]], base_ring)
 
     @staticmethod
     def right_angled_pentagon(angle, c0, c1, base_ring=None):
@@ -789,38 +976,42 @@ class HyperbolicPolygonsConstructor:
 
         - ``c0``, ``c1`` -- real algebraic numbers larger than 1
 
-        - ``base_ring`` -- a ring or ``None`` (default: ``None``), the base ring
-          of the pentagon, see :class:`HyperbolicPolygonsConstructor`
+        - ``base_ring`` -- a field or ``None`` (default: ``None``), as in
+          :meth:`right_angled_hexagon`
 
         OUTPUT:
 
         A :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
         with vertex 0 at the origin, edge 0 on the positive `x`-axis, and
-        edge 4 ending at vertex 0.
+        edge 4 ending at vertex 0, in the hyperbolic plane of the form `x^2
+        + b y^2 - c z^2` over the field `K = \QQ(u_0, u_1, u_2, p)` of
+        :meth:`right_angled_hexagon`, with `c_0` the cosine of the angle
+        ``angle`` and `c_1, c_2` the arguments ``c0``, ``c1``.
 
         EXAMPLES::
 
             sage: from flatsurf import hyperbolic_polygons
             sage: P = hyperbolic_polygons.right_angled_pentagon(3/8, 5/4, 5/4)
             sage: P.base_ring().polynomial()
-            y^4 - 56*y^2 - 72*y + 414
+            y^2 - 2
             sage: P.angles()
             (1/4, 3/8, 1/4, 1/4, 1/4)
             sage: P.area()
             1/8
 
-        The Klein coordinates of the vertices of a pentagon with a quadratic
-        base field::
+        The Klein coordinates of the vertices of a pentagon over `\QQ`::
 
             sage: P = hyperbolic_polygons.right_angled_pentagon(1/6, 5/4, 5/4)
+            sage: P.parent()
+            Hyperbolic Plane over Rational Field with form x^2 + 7*y^2 - 7*z^2
             sage: [v.coordinates(model="klein") for v in P.vertices()]
-            [(0, 0), (5/14*a, 0), (10/31*a, 15/31), (16/55*a, 3/5), (0, 3/5)]
+            [(0, 0), (5/2, 0), (70/31, 15/31), (112/55, 3/5), (0, 3/5)]
 
-        A pentagon of degree 6::
+        A pentagon over a cubic field::
 
             sage: P = hyperbolic_polygons.right_angled_pentagon(1/14, 5/4, 5/4)
             sage: P.base_ring().degree()
-            6
+            3
             sage: P.area()
             3/7
 
@@ -871,6 +1062,11 @@ class HyperbolicPolygonsConstructor:
         pentagon is the right-angled one, with `\cosh s_3 = \sinh s_0 \sinh
         s_1`, Theorem 2.3.4 (i), p. 39.
 
+        The pentagon is then built as the hexagon of
+        :meth:`right_angled_hexagon` whose slot 0 is a cone point: the
+        mirrors 1 and 2, the lines of the edges 0 and 1, meet at the vertex 1
+        with the angle `\varphi`, and `B_{12} = -\cos\varphi`.
+
         """
         _check_exact(base_ring)
         angle = _angle(angle)
@@ -878,7 +1074,7 @@ class HyperbolicPolygonsConstructor:
             raise ValueError("the angle must be in (0, 1/2)")
         h0 = _from_cosh(c0, "c0")
         h1 = _from_cosh(c1, "c1")
-        cos, sin = _cos_sin(angle)
+        cos, _ = _cos_sin(angle)
 
         if not h1[0] + h0[0] * cos > 0:
             raise ValueError(
@@ -889,14 +1085,7 @@ class HyperbolicPolygonsConstructor:
                 "no right-angled pentagon with these parameters: c0 + c1 cos(2π angle) must be positive"
             )
 
-        side0 = _from_sinh((h0[0] + h1[0] * cos) / (h1[1] * sin))
-        side1 = _from_sinh((h1[0] + h0[0] * cos) / (h0[1] * sin))
-        side3 = _from_cosh((cos + h0[0] * h1[0]) / (h0[1] * h1[1]))
-
-        return _polygon(
-            _walk([side0, side1, h0, side3], [(cos, sin), _RIGHT_ANGLE, _RIGHT_ANGLE]),
-            base_ring,
-        )
+        return _seam_polygon([cos, h0[0], h1[0]], base_ring)
 
     @staticmethod
     def right_angled_quadrilateral(angle0, angle1, c, base_ring=None):
@@ -914,23 +1103,26 @@ class HyperbolicPolygonsConstructor:
 
         - ``c`` -- a real algebraic number larger than 1
 
-        - ``base_ring`` -- a ring or ``None`` (default: ``None``), the base ring
-          of the quadrilateral, see :class:`HyperbolicPolygonsConstructor`
+        - ``base_ring`` -- a field or ``None`` (default: ``None``), as in
+          :meth:`right_angled_hexagon`
 
         OUTPUT:
 
         A :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
         with vertex 0 at the origin, edge 0 on the positive `x`-axis, and
-        edge 3 ending at vertex 0.
+        edge 3 ending at vertex 0, in the hyperbolic plane of the form `x^2
+        + b y^2 - c z^2` over the field `K = \QQ(u_0, u_1, u_2, p)` of
+        :meth:`right_angled_hexagon`, with `c_0` and `c_1` the cosines of
+        the angles ``angle0`` and ``angle1`` and `c_2` the argument ``c``.
 
         EXAMPLES::
 
             sage: from flatsurf import hyperbolic_polygons
             sage: P = hyperbolic_polygons.right_angled_quadrilateral(1/4, 1/8, 5/4)
-            sage: P.base_ring()
-            Number Field in a with defining polynomial y^2 - 34 with a = 5.830951894845300?
+            sage: P.parent()
+            Hyperbolic Plane over Rational Field with form x^2 + 34*y^2 - 34*z^2
             sage: [v.coordinates(model="klein") for v in P.vertices()]
-            [(0, 0), (2/17*a, 0), (2/17*a, 3/5), (0, 3/5)]
+            [(0, 0), (4, 0), (4, 3/5), (0, 3/5)]
             sage: P.angles()
             (1/4, 1/4, 1/8, 1/4)
             sage: P.area()
@@ -985,9 +1177,9 @@ class HyperbolicPolygonsConstructor:
         2.3.1 (i), `\cos\varphi_0 = \sinh a \sinh h_2`, for the quadrilateral
         with three right angles.
 
-        Vertex 1 is reached along edge 0, and the vertices 3 and 2 along
-        the edges 3 and 2 walked from the origin in the mirror image under
-        `(x, y) \mapsto (y, x)`, so that the edge 1 is never needed.
+        The quadrilateral is then built as the hexagon of
+        :meth:`right_angled_hexagon` whose slots 0 and 1 are cone points, at
+        the vertices 1 and 2.
 
         """
         _check_exact(base_ring)
@@ -996,8 +1188,8 @@ class HyperbolicPolygonsConstructor:
         if not (angle0 > 0 and angle1 > 0 and angle0 + angle1 < QQ((1, 2))):
             raise ValueError("the two angles must be positive and sum to less than 1/2")
         h = _from_cosh(c, "c")
-        cos0, sin0 = _cos_sin(angle0)
-        cos1, sin1 = _cos_sin(angle1)
+        cos0, _ = _cos_sin(angle0)
+        cos1, _ = _cos_sin(angle1)
 
         if not cos1 + h[0] * cos0 > 0:
             raise ValueError(
@@ -1008,13 +1200,7 @@ class HyperbolicPolygonsConstructor:
                 "no right-angled quadrilateral with these parameters: cos(2π angle0) + c cos(2π angle1) must be positive"
             )
 
-        side0 = _from_sinh((cos1 + h[0] * cos0) / (h[1] * sin0))
-        side2 = _from_sinh((cos0 + h[0] * cos1) / (h[1] * sin1))
-
-        forward = _walk([side0], [])
-        mirror = _walk([h, side2], [_RIGHT_ANGLE])
-        vertices = forward + [mirror[2][::-1], mirror[1][::-1]]
-        return _polygon(vertices, base_ring)
+        return _seam_polygon([cos0, cos1, h[0]], base_ring)
 
 
 hyperbolic_polygons = HyperbolicPolygonsConstructor()
@@ -1076,138 +1262,38 @@ def _reflection(p, q, form=None):
     return identity_matrix(3) - 2 * matrix(n).transpose() * matrix(Q * n) / (n * Q * n)
 
 
-def _optimize_placement(vertices):
+def _pants_polygon(boundary_traces, cone_orders):
     r"""
-    Return the image of the polygon with the Klein coordinates ``vertices``
-    by an isometry that makes its coordinates rational, or ``vertices`` when
-    no such isometry is found.
+    Return the field, the quadratic form and the Klein coordinates of the
+    front polygon of the pair of pants of
+    :meth:`HyperbolicSurfaceGenerators.pants`, and its seams.
 
     INPUT:
 
-    - ``vertices`` -- a list of pairs of elements of ``AA``, the Klein
-      coordinates of the vertices of a polygon
-
-    OUTPUT:
-
-    A list of pairs of elements of ``AA`` of the same length, the image of
-    the vertices, in the same order, by an orientation preserving isometry;
-    ``vertices`` itself when their coordinates are rational, generate a
-    field of degree other than 2, or when no image is rational.
-
-    EXAMPLES:
-
-    The right-angled hexagon whose alternate sides have `\cosh = 5/4`, the
-    half of a pair of pants with three cuffs of trace `21/4`, has its
-    coordinates in `\QQ(\sqrt{6})` when its vertex 0 is at the origin, and
-    rational ones once moved::
-
-        sage: from flatsurf import hyperbolic_polygons
-        sage: from flatsurf.geometry.hyperbolic_surface_generators import _optimize_placement
-        sage: P = hyperbolic_polygons.right_angled_hexagon(5/4, 5/4, 5/4, base_ring=AA)
-        sage: vertices = [v.coordinates(model="klein") for v in P.vertices()]
-        sage: _optimize_placement(vertices)
-        [(-1/5, 0), (-1/5, -24/25), (-5/61, -60/61), (23/65, -12/13), (5/11, -48/55), (5/11, 0)]
-
-    Rational coordinates are kept::
-
-        sage: vertices = [(AA(0), AA(0)), (AA(1/2), AA(0)), (AA(0), AA(1/2))]
-        sage: _optimize_placement(vertices) is vertices
-        True
-
-    ALGORITHM:
-
-    When the coordinates generate `\QQ(\sqrt{d})`, with `d` the squarefree
-    part of the discriminant, the point `(x_0, 0)` with `x_0 = (q^2 -
-    dp^2)/(q^2 + dp^2)` has `1 - x_0^2 \in d \QQ^2`. For each vertex `i`
-    and its neighbours `j = i + 1, i - 1`, in this order, the isometry that
-    sends the vertex `i` to `(x_0, 0)` and the direction of the vertex `j`
-    to the positive `x`-axis is applied; the first rational image is
-    returned.
-
-    The start point `x_0` is the one of smallest height, then the smallest,
-    among `1 \le p, q \le 40`. Any two start points with `1 - x_0^2 \in d
-    \QQ^2` differ by a boost along the `x`-axis with rational `\cosh` and
-    `\sinh`, so the choice of `x_0` only changes the size of the rational
-    coordinates, not whether there are some; `p = q = 1` is always a
-    candidate.
-
-    """
-    from flatsurf.geometry.hyperbolic_isometry import tangent_vector_isometry
-    from flatsurf.geometry.subfield import number_field_elements_from_algebraics
-
-    field, _ = number_field_elements_from_algebraics(
-        [c for vertex in vertices for c in vertex]
-    )
-    if field is QQ or field.degree() != 2:
-        return vertices
-
-    d = field.discriminant().squarefree_part()
-
-    def height_and_value(x):
-        return max(abs(x.numerator()), x.denominator()), x
-
-    x0 = min(
-        (
-            QQ((q * q - d * p * p, q * q + d * p * p))
-            for p in range(1, 41)
-            for q in range(1, 41)
-        ),
-        key=height_and_value,
-    )
-
-    n = len(vertices)
-    lifts = [vector(AA, (x, y, 1)) for x, y in vertices]
-    for i in range(n):
-        for j in ((i + 1) % n, (i - 1) % n):
-            direction = (
-                vertices[j][0] - vertices[i][0],
-                vertices[j][1] - vertices[i][1],
-            )
-            M = tangent_vector_isometry(
-                (vertices[i], direction), ((x0, 0), (1, 0)), ring=AA
-            )
-            images = []
-            for lift in lifts:
-                x, y, z = M * lift
-                images.append((x / z, y / z))
-            if all(c in QQ for image in images for c in image):
-                return [(AA(QQ(x)), AA(QQ(y))) for x, y in images]
-
-    return vertices
-
-
-def _pants_polygon(boundary_traces, cone_orders, optimize_placement):
-    r"""
-    Return the Klein coordinates in ``AA`` of the front polygon of the pair
-    of pants of :meth:`HyperbolicSurfaceGenerators.pants`, and its seams.
-
-    INPUT:
-
-    - ``boundary_traces``, ``cone_orders``, ``optimize_placement`` -- as in
+    - ``boundary_traces``, ``cone_orders`` -- as in
       :meth:`HyperbolicSurfaceGenerators.pants`
 
     OUTPUT:
 
-    A pair ``(vertices, seams)``: the list of the Klein coordinates of the
-    vertices of the front polygon, and the list of its edges that are
-    seams. The other edges are the half-cuffs, in the order of
-    ``boundary_traces``. With three cone points and no cuff, ``vertices``
-    is the list of the angles of the front triangle at its vertices 0, 1,
-    2, as multiples of `2\pi`, for
-    :meth:`HyperbolicPolygonsConstructor.triangle`.
+    A tuple ``(K, (b, c), vertices, seams)``: the front polygon lies in the
+    hyperbolic plane of the form `x^2 + b y^2 - c z^2` over the field ``K``
+    of its slots, ``vertices`` is the list of the Klein coordinates in ``K``
+    of its vertices, and ``seams`` the list of its edges that are seams. The
+    other edges are the half-cuffs, in the order of ``boundary_traces``.
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.hyperbolic_surface_generators import _pants_polygon
-        sage: _pants_polygon((21/4, 21/4), (-1/2,), True)
-        ([(-15/19, 0),
-          (-15/19, -10/19),
-          (-225/421, -340/421),
-          (-9/25, -544/625),
-          (-9/25, 0)],
+        sage: _pants_polygon((21/4, 21/4), (-1/2,))
+        (Rational Field,
+         (34, 34),
+         [(0, 0), (5, 0), (5, 15/34), (544/125, 3/5), (0, 3/5)],
          [0, 1, 3])
-        sage: _pants_polygon((), (-1/2, -3/4, -7/8), True)
-        ([1/16, 1/4, 1/8], [0, 1, 2])
+        sage: _pants_polygon((), (-1/2, -3/4, -7/8))
+        (Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095?,
+         (8*a + 12, a),
+         [(0, 0), (1, 0), (1, -a + 3/2)],
+         [0, 1, 2])
 
     """
     boundary_traces = tuple(boundary_traces)
@@ -1286,13 +1372,11 @@ def _pants_polygon(boundary_traces, cone_orders, optimize_placement):
             "cos(2π angle0) + c cos(2π angle1)": f"cos(π(1 + k0)) + c2 cos(π(1 + k1)) must be positive, {slots}",
         }
     else:
-        # The triangle lies in the plane of its invariant form, which the
-        # Klein coordinates of the standard plane returned here cannot
-        # express; its angles are returned instead.
-        return [angles[2], angles[0], angles[1]], [0, 1, 2]
+        K, form, vertices = _vinberg_triangle([angles[2], angles[0], angles[1]])
+        return K, form, vertices, [0, 1, 2]
 
     try:
-        P = constructor(*arguments, base_ring=AA)
+        P = constructor(*arguments)
     except ValueError as error:
         for inequality, message in inequalities.items():
             if inequality in str(error):
@@ -1301,11 +1385,9 @@ def _pants_polygon(boundary_traces, cone_orders, optimize_placement):
                 ) from error
         raise
 
+    form = P.parent().quadratic_form()
     vertices = [v.coordinates(model="klein") for v in P.vertices()]
-    if optimize_placement:
-        vertices = _optimize_placement(vertices)
-
-    return vertices, seams
+    return P.base_ring(), (form[1, 1], -form[2, 2]), vertices, seams
 
 
 def _mirror(P, glued_edges, mirror_edge):
@@ -1363,6 +1445,168 @@ def _mirror(P, glued_edges, mirror_edge):
         x, y, z = reflection * vector((vertices[j][0], vertices[j][1], 1))
         mirrored.append((x / z, y / z))
     return P.parent().polygon(vertices=mirrored), gluings
+
+
+def _standard_surface(surface, half_cuffs):
+    r"""
+    Return the image of ``surface`` in the hyperbolic plane of the form `x^2
+    + y^2 - z^2`.
+
+    INPUT:
+
+    - ``surface`` -- an immutable hyperbolic surface in the plane of a form
+      `x^2 + b y^2 - c z^2` over ``QQ`` or a number field `K`
+
+    - ``half_cuffs`` -- a list of pairs ``(label, edge)`` of edges of
+      ``surface`` whose lines may have their ends over `K`
+
+    OUTPUT:
+
+    The image of ``surface`` by the
+    :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.standard_form_isometry`
+    of its plane: without isotropic vector when `c` or `c/b` is a square in
+    `K`, otherwise with the isotropic vector of an end of the line of the
+    first of ``half_cuffs`` whose ends are over `K`, otherwise with
+    ``algorithm="extension"``.
+
+    EXAMPLES:
+
+    In the plane of `x^2 + 2 y^2 - 3 z^2`, the line of the edge 2 of a
+    triangle has its ends `(\pm 1, \pm 1)` over `\QQ`, the line of its edge
+    0 has the ends `(\pm\sqrt{3}, 0)`::
+
+        sage: from flatsurf import HyperbolicPlane, hyperbolic_surfaces
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _standard_surface
+        sage: H = HyperbolicPlane(QQ, form=[1, 2, -3])
+        sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2)])
+        sage: S = hyperbolic_surfaces.pillowcase(P)
+        sage: _standard_surface(S, [(0, 0), (0, 2)]).base_ring()
+        Rational Field
+        sage: _standard_surface(S, [(0, 0)]).base_ring()
+        Number Field in s with defining polynomial x^2 - 3 with s = 1.732050807568878?
+
+    ALGORITHM:
+
+    The ends of the line through the points of Klein lifts `P` and `Q` are
+    `P + \lambda Q` with `\langle P, P\rangle + 2 \lambda \langle P,
+    Q\rangle + \lambda^2 \langle Q, Q\rangle = 0`, over `K` exactly when
+    `\langle P, Q\rangle^2 - \langle P, P\rangle \langle Q, Q\rangle` is a
+    square in `K`.
+
+    """
+    H = surface.hyperbolic_plane()
+    Q = H.quadratic_form()
+    b, c = Q[1, 1], -Q[2, 2]
+    if c.is_square() or (c / b).is_square():
+        return H.standard_form_isometry()(surface)
+
+    for label, edge in half_cuffs:
+        vertices = surface.polygon(label).vertices()
+        P, R = (
+            vector(vertices[e % len(vertices)].coordinates(model="klein") + (1,))
+            for e in (edge, edge + 1)
+        )
+        pp, pr, rr = P * Q * P, P * Q * R, R * Q * R
+        discriminant = pr**2 - pp * rr
+        if discriminant.is_square():
+            end = P + (discriminant.sqrt() - pr) / rr * R
+            return H.standard_form_isometry(isotropic_vector=end)(surface)
+
+    return H.standard_form_isometry(algorithm="extension")(surface)
+
+
+def _develop(chain, half_cuffs, placed, i, plane, form, vertices):
+    r"""
+    Return the Klein coordinates in ``AA`` of the front polygon of the pants
+    ``i`` of :meth:`HyperbolicSurfaceGenerators.from_signature`, developed
+    into the seam plane of the pants 0.
+
+    INPUT:
+
+    - ``chain``, ``half_cuffs`` -- the slots of the pants and the half-cuff
+      edges of their slots, as in
+      :meth:`HyperbolicSurfaceGenerators.from_signature`
+
+    - ``placed`` -- the list of the Klein coordinates in ``AA`` of the front
+      polygons of the pants before ``i``, in the seam plane of the pants 0
+
+    - ``i`` -- the index of the pants
+
+    - ``plane`` -- the pair ``(b, c)`` of elements of ``AA`` of the seam
+      plane of the pants 0
+
+    - ``form`` -- the pair ``(b, c)`` of elements of ``AA`` of the seam plane
+      of the pants ``i``
+
+    - ``vertices`` -- the Klein coordinates of the front polygon of the
+      pants ``i`` in its seam plane
+
+    EXAMPLES:
+
+    The two pants of the closed surface of genus 2 share the cuff of their
+    slots 2 and 0, the edge 5 of the first hexagon and the edge 1 of the
+    second one::
+
+        sage: from flatsurf.geometry.hyperbolic_surface_generators import _develop, _pants_polygon
+        sage: chain = [[("cuff", "l"), ("cuff", "l"), ("cuff", "c")], [("cuff", "c"), ("cuff", "m"), ("cuff", "m")]]
+        sage: half_cuffs = {(0, 0): 1, (0, 1): 3, (0, 2): 5, (1, 0): 1, (1, 1): 3, (1, 2): 5}
+        sage: _, form, vertices, _ = _pants_polygon((21/4, 21/4, 21/4), ())
+        sage: form = [AA(t) for t in form]
+        sage: first = _develop(chain, half_cuffs, [], 0, form, form, vertices)
+        sage: second = _develop(chain, half_cuffs, [first], 1, form, form, vertices)
+        sage: second[1] == first[0] and second[2] == first[5]
+        True
+
+    ALGORITHM:
+
+    The first slot of the pants ``i`` is a cuff shared with an earlier
+    pants. The isometry that sends the half-cuff edge of the pants ``i``
+    onto the matching edge of the earlier front polygon, reversed, is
+    computed between the planes of the form `x^2 + y^2 - z^2` over ``AA``
+    of the two seam planes, where the square roots of the forms exist.
+
+    """
+    from flatsurf.geometry.hyperbolic import HyperbolicPlane
+    from flatsurf.geometry.hyperbolic_isometry import segment_isometry
+
+    points = [(AA(x), AA(y)) for x, y in vertices]
+    if i == 0:
+        return points
+
+    j, s = next(
+        (j, s) for j in range(i) for s in range(3) if chain[j][s] == chain[i][0]
+    )
+    target = placed[j]
+    a = half_cuffs[j, s]
+    e = half_cuffs[i, 0]
+
+    H0 = HyperbolicPlane(AA, form=[1, plane[0], -plane[1]])
+    Hi = HyperbolicPlane(AA, form=[1, form[0], -form[1]])
+    f0 = H0.standard_form_isometry()
+    fi = Hi.standard_form_isometry()
+
+    def standard(f, H, point):
+        return f(H.point(point[0], point[1], model="klein"))
+
+    M = segment_isometry(
+        (
+            standard(fi, Hi, points[e]),
+            standard(fi, Hi, points[(e + 1) % len(points)]),
+        ),
+        (
+            standard(f0, H0, target[(a + 1) % len(target)]),
+            standard(f0, H0, target[a]),
+        ),
+        ring=AA,
+    )
+
+    developed = []
+    for point in points:
+        x, y = standard(fi, Hi, point).coordinates(model="klein")
+        X, Y, Z = M * vector(AA, (x, y, 1))
+        image = (~f0)(f0.codomain().point(X / Z, Y / Z, model="klein"))
+        developed.append(image.coordinates(model="klein"))
+    return developed
 
 
 class HyperbolicSurfaceGenerators:
@@ -1562,9 +1806,7 @@ class HyperbolicSurfaceGenerators:
         return surface
 
     @staticmethod
-    def pants(
-        boundary_traces=(), cone_orders=(), base_ring=None, optimize_placement=True
-    ):
+    def pants(boundary_traces=(), cone_orders=(), base_ring=None, standard=False):
         r"""
         Return the hyperbolic pair of pants with geodesic boundary components
         of traces ``boundary_traces`` and cone points of orders
@@ -1598,20 +1840,15 @@ class HyperbolicSurfaceGenerators:
           (default: ``()``); the orders `k` of the cone points, of angle
           `2\pi(1 + k)`
 
-        - ``base_ring`` -- a ring or ``None`` (default: ``None``), the base ring
-          of the surface: with ``None``, the number field generated by the
-          Klein coordinates of the front polygon, ``QQ`` when they are
-          rational; ``AA`` keeps the coordinates in ``AA``; any other ring
-          receives the coordinates by conversion. With three cone points,
-          the base ring of
-          :meth:`HyperbolicPolygonsConstructor.triangle`.
+        - ``base_ring`` -- a field or ``None`` (default: ``None``); with
+          ``None``, the field `K` below, otherwise an exact field into which
+          `K` converts along the embeddings in the reals, such as ``AA``,
+          which receives the form and the coordinates
 
-        - ``optimize_placement`` -- a boolean (default: ``True``); whether to
-          move the front polygon by an isometry that makes its coordinates
-          rational when they generate a quadratic field, see below.
-          Otherwise the front polygon has its vertex 0 at the origin and its
-          edge 0 on the positive `x`-axis. No effect with three cone
-          points.
+        - ``standard`` -- a boolean (default: ``False``); whether to carry
+          the surface to the plane of the form `x^2 + y^2 - z^2`, over `K`
+          when that plane has an isometry to it over `K`, otherwise over a
+          quadratic extension of `K`
 
         OUTPUT:
 
@@ -1620,58 +1857,72 @@ class HyperbolicSurfaceGenerators:
         with the labels 0, the front polygon, and 1, its mirror image. Its
         :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
         has the genus 0, the cone orders ``cone_orders`` and the boundary
-        traces ``boundary_traces``.
+        traces ``boundary_traces``. The surface lies in the hyperbolic plane
+        of a form `x^2 + b y^2 - c z^2` of its own, its seam plane, over the
+        field `K = \QQ(u_0, u_1, u_2, p)` of its slots, with `u_k = t_k + 1`
+        for a cuff of trace `t_k`, see the algorithm below; over `\QQ`, `b`
+        and `c` are squarefree integers. The front polygon has its vertex 0
+        at the origin and its edge 0 on the positive `x`-axis.
 
         EXAMPLES:
 
-        The pants with three cuffs of trace `21/4` is defined over `\QQ`
-        once its front hexagon is moved off the origin::
+        The pants with three cuffs of trace `21/4` is defined over `\QQ`, in
+        its seam plane::
 
             sage: from flatsurf import hyperbolic_surfaces
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4))
             sage: S
             Hyperbolic Surface with boundary built from 2 right-angled hexagons
-            sage: S.base_ring()
-            Rational Field
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field with form x^2 + 6*y^2 - 6*z^2
             sage: S.polygon(0).vertices()
-            ((-1/5, 0),
-             (-1/5, -24/25),
-             (-5/61, -60/61),
-             (23/65, -12/13),
-             (5/11, -48/55),
-             (5/11, 0))
+            ((0, 0), (12/5, 0), (12/5, 3/25), (60/29, 15/29), (48/25, 3/5), (0, 3/5))
             sage: S.signature()
             SurfaceSignature(g=0, boundary_traces=(21/4, 21/4, 21/4))
             sage: S.area()
             1
             sage: TestSuite(S).run()
 
-        With the vertex 0 of the hexagon at the origin, the coordinates need
-        `\sqrt{6}`::
+        In the plane of the form `x^2 + y^2 - z^2`, still over `\QQ` since
+        `c/b` is a square::
 
-            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), optimize_placement=False)
-            sage: S.base_ring()
-            Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178?
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), standard=True)
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field
+            sage: S.polygon(0).vertices()
+            ((-23/25, 0),
+             (-23/25, -48/125),
+             (-125/139, -60/139),
+             (-73/95, -12/19),
+             (-5/7, -24/35),
+             (-5/7, 0))
             sage: S.signature()
             SurfaceSignature(g=0, boundary_traces=(21/4, 21/4, 21/4))
-            sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), base_ring=QQ, optimize_placement=False)
-            Traceback (most recent call last):
-            ...
-            ValueError: the coordinates of the polygon do not lie in Rational Field
+
+        The cuffs of trace `5` give a seam plane over `\QQ(\sqrt{6})` that
+        has no isometry to the plane of `x^2 + y^2 - z^2` over that field;
+        ``standard=True`` adjoins a square root::
+
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(5, 5, 5))
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Number Field in a with defining polynomial y^2 - 6 with a = 2.449489742783178? with form ...
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(5, 5, 5), standard=True)
+            sage: S.base_ring()
+            Number Field in s with defining polynomial ... with s = ...
+            sage: S.base_ring().degree()
+            4
+            sage: S.signature()
+            SurfaceSignature(g=0, boundary_traces=(5, 5, 5))
 
         A cone point of angle `\pi` and two cuffs, from a pentagon::
 
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(QQ(21)/4, QQ(21)/4), cone_orders=(QQ(-1)/2,))
             sage: S
             Hyperbolic Surface with boundary built from 2 right-angled pentagons
-            sage: S.base_ring()
-            Rational Field
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field with form x^2 + 34*y^2 - 34*z^2
             sage: S.polygon(0).vertices()
-            ((-15/19, 0),
-             -15/29 + 6/29*I,
-             (-225/421, -340/421),
-             (-9/25, -544/625),
-             (-9/25, 0))
+            ((0, 0), (5, 0), (5, 15/34), (544/125, 3/5), (0, 3/5))
             sage: S.signature()
             SurfaceSignature(g=0, cone_orders=(-1/2,), boundary_traces=(21/4, 21/4))
             sage: S.area()
@@ -1682,10 +1933,10 @@ class HyperbolicSurfaceGenerators:
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4,), cone_orders=(-1/2, -2/3))
             sage: S
             Hyperbolic Surface with boundary built from 2 quadrilaterals
-            sage: S.base_ring()
-            Rational Field
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field with form x^2 + 13*y^2 - 13*z^2
             sage: S.polygon(0).vertices()
-            ((-6/7, 0), -2/3 + 1/3*I, (-9/17, -10/17), (-9/17, 0))
+            ((0, 0), (2, 0), (2, 3/5), (0, 3/5))
             sage: S.signature()
             SurfaceSignature(g=0, cone_orders=(-2/3, -1/2), boundary_traces=(21/4,))
             sage: S.area()
@@ -1757,7 +2008,7 @@ class HyperbolicSurfaceGenerators:
 
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(int(4), int(4), int(4)))
             sage: S.base_ring().polynomial()
-            y^4 - 2*y^2 - 4
+            y^2 - y - 1
             sage: S.signature()
             SurfaceSignature(g=0, boundary_traces=(4, 4, 4))
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 20881/144))
@@ -1765,6 +2016,46 @@ class HyperbolicSurfaceGenerators:
             Rational Field
             sage: [v.coordinates(model="klein") for v in S.polygon(0).vertices()]
             [(0, 0), (56/65, 0), (56/65, 99/325), (840/4121, 4015/4121), (1344/9425, 143/145), (0, 143/145)]
+
+        The field `K` of the slots, and the way to the plane of the form
+        `x^2 + y^2 - z^2`, the isotropic vector `(0, \sqrt{c/b}, 1)` when
+        `c/b` is a square, otherwise an end of the line of a half-cuff when
+        one is over `K`, otherwise a quadratic extension::
+
+            sage: def fields(traces, orders=()):
+            ....:     S = hyperbolic_surfaces.pants(boundary_traces=traces, cone_orders=orders)
+            ....:     T = hyperbolic_surfaces.pants(boundary_traces=traces, cone_orders=orders, standard=True)
+            ....:     return S.base_ring(), S.area(), T.base_ring(), T.signature() == S.signature()
+            sage: fields((4, 5, 21/4))
+            (Number Field in a with defining polynomial y^2 - 30 with a = ...,
+             1,
+             Number Field in a with defining polynomial y^2 - 30 with a = ...,
+             True)
+            sage: fields((21/4, 4, 5))
+            (Number Field in a with defining polynomial y^2 - 30 with a = ...,
+             1,
+             Number Field in a with defining polynomial y^2 - 30 with a = ...,
+             True)
+            sage: fields((21/4, 21/4), (-1/2,))
+            (Rational Field, 1/2, Rational Field, True)
+            sage: K, area, L, _ = fields((4, 5), (-2/3,))
+            sage: K.polynomial(), area, L.degree()
+            (y^2 - 30, 2/3, 4)
+            sage: fields((4,), (-2/3, -4/5))
+            (Number Field in a with defining polynomial y^2 - y - 1 with a = ...,
+             7/15,
+             Number Field in a with defining polynomial y^2 - y - 1 with a = ...,
+             True)
+            sage: fields((8, 8, 8))
+            (Rational Field,
+             1,
+             Number Field in s with defining polynomial x^2 - 2 with s = 1.414213562373095?,
+             True)
+            sage: K, area, L, _ = fields((15, 15, 15))
+            sage: K, area, L.degree()
+            (Rational Field, 1, 2)
+            sage: fields((), (-1/2, -3/4, -7/8))[0].polynomial()
+            x^2 - 2
             sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4), cone_orders=(-2/3,)).base_ring()
             Rational Field
             sage: hyperbolic_surfaces.pants(boundary_traces=(21/4,), cone_orders=(-2/3, -2/3)).base_ring()
@@ -1792,6 +2083,15 @@ class HyperbolicSurfaceGenerators:
             sage: S = hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), base_ring=AA)
             sage: S.base_ring()
             Algebraic Real Field
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Algebraic Real Field with form x^2 + 6*y^2 - 6*z^2
+            sage: S = hyperbolic_surfaces.pants(boundary_traces=(5, 5, 5), base_ring=AA, standard=True)
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Algebraic Real Field
+            sage: hyperbolic_surfaces.pants(boundary_traces=(5, 5, 5), base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
             sage: hyperbolic_surfaces.pants(boundary_traces=(21/4, 21/4, 21/4), base_ring=RR)
             Traceback (most recent call last):
             ...
@@ -1804,27 +2104,50 @@ class HyperbolicSurfaceGenerators:
         cone point,
         :meth:`~HyperbolicPolygonsConstructor.right_angled_pentagon` with
         one, and :meth:`~HyperbolicPolygonsConstructor.right_angled_quadrilateral`
-        with two, built over ``AA``. With three cone points, the front
-        polygon is :meth:`~HyperbolicPolygonsConstructor.triangle`, in the
-        plane of its invariant form.
+        with two. With three cone points, the front polygon is
+        :meth:`~HyperbolicPolygonsConstructor.triangle`.
 
-        When its coordinates generate `\QQ(\sqrt{d})` and
-        ``optimize_placement`` is set, the polygon is moved by the isometry
-        that sends one of its vertices to a point `(x_0, 0)` with `1 -
-        x_0^2 \in d \QQ^2`, and the direction of a neighbouring vertex to
-        the positive `x`-axis, for the first vertex and neighbour whose image
-        has rational coordinates; the polygon is kept when there is none.
+        The mirror `k`, the seam opposite the slot `k`, has the unit normal
+        `e_k`; the mirrors `i` and `j` meet at the cone point of the slot `k`
+        and of order `\kappa_k` with the angle `\theta_k = \pi(1 +
+        \kappa_k)`, or are disjoint with the
+        half-cuff of the slot `k` as common perpendicular, of length `\ell_k
+        / 2`. The Gram matrix of the `e_k` has the entries `1` on the
+        diagonal and `-c_k` for the mirrors `i`, `j`, with `c_k = \cos
+        \theta_k` or `c_k = \cosh(\ell_k / 2) = \sqrt{t_k + 1} / 2`. Vinberg's
+        rescaling of the normals turns it into a Gram matrix `G` over the
+        field of `u_k = 4 c_k^2`, `t_k + 1` for a cuff, and of `p = 8 c_0 c_1
+        c_2`. In the rescaled basis `f`, a cone point is a column `v_k` of
+        `G^{-1}`; for a cuff, that column is the pole of the line of the
+        cuff, and the corner of the mirror `a` and the cuff `k` is the cross
+        product of the row `a` of `G` and of the `k`-th vector of the
+        canonical basis. In the orthogonal basis of the normal `f_1` of the
+        seam 20, of a vector orthogonal to it in the plane of the cuff or the
+        cone point of the slot 2, and of the vertex 0, the form is diagonal.
+
+        With ``standard``, the isometry to the plane of `x^2 + y^2 - z^2`
+        is the one of
+        :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.standard_form_isometry`,
+        found from the square roots of `c` or `c/b` when they are in `K`,
+        otherwise from an ideal end of the line of a half-cuff when one has
+        its coordinates in `K`, otherwise over a quadratic extension of `K`.
 
         """
         _check_exact(base_ring)
         boundary_traces = tuple(boundary_traces)
-        vertices, seams = _pants_polygon(
-            boundary_traces, cone_orders, optimize_placement
-        )
-        if boundary_traces:
-            P = _polygon(vertices, base_ring)
-        else:
-            P = hyperbolic_polygons.triangle(*vertices, base_ring=base_ring)
+        K, form, vertices, seams = _pants_polygon(boundary_traces, cone_orders)
+        if standard:
+            P = _plane_polygon(K, form, vertices, None)
+            S = HyperbolicSurfaceGenerators.pillowcase(P, glued_edges=seams)
+            n = len(vertices)
+            half_cuffs = [e for e in range(n) if e not in seams]
+            S = _standard_surface(
+                S,
+                [(0, e) for e in half_cuffs]
+                + [(1, e) for e in sorted(-e % n for e in half_cuffs)],
+            )
+            return S if base_ring is None else S.change_ring(base_ring)
+        P = _plane_polygon(K, form, vertices, base_ring)
         return HyperbolicSurfaceGenerators.pillowcase(P, glued_edges=seams)
 
     @staticmethod
@@ -1915,9 +2238,7 @@ class HyperbolicSurfaceGenerators:
         return surface
 
     @staticmethod
-    def from_signature(
-        signature, cuff_traces=None, base_ring=None, optimize_placement=True
-    ):
+    def from_signature(signature, cuff_traces=None, base_ring=None, standard=False):
         r"""
         Return a compact hyperbolic surface of signature ``signature``, glued
         from pairs of pants.
@@ -1936,14 +2257,14 @@ class HyperbolicSurfaceGenerators:
 
         - ``base_ring`` -- a ring or ``None`` (default: ``None``), the base ring
           of the surface: with ``None``, the number field generated by the
-          Klein coordinates of all the polygons, ``QQ`` when they are
-          rational; ``AA`` keeps the coordinates in ``AA``; any other ring
-          receives the coordinates by conversion
+          Klein coordinates of all the polygons and by the form of their
+          plane, ``QQ`` when they are rational; ``AA`` keeps the coordinates
+          in ``AA``; any other ring receives the coordinates and the form by
+          conversion
 
-        - ``optimize_placement`` -- a boolean (default: ``True``); whether to
-          move each polygon to coordinates of small degree, as in
-          :meth:`pants`; no effect with genus 0, three cone points and no
-          boundary
+        - ``standard`` -- a boolean (default: ``False``); whether to carry
+          the surface to the plane of the form `x^2 + y^2 - z^2`, as in
+          :meth:`pants`
 
         OUTPUT:
 
@@ -1953,7 +2274,8 @@ class HyperbolicSurfaceGenerators:
         :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
         is ``signature``. The pair of pants `i` of the decomposition below
         is made of the polygons with the labels ``(i, 0)``, its front
-        polygon, and ``(i, 1)``, its mirror image, as in :meth:`pants`.
+        polygon, and ``(i, 1)``, its mirror image, as in :meth:`pants`. The
+        surface lies in the seam plane of the pants 0 of :meth:`pants`.
 
         EXAMPLES:
 
@@ -1971,6 +2293,19 @@ class HyperbolicSurfaceGenerators:
             sage: S.area()
             2
             sage: TestSuite(S).run()
+
+        The surface lies in the seam plane of its first pants; the second
+        front polygon is glued to the first one by the identity::
+
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field with form x^2 + 6*y^2 - 6*z^2
+            sage: S.edge_transformation((0, 0), 5).matrix().is_one()
+            True
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), standard=True)
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Rational Field
+            sage: S.signature()
+            SurfaceSignature(g=2)
 
         Orbifolds, given in Katok's form; the cone points of angle `\pi`
         come in pairs as folds::
@@ -2020,22 +2355,20 @@ class HyperbolicSurfaceGenerators:
             sage: S.area()
             1/24
 
-        With the default traces, the polygons of the orbifold of signature
-        `(2; 2)` are rational but not its side pairings: the surface is
-        glued over ``AA`` and moved to the field of its coordinates and
-        side pairings, which is its invariant trace field. Traces `99`
-        give a surface over ``QQ``::
+        With the default traces, the orbifold of signature `(2; 2)` is over
+        its invariant trace field, a quadratic field. Traces `99` give a
+        surface over ``QQ``::
 
             sage: s = SurfaceSignature.from_orbifold_orders(2, (2,))
             sage: S = hyperbolic_surfaces.from_signature(s)
             sage: S.signature()
             SurfaceSignature(g=2, cone_orders=(-1/2,))
             sage: S.base_ring()
-            Number Field in a with defining polynomial y^2 - 51 with a = 7.141428428542850?
+            Number Field in a with defining polynomial y^2 - 51 with a = -7.141428428542850?
             sage: S.area()
             5/2
             sage: S.holonomy_representation().invariant_trace_field()
-            Number Field in a with defining polynomial y^2 - 51 with a = 7.141428428542850?
+            Number Field in a with defining polynomial y^2 - 51 with a = -7.141428428542850?
             sage: S = hyperbolic_surfaces.from_signature(s, cuff_traces=(int(99),) * 4)
             sage: S.signature()
             SurfaceSignature(g=2, cone_orders=(-1/2,))
@@ -2094,8 +2427,25 @@ class HyperbolicSurfaceGenerators:
             sage: S.signature()
             SurfaceSignature(g=3)
 
+        Closed surfaces of genus 2 with other traces, the second pants
+        developed across the cuff of trace `c` in ``cuff_traces=(l, c,
+        l')``; the base ring is the invariant trace field::
+
+            sage: def check(traces):
+            ....:     S = hyperbolic_surfaces.from_signature(SurfaceSignature(2), cuff_traces=traces)
+            ....:     assert S.edge_transformation((0, 0), 5).matrix().is_one()
+            ....:     assert S.signature() == SurfaceSignature(2) and S.area() == 2
+            ....:     K = S.base_ring()
+            ....:     assert K.degree() == S.holonomy_representation().invariant_trace_field().degree()
+            ....:     TestSuite(S).run()
+            ....:     return K
+            sage: check((21/4, 21/4, 21/4))
+            Rational Field
+            sage: check((4, 4, 4)).polynomial()
+            y^2 - y - 1
+
         The number of cuff traces, their values, and an explicit ring
-        that does not hold the side pairings::
+        that does not hold the coordinates::
 
             sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2), cuff_traces=(21/4,))
             Traceback (most recent call last):
@@ -2108,9 +2458,14 @@ class HyperbolicSurfaceGenerators:
             sage: hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(2, (2,)), base_ring=QQ)
             Traceback (most recent call last):
             ...
-            ValueError: cannot glue edge 5 of polygon (0, 0) to edge 2 of polygon (1, 0): isometry is not defined over Rational Field; adjoin a square root of 390625/55539
+            ValueError: the coordinates of the polygon do not lie in Rational Field
             sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2), base_ring=AA).base_ring()
             Algebraic Real Field
+            sage: hyperbolic_surfaces.from_signature(SurfaceSignature(2), base_ring=AA, standard=True).hyperbolic_plane()
+            Hyperbolic Plane over Algebraic Real Field
+            sage: S = hyperbolic_surfaces.from_signature(SurfaceSignature.from_orbifold_orders(0, (3, 3, 4)), standard=True)
+            sage: S.hyperbolic_plane()
+            Hyperbolic Plane over Number Field in s with defining polynomial ... with s = ...
             sage: hyperbolic_surfaces.from_signature(SurfaceSignature(1, boundary_traces=(None,)))
             Traceback (most recent call last):
             ...
@@ -2162,16 +2517,29 @@ class HyperbolicSurfaceGenerators:
 
         The interior cuffs are the loops, the links `c`, the doubled cuffs
         `d, d'` and the folds. Each has the trace `21/4` by default, for
-        which the pants have rational coordinates once placed, or the trace
-        of ``cuff_traces``, given in the order in which the interior cuffs
-        first appear along the pants of the chain and their slots: on `(2;
-        2)` the loop `\ell`, the links `c_1, c_2`, the loop `\ell'`.
+        which the pants of three cuffs is over `\QQ` in its seam plane, or
+        the trace of ``cuff_traces``, given in the order in which the
+        interior cuffs first appear along the pants of the chain and their
+        slots: on `(2; 2)` the loop `\ell`, the links `c_1, c_2`, the loop
+        `\ell'`.
 
-        With ``base_ring=None``, the polygons are built over the number field of
-        all their Klein coordinates. The side pairings between two pants
-        may need square roots that this field does not hold: when a gluing
-        is refused, the surface is glued over ``AA`` and moved to the field
-        of its coordinates and side pairings by
+        Each front polygon is built in the seam plane of its pants, see
+        :meth:`pants`. The pants 0 stays there; the first slot of each
+        other pants of the chain is a cuff shared with an earlier pants,
+        across which its front polygon is developed: the isometry that sends
+        its half-cuff edge onto the matching edge of the front polygon
+        already placed, reversed, carries it into the seam plane of the
+        pants 0, so that the two polygons lie on either side of the cuff and
+        are glued by the identity. The isometry is computed over ``AA``
+        between the planes of the form `x^2 + y^2 - z^2` of the two seam
+        planes.
+
+        With ``base_ring=None``, the polygons are built over the number
+        field of all their Klein coordinates and of the form of the seam
+        plane of the pants 0. The side pairings between two pants may need
+        square roots that this field does not hold: when a gluing is
+        refused, the surface is glued over ``AA`` and moved to the field of
+        its coordinates and side pairings by
         :meth:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface.set_immutable`.
         With an explicit ``base_ring``, the refusal is raised.
 
@@ -2307,6 +2675,10 @@ class HyperbolicSurfaceGenerators:
                 check_trace(t, "cuff trace")
         traces = dict(zip(interior, cuff_traces))
 
+        # The surface is built over its own field before it is carried to
+        # the standard plane.
+        ring = None if standard else base_ring
+
         # The half-cuff edge of the front polygon of each slot that is not a
         # cone point.
         half_cuffs = {}
@@ -2314,13 +2686,15 @@ class HyperbolicSurfaceGenerators:
             angles = [(1 + slot[1][1]) / 2 for slot in chain[0]]
             polygons = [
                 hyperbolic_polygons.triangle(
-                    angles[2], angles[0], angles[1], base_ring=base_ring
+                    angles[2], angles[0], angles[1], base_ring=ring
                 )
             ]
             seams = [[0, 1, 2]]
         else:
             fronts = []
             seams = []
+            # the form of the seam plane of the pants 0, set by the first pants
+            plane = None
             for i, slots in enumerate(chain):
                 orders = []
                 cuffs = []
@@ -2337,8 +2711,8 @@ class HyperbolicSurfaceGenerators:
                         continue
                     cuffs.append(s)
                 try:
-                    vertices, pants_seams = _pants_polygon(
-                        pants_traces, orders, optimize_placement
+                    _, form, vertices, pants_seams = _pants_polygon(
+                        pants_traces, orders
                     )
                 except ValueError as error:
                     raise NotImplementedError(
@@ -2347,29 +2721,37 @@ class HyperbolicSurfaceGenerators:
                 edges = [e for e in range(len(vertices)) if e not in pants_seams]
                 for s, e in zip(cuffs, edges):
                     half_cuffs[i, s] = e
-                fronts.append(vertices)
+                form = [AA(t) for t in form]
+                if i == 0:
+                    plane = form
+                fronts.append(
+                    _develop(chain, half_cuffs, fronts, i, plane, form, vertices)
+                )
                 seams.append(pants_seams)
 
-            if base_ring is None:
+            coordinates = [
+                c for vertices in fronts for vertex in vertices for c in vertex
+            ] + plane
+            if ring is AA:
+                field = AA
+            else:
                 from flatsurf.geometry.subfield import (
                     number_field_elements_from_algebraics,
                 )
 
-                field, coordinates = number_field_elements_from_algebraics(
-                    [c for vertices in fronts for vertex in vertices for c in vertex]
+                field, coordinates = number_field_elements_from_algebraics(coordinates)
+                if ring is not None:
+                    convert = _field_embedding(field, ring)
+                    field = ring
+                    coordinates = [convert(c) for c in coordinates]
+            H = HyperbolicPlane(field, form=[1, coordinates[-2], -coordinates[-1]])
+            coordinates = iter(coordinates)
+            polygons = [
+                H.polygon(
+                    vertices=[(next(coordinates), next(coordinates)) for _ in vertices]
                 )
-                H = HyperbolicPlane(field)
-                coordinates = iter(coordinates)
-                polygons = [
-                    H.polygon(
-                        vertices=[
-                            (next(coordinates), next(coordinates)) for _ in vertices
-                        ]
-                    )
-                    for vertices in fronts
-                ]
-            else:
-                polygons = [_polygon(vertices, base_ring) for vertices in fronts]
+                for vertices in fronts
+            ]
 
         labelled = {}
         gluings = []
@@ -2407,15 +2789,21 @@ class HyperbolicSurfaceGenerators:
         try:
             surface = assemble(polygons[0].parent())
         except ValueError as error:
-            if base_ring is not None or "isometry is not defined over" not in str(
-                error
-            ):
+            if ring is not None or "isometry is not defined over" not in str(error):
                 raise
-            surface = assemble(AA)
+            surface = assemble(polygons[0].parent().change_ring(AA))
             surface.set_immutable(minimal_field=True)
         else:
             surface.set_immutable()
-        return surface
+
+        if not standard:
+            return surface
+        edges = []
+        for (i, _), e in half_cuffs.items():
+            size = len(polygons[i].vertices())
+            edges.extend([((i, 0), e), ((i, 1), -e % size)])
+        surface = _standard_surface(surface, sorted(edges))
+        return surface if base_ring is None else surface.change_ring(base_ring)
 
 
 hyperbolic_surfaces = HyperbolicSurfaceGenerators()
@@ -2499,17 +2887,17 @@ class FuchsianGroupGenerators:
             sage: from flatsurf import fuchsian_groups
             sage: G = fuchsian_groups.triangle(3, 4, 4)
             sage: G
-            Subgroup with 3 generators of Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 4/3*y^2 - 2/3*z^2
+            Subgroup with 3 generators of Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - 6*z^2
             sage: G.gens()
-            ([-1/2   -1    0]
-             [ 3/4 -1/2    0]
+            ([-1/2 -3/2    0]
+             [ 1/2 -1/2    0]
              [   0    0    1],
-             [-1/2   -3    2]
-             [ 3/4 -3/2    1]
-             [   0   -4    3],
-             [-1/2   -1    0]
-             [ 9/4 -3/2    2]
-             [   3   -2    3])
+             [-1/2 -9/2    6]
+             [ 1/2 -3/2    2]
+             [   0   -2    3],
+             [-1/2 -3/2    0]
+             [ 3/2 -3/2    4]
+             [   1   -1    3])
             sage: G.base_ring()
             Rational Field
             sage: g1, g2, g3 = G.gens()
