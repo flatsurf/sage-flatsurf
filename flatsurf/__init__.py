@@ -29,6 +29,8 @@ from flatsurf.geometry.hyperbolic_surface_generators import (
     fuchsian_groups,
 )
 
+from flatsurf.geometry.similarity_surface_generators import crystallographic_groups
+
 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
 from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
