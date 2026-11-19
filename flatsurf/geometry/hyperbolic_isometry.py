@@ -400,36 +400,6 @@ def tangent_vector_isometry(u, v, ring=None, form=None, orientation_preserving=T
     in the chart is a unit tangent vector: the matrix is unique, and so is the
     orientation reversing one.
 
-    ALGORITHM:
-
-    Write `Q` for the matrix of the form and `\langle u, v\rangle = u^T Q v`.
-    The point `p` lifts to `P = (p, 1)` on the cone of timelike vectors, and
-    the direction `d` to the tangent vector `T = D - \langle P, D\rangle /
-    \langle P, P\rangle P` of the hyperboloid, the projection of
-    `D = (d, 0)` onto `P^\perp`. The vector `N = Q^{-1} (P \times T)` satisfies
-    `\langle N, X\rangle = \det(P, T, X)`, so that `(P, T, N)` is an
-    orthogonal basis with `\langle N, N\rangle = \langle P, P\rangle \langle
-    T, T\rangle / \det Q`. With the same construction at the image,
-    the isometry is
-
-    .. MATH::
-
-        M = (\lambda P', \mu T', \lambda\mu N') (P, T, N)^{-1}
-
-    with `\lambda^2 = \langle P, P\rangle / \langle P', P'\rangle` and
-    `\mu^2 = \langle T, T\rangle / \langle T', T'\rangle`, `\lambda, \mu >
-    0`; its determinant is `\lambda^2 \mu^2 \langle N', N'\rangle / \langle
-    N, N\rangle = 1`. The inverse of the orthogonal basis is
-    `\mathrm{diag}(1/\langle P, P\rangle, 1/\langle T, T\rangle, 1/\langle
-    N, N\rangle) (P, T, N)^T Q`. Since `\lambda` is the last entry of `M P`
-    and `\mu T' = M T`, the matrix is defined over ``ring`` if and only if
-    `\lambda` and `\mu` are.
-
-    The orientation reversing isometry is `M R` for the reflection `R` in the
-    geodesic tangent to ``u``, which fixes `P` and `T` and sends `N` to `-N`:
-    it is the same product with the column `-\lambda\mu N'`. It is defined
-    over ``ring`` exactly when `M` is.
-
     EXAMPLES:
 
     A quarter turn about the origin; the directions are taken up to positive
@@ -528,6 +498,36 @@ def tangent_vector_isometry(u, v, ring=None, form=None, orientation_preserving=T
         Traceback (most recent call last):
         ...
         ValueError: (1, 0) is not a finite point of the hyperbolic plane
+
+    ALGORITHM:
+
+    Write `Q` for the matrix of the form and `\langle u, v\rangle = u^T Q v`.
+    The point `p` lifts to `P = (p, 1)` on the cone of timelike vectors, and
+    the direction `d` to the tangent vector `T = D - \langle P, D\rangle /
+    \langle P, P\rangle P` of the hyperboloid, the projection of
+    `D = (d, 0)` onto `P^\perp`. The vector `N = Q^{-1} (P \times T)` satisfies
+    `\langle N, X\rangle = \det(P, T, X)`, so that `(P, T, N)` is an
+    orthogonal basis with `\langle N, N\rangle = \langle P, P\rangle \langle
+    T, T\rangle / \det Q`. With the same construction at the image,
+    the isometry is
+
+    .. MATH::
+
+        M = (\lambda P', \mu T', \lambda\mu N') (P, T, N)^{-1}
+
+    with `\lambda^2 = \langle P, P\rangle / \langle P', P'\rangle` and
+    `\mu^2 = \langle T, T\rangle / \langle T', T'\rangle`, `\lambda, \mu >
+    0`; its determinant is `\lambda^2 \mu^2 \langle N', N'\rangle / \langle
+    N, N\rangle = 1`. The inverse of the orthogonal basis is
+    `\mathrm{diag}(1/\langle P, P\rangle, 1/\langle T, T\rangle, 1/\langle
+    N, N\rangle) (P, T, N)^T Q`. Since `\lambda` is the last entry of `M P`
+    and `\mu T' = M T`, the matrix is defined over ``ring`` if and only if
+    `\lambda` and `\mu` are.
+
+    The orientation reversing isometry is `M R` for the reflection `R` in the
+    geodesic tangent to ``u``, which fixes `P` and `T` and sends `N` to `-N`:
+    it is the same product with the column `-\lambda\mu N'`. It is defined
+    over ``ring`` exactly when `M` is.
 
     """
     from sage.matrix.constructor import diagonal_matrix, matrix
@@ -663,17 +663,6 @@ def segment_isometry(source, target, ring=None, form=None, orientation_preservin
     An immutable 3×3 matrix over ``ring`` of determinant `1`, or `-1` when
     ``orientation_preserving`` is ``False``, of `\mathrm{O}(2, 1)^+`, or of
     the group of the form.
-
-    ALGORITHM:
-
-    The two segments must have the same length, compared through
-    `\cosh^2 d(p, q) = \langle P, Q\rangle^2 / (\langle P, P\rangle \langle
-    Q, Q\rangle)`. The isometry is then the one of
-    :func:`tangent_vector_isometry` sending the tangent vector at the start
-    of ``source`` pointing to its end to the one of ``target``: geodesics are
-    straight lines in the Klein model. The orientation reversing isometry is
-    the orientation preserving one composed with the reflection in the line
-    of ``source``.
 
     EXAMPLES:
 
@@ -827,6 +816,17 @@ def segment_isometry(source, target, ring=None, form=None, orientation_preservin
         ...
         ValueError: (1, 0) is not a finite point of the hyperbolic plane
 
+    ALGORITHM:
+
+    The two segments must have the same length, compared through
+    `\cosh^2 d(p, q) = \langle P, Q\rangle^2 / (\langle P, P\rangle \langle
+    Q, Q\rangle)`. The isometry is then the one of
+    :func:`tangent_vector_isometry` sending the tangent vector at the start
+    of ``source`` pointing to its end to the one of ``target``: geodesics are
+    straight lines in the Klein model. The orientation reversing isometry is
+    the orientation preserving one composed with the reflection in the line
+    of ``source``.
+
     """
     points = list(_segment_endpoints(source)) + list(_segment_endpoints(target))
     a, b, c, d = (_klein_vector(point) for point in points)
@@ -877,15 +877,6 @@ def segment_midpoint(a, b, ring=None, form=None):
     raised when the midpoint is not defined over ``ring``, exactly when the
     half turn about it is not (see :func:`segment_isometry`).
 
-    ALGORITHM:
-
-    With `\langle u, v\rangle = u^T Q v` for the matrix `Q` of the form, the
-    lifts `A = (a, 1)` and `B = (b, 1)` are rescaled to `A/\sqrt{\langle A,
-    A\rangle}` and `B/\sqrt{\langle B, B\rangle}`, which lie on the
-    hyperboloid, and their sum is the lift of the midpoint. With
-    `\lambda^2 = \langle A, A\rangle / \langle B, B\rangle` and `\lambda >
-    0`, the midpoint is `(a + \lambda b) / (1 + \lambda)`.
-
     EXAMPLES::
 
         sage: from flatsurf.geometry.hyperbolic_isometry import segment_midpoint
@@ -910,6 +901,15 @@ def segment_midpoint(a, b, ring=None, form=None):
         Traceback (most recent call last):
         ...
         ValueError: isometry is not defined over Rational Field; adjoin a square root of 3/2
+
+    ALGORITHM:
+
+    With `\langle u, v\rangle = u^T Q v` for the matrix `Q` of the form, the
+    lifts `A = (a, 1)` and `B = (b, 1)` are rescaled to `A/\sqrt{\langle A,
+    A\rangle}` and `B/\sqrt{\langle B, B\rangle}`, which lie on the
+    hyperboloid, and their sum is the lift of the midpoint. With
+    `\lambda^2 = \langle A, A\rangle / \langle B, B\rangle` and `\lambda >
+    0`, the midpoint is `(a + \lambda b) / (1 + \lambda)`.
 
     """
     points = [a, b]
@@ -1349,13 +1349,6 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
         cannot be represented yet: a :class:`NotImplementedError` is raised.
         A :class:`ValueError` is raised for the identity.
 
-        ALGORITHM:
-
-        A fixed point of the action on the projective plane is a line of
-        fixed vectors, the kernel of `M - 1`, spanned by `v`. The sign of the
-        Minkowski norm `\langle v, v\rangle` is negative for a finite point,
-        zero for an ideal point and positive outside of the closed disk.
-
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
@@ -1413,6 +1406,13 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             sage: p.parent()
             Hyperbolic Plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
 
+        ALGORITHM:
+
+        A fixed point of the action on the projective plane is a line of
+        fixed vectors, the kernel of `M - 1`, spanned by `v`. The sign of the
+        Minkowski norm `\langle v, v\rangle` is negative for a finite point,
+        zero for an ideal point and positive outside of the closed disk.
+
         """
         if not self.is_orientable():
             raise ValueError(
@@ -1444,20 +1444,6 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
 
         A :class:`ValueError` is raised for the identity, an elliptic
         isometry and a parabolic isometry, which have no axis.
-
-        ALGORITHM:
-
-        A hyperbolic isometry fixes the vector `v` of its kernel of `M - 1`,
-        a glide reflection the vector `v` of its kernel of `M + 1`, and in
-        both cases `\langle v, v\rangle > 0`: `v` is the pole of the axis. The
-        projection `q = e_3 - (\langle e_3, v\rangle / \langle v,
-        v\rangle) v` of `e_3 = (0, 0, 1)` onto `v^\perp` is timelike and
-        defined over the base ring, so that it is a point of the axis, and
-        `Mq` is a point of the axis further along the translation. No square
-        root is taken, in contrast to the ideal endpoints of the axis.
-
-        The mirror of a reflection is the geodesic `\{x : \langle v, x\rangle
-        = 0\}` for the vector `v` of the kernel of `M + 1`.
 
         EXAMPLES::
 
@@ -1505,6 +1491,20 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             Traceback (most recent call last):
             ...
             ValueError: a parabolic isometry has no axis
+
+        ALGORITHM:
+
+        A hyperbolic isometry fixes the vector `v` of its kernel of `M - 1`,
+        a glide reflection the vector `v` of its kernel of `M + 1`, and in
+        both cases `\langle v, v\rangle > 0`: `v` is the pole of the axis. The
+        projection `q = e_3 - (\langle e_3, v\rangle / \langle v,
+        v\rangle) v` of `e_3 = (0, 0, 1)` onto `v^\perp` is timelike and
+        defined over the base ring, so that it is a point of the axis, and
+        `Mq` is a point of the axis further along the translation. No square
+        root is taken, in contrast to the ideal endpoints of the axis.
+
+        The mirror of a reflection is the geodesic `\{x : \langle v, x\rangle
+        = 0\}` for the vector `v` of the kernel of `M + 1`.
 
         """
         H = self.parent().hyperbolic_plane()
@@ -1812,32 +1812,6 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
         satisfies `t^2 / s = \mathrm{tr}(M) + 1` for the matrix `M` of this
         isometry, as the trace of `A` on the standard form.
 
-        ALGORITHM:
-
-        For the form `x^2 + y^2 - z^2`, the matrix of this isometry is
-        quadratic in the entries `a, b, c, d` of `A`: its entries give `a^2,
-        b^2, c^2, d^2` and the products of two of them. As `ad - bc = 1`,
-        either `a` or `b` is nonzero. If `s = a^2` is nonzero, then `aA =
-        (a^2, ab; ac, ad)`; otherwise `bA = (ab, b^2; bc, bd)` and `s = b^2`.
-        No square root is taken.
-
-        For another form, with `e_1, e_2, e_3` the basis of the vectors, the
-        generators of the even Clifford algebra are `i = e_1 e_2`, `j = e_2
-        e_3` and `k = ij = b e_1 e_3`. The element
-
-        .. MATH::
-
-            x = (1 + \mathrm{tr} M) + (M_{01}/b - M_{10}) i
-            - (M_{21}/b + M_{12}/c) j - (M_{20}/b + M_{02}/(bc)) k
-
-        (indices from `0`) is a multiple of the lift, by the classical
-        formula of a lift as `1` plus the sum of the products of the dual
-        basis vectors with their images by `M`, read in the basis `1, i, j,
-        k`. It vanishes exactly for a half turn, when `\mathrm{tr} M = -1`
-        and `QM` is symmetric: the lift of the half turn about the point `v`
-        is then the product of `v` with the volume element, `v_0 j - v_1 k -
-        c v_2 i`, for a nonzero vector `v` of the kernel of `M - 1`.
-
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
@@ -1887,6 +1861,32 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             Traceback (most recent call last):
             ...
             ValueError: an orientation reversing isometry has no lift to SL(2, R)
+
+        ALGORITHM:
+
+        For the form `x^2 + y^2 - z^2`, the matrix of this isometry is
+        quadratic in the entries `a, b, c, d` of `A`: its entries give `a^2,
+        b^2, c^2, d^2` and the products of two of them. As `ad - bc = 1`,
+        either `a` or `b` is nonzero. If `s = a^2` is nonzero, then `aA =
+        (a^2, ab; ac, ad)`; otherwise `bA = (ab, b^2; bc, bd)` and `s = b^2`.
+        No square root is taken.
+
+        For another form, with `e_1, e_2, e_3` the basis of the vectors, the
+        generators of the even Clifford algebra are `i = e_1 e_2`, `j = e_2
+        e_3` and `k = ij = b e_1 e_3`. The element
+
+        .. MATH::
+
+            x = (1 + \mathrm{tr} M) + (M_{01}/b - M_{10}) i
+            - (M_{21}/b + M_{12}/c) j - (M_{20}/b + M_{02}/(bc)) k
+
+        (indices from `0`) is a multiple of the lift, by the classical
+        formula of a lift as `1` plus the sum of the products of the dual
+        basis vectors with their images by `M`, read in the basis `1, i, j,
+        k`. It vanishes exactly for a half turn, when `\mathrm{tr} M = -1`
+        and `QM` is symmetric: the lift of the half turn about the point `v`
+        is then the product of `v` with the volume element, `v_0 j - v_1 k -
+        c v_2 i`, for a nonzero vector `v` of the kernel of `M - 1`.
 
         """
         from sage.matrix.constructor import matrix
@@ -1954,16 +1954,6 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
         :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.standard_form_isometry`
         with ``ring``, and `A` is the matrix of its image. It depends on that
         isomorphism: `A` acts on the upper half plane of its codomain.
-
-        ALGORITHM:
-
-        The matrix of this isometry is quadratic in the entries `a, b, c, d`
-        of `A`: its entries give `a^2, b^2, c^2, d^2` and the products of
-        two of them. As `ad - bc = 1`, either `a` or `b` is nonzero. If
-        `s = a^2` is nonzero, then `A = (a^2, ab; ac, ad)/a` with `a =
-        \sqrt{s}`; otherwise `A = (ab, b^2; bc, bd)/b` with `b = \sqrt{s}`
-        for `s = b^2`. So `A` is defined over ``ring`` if and only if `s` is
-        a square there. Note that `\mathrm{tr}(M) = \mathrm{tr}(A)^2 - 1`.
 
         EXAMPLES::
 
@@ -2064,6 +2054,16 @@ class HyperbolicIsometry(MultiplicativeGroupElement):
             Traceback (most recent call last):
             ...
             ValueError: an orientation reversing isometry has no lift to SL(2, R)
+
+        ALGORITHM:
+
+        The matrix of this isometry is quadratic in the entries `a, b, c, d`
+        of `A`: its entries give `a^2, b^2, c^2, d^2` and the products of
+        two of them. As `ad - bc = 1`, either `a` or `b` is nonzero. If
+        `s = a^2` is nonzero, then `A = (a^2, ab; ac, ad)/a` with `a =
+        \sqrt{s}`; otherwise `A = (ab, b^2; bc, bd)/b` with `b = \sqrt{s}`
+        for `s = b^2`. So `A` is defined over ``ring`` if and only if `s` is
+        a square there. Note that `\mathrm{tr}(M) = \mathrm{tr}(A)^2 - 1`.
 
         """
         from sage.matrix.constructor import matrix
@@ -2892,14 +2892,6 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
           is negative); a matrix may be given as the list (or tuple) of its
           rows
 
-        ALGORITHM:
-
-        A 2×2 matrix `A` goes through
-        :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_gl2_to_sim12`,
-        which is quadratic in the entries of `A`; normalizing `A` to
-        determinant `\pm 1` divides its image by `|\det A|`, so no root is
-        needed.
-
         EXAMPLES::
 
             sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
@@ -2980,6 +2972,14 @@ class HyperbolicIsometryGroup(UniqueRepresentation, Group):
             Traceback (most recent call last):
             ...
             ValueError: matrix is not in O(2, 1)+
+
+        ALGORITHM:
+
+        A 2×2 matrix `A` goes through
+        :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_gl2_to_sim12`,
+        which is quadratic in the entries of `A`; normalizing `A` to
+        determinant `\pm 1` divides its image by `|\det A|`, so no root is
+        needed.
 
         """
         from sage.matrix.constructor import matrix

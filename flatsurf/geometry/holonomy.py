@@ -645,14 +645,6 @@ def _holonomy_angle(surface, vertex):
     have irrational angles; it raises a ``ValueError`` when the angle is not
     rational.
 
-    ALGORITHM:
-
-    The loop of the vertex maps to a rotation by `2 \pi a` whose trace is `1 +
-    2 \cos(2 \pi a)`, exactly in the base ring. The cosine determines `a`
-    modulo `1` up to `a \leftrightarrow 1 - a`: `a = n + \theta` or `a = n +
-    1 - \theta` with `\theta` rational in `[0, 1/2]`. The integer `n` and the
-    choice come from the numerical total of the corner angles.
-
     EXAMPLES::
 
         sage: from flatsurf import HyperbolicPlane
@@ -688,6 +680,14 @@ def _holonomy_angle(surface, vertex):
         sage: S.glue((0, 0), (0, 2)); S.set_immutable()
         sage: _holonomy_angle(S, S(0, 0))
         1/8
+
+    ALGORITHM:
+
+    The loop of the vertex maps to a rotation by `2 \pi a` whose trace is `1 +
+    2 \cos(2 \pi a)`, exactly in the base ring. The cosine determines `a`
+    modulo `1` up to `a \leftrightarrow 1 - a`: `a = n + \theta` or `a = n +
+    1 - \theta` with `\theta` rational in `[0, 1/2]`. The integer `n` and the
+    choice come from the numerical total of the corner angles.
 
     """
     from sage.all import QQ
