@@ -238,7 +238,10 @@ class ConeSurfaces(SurfaceCategory):
                         sage: S.glue((0, 0), (0, 3))
                         sage: S.glue((0, 1), (0, 2))
                         sage: S.set_immutable()
-                        sage: S.holonomy_representation().image()
+                        sage: G = S.holonomy_representation().image()
+                        sage: G
+                        Subgroup with 2 generators of Group of isometries of the hyperbolic plane over Rational Field
+                        sage: G.matrix_group()
                         Matrix group over Rational Field with 2 generators (
                         [ 0  1  0]  [   0 -5/3  4/3]
                         [-1  0  0]  [   1    0    0]

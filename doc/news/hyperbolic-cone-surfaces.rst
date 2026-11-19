@@ -21,7 +21,9 @@
 * Added the fundamental group of polygonal surfaces, flat and hyperbolic,
   ``fundamental_group()``, with ``vertex_loops()`` and ``boundary_loops()``.
 * Added ``holonomy_representation()`` of cone surfaces, flat and
-  hyperbolic, and the ``invariant_trace_field()`` of the representation.
+  hyperbolic, whose ``image()`` is a subgroup of the similarities or of the
+  isometries of the hyperbolic plane, and the ``invariant_trace_field()`` of
+  the representation.
 * Added ``cyclic_quotient(m)`` of Euclidean and hyperbolic polygons, a
   fundamental domain of a rotation of order ``m`` that leaves the polygon
   invariant.

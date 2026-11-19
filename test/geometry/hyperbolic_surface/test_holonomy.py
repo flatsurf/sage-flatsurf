@@ -97,12 +97,18 @@ def test_flat_orbifold_relations(name, signature, angles, chi):
 
 
 def test_flat_orbifold_images():
-    G = CONSTRUCTORS["pillowcase"]().holonomy_representation().image()
+    phi = CONSTRUCTORS["pillowcase"]().holonomy_representation()
+    G = phi.image()
     assert G.base_ring() is QQ
     assert G.ngens() == 3
+    assert G.ambient() is phi.codomain()
+    assert G.is_orientable()
 
     S = CONSTRUCTORS["triangle_236_double"]()
-    G = S.holonomy_representation().image()
+    phi = S.holonomy_representation()
+    G = phi.image()
+    assert G.ambient() is phi.codomain()
+    assert G.is_orientable()
     assert G.base_ring() is S.base_ring()
     assert G.base_ring().degree() == 2
     assert G.base_ring().discriminant() == 12
@@ -153,6 +159,14 @@ def test_sphere_traces(H):
     phi._test_vertex_loops()
 
 
+def test_unglued_image(H):
+    S = MutableOrientedHyperbolicSurface(QQ)
+    S.add_polygon(H.polygon(vertices=QUADRILATERAL))
+    S.set_immutable()
+
+    assert S.holonomy_representation().image().ngens() == 0
+
+
 @pytest.mark.parametrize("gluing", sorted(OCTAGON_GLUINGS))
 def test_octagon(octagon, gluing):
     pairs, trace = OCTAGON_GLUINGS[gluing]
@@ -175,6 +189,8 @@ def test_octagon(octagon, gluing):
     G = phi.image()
     assert G.ngens() == 4
     assert G.base_ring() is K
+    assert G.ambient() is phi.codomain()
+    assert G.is_orientable()
 
     # One polygon: the spanning tree is empty and each generator crosses a
     # single edge, so its image is a side pairing.
