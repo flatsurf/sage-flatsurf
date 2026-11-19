@@ -337,3 +337,21 @@ def test_reversing_isometries(H3, B):
     assert segment_isometry(source, source, orientation_preserving=False) == reflection(
         *source
     )
+
+
+def test_reversing_image_of_polygon(H3, G3):
+    W = H3.polygon(
+        vertices=[(0, 0), (QQ(1) / 2, 0), (QQ(1) / 2, QQ(1) / 2), (0, QQ(1) / 2)]
+    )
+    R3 = reflection((1, 0), (0, 1), form=diagonal_matrix(QQ, [1, 2, -3]))
+    image = W.apply_isometry(R3)
+    assert image.vertices() == tuple(
+        point(H3, x, y)
+        for (x, y) in [
+            (QQ(12) / 11, QQ(6) / 11),
+            (QQ(2) / 3, QQ(13) / 18),
+            (QQ(1) / 2, QQ(1) / 2),
+            (QQ(19) / 18, QQ(1) / 3),
+        ]
+    )
+    assert image == G3(R3)(W) == G3(R3) * W

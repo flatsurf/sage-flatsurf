@@ -1221,8 +1221,7 @@ class HyperbolicPolygon(Parent):
 
     def apply_isometry(self, isometry, model="klein"):
         r"""
-        Return the image of this polygon under the orientation preserving
-        ``isometry``.
+        Return the image of this polygon under ``isometry``.
 
         INPUT:
 
@@ -1230,9 +1229,11 @@ class HyperbolicPolygon(Parent):
           :class:`~flatsurf.geometry.hyperbolic_isometry.HyperbolicIsometry`,
           or a matrix as in
           :meth:`~flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry`:
-          a 2×2 matrix of positive determinant if ``model`` is
-          ``"half_plane"``, a 3×3 matrix preserving the quadratic form of the
-          plane up to a positive factor if ``model`` is ``"klein"``
+          a 2×2 matrix of nonzero determinant if ``model`` is
+          ``"half_plane"`` (a negative determinant reverses the orientation,
+          acting as `z \mapsto (a \bar{z} + b)/(c \bar{z} + d)`), a 3×3 matrix
+          preserving the quadratic form of the plane up to a positive factor
+          if ``model`` is ``"klein"``
 
         - ``model`` -- ``"klein"`` or ``"half_plane"`` (default:
           ``"klein"``); the model in which a matrix ``isometry`` acts, ignored
@@ -1240,8 +1241,13 @@ class HyperbolicPolygon(Parent):
 
         OUTPUT:
 
-        The polygon of this hyperbolic plane whose vertices are the images of
-        the vertices of this polygon, in the same order.
+        The polygon of this hyperbolic plane pointed at the image of the vertex
+        0 of this polygon, with its vertices listed counterclockwise from it.
+        If ``isometry`` preserves the orientation, the vertex `j` of the image
+        is the image of the vertex `j`. If it reverses the orientation, the
+        vertex `j` of the image is the image of the vertex `-j \bmod n`, and
+        the edge `e` of this polygon is the edge `(-1 - e) \bmod n` of the
+        image, traversed in the other direction.
 
         EXAMPLES::
 
@@ -1258,16 +1264,34 @@ class HyperbolicPolygon(Parent):
             sage: P.apply_isometry(g) == g(P) == P.apply_isometry(matrix([[2, 0], [0, 1]]), model="half_plane")
             True
 
-        The isometry must preserve the orientation::
+        An isometry may reverse the orientation::
 
-            sage: P.apply_isometry(matrix([[1, 0, 0], [0, -1, 0], [0, 0, 1]]))
-            Traceback (most recent call last):
-            ...
-            ValueError: isometry must preserve the orientation
+            sage: Q = P.apply_isometry(matrix([[1, 0, 0], [0, -1, 0], [0, 0, 1]]))
+            sage: Q
+            Hyperbolic polygon with vertices [I, (0, -1/2), (1/2, 0)]
             sage: P.apply_isometry(matrix([[1, 0], [0, -1]]), model="half_plane")
-            Traceback (most recent call last):
-            ...
-            ValueError: isometry must preserve the orientation
+            Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+
+        The image of the start of the edge `e` of ``P`` is the end of the edge
+        `(-1 - e) \bmod 3` of the image::
+
+            sage: [P.edge_segment(e).start() for e in range(3)]
+            [I, (1/2, 0), (0, 1/2)]
+            sage: [Q.edge_segment((-1 - e) % 3).end() for e in range(3)]
+            [I, (1/2, 0), (0, -1/2)]
+
+        The reflection in a geodesic through the vertex 1 fixes it::
+
+            sage: from flatsurf.geometry.hyperbolic_isometry import reflection
+            sage: R = reflection((1/2, 0), (1/3, 1/2))
+            sage: P.apply_isometry(R)
+            Hyperbolic polygon with vertices [36/37 + 31/37*I, (24/43, 47/86), (1/2, 0)]
+            sage: r = HyperbolicIsometryGroup(QQ)(R)
+            sage: P.apply_isometry(R) == r(P) == r * P
+            True
+
+        Other matrices are refused::
+
             sage: P.apply_isometry(matrix([[1, 2, 0], [0, 1, 0], [0, 0, 1]]))
             Traceback (most recent call last):
             ...
@@ -1343,14 +1367,13 @@ class HyperbolicPolygon(Parent):
             Z = M[2, 0] * x + M[2, 1] * y + M[2, 2]
             images.append((X / Z, Y / Z))
 
-        polygon = HyperbolicPolygon(H, images)
+        # The Jacobian of (x, y) ↦ (X/Z, Y/Z) has determinant det(M)/Z³,
+        # which is nonzero on the Klein disk, so its sign at any vertex tells
+        # whether the isometry reverses the orientation.
+        if M.determinant() * Z < 0:
+            images = [images[0]] + images[:0:-1]
 
-        # An isometry is a diffeomorphism of the Klein disk, so it reverses
-        # the orientation of every polygon or of none.
-        if polygon._klein_area() < 0:
-            raise ValueError("isometry must preserve the orientation")
-
-        return polygon
+        return HyperbolicPolygon(H, images)
 
     def edge_cosh_squared(self, i):
         r"""

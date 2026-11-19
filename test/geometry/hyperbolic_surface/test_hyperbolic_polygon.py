@@ -26,7 +26,7 @@ import pytest
 from sage.all import AA, QQ, RR, I, NumberField, matrix, polygen
 
 from flatsurf import HyperbolicPlane
-from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup, reflection
 
 from hyperbolic_surface_oracles import (
     BOOST,
@@ -258,3 +258,88 @@ def test_cyclic_quotient_octagon(octagon):
     assert Q.angles() == (QQ(1) / 8, QQ(1) / 16, QQ(1) / 16)
     assert octagon.cyclic_quotient(4).vertices() == (origin,) + octagon.vertices()[:3]
     assert octagon.cyclic_quotient(2).vertices() == octagon.vertices()[:5]
+
+
+TRIANGLE = [(0, 0), (QQ(1) / 2, 0), (0, QQ(1) / 2)]
+
+# Images of TRIANGLE and QUADRILATERAL under the reflection R of
+# test_reversing_isometry, in Klein coordinates.
+REFLECTED = {
+    3: [(QQ(36) / 49, QQ(12) / 49), (QQ(24) / 43, QQ(47) / 86), (QQ(1) / 2, 0)],
+    4: [
+        (QQ(36) / 49, QQ(12) / 49),
+        (QQ(24) / 43, QQ(47) / 86),
+        (QQ(7) / 50, QQ(23) / 50),
+        (QQ(1) / 2, 0),
+    ],
+}
+
+
+def klein(polygon):
+    return [tuple(v.coordinates(model="klein")) for v in polygon.vertices()]
+
+
+@pytest.mark.parametrize("vertices", [TRIANGLE, QUADRILATERAL])
+def test_reversing_isometry(H, vertices):
+    P = H.polygon(vertices=vertices)
+    n = len(vertices)
+    R = reflection((QQ(1) / 2, 0), (QQ(1) / 3, QQ(1) / 2))
+    g = HyperbolicIsometryGroup(QQ)(R)
+
+    image = g(P)
+    assert klein(image) == REFLECTED[n]
+    assert image._klein_area() > 0
+    for other in (
+        g * P,
+        P * g,
+        P.apply_isometry(g),
+        P.apply_isometry(R),
+        P.apply_transformation(g),
+    ):
+        assert other == image
+
+    # The edge e of P is the edge (-1 - e) mod n of the image, reversed.
+    for e in range(n):
+        s = P.edge_segment(e)
+        t = image.edge_segment((-1 - e) % n)
+        assert g(s.start()) == t.end()
+        assert g(s.end()) == t.start()
+
+    # A reflection is an involution and the vertex 0 is kept.
+    assert g(image) == P
+
+
+def test_reversing_isometry_in_half_plane(H):
+    P = H.polygon(vertices=TRIANGLE)
+    image = P.apply_isometry(matrix(QQ, [[1, 0], [0, -1]]), model="half_plane")
+    assert klein(image) == [(0, 0), (0, QQ(1) / 2), (-QQ(1) / 2, 0)]
+    assert image == P.apply_isometry(matrix(QQ, [[-1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+
+
+def test_preserving_isometry_keeps_order(H):
+    P = H.polygon(vertices=QUADRILATERAL)
+    g = HyperbolicIsometryGroup(QQ)(matrix(QQ, [[0, -1, 0], [1, 0, 0], [0, 0, 1]]))
+    assert klein(g(P)) == [
+        (0, 0),
+        (0, QQ(1) / 2),
+        (-QQ(1) / 2, QQ(1) / 2),
+        (-QQ(1) / 2, 0),
+    ]
+
+
+def test_reversing_isometry_over_larger_ring(H):
+    P = H.polygon(vertices=TRIANGLE)
+    x = polygen(QQ, "x")
+    K = NumberField(x**2 - 2, "a", embedding=AA(2).sqrt())
+    a = K.gen()
+    M = matrix(K, [[a / 2, a / 2, 0], [a / 2, -a / 2, 0], [0, 0, 1]])
+    g = HyperbolicIsometryGroup(K)(M)
+
+    image = g(P)
+    assert image.parent() is HyperbolicPlane(K)
+    assert klein(image) == [(0, 0), (a / 4, -a / 4), (a / 4, a / 4)]
+    assert image == g * P == P * g
+
+    for transformation in (g, M):
+        with pytest.raises(TypeError, match="Unable to coerce 1/2\\*a to a rational"):
+            P.apply_transformation(transformation)

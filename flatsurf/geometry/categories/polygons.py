@@ -594,11 +594,11 @@ class Polygons(Category_over_base_ring):
 
             INPUT:
 
-            - ``g`` -- a similarity for a Euclidean polygon, an orientation
-              preserving isometry for a hyperbolic polygon, or anything that
-              the group of such transformations over the base ring of this
-              polygon converts (a tuple for a ``SimilarityGroup``, a matrix
-              for a ``HyperbolicIsometryGroup``)
+            - ``g`` -- a similarity for a Euclidean polygon, an isometry for a
+              hyperbolic polygon, or anything that the group of such
+              transformations over the base ring of this polygon converts (a
+              tuple for a ``SimilarityGroup``, a matrix for a
+              ``HyperbolicIsometryGroup``)
 
             OUTPUT:
 
@@ -650,6 +650,11 @@ class Polygons(Category_over_base_ring):
                 Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
                 sage: P.apply_transformation(M)
                 Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+
+            A hyperbolic isometry may reverse the orientation::
+
+                sage: P.apply_transformation(matrix([[1, 0, 0], [0, -1, 0], [0, 0, 1]]))
+                Hyperbolic polygon with vertices [I, (0, -1/2), (1/2, 0)]
 
             A transformation of the other geometry is refused::
 
