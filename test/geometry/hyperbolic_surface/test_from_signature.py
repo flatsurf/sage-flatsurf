@@ -31,7 +31,7 @@ units of `\pi`, here halved to units of `2\pi`.
 
 import pytest
 
-from sage.all import AA, QQ, RR, NumberField, polygen
+from sage.all import AA, QQ, RR, NumberField, TestSuite, polygen
 
 from flatsurf import HyperbolicPlane, hyperbolic_polygons, hyperbolic_surfaces
 from flatsurf.geometry.signature import SurfaceSignature
@@ -161,6 +161,34 @@ def test_developed_genus_2(cuff_traces, polynomial):
     assert S.edge_transformation((0, 0), 5).matrix().is_one()
     field = S.holonomy_representation().invariant_trace_field()
     assert S.base_ring().degree() == field.degree()
+
+
+# Genus 3 from the pants (l, l, c0), (c0, d, e), (d, e, c1), (c1, l', l'):
+# the side pairings of the loops and of the second cuff e of the handle join
+# two polygons already in the seam plane of the first pants.
+@pytest.mark.parametrize(
+    "cuff_traces,polynomial",
+    [
+        (
+            (T, T, 4, 5, T, T),
+            y**8
+            - 42 * y**6
+            - 36 * y**5
+            - 331 * y**4
+            - 2184 * y**3
+            + 1836 * y**2
+            + 5076 * y
+            + 68881,
+        ),
+        ((4, T, T, T, T, 5), y**4 - 2 * y**3 - 665 * y**2 + 666 * y + 106599),
+    ],
+)
+def test_genus_3_cuff_traces(cuff_traces, polynomial):
+    S = hyperbolic_surfaces.from_signature(SurfaceSignature(3), cuff_traces=cuff_traces)
+    check(S, SurfaceSignature(3), 4, polynomial, 8)
+    assert S.base_ring().polynomial() == polynomial
+    assert S.edge_transformation((0, 0), 5).matrix().is_one()
+    TestSuite(S).run()
 
 
 def test_standard():
