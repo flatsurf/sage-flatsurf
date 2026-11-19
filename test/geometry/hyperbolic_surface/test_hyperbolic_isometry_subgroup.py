@@ -38,9 +38,7 @@ from flatsurf.geometry.hyperbolic_isometry import (
 )
 
 
-MEMBERSHIP = re.escape(
-    "membership in a finitely generated subgroup of isometries is not decided"
-)
+MEMBERSHIP = re.escape("membership in a finitely generated subgroup is not decided")
 SKIP = ["_test_an_element", "_test_one", "_test_some_elements"]
 
 R = matrix(QQ, [[-QQ(1) / 3, QQ(4) / 3, 0], [-QQ(2) / 3, -QQ(1) / 3, 0], [0, 0, 1]])
@@ -177,3 +175,81 @@ def test_image_under_isomorphism(G3, K, r, s):
     ]
     assert [g.trace() for g in G.gens()] == [QQ(1) / 3, QQ(7) / 17]
     assert f(G3.subgroup([r, s]).change_ring(K)) is G
+
+
+@pytest.fixture
+def m1(G3):
+    Q = G3.quadratic_form()
+    return G3(_form_reflection(vector(QQ, (0, 1, 0)), Q))
+
+
+@pytest.fixture
+def m2(G3):
+    Q = G3.quadratic_form()
+    n = Q.inverse() * vector(QQ, (QQ(1) / 2, 0, 1)).cross_product(
+        vector(QQ, (0, QQ(1) / 2, 1))
+    )
+    return G3(_form_reflection(n, Q))
+
+
+def test_group_change_ring(G3, K):
+    GK = G3.change_ring(K)
+    assert GK is HyperbolicIsometryGroup(K, form=[1, 2, -3])
+    assert GK.change_ring(QQ) is G3
+    assert HyperbolicIsometryGroup(QQ).change_ring(AA) is HyperbolicIsometryGroup(AA)
+
+
+def test_is_orientable(G3, r, s, m1, m2):
+    assert m1.det() == m2.det() == -1
+    assert (m1 * m2).trace() == QQ(7) / 17
+    assert G3.subgroup([r, s]).is_orientable()
+    assert G3.subgroup([]).is_orientable()
+    assert not G3.subgroup([m1]).is_orientable()
+    assert not G3.subgroup([r, m1]).is_orientable()
+    assert G3.subgroup([r, s]).orientation_preserving_subgroup() is G3.subgroup(
+        [r, s]
+    )
+
+
+def test_orientation_preserving_subgroup(G3, r, m1, m2):
+    P = G3.subgroup([r, m1]).orientation_preserving_subgroup()
+    assert P.gens() == (r, m1 * r * ~m1)
+    assert [g.trace() for g in P.gens()] == [QQ(1) / 3, QQ(1) / 3]
+    assert P.is_orientable()
+    assert P.invariant_trace_field() is QQ
+    assert G3.subgroup([r, m1]).invariant_trace_field() is QQ
+
+    P = G3.subgroup([m1, m2]).orientation_preserving_subgroup()
+    assert P.gens() == (m2 * ~m1, m1 * m2)
+    assert [g.trace() for g in P.gens()] == [QQ(7) / 17, QQ(7) / 17]
+    assert G3.subgroup([m1, m2]).invariant_trace_field() is QQ
+
+    T = G3.subgroup([m1]).orientation_preserving_subgroup()
+    assert T.gens() == ()
+    assert T.invariant_trace_field() is QQ
+
+
+def test_extended_triangle_group():
+    from flatsurf import hyperbolic_polygons
+
+    T = hyperbolic_polygons.triangle(QQ(1) / 4, QQ(1) / 6, QQ(1) / 14)
+    GT = T._transformation_group()
+    Q = GT.quadratic_form()
+    V = [
+        vector(list(v.coordinates(model="klein")) + [1]) for v in T.vertices()
+    ]
+    reflections = [
+        GT(_form_reflection(Q.inverse() * V[i].cross_product(V[(i + 1) % 3]), Q))
+        for i in range(3)
+    ]
+    assert all(g.det() == -1 and (g * g).is_one() for g in reflections)
+
+    W = GT.subgroup(reflections)
+    assert not W.is_orientable()
+    P = W.orientation_preserving_subgroup()
+    assert P.ngens() == 4
+    assert sorted(g.trace() for g in P.gens()) == [-1, -1, 0, 0]
+
+    F = W.invariant_trace_field()
+    assert F.degree() == 3
+    assert F.polynomial() == polygen(QQ) ** 3 - 7 * polygen(QQ) - 7

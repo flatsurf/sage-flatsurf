@@ -38,6 +38,7 @@ The flatsurf.geometry Package
    geometry/similarity_surface_generators
    geometry/straight_line_trajectory
    geometry/subfield
+   geometry/subgroup
    geometry/surface
    geometry/surface_legacy
    geometry/surface_objects

@@ -3242,7 +3242,7 @@ class FuchsianGroupGenerators:
         invariant trace field of the group. The vertex of period `m_1` is at
         the origin and its edge to the vertex of period `m_3` on the
         positive `x`-axis. The matrices of the generators are reached by
-        :meth:`~flatsurf.geometry.hyperbolic_isometry.HyperbolicIsometrySubgroup.matrix_group`.
+        :meth:`~flatsurf.geometry.subgroup.FinitelyGeneratedSubgroup.matrix_group`.
 
         With ``standard``, the image of that group by the
         :meth:`~flatsurf.geometry.hyperbolic.HyperbolicPlane.standard_form_isometry`
