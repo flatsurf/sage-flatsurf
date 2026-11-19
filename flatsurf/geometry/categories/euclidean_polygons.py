@@ -162,7 +162,9 @@ class EuclideanPolygons(Category_over_base_ring):
             r"""
             Apply the 2x2 matrix `g` to this polygon.
 
-            The matrix must have non-zero determinant. If the determinant is
+            The matrix must have non-zero determinant. The image is pointed at
+            `g v_0`, where `v_0` is the vertex 0 of this polygon, and its
+            vertices are listed counterclockwise from it. If the determinant is
             negative, then the vertices and edges are relabeled according to the
             involutions `v \mapsto (n-v)%n` and  `e \mapsto n-1-e` respectively.
 
@@ -225,8 +227,15 @@ class EuclideanPolygons(Category_over_base_ring):
 
         def apply_similarity(self, similarity):
             r"""
-            Return the image of this polygon under the orientation preserving
-            ``similarity``.
+            Return the image of this polygon under ``similarity``.
+
+            The image is pointed at the image of the vertex 0 of this polygon
+            and its vertices are listed counterclockwise from it. If
+            ``similarity`` reverses the orientation, the vertex `j` of the
+            image is the image of the vertex `-j \bmod n`, and the edge `e` of
+            this polygon is the edge `(-1 - e) \bmod n` of the image, traversed
+            in the other direction. This is the image computed by calling the
+            similarity on the polygon.
 
             INPUT:
 
@@ -261,18 +270,13 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: T.apply_similarity(G((0, 1, 0, 0))).base_ring() is T.base_ring()
                 True
 
-            The similarity must preserve the orientation::
+            A similarity may reverse the orientation::
 
                 sage: S.apply_similarity(G((1, 0, 0, 0, -1)))
-                Traceback (most recent call last):
-                ...
-                ValueError: similarity must preserve the orientation
+                Polygon(vertices=[(0, 0), (0, -1), (1, -1), (1, 0)])
 
             """
             similarity = self._transformation_group()(similarity)
-
-            if similarity._sign == -1:
-                raise ValueError("similarity must preserve the orientation")
 
             return similarity(self)
 

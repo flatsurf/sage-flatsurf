@@ -861,6 +861,22 @@ def test_similarity_group_conversion():
     assert G(GK((2, 0, 0, 0))) == G((2, 0, 0, 0))
 
 
+def test_reversing_similarity_image():
+    from flatsurf import Polygon
+
+    G, _, _, S, _, _ = _transformation_data()
+    r = G((1, 0, 0, 0, -1))
+    image = Polygon(vertices=[(0, 0), (0, -1), (1, -1), (1, 0)])
+
+    assert S.apply_similarity(r) == image
+    assert S.apply_transformation(r) == image
+    assert r(S) == image
+
+    T = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+    assert G((1, 0, 1, 0, -1))(T) == Polygon(vertices=[(1, 0), (1, -1), (2, 0)])
+    assert G((0, 1, 0, 0, -1))(S) == S
+
+
 def test_transformation_errors():
     from sage.all import QQ, matrix
 
@@ -868,11 +884,8 @@ def test_transformation_errors():
 
     G, GK, K, S, _, _ = _transformation_data()
     gK = GK((K.gen(), 0, 0, 0))
-    r = G((1, 0, 0, 0, -1))
     h = HyperbolicIsometryGroup(QQ)(matrix(QQ, [[0, -1, 0], [1, 0, 0], [0, 0, 1]]))
 
-    with pytest.raises(ValueError, match="similarity must preserve the orientation"):
-        S.apply_similarity(r)
     with pytest.raises(ValueError, match="cannot be used to create element in"):
         S.apply_transformation(h)
     with pytest.raises(TypeError, match="Unable to coerce a to a rational"):

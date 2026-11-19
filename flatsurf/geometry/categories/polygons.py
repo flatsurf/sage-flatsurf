@@ -604,6 +604,17 @@ class Polygons(Category_over_base_ring):
 
             A polygon over the base ring of this polygon.
 
+            A polygon is pointed at its vertex 0 and its vertices are listed
+            counterclockwise from it. The image of a polygon with vertices
+            `v_0, \ldots, v_{n-1}` is the polygon pointed at `g(v_0)`, with its
+            vertices listed counterclockwise from it. If ``g`` preserves the
+            orientation, these are `g(v_0), \ldots, g(v_{n-1})`. If ``g``
+            reverses it, the vertex `j` of the image is `g(v_{-j \bmod n})`.
+            Consequently, the edge `e` of the polygon is the edge `e` of the
+            image if ``g`` preserves the orientation, and the edge
+            `(-1 - e) \bmod n` of the image, traversed in the other
+            direction, if ``g`` reverses it.
+
             EXAMPLES::
 
                 sage: from flatsurf import euclidean_polygons, Polygon, HyperbolicPlane
@@ -616,6 +627,11 @@ class Polygons(Category_over_base_ring):
                 Polygon(vertices=[(1, 2), (2, 2), (2, 3), (1, 3)])
                 sage: S.apply_transformation((1, 2))
                 Polygon(vertices=[(1, 2), (2, 2), (2, 3), (1, 3)])
+
+            A similarity may reverse the orientation::
+
+                sage: S.apply_transformation((1, 0, 0, 0, -1))
+                Polygon(vertices=[(0, 0), (0, -1), (1, -1), (1, 0)])
 
             The image is over the base ring of the polygon::
 

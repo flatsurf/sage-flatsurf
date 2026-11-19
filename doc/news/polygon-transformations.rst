@@ -1,10 +1,11 @@
 **Added:**
 
 * Added ``apply_transformation()`` to Euclidean and hyperbolic polygons, which
-  moves a polygon by a similarity or by an orientation preserving hyperbolic
-  isometry (or anything the corresponding group converts), keeping the base
-  ring of the polygon.
-* Added ``apply_similarity()`` to Euclidean polygons, the counterpart of
+  moves a polygon by a similarity, which may reverse the orientation, or by an
+  orientation preserving hyperbolic isometry (or anything the corresponding
+  group converts), keeping the base ring of the polygon.
+* Added ``apply_similarity()`` to Euclidean polygons, which moves a polygon by
+  a similarity that may reverse the orientation, the counterpart of
   ``apply_isometry()`` for hyperbolic polygons.
 * Added the product of a hyperbolic isometry and a hyperbolic polygon,
   ``h * P`` and ``P * h``.

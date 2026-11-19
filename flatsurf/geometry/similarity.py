@@ -407,6 +407,18 @@ class Similarity(MultiplicativeGroupElement):
 
         The image of a vector is an immutable vector.
 
+        A polygon is pointed at its vertex 0 and its vertices are listed
+        counterclockwise from it. The image of a polygon with vertices `v_0,
+        \ldots, v_{n-1}` is the polygon pointed at the image of `v_0`, with
+        its vertices listed counterclockwise from it. If the similarity
+        preserves the orientation, these are the images of `v_0, \ldots,
+        v_{n-1}`. If it reverses the orientation, the images run clockwise and
+        the vertex `j` of the image is the image of `v_{-j \bmod n}`.
+        Consequently, the edge `e` of the polygon is the edge `e` of the image
+        if the similarity preserves the orientation, and the edge `(-1 - e)
+        \bmod n` of the image, traversed in the other direction, if it
+        reverses it.
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
@@ -416,6 +428,45 @@ class Similarity(MultiplicativeGroupElement):
             sage: v
             (2, 3)
             sage: v.is_immutable()
+            True
+
+        A similarity that reverses the orientation moves a polygon as well::
+
+            sage: from flatsurf import Polygon, euclidean_polygons
+            sage: T = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            sage: r = S((1, 0, 0, 0, -1))
+            sage: r
+            (x, y) |-> (x, -y)
+            sage: r(T)
+            Polygon(vertices=[(0, 0), (0, -1), (1, 0)])
+
+        The edge 0 of ``T``, from (0, 0) to (1, 0), is the edge 2 of the image,
+        traversed backwards::
+
+            sage: r(T).edge_vector(2)
+            (-1, 0)
+
+        A glide reflection::
+
+            sage: S((1, 0, 1, 0, -1))(T)
+            Polygon(vertices=[(1, 0), (1, -1), (2, 0)])
+
+        A dilative reflection of a non-convex polygon::
+
+            sage: N = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (1, 1), (0, 2)])
+            sage: S((2, 0, 0, 0, -1))(N)
+            Polygon(vertices=[(0, 0), (0, -4), (2, -2), (4, -4), (4, 0)])
+
+        The reflection in the diagonal fixes the square::
+
+            sage: Q = euclidean_polygons.square()
+            sage: S((0, 1, 0, 0, -1))(Q) == Q
+            True
+
+        The image under a similarity is the image under its matrix when the
+        similarity is linear::
+
+            sage: r(T) == matrix(QQ, [[1, 0], [0, -1]]) * T
             True
 
         TESTS::
@@ -439,6 +490,8 @@ class Similarity(MultiplicativeGroupElement):
             Polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).category()
             Category of convex simple euclidean polygons over Algebraic Real Field
+            sage: SG((1, 0, 0, 0, -1))(p, ring=AA).category()
+            Category of convex simple euclidean polygons over Algebraic Real Field
 
         A non-convex polygon is moved as well::
 
@@ -458,14 +511,13 @@ class Similarity(MultiplicativeGroupElement):
 
             from flatsurf import Polygon
 
-            try:
-                return Polygon(vertices=[self(v) for v in w.vertices()], base_ring=ring)
-            except ValueError:
-                if not self._sign.is_one():
-                    raise ValueError("Similarity must be orientation preserving.")
+            vertices = w.vertices()
+            if self._sign == -1:
+                # The images run clockwise, the polygon must be listed
+                # counterclockwise, starting from the image of vertex 0.
+                vertices = [vertices[0]] + list(reversed(vertices[1:]))
 
-                # Not sure why this would happen:
-                raise
+            return Polygon(vertices=[self(v) for v in vertices], base_ring=ring)
 
         if ring is None:
             if self._sign.is_one():
