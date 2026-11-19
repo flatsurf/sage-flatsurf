@@ -421,9 +421,7 @@ def test_form_segment_midpoint():
 
 
 def test_form_reflection():
-    from flatsurf.geometry.hyperbolic_surface_generators import _reflection
-
-    R = _reflection((1, 0), (0, 1), FORM)
+    R = reflection((1, 0), (0, 1), form=FORM)
     assert R == matrix(
         QQ,
         [

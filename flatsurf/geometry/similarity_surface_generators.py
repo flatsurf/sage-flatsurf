@@ -830,7 +830,11 @@ class SimilaritySurfaceGenerators:
         the edge `m` = ``mirror_edge`` has label 1. With `n` the number of
         vertices of ``P``, the vertex `j` of `Q` is the reflection of the
         vertex `2m + 1 - j \bmod n` of ``P``, so that the edge `j` of `Q` is
-        the reflection of the edge `2m - j \bmod n` of ``P``. The edge `e`
+        the reflection of the edge `2m - j \bmod n` of ``P``. The polygon
+        `Q` is the image of ``P`` under the reflection, as given by
+        :meth:`~flatsurf.geometry.categories.polygons.Polygons.ParentMethods.apply_transformation`,
+        with its vertex 0 moved to the reflection of the vertex `2m + 1 \bmod
+        n`, so that the edge `m` of `Q` is the edge `m` of ``P``. The edge `e`
         of ``P`` is glued to the edge `2m - e \bmod n` of `Q` for every `e`
         in ``glued_edges``, by the reflection in the line of `e` followed by
         the reflection in the line of `m`; the edge `m` of ``P`` is glued to
@@ -949,18 +953,14 @@ class SimilaritySurfaceGenerators:
             raise TypeError("P must be a Euclidean polygon")
 
         vertices = P.vertices()
-        m, permutation, gluings = _pillowcase_gluings(
-            len(vertices), glued_edges, mirror_edge
-        )
+        n = len(vertices)
+        m, _, gluings = _pillowcase_gluings(n, glued_edges, mirror_edge)
 
-        from sage.matrix.constructor import matrix
+        from flatsurf.geometry.similarity import reflection
 
-        p = vertices[m]
-        d = vertices[(m + 1) % len(vertices)] - p
-        reflection = 2 * matrix(d).transpose() * matrix(d) / (d * d) - 1
-
+        image = P.apply_transformation(reflection(vertices[m], vertices[(m + 1) % n]))
         Q = Polygon(
-            vertices=[p + reflection * (vertices[j] - p) for j in permutation],
+            vertices=[image.vertex((j - 2 * m - 1) % n) for j in range(n)],
             base_ring=P.base_ring(),
         )
 

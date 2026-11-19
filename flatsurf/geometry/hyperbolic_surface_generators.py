@@ -1224,62 +1224,6 @@ class HyperbolicPolygonsConstructor:
 hyperbolic_polygons = HyperbolicPolygonsConstructor()
 
 
-def _reflection(p, q, form=None):
-    r"""
-    Return the matrix of the reflection in the hyperbolic line through the
-    points of Klein coordinates ``p`` and ``q``, acting on the Klein lifts
-    `(x, y, 1)`; ``form`` is the quadratic form as in
-    :func:`~flatsurf.geometry.hyperbolic_isometry.tangent_vector_isometry`.
-
-    EXAMPLES:
-
-    The reflection in the edge 1 of the triangle `(0, 0), (1/2, 0), (1/3,
-    1/2)`, which sends the origin to `(36/49, 12/49)`::
-
-        sage: from flatsurf.geometry.hyperbolic_surface_generators import _reflection
-        sage: R = _reflection((1/2, 0), (1/3, 1/2))
-        sage: R
-        [-41/31 -24/31  36/31]
-        [-24/31  23/31  12/31]
-        [-36/31 -12/31  49/31]
-        sage: R.determinant(), (R^2).is_one()
-        (-1, True)
-        sage: R * vector((1/2, 0, 1))
-        (1/2, 0, 1)
-
-    With the form `Q = \mathrm{diag}(1, 2, -3)`, the reflection in the line
-    through `(1, 0)` and `(0, 1)`, which fixes `(1, 0, 1)`::
-
-        sage: R = _reflection((1, 0), (0, 1), diagonal_matrix([1, 2, -3]))
-        sage: R
-        [ -5/7 -12/7  12/7]
-        [ -6/7   1/7   6/7]
-        [ -4/7  -4/7  11/7]
-        sage: Q = diagonal_matrix([1, 2, -3])
-        sage: R.determinant(), (R^2).is_one(), R.transpose() * Q * R == Q
-        (-1, True, True)
-        sage: R * vector((1, 0, 1))
-        (1, 0, 1)
-
-    ALGORITHM:
-
-    With the matrix `Q` of the form (default: `\mathrm{diag}(1, 1, -1)`) and
-    `n = Q^{-1} (\hat p \times \hat q)` the normal, for the form, of the plane
-    of the lifts `\hat p, \hat q`, the reflection is `R = I - 2 n (Q n)^T /
-    \langle n, n \rangle`, where `\langle n, n \rangle = n^T Q n` is positive.
-    Its coefficients are rational in the coordinates of ``p`` and ``q`` and
-    the entries of the form.
-
-    """
-    from flatsurf.geometry.hyperbolic_isometry import _minkowski_form
-
-    p_hat = vector((p[0], p[1], 1))
-    q_hat = vector((q[0], q[1], 1))
-    Q = _minkowski_form(p_hat.base_ring().fraction_field(), form)
-    n = Q.inverse() * p_hat.cross_product(q_hat)
-    return identity_matrix(3) - 2 * matrix(n).transpose() * matrix(Q * n) / (n * Q * n)
-
-
 def _pants_polygon(boundary_traces, cone_orders):
     r"""
     Return the field, the quadratic form and the Klein coordinates of the
@@ -1420,10 +1364,13 @@ def _mirror(P, glued_edges, mirror_edge):
 
     OUTPUT:
 
-    A pair ``(Q, gluings)``: the reflection `Q` of ``P`` in the line of the
-    mirror edge, a polygon over the base ring of ``P``, and the list of
-    the pairs of edges ``(label, edge)`` to glue, ``P`` having the label 0
-    and `Q` the label 1.
+    A pair ``(Q, gluings)``: the polygon `Q`, over the base ring of ``P``,
+    and the list of the pairs of edges ``(label, edge)`` to glue, ``P``
+    having the label 0 and `Q` the label 1. The polygon `Q` is the image of
+    ``P`` under the reflection in the line of the mirror edge `m` (see
+    :meth:`~flatsurf.geometry.categories.polygons.Polygons.ParentMethods.apply_transformation`)
+    with its vertex 0 moved to the reflection of the vertex `2m + 1 \bmod n`
+    of ``P``.
 
     EXAMPLES::
 
@@ -1449,20 +1396,16 @@ def _mirror(P, glued_edges, mirror_edge):
     """
     from flatsurf.geometry.similarity_surface_generators import _pillowcase_gluings
 
-    vertices = [v.coordinates(model="klein") for v in P.vertices()]
-    m, permutation, gluings = _pillowcase_gluings(
-        len(vertices), glued_edges, mirror_edge
-    )
+    from flatsurf.geometry.hyperbolic_isometry import reflection
 
-    reflection = _reflection(
-        vertices[m], vertices[(m + 1) % len(vertices)], P.parent()._form
-    )
+    n = len(P.vertices())
+    m, _, gluings = _pillowcase_gluings(n, glued_edges, mirror_edge)
 
-    mirrored = []
-    for j in permutation:
-        x, y, z = reflection * vector((vertices[j][0], vertices[j][1], 1))
-        mirrored.append((x / z, y / z))
-    return P.parent().polygon(vertices=mirrored), gluings
+    image = P.apply_transformation(reflection(P.vertex(m), P.vertex((m + 1) % n)))
+    Q = P.parent().polygon(
+        vertices=[image.vertex((j - 2 * m - 1) % n) for j in range(n)]
+    )
+    return Q, gluings
 
 
 def _standard_surface(surface, half_cuffs):
@@ -1950,7 +1893,11 @@ class HyperbolicSurfaceGenerators:
         the edge `m` = ``mirror_edge`` has label 1. With `n` the number of
         vertices of ``P``, the vertex `j` of `Q` is the reflection of the
         vertex `2m + 1 - j \bmod n` of ``P``, so that the edge `j` of `Q` is
-        the reflection of the edge `2m - j \bmod n` of ``P``. The edge `e`
+        the reflection of the edge `2m - j \bmod n` of ``P``. The polygon
+        `Q` is the image of ``P`` under the reflection, as given by
+        :meth:`~flatsurf.geometry.categories.polygons.Polygons.ParentMethods.apply_transformation`,
+        with its vertex 0 moved to the reflection of the vertex `2m + 1 \bmod
+        n`, so that the edge `m` of `Q` is the edge `m` of ``P``. The edge `e`
         of ``P`` is glued to the edge `2m - e \bmod n` of `Q` for every `e`
         in ``glued_edges``, by the reflection in the line of `e` followed by
         the reflection in the line of `m`; the edge `m` of ``P`` is glued to
@@ -1998,9 +1945,9 @@ class HyperbolicSurfaceGenerators:
         the reflection in the line of the edge 1; the edge 1 is glued by the
         identity::
 
-            sage: from flatsurf.geometry.hyperbolic_surface_generators import _reflection
+            sage: from flatsurf.geometry.hyperbolic_isometry import reflection
             sage: vertices = [v.coordinates(model="klein") for v in P.vertices()]
-            sage: R = [_reflection(vertices[e], vertices[(e + 1) % 3]) for e in range(3)]
+            sage: R = [reflection(vertices[e], vertices[(e + 1) % 3]) for e in range(3)]
             sage: S.edge_transformation(0, 0)
             [-41/31  24/31  36/31]
             [-24/31 -23/31  12/31]
