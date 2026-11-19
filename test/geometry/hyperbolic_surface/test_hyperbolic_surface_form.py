@@ -275,7 +275,7 @@ def test_change_ring(S3, K3):
 
 def test_lifts_on_G3():
     G3 = HyperbolicIsometryGroup(QQ, form=[1, 2, -3])
-    one, half_turn, rotation, hyperbolic = G3.some_elements()
+    one, half_turn, rotation, hyperbolic = G3.some_elements()[:4]
     assert half_turn.matrix() == diagonal_matrix(QQ, [-1, -1, 1])
 
     x, s = one._half_lift()
@@ -332,7 +332,7 @@ def test_pillowcase_on_H31(H31):
 @pytest.mark.parametrize("b, c", [(2, 3), (3, 1), (1, 1), (6, 10)])
 def test_lift_is_a_homomorphism(b, c):
     G = HyperbolicIsometryGroup(QQ, form=[1, b, -c])
-    elements = G.some_elements()
+    elements = [g for g in G.some_elements() if g.is_orientable()]
     assert len(elements) <= 5
 
     def trace(x):

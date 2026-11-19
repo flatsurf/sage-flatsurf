@@ -4,6 +4,8 @@
 
 * Added ``reflection()`` in ``flatsurf.geometry.similarity``, the affine matrix of the reflection in the line through two points, and the keyword ``orientation_preserving`` of ``similarity_from_vectors()`` to get the orientation-reversing similarity that maps one vector to another.
 
+* Added orientation-reversing isometries (reflections and glide reflections) to ``HyperbolicIsometryGroup``, which is now the group ``O(Q)⁺`` instead of ``SO(Q)⁺``, with ``det()``, ``is_orientable()``, ``is_reflection()``, ``is_glide_reflection()`` and ``axis()`` of hyperbolic isometries, the geodesic preserved by a hyperbolic isometry, a glide reflection or a reflection.
+
 **Changed:**
 
 * Changed calling an orientation-reversing similarity on a polygon to return its image, pointed at the image of vertex 0 with its vertices counterclockwise, as ``matrix * P`` already did, instead of raising a ``ValueError``.

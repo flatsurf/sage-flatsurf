@@ -114,7 +114,7 @@ class HyperbolicPlaneIsomorphism(Morphism):
         sage: f(g).trace()
         1/3
         sage: f(g).parent()
-        Group of orientation preserving isometries of the hyperbolic plane over Rational Field
+        Group of isometries of the hyperbolic plane over Rational Field
 
     It sends the surface glued from the kite to a surface of the plane of `x^2
     + y^2 - z^2`::
@@ -542,7 +542,7 @@ class HyperbolicPlaneIsomorphism(Morphism):
             [-5/12*a       0     7/4]
             sage: G = g(G3.subgroup([r, s]))
             sage: G
-            Subgroup with 2 generators of Group of orientation preserving isometries of the hyperbolic plane over Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878?
+            Subgroup with 2 generators of Group of isometries of the hyperbolic plane over Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878?
             sage: G.gens()
             ([-31/18  7/9*a -35/18]
              [-7/9*a   -1/3 -5/9*a]
@@ -566,7 +566,7 @@ class HyperbolicPlaneIsomorphism(Morphism):
             sage: f(G3.subgroup([r]))
             Traceback (most recent call last):
             ...
-            ValueError: Subgroup with 1 generator of Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2 does not lie in the domain of this isomorphism
+            ValueError: Subgroup with 1 generator of Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2 does not lie in the domain of this isomorphism
 
         """
         from flatsurf.geometry.categories import HyperbolicConeSurfaces
@@ -683,16 +683,15 @@ class HyperbolicPlaneIsomorphism(Morphism):
 
     def _isometry_groups(self):
         r"""
-        Return the groups of orientation preserving isometries of the domain
-        and of the codomain.
+        Return the groups of isometries of the domain and of the codomain.
 
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
             sage: H3.isomorphism(H3)._isometry_groups()
-            (Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2,
-             Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2)
+            (Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2,
+             Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2)
 
         """
         from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
@@ -716,9 +715,9 @@ class HyperbolicPlaneIsomorphism(Morphism):
             sage: f = H8.isomorphism(H3)
             sage: phi = f.isometry_group_morphism()
             sage: phi.domain()
-            Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 8*y^2 - 12*z^2
+            Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 8*y^2 - 12*z^2
             sage: phi.codomain()
-            Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+            Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
             sage: g = phi.domain().an_element()
             sage: phi(g) == f(g)
             True

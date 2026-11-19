@@ -6161,7 +6161,7 @@ class HyperbolicConvexSet(SageObject):
 
         .. MATH::
 
-            z \mapsto \frac{a\bar{z} + b}{a\bar{z} + d}
+            z \mapsto \frac{a\bar{z} + b}{c\bar{z} + d}
 
         if the determinant is negative. Note that these maps are invariant
         under scaling the matrix with a non-zero real.

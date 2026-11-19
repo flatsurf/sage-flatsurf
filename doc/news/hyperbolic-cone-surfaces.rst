@@ -3,8 +3,8 @@
 * Added compact hyperbolic polygons, ``HyperbolicPolygon``, made by
   ``HyperbolicPlane.polygon(vertices=...)``; their angles, in multiples of
   ``2π``, and their area, in units of ``2π``, are exact when rational.
-* Added ``HyperbolicIsometryGroup``, the group of orientation preserving
-  isometries of the hyperbolic plane as matrices of ``SO(2, 1)``, with
+* Added ``HyperbolicIsometryGroup``, the group of isometries of the
+  hyperbolic plane as matrices of ``O(2, 1)⁺``, with
   ``tangent_vector_isometry()``, ``segment_isometry()`` and
   ``psl2_matrix()``. Isometries act on points and multiply over the pushout
   of mixed base rings.

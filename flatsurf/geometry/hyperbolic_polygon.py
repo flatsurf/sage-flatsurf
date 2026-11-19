@@ -1157,19 +1157,18 @@ class HyperbolicPolygon(Parent):
 
     def _transformation_group(self):
         r"""
-        Return the group of the orientation preserving isometries of the
-        hyperbolic plane, over the base ring of this polygon, with the
-        quadratic form of its plane.
+        Return the group of the isometries of the hyperbolic plane, over the
+        base ring of this polygon, with the quadratic form of its plane.
 
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
             sage: H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])._transformation_group()
-            Group of orientation preserving isometries of the hyperbolic plane over Rational Field
+            Group of isometries of the hyperbolic plane over Rational Field
             sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
             sage: H3.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])._transformation_group()
-            Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+            Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
 
         """
         from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup

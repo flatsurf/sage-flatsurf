@@ -79,12 +79,12 @@ def test_normalisation_and_printing(G3, H3):
     assert HyperbolicIsometryGroup(QQ).hyperbolic_plane() is HyperbolicPlane(QQ)
     assert (
         repr(G3)
-        == "Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form "
+        == "Group of isometries of the hyperbolic plane over Rational Field with form "
         + FORM3
     )
     assert (
         repr(HyperbolicIsometryGroup(QQ))
-        == "Group of orientation preserving isometries of the hyperbolic plane over Rational Field"
+        == "Group of isometries of the hyperbolic plane over Rational Field"
     )
 
 
@@ -102,20 +102,27 @@ def test_boost_and_inverse(G3, B):
 
 def test_refusals(G3, B):
     G = HyperbolicIsometryGroup(QQ)
-    with pytest.raises(ValueError, match=re.escape("matrix is not in SO(2, 1)+")):
+    with pytest.raises(ValueError, match=re.escape("matrix is not in O(2, 1)+")):
         G(B)
-    with pytest.raises(ValueError, match=re.escape(f"matrix is not in SO({FORM3})+")):
+    with pytest.raises(ValueError, match=re.escape(f"matrix is not in O({FORM3})+")):
         G3([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
     with pytest.raises(ValueError, match=HALF_PLANE):
         G3(matrix(QQ, [[2, 0], [0, 1]]))
-    with pytest.raises(ValueError, match=re.escape(f"matrix is not in SO({FORM3})+")):
+    with pytest.raises(ValueError, match=re.escape(f"matrix is not in O({FORM3})+")):
         G3(G.an_element())
-    with pytest.raises(ValueError, match=re.escape("matrix is not in SO(2, 1)+")):
+    with pytest.raises(ValueError, match=re.escape("matrix is not in O(2, 1)+")):
         G(G3(B))
 
 
 def test_some_elements(G3):
-    assert [g.trace() for g in G3.some_elements()] == [3, -1, QQ(1) / 3, QQ(51) / 13]
+    assert [g.trace() for g in G3.some_elements()] == [
+        3,
+        -1,
+        QQ(1) / 3,
+        QQ(51) / 13,
+        1,
+        QQ(25) / 13,
+    ]
 
     rotation = G3.some_elements()[2]
     assert rotation.matrix() == matrix(

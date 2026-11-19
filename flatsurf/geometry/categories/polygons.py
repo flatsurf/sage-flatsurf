@@ -656,11 +656,11 @@ class Polygons(Category_over_base_ring):
                 sage: S.apply_transformation(h)
                 Traceback (most recent call last):
                 ...
-                ValueError: element in Group of orientation preserving isometries of the hyperbolic plane over Rational Field cannot be used to create element in Similarity group over Rational Field
+                ValueError: element in Group of isometries of the hyperbolic plane over Rational Field cannot be used to create element in Similarity group over Rational Field
                 sage: P.apply_transformation(g)
                 Traceback (most recent call last):
                 ...
-                ValueError: element in Similarity group over Rational Field cannot be used to create element in Group of orientation preserving isometries of the hyperbolic plane over Rational Field
+                ValueError: element in Similarity group over Rational Field cannot be used to create element in Group of isometries of the hyperbolic plane over Rational Field
 
             So is a transformation over a ring that does not convert into the
             base ring::

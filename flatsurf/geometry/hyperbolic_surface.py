@@ -220,7 +220,7 @@ class OrientedHyperbolicSurface(Surface_base):
             [ 1/2 -1/2    0]
             [   0    0    1]
             sage: S.edge_transformation(0, 0).parent()
-            Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - z^2
+            Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - z^2
             sage: S(0, 0).angle()
             1/3
             sage: S(0, 1).angle(numerical=True)  # abs tol 1e-12

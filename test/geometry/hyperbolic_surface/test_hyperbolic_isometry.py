@@ -305,7 +305,7 @@ def test_constructor_errors(G):
     with pytest.raises(ValueError):
         G([[1, 0, 0], [0, 1, 0], [0, 0, -1]])
     with pytest.raises(ValueError):
-        G(matrix(QQ, [[1, 0], [0, -1]]))
+        G(matrix(QQ, [[1, 1], [1, 1]]))
 
 
 def test_polygon_transformations(H, G):

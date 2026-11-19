@@ -3256,7 +3256,7 @@ class FuchsianGroupGenerators:
             sage: from flatsurf import fuchsian_groups
             sage: G = fuchsian_groups.triangle(3, 4, 4)
             sage: G
-            Subgroup with 3 generators of Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - 6*z^2
+            Subgroup with 3 generators of Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - 6*z^2
             sage: G.gens()
             ([-1/2 -3/2    0]
              [ 1/2 -1/2    0]

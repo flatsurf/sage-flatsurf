@@ -728,7 +728,7 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                     [ 2/3 -1/3    0]
                     [   0    0    1]
                     sage: g.parent()
-                    Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+                    Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
                     sage: S.edge_transformation(0, 1).trace()
                     -7/15
                     sage: TestSuite(S).run()

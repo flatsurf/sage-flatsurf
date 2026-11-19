@@ -3,8 +3,8 @@ The holonomy representation of a cone surface.
 
 The holonomy representation of a flat or hyperbolic cone surface `S` built
 from finitely many polygons is the morphism from the fundamental group of `S`
-punctured at its vertices to the group of orientation preserving isometries
-of the plane (Euclidean or hyperbolic) that sends a closed walk to the
+punctured at its vertices to the group of isometries of the plane (Euclidean
+or hyperbolic) that sends a closed walk to the orientation preserving
 isometry obtained by developing the polygons it crosses.
 
 Conventions:
@@ -117,7 +117,7 @@ def holonomy_representation(surface, base_label=None, punctured_vertices=True):
         sage: S.glue((0, 1), (0, 1))
         sage: S.set_immutable()
         sage: holonomy_representation(S).codomain()
-        Group of orientation preserving isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - z^2
+        Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 3*y^2 - z^2
 
     TESTS::
 
@@ -240,7 +240,7 @@ class HolonomyRepresentation(Morphism):
         sage: phi
         Holonomy morphism:
           From: Fundamental group of Genus 0 Hyperbolic Surface built from a quadrilateral punctured at all of its vertices based at polygon 0
-          To:   Group of orientation preserving isometries of the hyperbolic plane over Rational Field
+          To:   Group of isometries of the hyperbolic plane over Rational Field
         sage: loops = phi.domain().vertex_loops()
         sage: [phi(loops[S(0, i)]).trace() for i in range(3)]
         [1, -1, 5/3]
