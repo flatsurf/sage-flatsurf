@@ -13,9 +13,9 @@ The :class:`HyperbolicIsometryGroup` over a field `K` is the group of those
 matrices with entries in `K`. For a hyperbolic plane with another quadratic
 form `Q = \mathrm{diag}(1, b, -c)`, whose Klein model is the disk `x^2 + b
 y^2 < c`, the group is `\mathrm{O}(Q)^+`, the matrices with `M^T Q M = Q`
-and `M_{2,2} > 0`. The functions :func:`tangent_vector_isometry`
-and :func:`segment_isometry` build such matrices in closed form, and
-:func:`segment_midpoint` gives the midpoint of a segment.
+and `M_{2,2} > 0`. The functions :func:`tangent_vector_isometry`,
+:func:`segment_isometry` and :func:`reflection` build such matrices in closed
+form, and :func:`segment_midpoint` gives the midpoint of a segment.
 
 EXAMPLES:
 
@@ -360,11 +360,11 @@ def _form_reflection(n, Q):
     )
 
 
-def tangent_vector_isometry(u, v, ring=None, form=None):
+def tangent_vector_isometry(u, v, ring=None, form=None, orientation_preserving=True):
     r"""
-    Return the matrix of the orientation preserving isometry of the
-    hyperbolic plane that sends the tangent vector ``u`` to the tangent
-    vector ``v``.
+    Return the matrix of the isometry of the hyperbolic plane that sends the
+    tangent vector ``u`` to the tangent vector ``v``, orientation preserving
+    or reversing.
 
     INPUT:
 
@@ -384,13 +384,21 @@ def tangent_vector_isometry(u, v, ring=None, form=None):
       hyperbolic plane. The points of hyperbolic planes must all have this
       form.
 
+    - ``orientation_preserving`` -- a boolean (default: ``True``); whether
+      the isometry preserves the orientation. If ``False``, the result is the
+      unique orientation reversing isometry that sends ``u`` to ``v``; when
+      ``u`` and ``v`` are equal, this is the reflection in the geodesic
+      tangent to ``u``.
+
     OUTPUT:
 
-    An immutable 3×3 matrix of determinant `1` over ``ring`` that preserves
-    the form, `M^T Q M = Q`; for the default form it lies in `\mathrm{SO}(2,
-    1)^+`. The group acts simply transitively on the unit tangent
-    bundle; the Klein chart preserves the orientation, so that a ray in the
-    chart is a unit tangent vector: the matrix is unique.
+    An immutable 3×3 matrix over ``ring`` that preserves the form, `M^T Q M =
+    Q`, of determinant `1`, or `-1` when ``orientation_preserving`` is
+    ``False``; for the default form it lies in `\mathrm{O}(2, 1)^+`. The
+    orientation preserving isometries act simply transitively on the unit
+    tangent bundle; the Klein chart preserves the orientation, so that a ray
+    in the chart is a unit tangent vector: the matrix is unique, and so is the
+    orientation reversing one.
 
     ALGORITHM:
 
@@ -416,6 +424,11 @@ def tangent_vector_isometry(u, v, ring=None, form=None):
     N, N\rangle) (P, T, N)^T Q`. Since `\lambda` is the last entry of `M P`
     and `\mu T' = M T`, the matrix is defined over ``ring`` if and only if
     `\lambda` and `\mu` are.
+
+    The orientation reversing isometry is `M R` for the reflection `R` in the
+    geodesic tangent to ``u``, which fixes `P` and `T` and sends `N` to `-N`:
+    it is the same product with the column `-\lambda\mu N'`. It is defined
+    over ``ring`` exactly when `M` is.
 
     EXAMPLES:
 
@@ -475,6 +488,35 @@ def tangent_vector_isometry(u, v, ring=None, form=None):
         Traceback (most recent call last):
         ...
         ValueError: (1, 1) is not a finite point of the hyperbolic plane
+
+    The orientation reversing isometry that sends the horizontal direction at
+    the origin to the vertical one is the reflection in the line `y = x`,
+    where the orientation preserving one is a quarter turn::
+
+        sage: M = tangent_vector_isometry(((0, 0), (1, 0)), ((0, 0), (0, 1)), orientation_preserving=False)
+        sage: M
+        [0 1 0]
+        [1 0 0]
+        [0 0 1]
+        sage: M.determinant()
+        -1
+
+    It is the orientation preserving one composed with the reflection in the
+    geodesic tangent to the source, here the horizontal axis::
+
+        sage: from flatsurf.geometry.hyperbolic_isometry import reflection
+        sage: M == tangent_vector_isometry(((0, 0), (1, 0)), ((0, 0), (0, 1))) * reflection((0, 0), (1/2, 0))
+        True
+
+    With another form::
+
+        sage: M = tangent_vector_isometry(((-1, 0), (1, 0)), ((1, 0), (1, 0)), form=Q, orientation_preserving=False)
+        sage: M
+        [ 2  0  3]
+        [ 0 -1  0]
+        [ 1  0  2]
+        sage: M.determinant(), M.transpose() * Q * M == Q
+        (-1, True)
 
     TESTS::
 
@@ -538,6 +580,11 @@ def tangent_vector_isometry(u, v, ring=None, form=None):
     if mu is None:
         raise _not_defined_over(ring, mu2)
 
+    if not orientation_preserving:
+        # The reflection in the geodesic tangent to u fixes P and T and
+        # negates N.
+        N_ = -N_
+
     source = matrix(ring, [P, T, N]).transpose()
     target = matrix(ring, [lam * P_, mu * T_, lam * mu * N_]).transpose()
 
@@ -588,11 +635,11 @@ def _segment_endpoints(segment):
     return start, end
 
 
-def segment_isometry(source, target, ring=None, form=None):
+def segment_isometry(source, target, ring=None, form=None, orientation_preserving=True):
     r"""
-    Return the matrix of the orientation preserving isometry of the
-    hyperbolic plane that sends the start of ``source`` to the start of
-    ``target`` and the end of ``source`` to the end of ``target``.
+    Return the matrix of the isometry of the hyperbolic plane, orientation
+    preserving or reversing, that sends the start of ``source`` to the start
+    of ``target`` and the end of ``source`` to the end of ``target``.
 
     INPUT:
 
@@ -605,10 +652,17 @@ def segment_isometry(source, target, ring=None, form=None):
     - ``form`` -- a quadratic form or ``None`` (default: ``None``); as in
       :func:`tangent_vector_isometry`
 
+    - ``orientation_preserving`` -- a boolean (default: ``True``); whether
+      the isometry preserves the orientation. If ``False``, the result is the
+      unique orientation reversing isometry that sends ``source`` to
+      ``target``; when they are equal, this is the reflection in the line of
+      ``source``.
+
     OUTPUT:
 
-    An immutable 3×3 matrix of `\mathrm{SO}(2, 1)^+` over ``ring``, or of the
-    group of the form.
+    An immutable 3×3 matrix over ``ring`` of determinant `1`, or `-1` when
+    ``orientation_preserving`` is ``False``, of `\mathrm{O}(2, 1)^+`, or of
+    the group of the form.
 
     ALGORITHM:
 
@@ -617,7 +671,9 @@ def segment_isometry(source, target, ring=None, form=None):
     Q, Q\rangle)`. The isometry is then the one of
     :func:`tangent_vector_isometry` sending the tangent vector at the start
     of ``source`` pointing to its end to the one of ``target``: geodesics are
-    straight lines in the Klein model.
+    straight lines in the Klein model. The orientation reversing isometry is
+    the orientation preserving one composed with the reflection in the line
+    of ``source``.
 
     EXAMPLES:
 
@@ -687,6 +743,37 @@ def segment_isometry(source, target, ring=None, form=None):
         True
         sage: M * vector((0, 0, 1)), M * vector((1/2, 0, 1))
         ((1/3*r, 0, 2/3*r), (0, 0, 1/2*r))
+
+    The orientation reversing pairing of the sides 1 and 2 of the Lambert
+    quadrilateral is the reflection in the diagonal `y = x`::
+
+        sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+        sage: M = segment_isometry(P.edge_segment(1), -P.edge_segment(2), orientation_preserving=False)
+        sage: M
+        [0 1 0]
+        [1 0 0]
+        [0 0 1]
+        sage: M * vector((1/2, 0, 1)), M * vector((1/2, 1/2, 1))
+        ((0, 1/2, 1), (1/2, 1/2, 1))
+
+    The orientation reversing isometry from a segment to itself is the
+    reflection in its line::
+
+        sage: from flatsurf.geometry.hyperbolic_isometry import reflection
+        sage: M = segment_isometry(P.edge_segment(1), P.edge_segment(1), orientation_preserving=False)
+        sage: M
+        [-5/3    0  4/3]
+        [   0    1    0]
+        [-4/3    0  5/3]
+        sage: M == reflection((1/2, 0), (1/2, 1/2))
+        True
+
+    It is defined over the same ring as the orientation preserving one::
+
+        sage: segment_isometry(((0, 0), (1/2, 0)), ((1/2, 0), (0, 0)), orientation_preserving=False)
+        Traceback (most recent call last):
+        ...
+        ValueError: isometry is not defined over Rational Field; adjoin a square root of 4/3
 
     With another form, the rotation of the corresponding example of
     :func:`tangent_vector_isometry`::
@@ -758,7 +845,13 @@ def segment_isometry(source, target, ring=None, form=None):
     if _cosh2(a, b, Q) != _cosh2(c, d, Q):
         raise ValueError("segments do not have the same length")
 
-    return tangent_vector_isometry((a, b - a), (c, d - c), ring=ring, form=Q)
+    return tangent_vector_isometry(
+        (a, b - a),
+        (c, d - c),
+        ring=ring,
+        form=Q,
+        orientation_preserving=orientation_preserving,
+    )
 
 
 def segment_midpoint(a, b, ring=None, form=None):
@@ -840,6 +933,154 @@ def segment_midpoint(a, b, ring=None, form=None):
     midpoint = (a + lam * b) / (1 + lam)
     midpoint.set_immutable()
     return midpoint
+
+
+def reflection(p, q, ring=None, form=None):
+    r"""
+    Return the matrix of the reflection of the hyperbolic plane in the line
+    through ``p`` and ``q``.
+
+    INPUT:
+
+    - ``p``, ``q`` -- two distinct finite points of the hyperbolic plane, or
+      pairs or vectors of Klein coordinates
+
+    - ``ring`` -- a field or ``None`` (default: ``None``); the field of the
+      result, by default the fraction field of the pushout of the rings of
+      the coordinates
+
+    - ``form`` -- a quadratic form or ``None`` (default: ``None``); as in
+      :func:`tangent_vector_isometry`
+
+    OUTPUT:
+
+    An immutable 3×3 matrix `M` of determinant `-1` over ``ring`` that
+    preserves the matrix `Q` of the form, `M^T Q M = Q`, and fixes the lifts
+    of ``p`` and ``q``; ``HyperbolicIsometryGroup(K, form)(M)`` is the
+    corresponding element of the group of isometries.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.hyperbolic_isometry import reflection
+        sage: R = reflection((1/2, 0), (1/3, 1/2))
+        sage: R
+        [-41/31 -24/31  36/31]
+        [-24/31  23/31  12/31]
+        [-36/31 -12/31  49/31]
+        sage: R.determinant()
+        -1
+        sage: R * vector((1/2, 0, 1)), R * vector((1/3, 1/2, 1))
+        ((1/2, 0, 1), (1/3, 1/2, 1))
+
+    Points of a hyperbolic plane are accepted; the reflection in the
+    imaginary axis of the upper half plane is `x \mapsto -x` in the Klein
+    model::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: H = HyperbolicPlane(QQ)
+        sage: H(I).coordinates(model="klein"), H(2*I).coordinates(model="klein")
+        ((0, 0), (0, 3/5))
+        sage: reflection(H(I), H(2*I))
+        [-1  0  0]
+        [ 0  1  0]
+        [ 0  0  1]
+
+    The corresponding element of the group of isometries::
+
+        sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+        sage: g = HyperbolicIsometryGroup(QQ)(R)
+        sage: g.is_reflection()
+        True
+        sage: (g * g).is_one()
+        True
+
+    With another form, the hyperbolic plane is the disk `x^2 + 2 y^2 < 3`::
+
+        sage: Q = diagonal_matrix([1, 2, -3])
+        sage: R = reflection((1, 0), (0, 1), form=Q)
+        sage: R
+        [ -5/7 -12/7  12/7]
+        [ -6/7   1/7   6/7]
+        [ -4/7  -4/7  11/7]
+        sage: R.transpose() * Q * R == Q
+        True
+
+    The two points must differ and be finite::
+
+        sage: reflection((1/2, 0), (1/2, 0))
+        Traceback (most recent call last):
+        ...
+        ValueError: the points must be distinct
+        sage: reflection((0, 0), (1, 0))
+        Traceback (most recent call last):
+        ...
+        ValueError: (1, 0) is not a finite point of the hyperbolic plane
+
+    TESTS:
+
+    The reflections in the sides of the triangle of angles `\pi/4`, `\pi/6`
+    and `\pi/14`, over a cubic field, from the points of its hyperbolic
+    plane::
+
+        sage: from flatsurf import hyperbolic_polygons
+        sage: from flatsurf.geometry.hyperbolic_isometry import _form_reflection
+        sage: T = hyperbolic_polygons.triangle(1/4, 1/6, 1/14)
+        sage: Q = T._transformation_group().quadratic_form()
+        sage: V = T.vertices()
+        sage: L = [vector(list(v.coordinates(model="klein")) + [1]) for v in V]
+        sage: all(reflection(V[i], V[(i + 1) % 3]) == _form_reflection(Q.inverse() * L[i].cross_product(L[(i + 1) % 3]), Q) for i in range(3))
+        True
+
+    The points must have the form of the computation::
+
+        sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+        sage: reflection(H3.point(0, 0, model="klein"), H(2*I))
+        Traceback (most recent call last):
+        ...
+        ValueError: the points lie in hyperbolic planes of different forms
+        sage: reflection(H(I), H(2*I), form=[1, 2, -3])
+        Traceback (most recent call last):
+        ...
+        ValueError: the form differs from the form of the hyperbolic plane of the points
+        sage: reflection(H(0), H(I))
+        Traceback (most recent call last):
+        ...
+        ValueError: 0 is not a finite point of the hyperbolic plane
+
+    ALGORITHM:
+
+    With `\hat p = (p, 1)` and `\hat q = (q, 1)` the lifts of the points and
+    `Q` the matrix of the form, the normal `n = Q^{-1} (\hat p \times \hat q)`
+    satisfies `\langle n, x\rangle = \det(\hat p, \hat q, x)`, so that `n^\perp`
+    is the plane of the lifts. That plane holds a timelike vector, so `n` is
+    spacelike, `\langle n, n\rangle > 0`, and the reflection `1 - 2 n n^T Q /
+    \langle n, n\rangle` fixes `n^\perp`. It is rational in the coordinates
+    and in the form.
+
+    """
+    from sage.modules.free_module_element import vector
+
+    points = [p, q]
+    p = _klein_vector(p)
+    q = _klein_vector(q)
+
+    ring = _common_ring([p, q], ring)
+    p, q = (w.change_ring(ring) for w in (p, q))
+
+    Q = _points_form(points, form, ring)
+
+    for point in (p, q):
+        if not _minkowski(_lift(point), _lift(point), Q) < 0:
+            raise ValueError(f"{point} is not a finite point of the hyperbolic plane")
+
+    if p == q:
+        raise ValueError("the points must be distinct")
+
+    n = Q.inverse() * vector(ring, _lift(p)).cross_product(vector(ring, _lift(q)))
+
+    M = _form_reflection(n, Q)
+    M.set_immutable()
+    return M
 
 
 class HyperbolicIsometry(MultiplicativeGroupElement):

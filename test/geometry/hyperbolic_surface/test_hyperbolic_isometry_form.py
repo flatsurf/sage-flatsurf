@@ -33,7 +33,9 @@ from sage.all import AA, QQ, I, diagonal_matrix, dumps, loads, matrix
 from flatsurf import HyperbolicPlane
 from flatsurf.geometry.hyperbolic_isometry import (
     HyperbolicIsometryGroup,
+    reflection,
     segment_isometry,
+    tangent_vector_isometry,
 )
 
 
@@ -283,4 +285,55 @@ def test_cyclic_quotient_half_turn(H3):
     )
     assert R.cyclic_quotient(2) == H3.polygon(
         vertices=[(-QQ(1) / 2, -QQ(1) / 4), (QQ(1) / 2, -QQ(1) / 4), (QQ(1) / 2, QQ(1) / 4)]
+    )
+
+
+def test_reflection(H3, G3):
+    Q = H3.quadratic_form()
+    R = reflection((1, 0), (0, 1), form=Q)
+    assert R == matrix(QQ, [[-5, -12, 12], [-6, 1, 6], [-4, -4, 11]]) / 7
+    assert R.determinant() == -1
+    assert (R * R).is_one()
+    assert R.transpose() * Q * R == Q
+    assert R * matrix(QQ, [[1], [0], [1]]) == matrix(QQ, [[1], [0], [1]])
+    assert R * matrix(QQ, [[0], [1], [1]]) == matrix(QQ, [[0], [1], [1]])
+
+    assert reflection((1, 0), (0, 1), form=[2, 4, -6]) == R
+    assert reflection(point(H3, 1, 0), point(H3, 0, 1)) == R
+    assert reflection(point(H3, 1, 0), (0, 1)) == R
+    assert G3(R).is_reflection()
+    assert (G3(R) * G3(R)).is_one()
+
+
+def test_reflection_refusals(H3):
+    H = HyperbolicPlane(QQ)
+    with pytest.raises(ValueError, match="different forms"):
+        reflection(point(H3, 0, 0), H(2 * I))
+    with pytest.raises(ValueError, match="the form differs"):
+        reflection(point(H3, 0, 0), point(H3, 1, 0), form=[1, 1, -1])
+    with pytest.raises(ValueError, match="not a finite point"):
+        reflection((0, 0), (2, 0), form=[1, 2, -3])
+    with pytest.raises(ValueError, match="the points must be distinct"):
+        reflection(point(H3, 1, 0), (1, 0))
+
+
+def test_reversing_isometries(H3, B):
+    Q = H3.quadratic_form()
+    u = ((-1, 0), (1, 0))
+    v = ((1, 0), (1, 0))
+    M = tangent_vector_isometry(u, v, form=Q, orientation_preserving=False)
+    assert M == matrix(QQ, [[2, 0, 3], [0, -1, 0], [1, 0, 2]])
+    assert M.determinant() == -1
+    assert M.transpose() * Q * M == Q
+    assert M == B * reflection((-1, 0), (0, 0), form=Q)
+
+    source = (point(H3, 0, 0), point(H3, 1, 0))
+    target = (point(H3, 0, 0), point(H3, QQ(1) / 3, QQ(2) / 3))
+    M = segment_isometry(source, target, orientation_preserving=False)
+    assert M == matrix(QQ, [[QQ(1) / 3, QQ(4) / 3, 0], [QQ(2) / 3, -QQ(1) / 3, 0], [0, 0, 1]])
+    assert M.determinant() == -1
+    assert M.transpose() * Q * M == Q
+    assert M == segment_isometry(source, target) * reflection(*source)
+    assert segment_isometry(source, source, orientation_preserving=False) == reflection(
+        *source
     )

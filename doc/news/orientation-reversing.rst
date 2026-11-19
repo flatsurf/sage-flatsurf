@@ -6,6 +6,8 @@
 
 * Added orientation-reversing isometries (reflections and glide reflections) to ``HyperbolicIsometryGroup``, which is now the group ``O(Q)⁺`` instead of ``SO(Q)⁺``, with ``det()``, ``is_orientable()``, ``is_reflection()``, ``is_glide_reflection()`` and ``axis()`` of hyperbolic isometries, the geodesic preserved by a hyperbolic isometry, a glide reflection or a reflection.
 
+* Added ``reflection()`` in ``flatsurf.geometry.hyperbolic_isometry``, the matrix of the reflection of the hyperbolic plane in the line through two points, and the keyword ``orientation_preserving`` of ``tangent_vector_isometry()`` and ``segment_isometry()`` to get the orientation-reversing isometry that sends one tangent vector or segment to another.
+
 * Added ``SimilarityGroup.subgroup()``, and ``is_orientable()`` and ``orientation_preserving_subgroup()`` to the finitely generated subgroups of ``SimilarityGroup`` and ``HyperbolicIsometryGroup``, which share the class ``FinitelyGeneratedSubgroup``; ``invariant_trace_field()`` of a subgroup of hyperbolic isometries with a reversing generator is read on its subgroup of orientation preserving elements.
 
 * Added ``change_ring()`` to ``SimilarityGroup`` and ``HyperbolicIsometryGroup``.

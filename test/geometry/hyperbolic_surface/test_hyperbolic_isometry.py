@@ -37,6 +37,7 @@ from sage.all import (
 from flatsurf import HyperbolicPlane
 from flatsurf.geometry.hyperbolic_isometry import (
     HyperbolicIsometryGroup,
+    reflection,
     segment_isometry,
     segment_midpoint,
     tangent_vector_isometry,
@@ -435,3 +436,99 @@ def test_form_reflection():
     assert R * R == 1
     assert R.transpose() * FORM * R == FORM
     assert R * vector(QQ, (1, 0, 1)) == vector(QQ, (1, 0, 1))
+
+
+def test_reflection(H, G):
+    p = (QQ(1) / 2, 0)
+    q = (QQ(1) / 3, QQ(1) / 2)
+    R = reflection(p, q)
+    assert R == matrix(QQ, [[-41, -24, 36], [-24, 23, 12], [-36, -12, 49]]) / 31
+    assert R.is_immutable()
+    assert R.determinant() == -1
+    assert (R * R).is_one()
+    assert R.transpose() * J * R == J
+    for point in (p, q):
+        lift = vector(QQ, (point[0], point[1], 1))
+        assert R * lift == lift
+
+    assert reflection(vector(QQ, p), vector(QQ, q)) == R
+    assert reflection(H.point(*p, model="klein"), H.point(*q, model="klein")) == R
+    assert reflection(H.point(*p, model="klein"), q) == R
+    assert reflection(H(I), H(2 * I)) == diagonal_matrix(QQ, [-1, 1, 1])
+
+    g = G(R)
+    assert g.is_reflection()
+    assert (g * g).is_one()
+
+    x = polygen(QQ)
+    L = NumberField(x**2 - 3, "r", embedding=AA(3).sqrt())
+    assert reflection(p, q, ring=L).base_ring() is L
+    assert reflection(p, q, ring=L) == R.change_ring(L)
+
+
+def test_reflection_refusals(H):
+    with pytest.raises(ValueError, match="the points must be distinct"):
+        reflection((QQ(1) / 2, 0), (QQ(1) / 2, 0))
+    with pytest.raises(ValueError, match="the points must be distinct"):
+        reflection(H(I), (0, 0))
+    with pytest.raises(ValueError, match="not a finite point"):
+        reflection((0, 0), (1, 0))
+    with pytest.raises(ValueError, match="not a finite point"):
+        reflection(H(0), H(I))
+
+
+def test_reversing_tangent_vector_isometry():
+    u = ((0, 0), (1, 0))
+    v = ((0, 0), (0, 1))
+    M = tangent_vector_isometry(u, v, orientation_preserving=False)
+    assert M == matrix(QQ, [[0, 1, 0], [1, 0, 0], [0, 0, 1]])
+    assert M.is_immutable()
+    assert M.determinant() == -1
+    assert M.transpose() * J * M == J
+    assert M * vector(QQ, (0, 0, 1)) == vector(QQ, (0, 0, 1))
+    assert M * vector(QQ, (1, 0, 0)) == vector(QQ, (0, 1, 0))
+    assert M == tangent_vector_isometry(u, v) * reflection((0, 0), (QQ(1) / 2, 0))
+
+    u = ((QQ(1) / 4, QQ(1) / 3), (1, 2))
+    assert tangent_vector_isometry(u, u, orientation_preserving=False) == reflection(
+        (QQ(1) / 4, QQ(1) / 3), (QQ(1) / 2, QQ(5) / 6)
+    )
+
+    with pytest.raises(ValueError, match="adjoin a square root of 3/4"):
+        tangent_vector_isometry(
+            ((QQ(1) / 2, 0), (1, 0)), ((0, 0), (1, 0)), orientation_preserving=False
+        )
+
+
+def test_reversing_segment_isometry(H):
+    P = H.polygon(vertices=QUADRILATERAL)
+    half = QQ(1) / 2
+    source = P.edge_segment(1)
+    target = -P.edge_segment(2)
+
+    M = segment_isometry(source, target, orientation_preserving=False)
+    assert M == matrix(QQ, [[0, 1, 0], [1, 0, 0], [0, 0, 1]])
+    assert M.determinant() == -1
+    assert M.transpose() * J * M == J
+    assert_images(M, [((half, 0), (0, half)), ((half, half), (half, half))])
+    assert M == segment_isometry(source, target) * reflection(
+        source.start(), source.end()
+    )
+
+    M = segment_isometry(source, source, orientation_preserving=False)
+    assert M == matrix(QQ, [[-QQ(5) / 3, 0, QQ(4) / 3], [0, 1, 0], [-QQ(4) / 3, 0, QQ(5) / 3]])
+    assert M == reflection((half, 0), (half, half))
+
+    edge = ((0, 0), (half, 0))
+    reverse = ((half, 0), (0, 0))
+    with pytest.raises(ValueError, match="adjoin a square root of 4/3"):
+        segment_isometry(edge, reverse, orientation_preserving=False)
+
+    x = polygen(QQ)
+    L = NumberField(x**2 - 3, "r", embedding=AA(3).sqrt())
+    M = segment_isometry(edge, reverse, ring=L, orientation_preserving=False)
+    assert M.determinant() == -1
+    JL = J.change_ring(L)
+    assert M.transpose() * JL * M == JL
+    assert_images(M, [((0, 0), (half, 0)), ((half, 0), (0, 0))])
+    assert M == segment_isometry(edge, reverse, ring=L) * reflection(*edge, ring=L)
