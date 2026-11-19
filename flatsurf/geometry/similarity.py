@@ -842,6 +842,25 @@ class SimilarityGroup(UniqueRepresentation, Group):
             Traceback (most recent call last):
             ...
             TypeError: Unable to coerce a to a rational
+
+        Matrices of size 2 and 3 (affine) are accepted, and their entries are
+        converted into the base ring::
+
+            sage: g = S((1, -2/3, 1, 1, -1))
+            sage: S(g.matrix()) == g
+            True
+            sage: S(matrix(ZZ, 2, [0, -1, 1, 0]))
+            (x, y) |-> (-y, x)
+            sage: S(matrix(ZZ, 3, [0, 1, 0, 1, 0, 0, 0, 0, 1]))
+            (x, y) |-> (y, x)
+            sage: S(matrix(QQ, 3, [1, 0, 0, 0, 1, 0, 1, 0, 1]))
+            Traceback (most recent call last):
+            ...
+            ValueError: not a similarity matrix
+            sage: S(matrix(QQ, 3, [1, 1, 0, 0, 1, 0, 0, 0, 1]))
+            Traceback (most recent call last):
+            ...
+            ValueError: not a similarity matrix
         """
         if len(args) == 1:
             x = args[0]
@@ -851,8 +870,6 @@ class SimilarityGroup(UniqueRepresentation, Group):
         a = self._ring.one()
         b = s = t = self._ring.zero()
         sign = ZZ_1
-
-        # TODO: 2x2 and 3x3 matrix input
 
         if isinstance(x, (tuple, list)):
             if len(x) == 2:
@@ -872,17 +889,20 @@ class SimilarityGroup(UniqueRepresentation, Group):
             #   a -sb
             #   b sa
             if x.nrows() == x.ncols() == 2:
-                a, c, b, d = x.list()
-                if a == d and b == -c:
-                    sign = ZZ_1
-                elif a == -d and b == c:
-                    sign = ZZ_m1
-                else:
-                    raise ValueError("not a similarity matrix")
+                a, c, b, d = map(self._ring, x.list())
             elif x.nrows() == x.ncols() == 3:
-                raise NotImplementedError
+                a, c, s, b, d, t, z0, z1, z2 = map(self._ring, x.list())
+                if not (z0.is_zero() and z1.is_zero() and z2.is_one()):
+                    raise ValueError("not a similarity matrix")
             else:
                 raise ValueError("invalid dimension for matrix input")
+
+            if a == d and b == -c:
+                sign = ZZ_1
+            elif a == -d and b == c:
+                sign = ZZ_m1
+            else:
+                raise ValueError("not a similarity matrix")
         elif isinstance(x, FreeModuleElement):
             if len(x) == 2:
                 if x.base_ring() is self._ring:
@@ -972,9 +992,24 @@ class SimilarityGroup(UniqueRepresentation, Group):
         return self._ring
 
 
-def similarity_from_vectors(u, v, matrix_space=None):
+def similarity_from_vectors(u, v, matrix_space=None, orientation_preserving=True):
     r"""
     Return the unique similarity matrix that maps ``u`` to ``v``.
+
+    INPUT:
+
+    - ``u``, ``v`` -- non-zero vectors of the same vector space of rank 2
+
+    - ``matrix_space`` -- a space of 2x2 matrices or ``None`` (default:
+      ``None``); the parent of the result, by default the matrices over the
+      base ring of ``u``
+
+    - ``orientation_preserving`` -- a boolean (default: ``True``); whether the
+      similarity preserves the orientation. If ``False``, the result is the
+      unique orientation-reversing similarity that maps ``u`` to ``v``; when
+      ``u == v`` this is the reflection in the line spanned by ``u``.
+
+    OUTPUT: an immutable matrix
 
     EXAMPLES::
 
@@ -1025,6 +1060,42 @@ def similarity_from_vectors(u, v, matrix_space=None):
         sage: m*u == 2*v
         True
 
+    The orientation-reversing similarity that maps ``u`` to ``v``::
+
+        sage: V = VectorSpace(QQ, 2)
+        sage: m = similarity_from_vectors(V((1, 0)), V((0, 1)), orientation_preserving=False); m
+        [0 1]
+        [1 0]
+        sage: m * V((1, 0)) == V((0, 1)), m.det()
+        (True, -1)
+
+        sage: u = V((1, 0))
+        sage: m = similarity_from_vectors(u, u, orientation_preserving=False); m
+        [ 1  0]
+        [ 0 -1]
+        sage: m * u == u, m.det()
+        (True, -1)
+
+        sage: u, v = V((5, 0)), V((3, 4))
+        sage: m = similarity_from_vectors(u, v, orientation_preserving=False); m
+        [ 3/5  4/5]
+        [ 4/5 -3/5]
+        sage: m * u == v, m.det()
+        (True, -1)
+
+        sage: u, v = V((2, 1)), V((1, -2))
+        sage: m = similarity_from_vectors(u, v, orientation_preserving=False); m
+        [ 4/5 -3/5]
+        [-3/5 -4/5]
+        sage: m * u == v, m.det()
+        (True, -1)
+
+    ALGORITHM:
+
+    The orientation-preserving similarity is `[c, -s; s, c]`; composing it
+    with the conjugation `(x, y) \mapsto (x, -y)` gives the
+    orientation-reversing one, `[c, s; s, -c]` with `c = (u_0 v_0 - u_1
+    v_1) / |u|^2` and `s = (u_1 v_0 + u_0 v_1) / |u|^2`, over the same ring.
     """
     if u.parent() is not v.parent():
         raise ValueError
@@ -1034,13 +1105,111 @@ def similarity_from_vectors(u, v, matrix_space=None):
 
         matrix_space = MatrixSpace(u.base_ring(), 2)
 
-    if u == v:
+    if orientation_preserving and u == v:
         return matrix_space.one()
 
     sqnorm_u = u[0] * u[0] + u[1] * u[1]
+
+    if not orientation_preserving:
+        c = (u[0] * v[0] - u[1] * v[1]) / sqnorm_u
+        s = (u[1] * v[0] + u[0] * v[1]) / sqnorm_u
+        m = matrix_space([c, s, s, -c])
+        m.set_immutable()
+        return m
+
     cos_uv = (u[0] * v[0] + u[1] * v[1]) / sqnorm_u
     sin_uv = (u[0] * v[1] - u[1] * v[0]) / sqnorm_u
 
     m = matrix_space([cos_uv, -sin_uv, sin_uv, cos_uv])
+    m.set_immutable()
+    return m
+
+
+def reflection(p, q, ring=None):
+    r"""
+    Return the affine matrix of the reflection in the line through ``p`` and
+    ``q``.
+
+    INPUT:
+
+    - ``p``, ``q`` -- two distinct points of the plane, as pairs or vectors
+
+    - ``ring`` -- a field or ``None`` (default: ``None``); the base ring of the
+      result, by default the fraction field of the pushout of the rings of the
+      coordinates
+
+    OUTPUT: an immutable 3x3 matrix `[a, b, s; b, -a, t; 0, 0, 1]`, as returned
+    by :meth:`Similarity.matrix`; ``SimilarityGroup(K)(reflection(p, q))`` is
+    the corresponding element of the similarity group.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.similarity import reflection, SimilarityGroup
+        sage: R = reflection((0, 0), (2, 1)); R
+        [ 3/5  4/5    0]
+        [ 4/5 -3/5    0]
+        [   0    0    1]
+        sage: reflection((1, 2), (3, 3))
+        [ 3/5  4/5 -6/5]
+        [ 4/5 -3/5 12/5]
+        [   0    0    1]
+
+    The reflection is rational in the coordinates, over any field::
+
+        sage: K.<a> = NumberField(x^2 - 3, embedding=1.7)
+        sage: reflection((0, 0), (1, a))
+        [ -1/2 1/2*a     0]
+        [1/2*a   1/2     0]
+        [    0     0     1]
+
+    The corresponding element of the similarity group::
+
+        sage: g = SimilarityGroup(QQ)(R); g
+        (x, y) |-> (3/5*x + 4/5*y, 4/5*x - 3/5*y)
+        sage: g.is_reflection()
+        True
+        sage: g * g
+        (x, y) |-> (x, y)
+        sage: R * R
+        [1 0 0]
+        [0 1 0]
+        [0 0 1]
+
+    The two points must differ::
+
+        sage: reflection((1, 1), (1, 1))
+        Traceback (most recent call last):
+        ...
+        ValueError: the points must be distinct
+
+    ALGORITHM:
+
+    With `d = q - p`, the linear part is `L = 2 d d^T / |d|^2 - 1` and the
+    translation is `p - L p`, which makes `p` and `q` fixed.
+    """
+    p = vector(p)
+    q = vector(q)
+
+    if ring is None:
+        from sage.categories.pushout import pushout
+
+        ring = pushout(p.base_ring(), q.base_ring()).fraction_field()
+
+    p = p.change_ring(ring)
+    q = q.change_ring(ring)
+
+    d = q - p
+    sqnorm = d[0] * d[0] + d[1] * d[1]
+    if sqnorm.is_zero():
+        raise ValueError("the points must be distinct")
+
+    a = (d[0] * d[0] - d[1] * d[1]) / sqnorm
+    b = 2 * d[0] * d[1] / sqnorm
+    s = p[0] - a * p[0] - b * p[1]
+    t = p[1] - b * p[0] + a * p[1]
+
+    from sage.matrix.constructor import matrix
+
+    m = matrix(ring, 3, [a, b, s, b, -a, t, 0, 0, 1])
     m.set_immutable()
     return m
