@@ -98,6 +98,18 @@ def test_triangle_group(periods, polynomial, standard_degree):
         assert_generators(G, periods)
 
 
+def test_reflections():
+    W = fuchsian_groups.triangle(2, 3, 7, orientation_preserving=False)
+    assert W.ngens() == 3
+    assert not W.is_orientable()
+    assert all(g.is_reflection() for g in W.gens())
+    assert W.invariant_trace_field().polynomial() == x**3 - 7 * x - 7
+
+    W = fuchsian_groups.triangle(3, 4, 4, standard=True, orientation_preserving=False)
+    assert W.base_ring().degree() == 2
+    assert [g.det() for g in W.gens()] == [-1, -1, -1]
+
+
 def test_triangle_group_degree_24():
     G = fuchsian_groups.triangle(5, 7, 8)
     assert G.base_ring().degree() == 24
@@ -142,7 +154,7 @@ def test_base_ring():
         ((QQ(5) / 2, 4, 4), "the period 5/2 is not an integer at least 2"),
         (
             (2, 3, 6),
-            r"the triangle group \(2, 3, 6\) is euclidean, not hyperbolic",
+            r"the triangle group \(2, 3, 6\) is euclidean, not hyperbolic.*; use crystallographic_groups.triangle",
         ),
         (
             (2, 4, 4),

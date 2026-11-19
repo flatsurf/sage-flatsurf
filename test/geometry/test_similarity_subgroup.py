@@ -88,16 +88,16 @@ def test_orientation_preserving_subgroup(F, A, B, rot, r):
     assert A.orientation_preserving_subgroup() is A
 
     P = B.orientation_preserving_subgroup()
-    assert P.ngens() == 2
-    assert P.gens() == (rot, F(matrix(QQ, 2, [0, 1, -1, 0])))
+    assert P.ngens() == 1
+    assert P.gens() == (rot,)
     assert P.is_orientable()
     assert P.orientation_preserving_subgroup() is P
 
     # The reflection in the line y = -x, and the generators t r and r t
-    # left once r r and r ~r are dropped.
+    # left once r r and r ~r are dropped, with r t the inverse of t r.
     t = F(matrix(QQ, 2, [0, -1, -1, 0]))
     Q = F.subgroup([r, t]).orientation_preserving_subgroup()
-    assert Q.gens() == (t * r, r * t)
+    assert Q.gens() == (t * r,)
 
 
 def test_trivial_subgroup(F):

@@ -1072,7 +1072,7 @@ class SimilaritySubgroup(FinitelyGeneratedSubgroup):
         sage: B.is_orientable()
         False
         sage: B.orientation_preserving_subgroup().gens()
-        ((x, y) |-> (-y, x), (x, y) |-> (y, -x))
+        ((x, y) |-> (-y, x),)
 
     TESTS::
 

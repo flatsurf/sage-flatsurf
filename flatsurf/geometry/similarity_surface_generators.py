@@ -678,22 +678,18 @@ def _pillowcase_gluings(n, glued_edges, mirror_edge):
 
     OUTPUT:
 
-    A triple ``(m, permutation, gluings)``: the mirror edge ``m``; the list
-    whose entry ``j`` is the vertex of the polygon whose reflection is the
-    vertex ``j`` of the mirror polygon, `2m + 1 - j \bmod n`; the list of
-    pairs of edges ``((0, e), (1, (2m - e) mod n))`` to glue, one for each
-    ``e`` in ``glued_edges``, in that order.
+    A pair ``(m, gluings)``: the mirror edge ``m``; the list of pairs of
+    edges ``((0, e), (1, (2m - e) mod n))`` to glue, one for each ``e`` in
+    ``glued_edges``, in that order.
 
     EXAMPLES:
 
     A pentagon reflected in the line of its edge 2::
 
         sage: from flatsurf.geometry.similarity_surface_generators import _pillowcase_gluings
-        sage: m, permutation, gluings = _pillowcase_gluings(5, None, 2)
+        sage: m, gluings = _pillowcase_gluings(5, None, 2)
         sage: m
         2
-        sage: permutation
-        [0, 4, 3, 2, 1]
         sage: gluings
         [((0, 0), (1, 4)), ((0, 1), (1, 3)), ((0, 2), (1, 2)), ((0, 3), (1, 1)), ((0, 4), (1, 0))]
 
@@ -701,12 +697,12 @@ def _pillowcase_gluings(n, glued_edges, mirror_edge):
     one::
 
         sage: _pillowcase_gluings(5, [3, 1], None)
-        (3, [2, 1, 0, 4, 3], [((0, 3), (1, 3)), ((0, 1), (1, 0))])
+        (3, [((0, 3), (1, 3)), ((0, 1), (1, 0))])
 
     TESTS::
 
         sage: _pillowcase_gluings(4, None, None)
-        (0, [1, 0, 3, 2], [((0, 0), (1, 0)), ((0, 1), (1, 3)), ((0, 2), (1, 2)), ((0, 3), (1, 1))])
+        (0, [((0, 0), (1, 0)), ((0, 1), (1, 3)), ((0, 2), (1, 2)), ((0, 3), (1, 1))])
         sage: _pillowcase_gluings(4, [], None)
         Traceback (most recent call last):
         ...
@@ -756,9 +752,8 @@ def _pillowcase_gluings(n, glued_edges, mirror_edge):
         if m not in glued_edges:
             raise ValueError(f"mirror_edge {m} is not one of the glued edges")
 
-    permutation = [(2 * m + 1 - j) % n for j in range(n)]
     gluings = [((0, e), (1, (2 * m - e) % n)) for e in glued_edges]
-    return m, permutation, gluings
+    return m, gluings
 
 
 class SimilaritySurfaceGenerators:
@@ -954,7 +949,7 @@ class SimilaritySurfaceGenerators:
 
         vertices = P.vertices()
         n = len(vertices)
-        m, _, gluings = _pillowcase_gluings(n, glued_edges, mirror_edge)
+        m, gluings = _pillowcase_gluings(n, glued_edges, mirror_edge)
 
         from flatsurf.geometry.similarity import reflection
 
@@ -2795,7 +2790,7 @@ class CrystallographicGroupGenerators:
             sage: W.is_orientable()
             False
             sage: W.orientation_preserving_subgroup().ngens()
-            4
+            2
 
         The periods are integers at least 2, and the group is euclidean::
 
@@ -2829,9 +2824,11 @@ class CrystallographicGroupGenerators:
 
         ALGORITHM:
 
-        The generators are the words of ``_triangle_group`` in the
-        reflections in the sides of the triangle; they are the rotations
-        about its vertices by twice its angles.
+        Let `r_0, r_1, r_2` be the reflections in the sides of the triangle,
+        the side `i` going from the vertex `i` to the vertex `i + 1`. The
+        generators are the words `r_2 r_0, r_1 r_2, r_2 r_1 r_0 r_2`, the
+        rotations about its vertices by twice its angles; with
+        ``orientation_preserving=False``, the generators are `r_0, r_1, r_2`.
 
         """
         from flatsurf.geometry.polygon import euclidean_polygons

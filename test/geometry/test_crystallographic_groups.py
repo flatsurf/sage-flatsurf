@@ -63,7 +63,7 @@ def test_reflections(periods, rational):
     assert W.ngens() == 3
     assert all(g.is_reflection() for g in W.gens())
     assert not W.is_orientable()
-    assert W.orientation_preserving_subgroup().ngens() == 4
+    assert W.orientation_preserving_subgroup().ngens() == 2
 
 
 def test_generators_244():

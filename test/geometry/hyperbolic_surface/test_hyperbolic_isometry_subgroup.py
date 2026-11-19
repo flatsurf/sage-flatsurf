@@ -213,15 +213,16 @@ def test_is_orientable(G3, r, s, m1, m2):
 
 def test_orientation_preserving_subgroup(G3, r, m1, m2):
     P = G3.subgroup([r, m1]).orientation_preserving_subgroup()
-    assert P.gens() == (r, m1 * r * ~m1)
-    assert [g.trace() for g in P.gens()] == [QQ(1) / 3, QQ(1) / 3]
+    assert (m1 * r * ~m1 * r).is_one()
+    assert P.gens() == (r,)
+    assert [g.trace() for g in P.gens()] == [QQ(1) / 3]
     assert P.is_orientable()
     assert P.invariant_trace_field() is QQ
     assert G3.subgroup([r, m1]).invariant_trace_field() is QQ
 
     P = G3.subgroup([m1, m2]).orientation_preserving_subgroup()
-    assert P.gens() == (m2 * ~m1, m1 * m2)
-    assert [g.trace() for g in P.gens()] == [QQ(7) / 17, QQ(7) / 17]
+    assert P.gens() == (m2 * ~m1,)
+    assert [g.trace() for g in P.gens()] == [QQ(7) / 17]
     assert G3.subgroup([m1, m2]).invariant_trace_field() is QQ
 
     T = G3.subgroup([m1]).orientation_preserving_subgroup()
@@ -247,8 +248,8 @@ def test_extended_triangle_group():
     W = GT.subgroup(reflections)
     assert not W.is_orientable()
     P = W.orientation_preserving_subgroup()
-    assert P.ngens() == 4
-    assert sorted(g.trace() for g in P.gens()) == [-1, -1, 0, 0]
+    assert P.ngens() == 2
+    assert sorted(g.trace() for g in P.gens()) == [-1, 0]
 
     F = W.invariant_trace_field()
     assert F.degree() == 3
