@@ -48,6 +48,10 @@ class Similarity(MultiplicativeGroupElement):
 
     Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,
     and (ax+by+s,bx-ay+t) if sign=-1
+
+    The sign is ``1`` for an orientation-preserving similarity and ``-1`` for
+    an orientation-reversing one, see :meth:`is_reflection` and
+    :meth:`is_glide_reflection`.
     """
 
     def __init__(self, p, a, b, s, t, sign):
@@ -78,6 +82,26 @@ class Similarity(MultiplicativeGroupElement):
         MultiplicativeGroupElement.__init__(self, p)
 
     def sign(self):
+        r"""
+        Return ``1`` if this element preserves the orientation and ``-1`` if
+        it reverses it.
+
+        .. SEEALSO::
+
+            :meth:`is_orientable`, :meth:`is_reflection`,
+            :meth:`is_glide_reflection`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((0, 1, 0, 0)).sign()
+            1
+            sage: S((1, 0, 0, 0, -1)).sign()
+            -1
+            sage: S((2, 0, 0, 0, -1)).sign()
+            -1
+        """
         return self._sign
 
     def is_translation(self):
@@ -119,6 +143,30 @@ class Similarity(MultiplicativeGroupElement):
         )
 
     def is_orientable(self):
+        r"""
+        Return whether this element preserves the orientation of the plane,
+        i.e., whether its determinant is positive.
+
+        This concerns the transformation; for a surface, see
+        :meth:`~flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_orientable`.
+
+        .. SEEALSO::
+
+            :meth:`sign`, :meth:`is_reflection`, :meth:`is_glide_reflection`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((0, 1, 0, 0)).is_orientable()
+            True
+            sage: S.one().is_orientable()
+            True
+            sage: S((1, 0, 0, 0, -1)).is_orientable()
+            False
+            sage: S((2, 0, 0, 0, -1)).is_orientable()
+            False
+        """
         return self._sign.is_one()
 
     def is_rotation(self):
@@ -160,9 +208,106 @@ class Similarity(MultiplicativeGroupElement):
         det = self.det()
         return det.is_one() or (-det).is_one()
 
+    def is_reflection(self):
+        r"""
+        Return whether this element is a reflection, i.e., an
+        orientation-reversing involution.
+
+        A reflection is an isometry. An orientation-reversing similarity that
+        is not an isometry (a dilative reflection) has a unique fixed point
+        and is neither a reflection nor a glide reflection.
+
+        .. SEEALSO::
+
+            :meth:`is_glide_reflection`, :meth:`sign`, :meth:`is_orientable`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((1, 0, 0, 0, -1)).is_reflection()
+            True
+            sage: S((-1, 0, 1, 0, -1)).is_reflection()
+            True
+            sage: S((0, 1, 0, 0, -1)).is_reflection()
+            True
+
+        A glide reflection is not a reflection::
+
+            sage: S((1, 0, 1, 0, -1)).is_reflection()
+            False
+
+        Neither is a dilative reflection, nor an orientation-preserving
+        element::
+
+            sage: S((2, 0, 0, 0, -1)).is_reflection()
+            False
+            sage: S((0, 1, 0, 0)).is_reflection()
+            False
+            sage: S.one().is_reflection()
+            False
+        """
+        return self._sign == ZZ_m1 and self.is_isometry() and (self * self).is_one()
+
+    def is_glide_reflection(self):
+        r"""
+        Return whether this element is a glide reflection, i.e., an
+        orientation-reversing isometry that is not an involution.
+
+        A reflection is not a glide reflection (the glide is not zero). An
+        orientation-reversing similarity that is not an isometry (a dilative
+        reflection) has a unique fixed point and is neither a reflection nor
+        a glide reflection.
+
+        .. SEEALSO::
+
+            :meth:`is_reflection`, :meth:`sign`, :meth:`is_orientable`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((1, 0, 1, 0, -1)).is_glide_reflection()
+            True
+
+        A reflection is not a glide reflection::
+
+            sage: S((1, 0, 0, 0, -1)).is_glide_reflection()
+            False
+            sage: S((-1, 0, 1, 0, -1)).is_glide_reflection()
+            False
+            sage: S((0, 1, 0, 0, -1)).is_glide_reflection()
+            False
+
+        Neither is a dilative reflection, nor an orientation-preserving
+        element::
+
+            sage: S((2, 0, 0, 0, -1)).is_glide_reflection()
+            False
+            sage: S((0, 1, 0, 0)).is_glide_reflection()
+            False
+            sage: S.one().is_glide_reflection()
+            False
+        """
+        return self._sign == ZZ_m1 and self.is_isometry() and not (self * self).is_one()
+
     def det(self):
         r"""
-        Return the determinant of this element
+        Return the determinant of the linear part of this element, which is
+        `\pm(a^2 + b^2)` where the sign is the one of :meth:`sign`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((1, 0, 0, 0, -1)).det()
+            -1
+            sage: S((2, 0, 0, 0, -1)).det()
+            -4
+            sage: S((0, 1, 0, 0)).det()
+            1
+            sage: S((2, 1, 0, 0)).det()
+            5
         """
         return self._sign * (self._a * self._a + self._b * self._b)
 
