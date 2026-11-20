@@ -159,6 +159,10 @@ class OrientedHyperbolicSurface(Surface_base):
 
     """
 
+    # A class attribute: unpickling restores the instance __dict__ only, so an
+    # instance attribute would be missing on surfaces pickled without it.
+    _geometry = "hyperbolic"
+
     def __init__(self, base, category=None):
         from sage.categories.all import Rings
 

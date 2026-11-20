@@ -605,8 +605,28 @@ class MutablePolygonalSurface(Surface_base):
             sage: S != T
             True
 
+        An empty flat surface differs from an empty hyperbolic surface over the
+        same ring, whether the surfaces are mutable or not::
+
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: H = MutableOrientedHyperbolicSurface(QQ)
+            sage: S == H
+            False
+            sage: H == S
+            False
+            sage: S.set_immutable()
+            sage: H.set_immutable()
+            sage: S == H
+            False
+            sage: H == S
+            False
+
         """
         if not isinstance(other, MutablePolygonalSurface):
+            return False
+
+        if self._geometry != other._geometry:
             return False
 
         if self.base() != other.base():
@@ -647,12 +667,21 @@ class MutablePolygonalSurface(Surface_base):
             sage: hash(S) == hash(T)
             True
 
+        The hashes of an empty flat and an empty hyperbolic surface differ::
+
+            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+            sage: H = MutableOrientedHyperbolicSurface(QQ)
+            sage: H.set_immutable()
+            sage: hash(S) == hash(H)
+            False
+
         """
         if self._mutable:
             raise TypeError("cannot hash a mutable surface")
 
         return hash(
             (
+                self._geometry,
                 tuple(self.labels()),
                 tuple(self.polygons()),
                 self._roots,
@@ -1234,6 +1263,10 @@ class OrientedSimilaritySurface(Surface_base):
         True
 
     """
+
+    # A class attribute: unpickling restores the instance __dict__ only, so an
+    # instance attribute would be missing on surfaces pickled without it.
+    _geometry = "euclidean"
 
     def __init__(self, base, category=None):
         from sage.categories.all import Rings
