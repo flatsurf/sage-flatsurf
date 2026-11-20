@@ -29,7 +29,7 @@ jobs:
     needs: [ unix ]
     strategy:
       matrix:
-        on: [ ubuntu-24.04, macos-13, macos-14 ]
+        on: [ ubuntu-24.04 ]
     steps:
     - uses: actions/download-artifact@v6
       with:
