@@ -172,10 +172,8 @@ from flatsurf.geometry.categories.euclidean_polygonal_surfaces import (
     EuclideanPolygonalSurfaces,
 )
 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
-from flatsurf.geometry.categories.cone_surfaces import (
-    ConeSurfaces,
-    FlatConeSurfaces,
-)
+from flatsurf.geometry.categories.common_cone_surfaces import ConeSurfaces
+from flatsurf.geometry.categories.cone_surfaces import FlatConeSurfaces
 from flatsurf.geometry.categories.hyperbolic_cone_surfaces import (
     HyperbolicConeSurfaces,
 )

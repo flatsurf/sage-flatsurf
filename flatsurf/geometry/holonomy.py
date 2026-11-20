@@ -88,7 +88,7 @@ def holonomy_representation(surface, base_label=None, punctured_vertices=True):
     Return the holonomy representation of the oriented cone ``surface``.
 
     This is a helper function for
-    :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.holonomy_representation`,
+    :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.holonomy_representation`,
     which documents the arguments.
 
     The codomain is chosen from the category of ``surface``: the group of

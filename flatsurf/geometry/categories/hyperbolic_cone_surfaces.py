@@ -90,7 +90,7 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             [Category of cone surfaces]
 
         """
-        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+        from flatsurf.geometry.categories.common_cone_surfaces import ConeSurfaces
 
         return [ConeSurfaces()]
 
@@ -205,7 +205,7 @@ class HyperbolicConeSurfaces(SurfaceCategory):
             ``edge`` of the polygon ``label``.
 
             This is a helper method for
-            :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
+            :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
 
             INPUT:
 
@@ -856,7 +856,7 @@ class HyperbolicConeSurfaces(SurfaceCategory):
                 boundary ``loop``.
 
                 This is a helper method for
-                :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`.
+                :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`.
                 The trace is a conjugacy invariant in the base ring, `1 + 2
                 \cosh \ell` for a geodesic boundary of length `\ell`.
 

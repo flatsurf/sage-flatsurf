@@ -2107,7 +2107,7 @@ class HyperbolicSurfaceGenerators:
         An immutable
         :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
         with the labels 0, the front polygon, and 1, its mirror image. Its
-        :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
+        :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
         has the genus 0, the cone orders ``cone_orders`` and the boundary
         traces ``boundary_traces``. The surface lies in the hyperbolic plane
         of a form `x^2 + b y^2 - c z^2` of its own, its seam plane, over the
@@ -2523,7 +2523,7 @@ class HyperbolicSurfaceGenerators:
         An immutable
         :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
         whose
-        :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
+        :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`
         is ``signature``. The pair of pants `i` of the decomposition below
         is made of the polygons with the labels ``(i, 0)``, its front
         polygon, and ``(i, 1)``, its mirror image, as in :meth:`pants`. The

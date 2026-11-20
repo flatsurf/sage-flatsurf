@@ -134,7 +134,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
             polygon ``label``.
 
             This is a helper method for
-            :meth:`~flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
+            :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
 
             INPUT:
 

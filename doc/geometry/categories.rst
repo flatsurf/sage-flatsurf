@@ -6,6 +6,7 @@ The flatsurf.geometry.categories Package
 .. toctree::
    :maxdepth: 1
 
+   categories/common_cone_surfaces
    categories/cone_surfaces
    categories/dilation_surfaces
    categories/euclidean_polygonal_surfaces
