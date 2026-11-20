@@ -582,4 +582,11 @@ class SurfaceSignature(SageObject):
             True
 
         """
+        # TODO: The hash of a boundary trace depends on its parent, while
+        # equality does not: SurfaceSignature(0, boundary_traces=(15, 15, 15))
+        # compares equal to the same signature with traces AA(15), but
+        # hash(AA(15)) differs from hash(15). Missing: a hash of the traces
+        # that does not depend on their parent, for instance through their
+        # minimal polynomials, or one that hashes only the topological part of
+        # the key.
         return hash(self._key())

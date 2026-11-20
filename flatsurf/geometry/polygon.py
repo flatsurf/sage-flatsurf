@@ -1804,6 +1804,11 @@ def _Polygon_hyperbolic(
         if geometry == "euclidean":
             raise ValueError('parent is a hyperbolic plane but geometry is "euclidean"')
 
+    # TODO: This comprehension consumes vertices when it is an iterator, so the
+    # Euclidean construction that follows sees an empty iterator or fails.
+    # Polygon(vertices=(v for v in [(0, 0), (1, 0), (0, 1)])) raises
+    # TypeError: object of type 'generator' has no len(). Missing: turn
+    # vertices into a list once, in Polygon, before the dispatch.
     points = [v for v in vertices or [] if isinstance(v, HyperbolicPoint)]
     if points and geometry == "euclidean":
         raise ValueError(

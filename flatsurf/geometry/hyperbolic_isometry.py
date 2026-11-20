@@ -3479,6 +3479,15 @@ class HyperbolicIsometrySubgroup(FinitelyGeneratedSubgroup):
         if isinstance(K, NumberField):
             from flatsurf.geometry.subfield import subfield_from_elements
 
+            # TODO: The field is returned as subfield_from_elements computes it,
+            # without reducing its defining polynomial: on the genus 2 surface
+            # of from_signature with traces (4, 5, 21/4) the polynomial is not
+            # reduced. Missing: a polredabs of the result, with its embedding.
+            # The elements are only proven to generate the field for a
+            # non-elementary group (see ALGORITHM above). For an elementary
+            # group with a half-turn among its generators they are only proven
+            # to lie in the field, so the result may be too small. Missing: a
+            # proof or a direct computation for elementary groups.
             return subfield_from_elements(K, elements)[0]
         if K is AA:
             from flatsurf.geometry.subfield import (

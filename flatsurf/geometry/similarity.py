@@ -507,6 +507,12 @@ class Similarity(MultiplicativeGroupElement):
 
         from flatsurf.geometry.polygon import EuclideanPolygon
 
+        # TODO: The image of a polygon is built over the base ring of the
+        # similarity, not over a common ring of the similarity and the polygon.
+        # So a similarity over QQ applied to a polygon over QQ(sqrt(2)) raises
+        # a TypeError (Unable to coerce s to a rational), while
+        # w.apply_transformation(self) works. Missing: a pushout of the two
+        # base rings when ring is None.
         if isinstance(w, EuclideanPolygon):
             if ring is None:
                 ring = self.parent().base_ring()

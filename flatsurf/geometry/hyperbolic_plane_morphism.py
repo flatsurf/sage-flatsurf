@@ -1022,6 +1022,11 @@ def _square_root_extension(K, c):
 
     from sage.rings.qqbar import number_field_elements_from_algebraics
 
+    # TODO: For a relative number field K, K.gen() generates K over its base
+    # field, not over QQ. The field returned below therefore does not contain
+    # K and has no coercion from it, so this helper works for absolute number
+    # fields only. Missing: the absolute generator (K.absolute_field()), or
+    # the generators of the whole tower.
     F, _, _ = number_field_elements_from_algebraics(
         [AA(K.gen()), root], minimal=True, embedded=True
     )
@@ -1133,6 +1138,13 @@ def _standard_form_matrix(plane, ring, isotropic_vector, algorithm):
                 f'algorithm="norm_equation", "conic" or "extension", an '
                 f"isotropic_vector, or a ring with a square root of {c} or of {c / b}"
             )
+        # TODO: The isotropic vector comes from PARI's norm equation solver, so
+        # the isomorphism returned, and the matrix given by
+        # HyperbolicIsometry.psl2_matrix() for a form other than
+        # x^2 + y^2 - z^2, depend on the solution PARI picks. That choice may
+        # change with the PARI version. Missing: a normalisation of the
+        # isotropic vector, or of the resulting isomorphism, that makes the
+        # result independent of the solver.
         n = _isotropic_vector(Q, "norm_equation")
     else:
         n = None
