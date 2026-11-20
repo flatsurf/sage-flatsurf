@@ -119,6 +119,7 @@ There is a relatively small contract that a surface needs to implement, things s
 ### Further Reading
 
 * [Defining Surfaces](./defining_surfaces)
+* [Building finite and infinite surfaces as classes](./surfaces_as_classes)
 * {mod}`flatsurf.geometry.similarity_surface_generators`
 
 +++

@@ -421,3 +421,265 @@ def cos_minpoly(n, var="x"):
         M = M(chebyshev_T(nn, var))
 
     return M
+
+
+def _triangle_invariant_trace_field(angles):
+    r"""
+    Return the field `\QQ(u_0, u_1, u_2, p)` with `u_k = 4 \cos^2 \alpha_k`
+    and `p = 8 \cos \alpha_0 \cos \alpha_1 \cos \alpha_2`, together with
+    these elements.
+
+    For the angles `\pi / m_k` this is the invariant trace field of the
+    triangle group of periods `(m_0, m_1, m_2)`.
+
+    INPUT:
+
+    - ``angles`` -- three rationals `\theta_0, \theta_1, \theta_2`, the angles
+      `\alpha_k = 2 \pi \theta_k` in multiples of `2 \pi`
+
+    OUTPUT:
+
+    A triple ``(K, u, p)``: ``K`` is ``QQ`` or a number field embedded in the
+    reals, whose defining polynomial is reduced by PARI's ``polredbest``;
+    ``u`` is the tuple `(u_0, u_1, u_2)` of elements of ``K``, in the order
+    of ``angles``; ``p`` is an element of ``K``. The embedding of ``K`` is the
+    one where `u_k = 4 \cos^2 \alpha_k` and
+    `p = 8 \cos \alpha_0 \cos \alpha_1 \cos \alpha_2` as real numbers.
+
+    EXAMPLES:
+
+    The triangle group `(2, 3, 7)` has a cubic invariant trace field; `p` is
+    zero because of the right angle::
+
+        sage: from flatsurf.geometry.subfield import _triangle_invariant_trace_field
+        sage: K, u, p = _triangle_invariant_trace_field([1/4, 1/6, 1/14])
+        sage: K
+        Number Field in a with defining polynomial x^3 - 7*x - 7 with a = 3.048917339522306?
+        sage: u
+        (0, 1, a^2 - a - 3)
+        sage: p
+        0
+
+    The triangle group `(5, 7, 8)` has an invariant trace field of degree
+    `24`::
+
+        sage: K, u, p = _triangle_invariant_trace_field([1/10, 1/14, 1/16])
+        sage: K.degree()
+        24
+        sage: u[0] * u[1] * u[2] == p^2
+        True
+        sage: AA(u[2]) == 4 * AA(QQbar.zeta(16).real())^2
+        True
+
+    A cusp, of angle `0`, has `u = 4`; the triangle group `(2, 3, \infty)`
+    has invariant trace field `\QQ`::
+
+        sage: K, u, p = _triangle_invariant_trace_field([0, 1/4, 1/6])
+        sage: K
+        Rational Field
+        sage: u, p
+        ((4, 0, 1), 0)
+
+    TESTS:
+
+    A quadratic field, with `p` nonzero::
+
+        sage: K, u, p = _triangle_invariant_trace_field([1/6, 1/6, 1/8])
+        sage: K.degree()
+        2
+        sage: K.polynomial()
+        x^2 - 2
+        sage: u, p
+        ((1, 1, 2), a)
+
+    An angle given as a Python ``int``::
+
+        sage: K, u, p = _triangle_invariant_trace_field([int(0), 1/4, 1/6])
+        sage: K is QQ
+        True
+
+    ALGORITHM:
+
+    With `N` the least common multiple of the denominators of the
+    `\theta_k`, the elements `\cos \alpha_k` lie in `\QQ(\zeta_N)`, where
+    `\sigma_j`, `j \in (\ZZ/N)^\times`, sends `\cos(2 \pi \theta)` to
+    `\cos(2 \pi j \theta)`. So `\sigma_j` fixes `u_k` if and only if
+    `2 j \theta_k = \pm 2 \theta_k + t_k` with an integer `t_k`, and then
+    sends `p` to `(-1)^{t_0 + t_1 + t_2} p`. These congruences give the
+    subgroup `H` fixing ``K``, and the conjugates of an element of ``K`` are
+    explicit cosines over the cosets of `H`.
+
+    The element `s = u_0 + t u_1 + t^2 u_2 + t^3 p`, for the first integer
+    `t \ge 0` whose conjugates are pairwise distinct, generates ``K``. It is
+    an algebraic integer: its minimal polynomial is the product of the
+    `x - \sigma(s)` computed in interval arithmetic, each coefficient
+    rounded to the unique integer of its interval. The precision covers the
+    bound `(1 + B)^d` on the coefficients, with `d = [K : \QQ]` and `B` the
+    bound `4 (1 + t + t^2) + 8 t^3` on the conjugates, and is doubled when
+    the intervals are too wide. PARI's ``polredbest`` then reduces this
+    polynomial, and the embedding is the real root where `s` takes its value
+    at `j = 1`. Each `u_k` is the root in ``K`` of its minimal polynomial,
+    which ``cos_minpoly`` gives, near its value, and `p` the square root of
+    `u_0 u_1 u_2` of the sign of its value.
+    """
+    from sage.libs.pari import pari
+    from sage.rings.real_mpfi import RealIntervalField
+
+    angles = [QQ(angle) for angle in angles]
+
+    N = ZZ.one()
+    for angle in angles:
+        N = N.lcm(angle.denominator())
+    units = [j for j in range(1, N + 1) if ZZ(j).gcd(N) == 1]
+
+    # cos(2 pi theta) = 0 exactly when theta = 1/4 or 3/4 mod 1
+    p_is_zero = any(angle.denominator() == 4 for angle in angles)
+
+    def fixes(j):
+        sign = 1
+        for angle in angles:
+            if (2 * (j - 1) * angle) in ZZ:
+                t = ZZ(2 * (j - 1) * angle)
+            elif (2 * (j + 1) * angle) in ZZ:
+                t = ZZ(2 * (j + 1) * angle)
+            else:
+                return False
+            sign *= (-1) ** t
+        return p_is_zero or sign == 1
+
+    H = [j for j in units if fixes(j)]
+    cosets = []
+    seen = set()
+    for j in units:
+        if j in seen:
+            continue
+        cosets.append(j)
+        seen.update(j * h % N for h in H)
+    d = ZZ(len(cosets))
+    assert d * len(H) == len(units)
+
+    x = polygen(ZZ, "x")
+
+    def conjugate_cosines(R):
+        two_pi = 2 * R.pi()
+        cosines = []
+        for j in cosets:
+            reduced = [j * angle - (j * angle).floor() for angle in angles]
+            cosines.append([(two_pi * R(r)).cos() for r in reduced])
+        return cosines
+
+    def distinct(values):
+        return not any(
+            values[i].overlaps(values[k]) for i in range(len(values)) for k in range(i)
+        )
+
+    # Two distinct conjugates of s differ by a nonzero polynomial of degree
+    # at most 3 in t, so each of the d (d - 1) / 2 pairs excludes at most 3
+    # values of t.
+    t_bound = 3 * d * (d - 1) // 2
+
+    prec = 64
+    while True:
+        R = RealIntervalField(prec)
+        cosines = conjugate_cosines(R)
+        conjugates_u = [[4 * c**2 for c in cs] for cs in cosines]
+        conjugates_p = [8 * cs[0] * cs[1] * cs[2] for cs in cosines]
+
+        for t in range(t_bound + 1):
+            values = [
+                us[0] + t * us[1] + t**2 * us[2] + t**3 * pp
+                for us, pp in zip(conjugates_u, conjugates_p)
+            ]
+            if distinct(values):
+                break
+        else:
+            prec *= 2
+            continue
+
+        bound = 4 * (1 + t + t**2) + 8 * t**3
+        required = d * ZZ(1 + bound).nbits() + d.nbits() + 32
+        if prec < required:
+            prec = required
+            continue
+
+        coefficients = prod(x.change_ring(R) - v for v in values).list()
+        if all(c.lower().ceil() == c.upper().floor() for c in coefficients):
+            f = x.parent()([c.unique_integer() for c in coefficients])
+            break
+        prec *= 2
+
+    if d == 1:
+        K = QQ
+
+        def real(y):
+            return R(y)
+
+    else:
+        g, s = pari(f).polredbest(1)
+        g = x.parent()(g)
+        s = QQ["y"](s.lift())
+        roots = [
+            beta
+            for beta in g.roots(AA, multiplicities=False)
+            if s(R(beta)).overlaps(values[0])
+        ]
+        assert len(roots) == 1
+        K = NumberField(g, "a", embedding=roots[0])
+        beta = R(roots[0])
+
+        def real(y):
+            return y.polynomial()(beta)
+
+    def root(polynomial, value):
+        roots = [
+            r
+            for r in polynomial.roots(K, multiplicities=False)
+            if real(r).overlaps(value)
+        ]
+        assert len(roots) == 1
+        return roots[0]
+
+    u = []
+    for angle, value in zip(angles, conjugates_u[0]):
+        # u = 2 + 2 cos(2 pi a / b) with a / b = 2 theta in lowest terms;
+        # 2 cos(2 pi a / b) is a conjugate of 2 cos(pi / (b / 2)) for b even
+        # and of -2 cos(pi / b) for b odd.
+        b = (2 * angle).denominator()
+        if b % 2 == 0:
+            minpoly = cos_minpoly(b // 2)(x - 2)
+        else:
+            minpoly = cos_minpoly(b)(2 - x)
+        u.append(root(minpoly, value))
+
+    if p_is_zero:
+        p = K.zero()
+    else:
+        p = root(x**2 - u[0] * u[1] * u[2], conjugates_p[0])
+
+    return K, tuple(u), p
+
+
+def _check_exact(ring):
+    r"""
+    Raise a ``ValueError`` if ``ring`` is an inexact ring.
+
+    The closure, convexity and angle checks of a polygon, and the checks on
+    gluings and fields, are unreliable after rounding.
+
+    INPUT:
+
+    - ``ring`` -- a ring or ``None``
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.subfield import _check_exact
+        sage: _check_exact(None)
+        sage: _check_exact(QQ)
+        sage: _check_exact(RDF)
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Double Field
+
+    """
+    if ring is not None and not ring.is_exact():
+        raise ValueError(f"the ring must be exact, not {ring}")

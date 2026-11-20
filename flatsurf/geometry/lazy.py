@@ -224,7 +224,10 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             from bidict import bidict
 
             return triangulation, bidict(
-                {e: (reference_label, e) for e in range(len(reference_polygon.edges()))}
+                {
+                    e: (reference_label, e)
+                    for e in range(len(reference_polygon.edge_vectors()))
+                }
             )
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -742,7 +745,7 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         """
         reference_edge = edge
         if self._sgn() == -1:
-            reference_edge = len(self.polygon(label).edges()) - 1 - edge
+            reference_edge = len(self.polygon(label).edge_vectors()) - 1 - edge
 
         opposite_label, opposite_edge = self._reference.opposite_edge(
             label, reference_edge
@@ -750,7 +753,9 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
 
         if self._sgn() == -1:
             opposite_edge = (
-                len(self._reference.polygon(opposite_label).edges()) - 1 - opposite_edge
+                len(self._reference.polygon(opposite_label).edge_vectors())
+                - 1
+                - opposite_edge
             )
 
         return opposite_label, opposite_edge
@@ -1618,7 +1623,9 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if label != self._label(cell):
             raise ValueError("no polygon with this label")
 
-        edges = [self._reference.polygon(edge[0]).edge(edge[1]) for edge in edges]
+        edges = [
+            self._reference.polygon(edge[0]).edge_vector(edge[1]) for edge in edges
+        ]
 
         from flatsurf import Polygon
 

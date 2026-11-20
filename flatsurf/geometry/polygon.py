@@ -43,6 +43,7 @@ from sage.all import (
     cached_method,
     Parent,
     QQ,
+    ZZ,
     matrix,
     vector,
 )
@@ -52,6 +53,7 @@ from sage.structure.sequence import Sequence
 
 from flatsurf.geometry.subfield import (
     number_field_elements_from_algebraics,
+    _check_exact,
 )
 
 from flatsurf.geometry.categories import EuclideanPolygons
@@ -241,13 +243,63 @@ class PolygonPosition:
         return self._position_type
 
     def get_edge(self):
+        r"""
+        Return the edge in whose interior this point is.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+
+            sage: pos = S.get_point_position((1/2, 0))
+            sage: pos.get_edge()
+            0
+
+            sage: pos = S.get_point_position((0, 1/2))
+            sage: pos.get_edge()
+            3
+
+        A vertex is not in the interior of an edge::
+
+            sage: pos = S.get_point_position((0, 0))
+            sage: pos.get_edge()
+            Traceback (most recent call last):
+            ...
+            ValueError: not in the interior of any edge
+
+            sage: pos = S.get_point_position((1/2, 1/2))
+            sage: pos.get_edge()
+            Traceback (most recent call last):
+            ...
+            ValueError: not in the interior of any edge
+
+        """
         if not self.is_in_edge_interior():
-            raise ValueError("Asked for edge when not in edge interior.")
+            raise ValueError("not in the interior of any edge")
         return self._edge
 
     def get_vertex(self):
+        r"""
+        Return the vertex at which this point is.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons
+            sage: S = polygons.square()
+
+            sage: pos = S.get_point_position((1, 1))
+            sage: pos.get_vertex()
+            2
+
+            sage: pos = S.get_point_position((1/2, 0))
+            sage: pos.get_vertex()
+            Traceback (most recent call last):
+            ...
+            ValueError: not at any vertex
+
+        """
         if not self.is_vertex():
-            raise ValueError("Asked for vertex when not a vertex.")
+            raise ValueError("not at any vertex")
         return self._vertex
 
 
@@ -449,6 +501,13 @@ class EuclideanPolygon(Parent):
             sage: S.change_ring(K).base_ring()
             Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.4142...
 
+        The ring must be exact::
+
+            sage: S.change_ring(RDF)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Double Field
+
         """
         if ring is self.base_ring():
             return self
@@ -551,11 +610,9 @@ class EuclideanPolygon(Parent):
             return self.translate(translation).vertices(marked_vertices=marked_vertices)
 
         if not marked_vertices:
-            return tuple(
-                vertex
-                for (vertex, slope) in zip(self._v, self.slopes(relative=True))
-                if slope[1] != 0
-            )
+            from flatsurf.geometry.euclidean import polygon_corners
+
+            return polygon_corners(self._v)
 
         return self._v
 
@@ -796,8 +853,8 @@ class PolygonsConstructor:
             sage: P = polygons(angles=[1,1,3,3], lengths=[3,1])
             sage: P.angles()
             (1/8, 1/8, 3/8, 3/8)
-            sage: e0 = P.edge(0); assert e0[0]**2 + e0[1]**2 == 3**2
-            sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
+            sage: e0 = P.edge_vector(0); assert e0[0]**2 + e0[1]**2 == 3**2
+            sage: e1 = P.edge_vector(1); assert e1[0]**2 + e1[1]**2 == 1
 
             sage: polygons(angles=[1, 1, 1, 2])
             Polygon(vertices=[(0, 0), (1/10*c^3 + c^2 - 1/5*c - 3, 0), (1/20*c^3 + 1/2*c^2 - 1/20*c - 3/2, 1/20*c^2 + 1/2*c), (1/2*c^2 - 3/2, 1/2*c)])
@@ -827,6 +884,370 @@ class PolygonsConstructor:
 
 
 polygons = PolygonsConstructor()
+
+
+def _polygon_change_ring(polygon, base_ring):
+    r"""
+    Return ``polygon`` over ``base_ring``, or ``polygon`` itself if
+    ``base_ring`` is ``None``.
+
+    A ring that cannot hold the coordinates of the polygon is reported as a
+    ``ValueError`` naming the ring.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Polygon
+        sage: from flatsurf.geometry.polygon import _polygon_change_ring
+        sage: P = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+        sage: _polygon_change_ring(P, None) is P
+        True
+        sage: _polygon_change_ring(P, AA).base_ring()
+        Algebraic Real Field
+
+        sage: K.<a> = QuadraticField(2)
+        sage: Q = Polygon(vertices=[(0, 0), (a, 0), (0, 1)])
+        sage: _polygon_change_ring(Q, QQ)
+        Traceback (most recent call last):
+        ...
+        ValueError: the coordinates of the polygon do not lie in Rational Field
+
+    """
+    if base_ring is None:
+        return polygon
+    try:
+        return polygon.change_ring(base_ring)
+    except (TypeError, ValueError) as e:
+        raise ValueError(
+            f"the coordinates of the polygon do not lie in {base_ring}"
+        ) from e
+
+
+class EuclideanPolygonsConstructor:
+    r"""
+    Constructors of Euclidean polygons: ``square()``, ``rectangle()``,
+    ``triangle()`` and ``regular_ngon()``.
+
+    Angles are multiples of `2\pi`, so that `1/4` is a right angle;
+    ``triangle()`` also reads them as proportions and rescales them to sum to
+    `1/2`. Each polygon has its vertex 0 at the origin and its edge 0 on the
+    positive `x`-axis, and is oriented counterclockwise.
+
+    With ``base_ring=None``, a polygon is defined over the field that its
+    construction computes: the smallest ring containing the rationals and the
+    given sizes for ``square()`` and ``rectangle()``, the field of the
+    coordinates of the vertices for ``triangle()`` and ``regular_ngon()``. An
+    exact ``base_ring`` receives the coordinates by conversion, and a
+    ``ValueError`` is raised if they do not lie in it. An inexact ring is
+    refused.
+
+    EXAMPLES::
+
+        sage: from flatsurf import euclidean_polygons
+        sage: euclidean_polygons
+        Euclidean polygons
+
+    """
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this constructor.
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: euclidean_polygons
+            Euclidean polygons
+
+        """
+        return "Euclidean polygons"
+
+    @staticmethod
+    def square(side=1, base_ring=None):
+        r"""
+        Return a square with the given side length.
+
+        INPUT:
+
+        - ``side`` -- a positive number (default: ``1``)
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon with vertices ``(0, 0)``, ``(side, 0)``,
+        ``(side, side)`` and ``(0, side)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: euclidean_polygons.square()
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: euclidean_polygons.square(2)
+            Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+            sage: euclidean_polygons.square(int(2))
+            Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.square(base_ring=AA).base_ring()
+            Algebraic Real Field
+
+        TESTS::
+
+            sage: euclidean_polygons.square(0)
+            Traceback (most recent call last):
+            ...
+            ValueError: side must be positive
+            sage: euclidean_polygons.square(-1)
+            Traceback (most recent call last):
+            ...
+            ValueError: side must be positive
+            sage: euclidean_polygons.square(base_ring=RDF)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Double Field
+            sage: K.<sqrt2> = QuadraticField(2)
+            sage: euclidean_polygons.square(sqrt2, base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+
+        """
+        _check_exact(base_ring)
+        if side <= 0:
+            raise ValueError("side must be positive")
+        return EuclideanPolygonsConstructor.rectangle(side, side, base_ring=base_ring)
+
+    @staticmethod
+    def rectangle(width, height, base_ring=None):
+        r"""
+        Return a rectangle with the given width and height.
+
+        INPUT:
+
+        - ``width`` -- a positive number
+
+        - ``height`` -- a positive number
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon with vertices ``(0, 0)``, ``(width, 0)``,
+        ``(width, height)`` and ``(0, height)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: euclidean_polygons.rectangle(2, 1)
+            Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+            sage: euclidean_polygons.rectangle(int(2), int(1))
+            Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+        The default ring contains the sizes::
+
+            sage: K.<sqrt2> = QuadraticField(2)
+            sage: P = euclidean_polygons.rectangle(1, sqrt2)
+            sage: P.base_ring()
+            Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.rectangle(1, sqrt2, base_ring=AA).base_ring()
+            Algebraic Real Field
+
+        TESTS::
+
+            sage: euclidean_polygons.rectangle(0, 1)
+            Traceback (most recent call last):
+            ...
+            ValueError: width must be positive
+            sage: euclidean_polygons.rectangle(1, 0)
+            Traceback (most recent call last):
+            ...
+            ValueError: height must be positive
+            sage: euclidean_polygons.rectangle(1, 1, base_ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
+        """
+        _check_exact(base_ring)
+        if width <= 0:
+            raise ValueError("width must be positive")
+        if height <= 0:
+            raise ValueError("height must be positive")
+        P = Polygon(
+            edges=[(width, 0), (0, height), (-width, 0), (0, -height)],
+            angles=(1, 1, 1, 1),
+            check=False,
+        )
+        return _polygon_change_ring(P, base_ring)
+
+    @staticmethod
+    def triangle(a, b, c, base_ring=None):
+        r"""
+        Return the triangle with angles proportional to ``a``, ``b``, ``c``.
+
+        The first edge has length 1. The angles are positive rationals,
+        rescaled to sum to `1/2`; absolute angles (multiples of `2\pi`) that
+        sum to `1/2` are thus kept as they are, and integers are proportions.
+
+        INPUT:
+
+        - ``a``, ``b``, ``c`` -- positive rationals, the angles at the
+          vertices 0, 1 and 2
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon with the given angles
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: T = euclidean_polygons.triangle(1/12, 1/6, 1/4)
+            sage: T.angles()
+            (1/12, 1/6, 1/4)
+
+        The billiard triangle with angles proportional to 2, 5, 7::
+
+            sage: euclidean_polygons.triangle(2, 5, 7).angles()
+            (1/14, 5/28, 1/4)
+            sage: euclidean_polygons.triangle(int(1), int(2), int(3)).angles()
+            (1/12, 1/6, 1/4)
+
+        Proportions and absolute angles agree::
+
+            sage: euclidean_polygons.triangle(1, 2, 3) == T
+            True
+
+        The right triangle with acute angle ``a`` at the vertex 0 is
+        ``triangle(a, 1/4, 1/4 - a)``; its first leg is fixed by
+        ``Polygon(angles=..., lengths=...)``::
+
+            sage: euclidean_polygons.triangle(1/6, 1/4, 1/12).angles()
+            (1/6, 1/4, 1/12)
+            sage: from flatsurf import Polygon
+            sage: Polygon(angles=(1/6, 1/4, 1/12), lengths=[2]).edge_vector(0)
+            (2, 0)
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.triangle(1, 1, 2, base_ring=QQ)
+            Polygon(vertices=[(0, 0), (2, 0), (1, 1)])
+            sage: euclidean_polygons.triangle(1, 2, 3, base_ring=AA).base_ring()
+            Algebraic Real Field
+
+        TESTS::
+
+            sage: euclidean_polygons.triangle(1, 2, 3, base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: euclidean_polygons.triangle(1, 2, 3, base_ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+            sage: euclidean_polygons.triangle(0, 1, 1)
+            Traceback (most recent call last):
+            ...
+            ValueError: angles must be positive rationals
+            sage: euclidean_polygons.triangle(1.0, 2.0, 3.0)
+            Traceback (most recent call last):
+            ...
+            TypeError: ...
+
+        """
+        _check_exact(base_ring)
+        return _polygon_change_ring(Polygon(angles=[a, b, c], check=False), base_ring)
+
+    @staticmethod
+    def regular_ngon(n, base_ring=None):
+        r"""
+        Return the regular polygon with ``n`` vertices and edges of length 1.
+
+        INPUT:
+
+        - ``n`` -- an integer, at least 3
+
+        - ``base_ring`` -- an exact ring or ``None`` (default: ``None``); the
+          ring of the polygon
+
+        OUTPUT: a polygon whose edge 0 is ``(1, 0)``
+
+        EXAMPLES::
+
+            sage: from flatsurf import euclidean_polygons
+            sage: P = euclidean_polygons.regular_ngon(8)
+            sage: P.base_ring()
+            Number Field in a with defining polynomial y^2 - 2 with a = 1.414213562373095?
+            sage: euclidean_polygons.regular_ngon(int(5)).base_ring()
+            Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308?
+            sage: euclidean_polygons.regular_ngon(4)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        The ring of the polygon can be chosen::
+
+            sage: euclidean_polygons.regular_ngon(3, base_ring=AA)
+            Polygon(vertices=[(0, 0), (1, 0), (1/2, 0.866025403784439?)])
+
+        The field picked by default differs from the one of ``triangle()``,
+        although the polygons are equal::
+
+            sage: euclidean_polygons.regular_ngon(3) == euclidean_polygons.triangle(1, 1, 1)
+            True
+
+        TESTS::
+
+            sage: euclidean_polygons.regular_ngon(4, base_ring=QQ)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: euclidean_polygons.regular_ngon(8, base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: euclidean_polygons.regular_ngon(8, base_ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+            sage: euclidean_polygons.regular_ngon(2)
+            Traceback (most recent call last):
+            ...
+            ValueError: a polygon has at least 3 vertices
+            sage: euclidean_polygons.regular_ngon(5.5)
+            Traceback (most recent call last):
+            ...
+            ValueError: the number of vertices must be an integer
+            sage: euclidean_polygons.regular_ngon(QQ(7)/2)
+            Traceback (most recent call last):
+            ...
+            ValueError: the number of vertices must be an integer
+
+        """
+        _check_exact(base_ring)
+        try:
+            n = ZZ(n)
+        except (TypeError, ValueError):
+            raise ValueError("the number of vertices must be an integer") from None
+        if n < 3:
+            raise ValueError("a polygon has at least 3 vertices")
+
+        from sage.rings.qqbar import QQbar
+
+        c = QQbar.zeta(n).real()
+        s = QQbar.zeta(n).imag()
+        field, (c, s) = number_field_elements_from_algebraics((c, s))
+        cn = field.one()
+        sn = field.zero()
+        edges = [(cn, sn)]
+        for _ in range(n - 1):
+            cn, sn = c * cn - s * sn, c * sn + s * cn
+            edges.append((cn, sn))
+
+        ngon = Polygon(base_ring=field, edges=edges)
+        ngon._refine_category_(ngon.category().WithAngles([1] * n))
+        return _polygon_change_ring(ngon, base_ring)
+
+
+euclidean_polygons = EuclideanPolygonsConstructor()
 
 
 def ConvexPolygons(base_ring):
@@ -864,38 +1285,77 @@ def Polygon(
     base_ring=None,
     category=None,
     check=True,
+    geometry=None,
+    parent=None,
+    model=None,
     **kwds,
 ):
     r"""
-    Return a polygon from the given ``vertices``, ``edges``, or ``angles``.
+    Return a Euclidean or hyperbolic polygon from the given ``vertices``,
+    ``edges``, or ``angles``.
+
+    The polygon is Euclidean unless the input is explicitly hyperbolic:
+    ``geometry="hyperbolic"``, ``parent`` a hyperbolic plane, or a vertex that
+    is a point of a hyperbolic plane. Numbers alone always give a Euclidean
+    polygon.
 
     INPUT:
 
     - ``vertices`` -- a sequence of vertices or ``None`` (default: ``None``); the
-      vertices of the polygon as points in the real plane
+      vertices of the polygon as points in the real plane. For a hyperbolic
+      polygon, each vertex is a point of a hyperbolic plane or a pair of
+      coordinates in ``model``.
 
     - ``edges`` -- a sequence of vectors or ``None`` (default: ``None``); the
-      vectors connecting the vertices of the polygon
+      vectors connecting the vertices of the polygon. A hyperbolic polygon has
+      no edge vectors and refuses them.
 
     - ``angles`` -- a sequence of numbers that prescribe the inner angles of
-      the polygon or ``None`` (default: ``None``); the angles are rescaled so
-      that their sum matches the sum of the angles in an ngon.
+      the polygon or ``None`` (default: ``None``). For a Euclidean polygon,
+      angles summing to `(n - 2)/2` are read as multiples of `2\pi` and other
+      angles are rescaled so that their sum matches the sum of the angles in
+      an ngon. A hyperbolic polygon cannot be built from angles.
 
     - ``lengths`` -- a sequence of numbers that prescribe the lengths of the
-      edges of the polygon or ``None`` (default: ``None``)
+      edges of the polygon or ``None`` (default: ``None``); not supported for
+      a hyperbolic polygon.
 
     - ``base_ring`` -- a ring or ``None`` (default: ``None``); the ring over
-      which the polygon will be defined
+      which the polygon will be defined. For a hyperbolic polygon, the base
+      ring of the hyperbolic plane containing it; it must be the base ring of
+      ``parent`` when both are given.
 
     - ``category`` -- a category or ``None`` (default: ``None``); the category
       the polygon will be in (further refined from the features of the polygon
-      that are found during the construction).
+      that are found during the construction). The category of a hyperbolic
+      polygon is fixed and cannot be given.
 
     - ``check`` -- a boolean (default: ``True``); whether to check the
       consistency of the parameters or blindly trust them. Setting this to
       ``False`` allows creation of degenerate polygons in some cases. While
       they might be somewhat functional, no guarantees are made about such
       polygons.
+
+    - ``geometry`` -- ``"euclidean"``, ``"hyperbolic"`` or ``None`` (default:
+      ``None``); the geometry of the polygon, deduced from the other
+      arguments when ``None``. This is a string, unlike the ``geometry`` of
+      :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane` which fixes the
+      numerics of a plane.
+
+    - ``parent`` -- a :class:`~flatsurf.geometry.hyperbolic.HyperbolicPlane`
+      or ``None`` (default: ``None``); the hyperbolic plane containing the
+      polygon. When ``None``, the plane is deduced from the base ring and
+      from the vertices.
+
+    - ``model`` -- ``"klein"``, ``"half_plane"`` or ``None`` (default:
+      ``None``, meaning ``"klein"``); the model of the hyperbolic plane in
+      which vertices given as pairs of numbers are read. Only for a
+      hyperbolic polygon given by its vertices.
+
+    OUTPUT:
+
+    A :class:`~flatsurf.geometry.polygon.EuclideanPolygon` or a
+    :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`.
 
     EXAMPLES:
 
@@ -1041,6 +1501,107 @@ def Polygon(
         ...
         NotImplementedError: each angle must be in (0, 2π)
 
+    The base ring must be exact, whether it is given or computed from the
+    coordinates::
+
+        sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)], base_ring=RDF)
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Double Field
+
+        sage: Polygon(vertices=[(0, 0), (1.0, 0), (0, 1)])
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Field with 53 bits of precision
+
+    The same vertices give a Euclidean or a hyperbolic polygon, read in the
+    Klein model::
+
+        sage: Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+        Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+        sage: P = Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)], geometry="hyperbolic")
+        sage: P
+        Hyperbolic polygon with vertices [I, (1/2, 0), (0, 1/2)]
+        sage: P.parent()
+        Hyperbolic Plane over Rational Field
+
+    Euclidean angles are rescaled; a hyperbolic polygon is not built from
+    angles, use ``hyperbolic_polygons.triangle`` for a triangle::
+
+        sage: Polygon(angles=(1/6, 1/8, 1/8)).angles()
+        (1/5, 3/20, 3/20)
+        sage: Polygon(angles=(1/6, 1/8, 1/8), geometry="hyperbolic")
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: a hyperbolic polygon cannot be built from angles; use hyperbolic_polygons.triangle()
+
+    The hyperbolic plane can be given; otherwise it is deduced from the
+    coordinates and from the planes of the vertices that are points::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: K.<s> = QuadraticField(2)
+        sage: HK = HyperbolicPlane(K)
+        sage: Polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)], parent=HK).parent()
+        Hyperbolic Plane over Number Field in s with defining polynomial x^2 - 2 with s = 1.414213562373095?
+
+        sage: H = HyperbolicPlane(QQ)
+        sage: p0 = H.point(0, 0, model="klein")
+        sage: pK = HK.point(s/4, 0, model="klein")
+        sage: qK = HK.point(0, s/4, model="klein")
+        sage: Polygon(vertices=[p0, pK, qK]).parent()
+        Hyperbolic Plane over Number Field in s with defining polynomial x^2 - 2 with s = 1.414213562373095?
+
+    Coordinates can be read in the upper half plane model::
+
+        sage: Polygon(vertices=[(0, 1), (1, 1), (0, 2)], model="half_plane", geometry="hyperbolic")
+        Hyperbolic polygon with vertices [I, 1 + I, 2*I]
+
+    TESTS::
+
+        sage: V = [(0, 0), (1/2, 0), (0, 1/2)]
+        sage: Polygon(vertices=V, geometry="spherical")
+        Traceback (most recent call last):
+        ...
+        ValueError: geometry must be "euclidean" or "hyperbolic", not 'spherical'
+        sage: Polygon(vertices=V, geometry="euclidean", parent=H)
+        Traceback (most recent call last):
+        ...
+        ValueError: parent is a hyperbolic plane but geometry is "euclidean"
+        sage: Polygon(vertices=V, parent=QQ)
+        Traceback (most recent call last):
+        ...
+        ValueError: parent must be a HyperbolicPlane, not Rational Field
+        sage: p1 = H.point(1/2, 0, model="klein")
+        sage: p2 = H.point(0, 1/2, model="klein")
+        sage: Polygon(vertices=[p0, p1, p2], geometry="euclidean")
+        Traceback (most recent call last):
+        ...
+        ValueError: the vertices are hyperbolic points but geometry is "euclidean"
+        sage: Polygon(vertices=[p0, pK, qK], parent=H)
+        Traceback (most recent call last):
+        ...
+        ValueError: the vertices do not convert into Hyperbolic Plane over Rational Field
+        sage: Polygon(edges=[(1, 0), (-1, 1), (0, -1)], geometry="hyperbolic")
+        Traceback (most recent call last):
+        ...
+        ValueError: a hyperbolic polygon has no edge vectors; give its vertices
+        sage: L.<t> = QuadraticField(3)
+        sage: qL = HyperbolicPlane(L).point(0, t/4, model="klein")
+        sage: Polygon(vertices=[p0, pK, qL])
+        Traceback (most recent call last):
+        ...
+        ValueError: the vertices lie in hyperbolic planes with no common base ring
+
+    Coordinates given as numbers must be exact, while an inexact plane is
+    accepted::
+
+        sage: Polygon(vertices=[(0, 0), (0.5, 0), (0, 0.5)], geometry="hyperbolic")
+        Traceback (most recent call last):
+        ...
+        ValueError: the ring must be exact, not Real Field with 53 bits of precision
+        sage: Polygon(vertices=V, parent=HyperbolicPlane(RR)).parent()
+        Hyperbolic Plane over Real Field with 53 bits of precision
+
     """
     if "base_point" in kwds:
         base_point = kwds.pop("base_point")
@@ -1049,7 +1610,7 @@ def Polygon(
         warnings.warn(
             "base_point has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead"
         )
-        return Polygon(
+        polygon = Polygon(
             *args,
             vertices=vertices,
             edges=edges,
@@ -1057,8 +1618,14 @@ def Polygon(
             lengths=lengths,
             base_ring=base_ring,
             category=category,
+            geometry=geometry,
+            parent=parent,
+            model=model,
             **kwds,
-        ).translate(base_point)
+        )
+        if not isinstance(polygon, EuclideanPolygon):
+            raise ValueError("base_point can only be used with a Euclidean polygon")
+        return polygon.translate(base_point)
 
     if "ring" in kwds:
         import warnings
@@ -1112,6 +1679,21 @@ def Polygon(
     if kwds:
         raise ValueError("keyword argument not supported by Polygon()")
 
+    hyperbolic = _Polygon_hyperbolic(
+        vertices,
+        edges,
+        angles,
+        lengths,
+        base_ring,
+        category,
+        check,
+        geometry,
+        parent,
+        model,
+    )
+    if hyperbolic is not None:
+        return hyperbolic
+
     # Determine the number of sides of this polygon.
     if angles:
         n = len(angles)
@@ -1128,6 +1710,8 @@ def Polygon(
     # Determine the base ring of the polygon
     if base_ring is None:
         base_ring = _Polygon_base_ring(vertices, edges, angles, lengths)
+
+    _check_exact(base_ring)
 
     if category is None:
         from flatsurf.geometry.categories import EuclideanPolygons
@@ -1168,6 +1752,120 @@ def Polygon(
         _Polygon_check(p, vertices, edges, angles, lengths, convex)
 
     return p
+
+
+def _Polygon_hyperbolic(
+    vertices,
+    edges,
+    angles,
+    lengths,
+    base_ring,
+    category,
+    check,
+    geometry,
+    parent,
+    model,
+):
+    r"""
+    Return the hyperbolic polygon described by the arguments of
+    :func:`Polygon`, or ``None`` when they describe a Euclidean polygon.
+
+    This is a helper function for :func:`Polygon`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import _Polygon_hyperbolic
+        sage: _Polygon_hyperbolic(vertices=[(0, 0), (1/2, 0), (0, 1/2)], edges=None, angles=None, lengths=None, base_ring=None, category=None, check=True, geometry="hyperbolic", parent=None, model=None)
+        Hyperbolic polygon with vertices [I, (1/2, 0), (0, 1/2)]
+        sage: _Polygon_hyperbolic(vertices=[(0, 0), (1/2, 0), (0, 1/2)], edges=None, angles=None, lengths=None, base_ring=None, category=None, check=True, geometry=None, parent=None, model=None) is None
+        True
+
+    """
+    from sage.categories.pushout import pushout
+    from sage.structure.coerce_exceptions import CoercionException
+
+    from flatsurf.geometry.hyperbolic import HyperbolicPlane, HyperbolicPoint
+
+    if geometry is not None:
+        if not isinstance(geometry, str) or geometry not in (
+            "euclidean",
+            "Euclidean",
+            "hyperbolic",
+            "Hyperbolic",
+        ):
+            raise ValueError(
+                f'geometry must be "euclidean" or "hyperbolic", not {geometry!r}'
+            )
+        geometry = geometry.lower()
+
+    if parent is not None:
+        if not isinstance(parent, HyperbolicPlane):
+            raise ValueError(f"parent must be a HyperbolicPlane, not {parent}")
+        if geometry == "euclidean":
+            raise ValueError('parent is a hyperbolic plane but geometry is "euclidean"')
+
+    # TODO: This comprehension consumes vertices when it is an iterator, so the
+    # Euclidean construction that follows sees an empty iterator or fails.
+    # Polygon(vertices=(v for v in [(0, 0), (1, 0), (0, 1)])) raises
+    # TypeError: object of type 'generator' has no len(). Missing: turn
+    # vertices into a list once, in Polygon, before the dispatch.
+    points = [v for v in vertices or [] if isinstance(v, HyperbolicPoint)]
+    if points and geometry == "euclidean":
+        raise ValueError(
+            'the vertices are hyperbolic points but geometry is "euclidean"'
+        )
+
+    if geometry != "hyperbolic" and parent is None and not points:
+        if model is not None:
+            raise ValueError("model can only be used with a hyperbolic polygon")
+        return None
+
+    if edges:
+        raise ValueError("a hyperbolic polygon has no edge vectors; give its vertices")
+    if lengths:
+        raise NotImplementedError("a hyperbolic polygon cannot be built from lengths")
+    if angles:
+        raise NotImplementedError(
+            "a hyperbolic polygon cannot be built from angles; use hyperbolic_polygons.triangle()"
+        )
+    if category is not None:
+        raise ValueError("the category of a hyperbolic polygon cannot be chosen")
+    if not vertices:
+        raise NotImplementedError("the vertices of a hyperbolic polygon must be set")
+
+    if parent is not None:
+        if base_ring is not None and base_ring != parent.base_ring():
+            raise ValueError(f"base_ring is {base_ring} but parent is {parent}")
+        H = parent
+    else:
+        ring = base_ring
+        if ring is None:
+            ring = QQ
+            numbers = [
+                c for v in vertices if not isinstance(v, HyperbolicPoint) for c in v
+            ]
+            if numbers:
+                ring = pushout(ring, Sequence(numbers).universe())
+        # Only the coordinates given as numbers must be exact; the planes of
+        # the points may be inexact, as HyperbolicPlane.polygon accepts them.
+        _check_exact(ring)
+        try:
+            for p in points:
+                ring = pushout(ring, p.parent().base_ring())
+        except CoercionException as e:
+            raise ValueError(
+                "the vertices lie in hyperbolic planes with no common base ring"
+            ) from e
+        H = HyperbolicPlane(ring)
+
+    try:
+        vertices = [H(v) if isinstance(v, HyperbolicPoint) else v for v in vertices]
+    except (TypeError, ValueError) as e:
+        raise ValueError(f"the vertices do not convert into {H}") from e
+
+    return H.polygon(
+        vertices=vertices, model="klein" if model is None else model, check=check
+    )
 
 
 def _Polygon_base_ring(vertices, edges, angles, lengths):
@@ -1390,13 +2088,13 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
     if area == 0:
         raise ValueError("polygon has zero area")
 
-    if any(edge == 0 for edge in p.edges()):
+    if any(edge == 0 for edge in p.edge_vectors()):
         raise ValueError("polygon has zero edge")
 
     for i in range(len(p.vertices())):
         from flatsurf.geometry.euclidean import is_anti_parallel
 
-        if is_anti_parallel(p.edge(i), p.edge(i + 1)):
+        if is_anti_parallel(p.edge_vector(i), p.edge_vector(i + 1)):
             raise ValueError("polygon has anti-parallel edges")
 
     from flatsurf.geometry.categories import EuclideanPolygons
@@ -1432,7 +2130,7 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
             raise ValueError("polygon does not have the prescribed angles")
 
     if lengths:
-        for edge, length in zip(p.edges(), lengths):
+        for edge, length in zip(p.edge_vectors(), lengths):
             if edge.norm() != length:
                 raise ValueError("polygon does not have the prescribed lengths")
 

@@ -14,8 +14,14 @@ The flatsurf.geometry Package
    geometry/finitely_generated_matrix_group
    geometry/fundamental_group
    geometry/gl2r_orbit_closure
+   geometry/holonomy
    geometry/homology
    geometry/hyperbolic
+   geometry/hyperbolic_isometry
+   geometry/hyperbolic_plane_morphism
+   geometry/hyperbolic_polygon
+   geometry/hyperbolic_surface
+   geometry/hyperbolic_surface_generators
    geometry/interval_exchange_transformation
    geometry/l_infinity_delaunay_cells
    geometry/lazy
@@ -27,10 +33,12 @@ The flatsurf.geometry Package
    geometry/polygon
    geometry/polyhedra
    geometry/pyflatsurf_conversion
+   geometry/signature
    geometry/similarity
    geometry/similarity_surface_generators
    geometry/straight_line_trajectory
    geometry/subfield
+   geometry/subgroup
    geometry/surface
    geometry/surface_legacy
    geometry/surface_objects

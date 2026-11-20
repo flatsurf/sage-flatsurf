@@ -164,6 +164,50 @@ class PolygonalSurfaces(SurfaceCategory):
                 "cannot decide whether this (potentially infinite type) surface is triangulated"
             )
 
+        def _describe_polygons(self):
+            r"""
+            Return a string describing the nature of the polygons that make up this surface.
+
+            This is a helper method for :meth:`_repr_`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S._describe_polygons()
+                ''
+
+            """
+            polygons = [
+                (-len(p.erase_marked_vertices().vertices()), p.describe_polygon())
+                for p in self.polygons()
+            ]
+            polygons.sort()
+            polygons = [description for (edges, description) in polygons]
+
+            if not polygons:
+                return ""
+
+            collated = []
+            while polygons:
+                count = 1
+                polygon = polygons.pop()
+                while polygons and polygons[-1] == polygon:
+                    count += 1
+                    polygons.pop()
+
+                if count == 1:
+                    collated.append(f"{polygon[0]} {polygon[1]}")
+                else:
+                    collated.append(f"{count} {polygon[2]}")
+
+            description = collated.pop()
+
+            if collated:
+                description = ", ".join(collated) + " and " + description
+
+            return description
+
         def walker(self):
             r"""
             Return an iterable that walks the labels of the surface.
@@ -616,6 +660,62 @@ class PolygonalSurfaces(SurfaceCategory):
             return zip(self.labels(), self.polygons())
 
         @abstract_method
+        def _polygon_coordinates(self, label, point, ring=None):
+            r"""
+            Return ``point`` in the coordinates of the polygon ``label``.
+
+            The result is an immutable vector of ``ring²`` that the method
+            ``get_point_position`` of that polygon accepts.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``point`` -- coordinates of a point in the plane of that
+              polygon, e.g., a tuple or a vector
+
+            - ``ring`` -- a ring or ``None`` (default: ``None``); the ring
+              of the coordinates, the base ring of this surface if ``None``
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: p = S._polygon_coordinates(0, (1/2, 0))
+                sage: p
+                (1/2, 0)
+                sage: p.is_immutable()
+                True
+
+            """
+
+        def _polygon_point(self, label, coordinates):
+            r"""
+            Return the point with the internal ``coordinates`` in the polygon
+            ``label`` as the public interface of points presents it.
+
+            This is the inverse of :meth:`_polygon_coordinates`. Here, the
+            coordinates are returned unchanged; surfaces of other geometries
+            override this method.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``coordinates`` -- an immutable vector as returned by
+              :meth:`_polygon_coordinates`
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S._polygon_point(0, vector((1/2, 0)))
+                (1/2, 0)
+
+            """
+            return coordinates
+
+        @abstract_method
         def polygon(self, label):
             r"""
             Return the polygon with ``label``.
@@ -909,8 +1009,8 @@ class PolygonalSurfaces(SurfaceCategory):
             label, coordinates = self.representative()
             return (
                 self.parent()
-                .polygon(label)(coordinates)
-                .position()
+                .polygon(label)
+                .get_point_position(coordinates)
                 .is_in_edge_interior()
             )
 
@@ -943,7 +1043,12 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             label, coordinates = self.representative()
-            return self.parent().polygon(label)(coordinates).position().is_in_interior()
+            return (
+                self.parent()
+                .polygon(label)
+                .get_point_position(coordinates)
+                .is_in_interior()
+            )
 
         def edges(self):
             r"""
@@ -989,10 +1094,42 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S(0, 0).edges()
                 {(0, 0), (0, 1), (0, 2), (0, 3)}
 
+            For a hyperbolic surface::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S.glue((0, 0), (0, 3))
+                sage: S.glue((0, 1), (0, 2))
+                sage: S.set_immutable()
+
+                sage: S(0, (1/4, 1/4)).edges()
+                set()
+                sage: sorted(S(0, (1/4, 0)).edges())
+                [(0, 0), (0, 3)]
+                sage: sorted(S(0, 1).edges())
+                [(0, 0), (0, 1), (0, 2), (0, 3)]
+
             """
-            raise NotImplementedError(
-                "points on this surface cannot determine which edges they are contained in yet"
-            )
+            surface = self.parent()
+
+            edges = set()
+            for label, coordinates in self.representatives():
+                polygon = surface.polygon(label)
+                position = polygon.get_point_position(coordinates)
+
+                if position.is_in_edge_interior():
+                    edges.add((label, position.get_edge()))
+                elif position.is_vertex():
+                    vertex = position.get_vertex()
+                    n = len(polygon.vertices())
+                    edges.add((label, vertex))
+                    edges.add((label, (vertex - 1) % n))
+
+            return edges
 
         def _test_edges(self, **options):
             r"""
@@ -1004,6 +1141,21 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S = translation_surfaces.square_torus()
                 sage: S(0, 0)._test_edges()
 
+            A point inside a self-glued edge::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                sage: S(0, (1, 0))._test_edges()
+
+            A point inside an unglued edge::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: T = MutableOrientedSimilaritySurface(QQ)
+                sage: T.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                0
+                sage: T.set_immutable()
+                sage: T(0, (1/2, 0))._test_edges()
+
             """
             tester = self._tester(**options)
 
@@ -1013,8 +1165,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 tester.assertTrue(self.is_in_polygon_interior())
 
             if len(edges) == 1:
-                opposite = self.parent().opposite_edge(*edges[0])
-                tester.assertTrue(opposite is None or opposite == edges[0])
+                edge = next(iter(edges))
+                opposite = self.parent().opposite_edge(*edge)
+                tester.assertTrue(opposite is None or opposite == edge)
 
             if self.is_vertex():
                 tester.assertGreaterEqual(len(edges), 2)
@@ -1157,6 +1310,27 @@ class PolygonalSurfaces(SurfaceCategory):
                 to put it here.
                 """
 
+                def angles(self, numerical=False):
+                    r"""
+                    Return the total angles at the vertices of this surface as
+                    multiples of 2π.
+
+                    INPUT:
+
+                    - ``numerical`` -- a boolean (default: ``False``); whether
+                      to return floating point approximations of the angles or
+                      their exact values.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.regular_octagon()
+                        sage: S.angles()
+                        [3]
+
+                    """
+                    return [p.angle(numerical=numerical) for p in self.vertices()]
+
                 def euler_characteristic(self):
                     r"""
                     Return the Euler characteristic of this surface.
@@ -1207,6 +1381,325 @@ class PolygonalSurfaces(SurfaceCategory):
                     F = len(self.polygons())
 
                     return ZZ(V - E + F)
+
+                def boundary_components(self):
+                    r"""
+                    Return the boundary components of this surface as cycles
+                    of unglued edges.
+
+                    Each component is a tuple of the unglued edges ``(label,
+                    edge)`` along it, in boundary order, with the surface on
+                    its left: an edge runs counterclockwise around its polygon,
+                    and the edge after it is found by turning around its end
+                    vertex across the glued edges. Each tuple starts with its
+                    first edge in the order of
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edges`,
+                    and the components are in the order of their first edge.
+
+                    OUTPUT:
+
+                    A list of tuples of pairs ``(label, edge)``, empty if this
+                    surface has no boundary.
+
+                    EXAMPLES:
+
+                    A square glued along its horizontal edges is a cylinder
+                    with two boundary components::
+
+                        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.boundary_components()
+                        [((0, 1),), ((0, 3),)]
+
+                    A polygon without gluings is a disk, bounded by all of its
+                    edges::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]))
+                        0
+                        sage: S.set_immutable()
+                        sage: S.boundary_components()
+                        [((0, 0), (0, 1), (0, 2))]
+
+                    A surface without boundary::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: translation_surfaces.square_torus().boundary_components()
+                        []
+
+                    TESTS:
+
+                    A boundary component made of edges of two polygons, the
+                    walk turning across a self-glued edge::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        0
+                        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                        1
+                        sage: S.glue((0, 1), (1, 3))
+                        sage: S.glue((0, 2), (0, 2))
+                        sage: S.set_immutable()
+                        sage: S.boundary_components()
+                        [((0, 0), (1, 0), (1, 1), (1, 2), (0, 3))]
+
+                    """
+                    components = []
+                    seen = set()
+                    for start in self.edges():
+                        if start in seen or self.opposite_edge(*start) is not None:
+                            continue
+                        component = []
+                        label, edge = start
+                        while True:
+                            component.append((label, edge))
+                            seen.add((label, edge))
+                            # Turn around the end vertex of the edge: it is the
+                            # start of the next edge of the polygon, and when
+                            # that edge is glued, the end of the edge glued to
+                            # it, i.e., the start of the edge after that one.
+                            edge = (edge + 1) % len(self.polygon(label).vertices())
+                            while self.opposite_edge(label, edge) is not None:
+                                label, edge = self.opposite_edge(label, edge)
+                                edge = (edge + 1) % len(self.polygon(label).vertices())
+                            if (label, edge) == start:
+                                break
+                        components.append(tuple(component))
+                    return components
+
+                def fundamental_group(self, base_label=None, punctured_vertices=False):
+                    r"""
+                    Return the fundamental group of this surface, punctured at
+                    some of its vertices.
+
+                    The elements are closed walks crossing the edges from
+                    polygon to polygon, see
+                    :class:`~flatsurf.geometry.fundamental_group.FundamentalGroup`.
+
+                    INPUT:
+
+                    - ``base_label`` -- a polygon label or ``None`` (default:
+                      ``None``); the polygon at which the walks start and end,
+                      the root of the surface if ``None``
+
+                    - ``punctured_vertices`` -- a boolean or a list of vertices
+                      of this surface (default: ``False``); the vertices at
+                      which the surface is punctured, ``True`` standing for all
+                      of them
+
+                    OUTPUT:
+
+                    A :class:`~flatsurf.geometry.fundamental_group.FundamentalGroup`.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.square_torus()
+                        sage: S.fundamental_group()
+                        Fundamental group of Translation Surface in H_1(0) built from a square based at polygon 0
+
+                    With every vertex punctured, the group is free on its
+                    generators and the equality of elements is decided::
+
+                        sage: F = S.fundamental_group(punctured_vertices=True)
+                        sage: F
+                        Fundamental group of Translation Surface in H_1(0) built from a square punctured at all of its vertices based at polygon 0
+                        sage: a, b = F.gens()
+                        sage: a * b == b * a
+                        False
+
+                    """
+                    if base_label is None:
+                        base_label = self.root()
+
+                    from flatsurf.geometry.fundamental_group import FundamentalGroup
+
+                    return FundamentalGroup(self, base_label, punctured_vertices)
+
+                def ramified_cover(self, d, data):
+                    r"""
+                    Return the cover of degree ``d`` of this surface given by
+                    the permutations ``data`` of its sheets.
+
+                    The cover is made of ``d`` copies of each polygon, the
+                    sheets ``1, ..., d``. The edge ``e`` of polygon ``label``
+                    of the sheet ``i`` is glued to the opposite edge ``e'`` of
+                    polygon ``label'`` of the sheet ``s(i)``, where ``s`` is
+                    ``data[(label, e)]``, or the inverse of ``data[(label',
+                    e')]``, or the identity when neither is given. An unglued
+                    edge stays unglued in every sheet.
+
+                    INPUT:
+
+                    - ``d`` -- a positive integer; the degree of the cover
+
+                    - ``data`` -- a dictionary; to an edge ``(label, e)`` of
+                      this surface it associates a permutation of ``{1, ...,
+                      d}``, as a string such as ``'(1,2)(3,4)'`` or an element
+                      of ``SymmetricGroup(d)``; a self-glued edge requires an
+                      involution. The dictionary is not changed.
+
+                    OUTPUT:
+
+                    An immutable surface of the geometry of this surface. The
+                    sheet ``i`` of the polygon at position ``k`` (counting
+                    from 0) in the
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`
+                    of this surface, which has ``n`` polygons, has label ``(i
+                    - 1) * n + k``.
+
+                    EXAMPLES:
+
+                    The L-shape origami::
+
+                        sage: import flatsurf
+                        sage: T = flatsurf.translation_surfaces.square_torus()
+                        sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
+                        Translation Surface in H_2(2) built from 3 squares
+                        sage: O = T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
+                        sage: O.stratum()
+                        H_2(2)
+
+                    A double cover of the pillowcase of an equilateral
+                    triangle, branched over two of its vertices::
+
+                        sage: from flatsurf import euclidean_polygons, similarity_surfaces
+                        sage: S = similarity_surfaces.pillowcase(euclidean_polygons.triangle(1, 1, 1))
+                        sage: C = S.ramified_cover(2, {(0, 0): '(1,2)'})
+                        sage: C
+                        Genus 0 Rational Cone Surface built from 4 equilateral triangles
+                        sage: C.signature()
+                        SurfaceSignature(g=0, cone_orders=(-2/3, -2/3, -1/3, -1/3))
+
+                    The same construction for a hyperbolic surface, the
+                    pillowcase of an equilateral triangle with angles `\pi/4`::
+
+                        sage: from flatsurf import hyperbolic_polygons, hyperbolic_surfaces
+                        sage: H = hyperbolic_surfaces.pillowcase(hyperbolic_polygons.triangle(1/8, 1/8, 1/8))
+                        sage: C = H.ramified_cover(2, {(0, 0): '(1,2)'})
+                        sage: C
+                        Genus 0 Hyperbolic Surface built from 4 equilateral triangles
+                        sage: C.area()
+                        1/2
+                        sage: C.signature()
+                        SurfaceSignature(g=0, cone_orders=(-3/4, -3/4, -1/2, -1/2))
+
+                    TESTS::
+
+                        sage: import flatsurf
+                        sage: T = flatsurf.translation_surfaces.square_torus()
+                        sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,2): '(1,3)'})
+                        Traceback (most recent call last):
+                        ...
+                        ValueError: inconsistent covering data
+
+                    A self-glued edge glues the sheet ``i`` to the sheet
+                    ``s(i)``::
+
+                        sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(polygons.square())
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.glue((0, 1), (0, 1))
+                        sage: S.glue((0, 3), (0, 3))
+                        sage: S.set_immutable()
+                        sage: data = {(0, 0): '(1,2)'}
+                        sage: C = S.ramified_cover(2, data)
+                        sage: [C.opposite_edge(label, e) for label in C.labels() for e in range(4)]
+                        [(1, 2), (0, 1), (1, 0), (0, 3), (0, 2), (1, 1), (0, 0), (1, 3)]
+                        sage: data
+                        {(0, 0): '(1,2)'}
+                        sage: C = S.ramified_cover(2, {(0, 1): '(1,2)'})
+                        sage: [C.opposite_edge(label, 1) for label in C.labels()]
+                        [(1, 1), (0, 1)]
+
+                    The permutation of a self-glued edge must be an
+                    involution::
+
+                        sage: S.ramified_cover(3, {(0, 1): '(1,2,3)'})
+                        Traceback (most recent call last):
+                        ...
+                        ValueError: the permutation (1,2,3) of the self-glued edge (0, 1) is not an involution
+
+                    An unglued edge stays unglued; the double cover of a
+                    cylinder around its core curve is a cylinder twice as
+                    long::
+
+                        sage: S = MutableOrientedSimilaritySurface(QQ)
+                        sage: S.add_polygon(polygons.square())
+                        0
+                        sage: S.glue((0, 0), (0, 2))
+                        sage: S.set_immutable()
+                        sage: C = S.ramified_cover(2, {(0, 0): '(1,2)'})
+                        sage: C.boundary_components()
+                        [((0, 1), (1, 1)), ((0, 3), (1, 3))]
+
+                    The keys of ``data`` must be edges::
+
+                        sage: S.ramified_cover(2, {(0, 4): '(1,2)'})
+                        Traceback (most recent call last):
+                        ...
+                        ValueError: (0, 4) is not an edge of this surface
+
+                    """
+                    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+                    G = SymmetricGroup(d)
+
+                    edges = set(self.edges())
+                    permutations = {}
+                    for edge, permutation in data.items():
+                        if edge not in edges:
+                            raise ValueError(f"{edge} is not an edge of this surface")
+                        permutations[edge] = G(permutation)
+
+                    cover = self._empty_mutable_surface()
+                    sheets = {}
+                    for i in range(1, d + 1):
+                        for label in self.labels():
+                            sheets[(label, i)] = cover.add_polygon(self.polygon(label))
+
+                    seen = set()
+                    for edge in self.edges():
+                        if edge in seen:
+                            continue
+                        opposite = self.opposite_edge(*edge)
+                        if opposite is None:
+                            continue
+                        seen.add(edge)
+                        seen.add(opposite)
+
+                        s = permutations.get(edge)
+                        t = permutations.get(opposite)
+                        if edge == opposite:
+                            if s is None:
+                                s = G.one()
+                            elif not (s * s).is_one():
+                                raise ValueError(
+                                    f"the permutation {s} of the self-glued edge {edge} is not an involution"
+                                )
+                        elif s is None:
+                            s = G.one() if t is None else ~t
+                        elif t is not None and not (s * t).is_one():
+                            raise ValueError("inconsistent covering data")
+
+                        for i in range(1, d + 1):
+                            # A self-glued edge pairs the sheets i and s(i),
+                            # glued once from the smaller of the two.
+                            if edge == opposite and s(i) < i:
+                                continue
+                            cover.glue(
+                                (sheets[(edge[0], i)], edge[1]),
+                                (sheets[(opposite[0], s(i))], opposite[1]),
+                            )
+
+                    cover.set_immutable()
+                    return cover
 
         class ParentMethods:
             r"""
@@ -1391,6 +1884,84 @@ class PolygonalSurfaces(SurfaceCategory):
             )
 
             return (TopologicalSurfaces().Orientable(),)
+
+        class ElementMethods:
+            r"""
+            Provides methods available to all points of oriented surfaces built
+            from polygons.
+
+            If you want to add functionality for such points, you most likely
+            want to put it here.
+            """
+
+            def angle(self, numerical=False):
+                r"""
+                Return the total angle at this point as a multiple of 2π.
+
+                INPUT:
+
+                - ``numerical`` -- a boolean (default: ``False``); whether to
+                  return a floating point approximation of the angle or its exact
+                  value.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S(0, 0).angle()
+                    1
+                    sage: S(0, (1, 0)).angle()
+                    1/2
+                    sage: S(0, (1, 0)).angle(numerical=True)
+                    0.500000000000000
+
+                TESTS:
+
+                For mutable surfaces, the angles are not cached::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+                    sage: T._refine_category_(S.category())  # make angle() available
+                    sage: T(0, 0).angle()
+                    1
+                    sage: T(0, 0).angle() is T(0, 0).angle()
+                    False
+
+                ::
+
+                    sage: T.glue((0, 0), (0, 2))
+                    sage: T(0, 0).angle()
+                    3/8
+
+                .. SEEALSO::
+
+                    :meth:`~flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.turns`
+                    for the number of full 2π turns at a point.
+
+                """
+                if self.is_vertex():
+                    return self.parent()._angle_vertex(self, numerical=numerical)
+
+                from sage.all import QQ, RR
+
+                ring = RR if numerical else QQ
+
+                if self.is_in_edge_interior():
+                    label, coordinates = self.representative()
+                    edge = (
+                        self.parent()
+                        .polygon(label)
+                        .get_point_position(coordinates)
+                        .get_edge()
+                    )
+
+                    opposite_edge = self.parent().opposite_edge(label, edge)
+                    if opposite_edge is None or opposite_edge == (label, edge):
+                        # The total angle at a self-glued or unglued edge is π.
+                        return ring(0.5)
+
+                return ring.one()
 
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""

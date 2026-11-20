@@ -80,13 +80,13 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
             sage: HalfTranslationSurfaces().super_categories()
-            [Category of dilation surfaces, Category of rational cone surfaces]
+            [Category of dilation surfaces, Category of rational flat cone surfaces]
 
         """
         from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
-        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+        from flatsurf.geometry.categories.cone_surfaces import FlatConeSurfaces
 
-        return [DilationSurfaces(), ConeSurfaces().Rational()]
+        return [DilationSurfaces(), FlatConeSurfaces().Rational()]
 
     # Declare that the "positive" half-translation surfaces are called
     # "translation surfaces".
@@ -402,22 +402,22 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     lab = next(iter(self.labels()))
                     p = self.polygon(lab)
-                    u = p.edge(1)
-                    v = -p.edge(0)
+                    u = p.edge_vector(1)
+                    v = -p.edge_vector(0)
                     i = 1
                     from flatsurf.geometry.euclidean import ccw
 
                     while ccw(u, v) == 0:
                         i += 1
-                        u = p.edge(i)
-                        v = -p.edge(i - 1)
+                        u = p.edge_vector(i)
+                        v = -p.edge_vector(i - 1)
                     M = matrix(2, [u, v]).transpose().inverse()
                     assert M.det() > 0
                     hols = []
                     for lab in self.labels():
                         p = self.polygon(lab)
                         for e in range(len(p.vertices())):
-                            w = M * p.edge(e)
+                            w = M * p.edge_vector(e)
                             hols.append(w[0])
                             hols.append(w[1])
                     if self.base_ring() is AA:

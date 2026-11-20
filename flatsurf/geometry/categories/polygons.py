@@ -104,6 +104,22 @@ class Polygons(Category_over_base_ring):
             sage: Polygons._describe_polygon(64, equiangular=False, equilateral=False)
             ('a', '64-gon', '64-gons')
 
+        The Euclidean names of quadrilaterals can be disabled::
+
+            sage: Polygons._describe_polygon(4, equilateral=True, equiangular=True, euclidean=False)
+            ('a', 'regular quadrilateral', 'regular quadrilaterals')
+            sage: Polygons._describe_polygon(4, equiangular=True, euclidean=False)
+            ('an', 'equiangular quadrilateral', 'equiangular quadrilaterals')
+            sage: Polygons._describe_polygon(4, equilateral=True, euclidean=False)
+            ('an', 'equilateral quadrilateral', 'equilateral quadrilaterals')
+
+        Polygons with only right angles::
+
+            sage: Polygons._describe_polygon(6, right_angled=True, euclidean=False)
+            ('a', 'right-angled hexagon', 'right-angled hexagons')
+            sage: Polygons._describe_polygon(6, right_angled=True, equilateral=True, equiangular=True, euclidean=False)
+            ('a', 'regular right-angled hexagon', 'regular right-angled hexagons')
+
         """
         from sage.all import infinity
 
@@ -177,14 +193,27 @@ class Polygons(Category_over_base_ring):
             return description
 
         if num_edges == 4:
-            if kwargs.get("equilateral", False) and kwargs.get("equiangular", False):
-                return "a", "square", "squares"
+            if kwargs.get("euclidean", True):
+                if kwargs.get("equilateral", False) and kwargs.get(
+                    "equiangular", False
+                ):
+                    return "a", "square", "squares"
 
-            if kwargs.get("equiangular", False):
-                return "a", "rectangle", "rectangles"
+                if kwargs.get("equiangular", False):
+                    return "a", "rectangle", "rectangles"
 
-            if kwargs.get("equilateral", False):
-                return "a", "rhombus", "rhombi"
+                if kwargs.get("equilateral", False):
+                    return "a", "rhombus", "rhombi"
+            elif not (
+                kwargs.get("equilateral", False) and kwargs.get("equiangular", False)
+            ):
+                if augment_if("an", "equiangular"):
+                    return description
+
+                if augment_if("an", "equilateral"):
+                    return description
+
+        augment_if("a", "right-angled", "right_angled")
 
         augment_if("a", "regular", "equilateral", "equiangular")
 
@@ -285,6 +314,214 @@ class Polygons(Category_over_base_ring):
 
             """
 
+        @abstract_method
+        def vertices(self, marked_vertices=True):
+            r"""
+            Return the vertices of this polygon in counterclockwise order.
+
+            INPUT:
+
+            - ``marked_vertices`` -- a boolean (default: ``True``); whether to
+              include the vertices with an angle π
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().vertices()
+                ((0, 0), (1, 0), (1, 1), (0, 1))
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]).vertices()
+                (I, (1/2, 0), (0, 1/2))
+
+            """
+
+        @abstract_method
+        def area(self):
+            r"""
+            Return the area of this polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().area()
+                1
+
+            The area of a hyperbolic polygon is divided by `2\pi`::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.polygon(vertices=[(0, -1/2), (1/2, 1/2), (0, 0), (-1/2, 1/2)])
+                sage: P.area(numerical=True)  # abs tol 1e-12
+                0.0462449974740256
+
+            """
+
+        @abstract_method(optional=True)
+        def vertex(self, i):
+            r"""
+            Return the ``i``-th vertex of this polygon, with ``i`` taken
+            modulo the number of vertices.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().vertex(-1)
+                (0, 1)
+
+            """
+
+        @abstract_method(optional=True)
+        def angle(self, i, numerical=None):
+            r"""
+            Return the interior angle at the vertex ``i`` of this polygon, as a
+            multiple of `2\pi`.
+
+            INPUT:
+
+            - ``i`` -- an integer, taken modulo the number of vertices
+
+            - ``numerical`` -- a boolean or ``None`` (default: ``None``);
+              whether to return a floating point approximation; when
+              ``None``, the angle is exact for a rational polygon
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().angle(0)
+                1/4
+
+            """
+
+        @abstract_method(optional=True)
+        def angles(self, numerical=None):
+            r"""
+            Return the interior angles of this polygon, as multiples of
+            `2\pi`, in the order of the vertices.
+
+            INPUT:
+
+            - ``numerical`` -- a boolean or ``None`` (default: ``None``); as
+              in :meth:`angle`
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().angles()
+                (1/4, 1/4, 1/4, 1/4)
+
+            """
+
+        @abstract_method(optional=True)
+        def edge_segment(self, i):
+            r"""
+            Return the oriented segment from the vertex ``i`` to the vertex
+            ``i + 1``, with ``i`` taken modulo the number of vertices.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().edge_segment(0)
+                (0, 0) → (1, 0)
+
+            """
+
+        @abstract_method(optional=True)
+        def edge_segments(self):
+            r"""
+            Return the oriented segments joining consecutive vertices of this
+            polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().edge_segments()
+                [(0, 0) → (1, 0), (1, 0) → (1, 1), (1, 1) → (0, 1), (0, 1) → (0, 0)]
+
+            """
+
+        @abstract_method(optional=True)
+        def get_point_position(self, point):
+            r"""
+            Return the combinatorial position of ``point`` with respect to
+            this polygon, as a
+            :class:`~flatsurf.geometry.polygon.PolygonPosition`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().get_point_position((1/2, 1/2))
+                point positioned in interior of polygon
+
+            """
+
+        @abstract_method(optional=True)
+        def is_equilateral(self):
+            r"""
+            Return whether all the sides of this polygon have the same length.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().is_equilateral()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def is_equiangular(self):
+            r"""
+            Return whether all the interior angles of this polygon are equal.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: polygons.square().is_equiangular()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def is_right_triangle(self):
+            r"""
+            Return whether this polygon is a triangle with a right angle.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)]).is_right_triangle()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def is_isosceles_triangle(self):
+            r"""
+            Return whether this polygon is a triangle with two sides of the
+            same length.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: Polygon(vertices=[(0, 0), (1, 0), (0, 1)]).is_isosceles_triangle()
+                True
+
+            """
+
+        @abstract_method(optional=True)
+        def erase_marked_vertices(self):
+            r"""
+            Return a copy of this polygon without its vertices of angle π.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: Polygon(vertices=[(0, 0), (1, 0), (2, 0), (0, 1)]).erase_marked_vertices()
+                Polygon(vertices=[(0, 0), (2, 0), (0, 1)])
+
+            """
+
         def base_ring(self):
             r"""
             Return the ring over which this polygon is defined.
@@ -331,18 +568,122 @@ class Polygons(Category_over_base_ring):
             }
 
             if len(self.vertices()) == 3:
-                slopes = self.slopes(relative=True)
-                properties["right"] = any(slope[0] == 0 for slope in slopes)
-
-                from flatsurf.geometry.euclidean import is_parallel
-
-                properties["isosceles"] = (
-                    is_parallel(slopes[0], slopes[1])
-                    or is_parallel(slopes[0], slopes[2])
-                    or is_parallel(slopes[1], slopes[2])
-                )
+                properties["right"] = self.is_right_triangle()
+                properties["isosceles"] = self.is_isosceles_triangle()
 
             return Polygons._describe_polygon(len(self.vertices()), **properties)
+
+        @abstract_method(optional=True)
+        def _transformation_group(self):
+            r"""
+            Return the group of the transformations of the plane of this
+            polygon, over the base ring of this polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import euclidean_polygons
+                sage: S = euclidean_polygons.square()
+                sage: S._transformation_group()
+                Similarity group over Rational Field
+
+            """
+
+        def apply_transformation(self, g):
+            r"""
+            Return the image of this polygon under the transformation ``g``.
+
+            INPUT:
+
+            - ``g`` -- a similarity for a Euclidean polygon, an isometry for a
+              hyperbolic polygon, or anything that the group of such
+              transformations over the base ring of this polygon converts (a
+              tuple for a ``SimilarityGroup``, a matrix for a
+              ``HyperbolicIsometryGroup``)
+
+            OUTPUT:
+
+            A polygon over the base ring of this polygon.
+
+            A polygon is pointed at its vertex 0 and its vertices are listed
+            counterclockwise from it. The image of a polygon with vertices
+            `v_0, \ldots, v_{n-1}` is the polygon pointed at `g(v_0)`, with its
+            vertices listed counterclockwise from it. If ``g`` preserves the
+            orientation, these are `g(v_0), \ldots, g(v_{n-1})`. If ``g``
+            reverses it, the vertex `j` of the image is `g(v_{-j \bmod n})`.
+            Consequently, the edge `e` of the polygon is the edge `e` of the
+            image if ``g`` preserves the orientation, and the edge
+            `(-1 - e) \bmod n` of the image, traversed in the other
+            direction, if ``g`` reverses it.
+
+            EXAMPLES::
+
+                sage: from flatsurf import euclidean_polygons, Polygon, HyperbolicPlane
+                sage: from flatsurf.geometry.similarity import SimilarityGroup
+                sage: from flatsurf.geometry.hyperbolic_isometry import HyperbolicIsometryGroup
+                sage: S = euclidean_polygons.square()
+                sage: G = SimilarityGroup(QQ)
+                sage: g = G((1, 2))
+                sage: S.apply_transformation(g)
+                Polygon(vertices=[(1, 2), (2, 2), (2, 3), (1, 3)])
+                sage: S.apply_transformation((1, 2))
+                Polygon(vertices=[(1, 2), (2, 2), (2, 3), (1, 3)])
+
+            A similarity may reverse the orientation::
+
+                sage: S.apply_transformation((1, 0, 0, 0, -1))
+                Polygon(vertices=[(0, 0), (0, -1), (1, -1), (1, 0)])
+
+            The image is over the base ring of the polygon::
+
+                sage: T = Polygon(angles=(1, 1, 1))
+                sage: rot = G((0, 1, 0, 0))
+                sage: T.apply_transformation(rot).base_ring() is T.base_ring()
+                True
+
+            Hyperbolic polygons are moved by hyperbolic isometries::
+
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+                sage: M = matrix([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+                sage: h = HyperbolicIsometryGroup(QQ)(M)
+                sage: P.apply_transformation(h)
+                Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+                sage: P.apply_transformation(M)
+                Hyperbolic polygon with vertices [I, (0, 1/2), (-1/2, 0)]
+
+            A hyperbolic isometry may reverse the orientation::
+
+                sage: P.apply_transformation(matrix([[1, 0, 0], [0, -1, 0], [0, 0, 1]]))
+                Hyperbolic polygon with vertices [I, (0, -1/2), (1/2, 0)]
+
+            A transformation of the other geometry is refused::
+
+                sage: S.apply_transformation(h)
+                Traceback (most recent call last):
+                ...
+                ValueError: element in Group of isometries of the hyperbolic plane over Rational Field cannot be used to create element in Similarity group over Rational Field
+                sage: P.apply_transformation(g)
+                Traceback (most recent call last):
+                ...
+                ValueError: element in Similarity group over Rational Field cannot be used to create element in Group of isometries of the hyperbolic plane over Rational Field
+
+            So is a transformation over a ring that does not convert into the
+            base ring::
+
+                sage: K.<a> = QuadraticField(2)
+                sage: gK = SimilarityGroup(K)((a, 0, 0, 0))
+                sage: S.apply_transformation(gK)
+                Traceback (most recent call last):
+                ...
+                TypeError: Unable to coerce a to a rational
+
+            .. SEEALSO::
+
+                ``apply_similarity()`` for Euclidean polygons and
+                ``apply_isometry()`` for hyperbolic polygons
+
+            """
+            return self._transformation_group()(g)(self)
 
         def _test_refined_category(self, **options):
             r"""

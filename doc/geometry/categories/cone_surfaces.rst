@@ -3,6 +3,6 @@
 
 .. automodule:: flatsurf.geometry.categories.cone_surfaces
 
-.. autoclass:: flatsurf.geometry.categories.cone_surfaces.ConeSurfaces
+.. autoclass:: flatsurf.geometry.categories.cone_surfaces.FlatConeSurfaces
    :members:
    :undoc-members:

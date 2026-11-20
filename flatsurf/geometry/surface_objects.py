@@ -82,7 +82,7 @@ class SurfacePoint(Element):
 
     INPUT:
 
-    - ``surface`` -- a similarity surface
+    - ``surface`` -- a surface built from polygons
 
     - ``label`` -- a polygon label for the polygon with respect to which the
       ``point`` coordinates can be made sense of
@@ -120,6 +120,8 @@ class SurfacePoint(Element):
         True
         sage: p.coordinates(2)
         ((1/2, 1),)
+        sage: p.representative(2)
+        (2, (1/2, 1))
 
     A point can have even more representations when it is a vertex::
 
@@ -178,8 +180,7 @@ class SurfacePoint(Element):
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
-        point = (ring**2)(point)
-        point.set_immutable()
+        point = surface._polygon_coordinates(label, point, ring=ring)
 
         position = polygon.get_point_position(point)
 
@@ -196,10 +197,9 @@ class SurfacePoint(Element):
             opposite_edge = surface.opposite_edge(label, position.get_edge())
             if opposite_edge is not None:
                 cross_label, cross_edge = opposite_edge
-                cross_point = surface.edge_transformation(label, position.get_edge())(
-                    point
+                cross_point = (
+                    surface.edge_transformation(label, position.get_edge()) * point
                 )
-                cross_point.set_immutable()
 
                 self._representatives.add((cross_label, cross_point))
         elif position.is_vertex():
@@ -249,7 +249,12 @@ class SurfacePoint(Element):
             collect_representatives(label, source_edge, -1, limit)
 
             self._representatives = {
-                (label, surface.polygon(label).vertex(vertex))
+                (
+                    label,
+                    surface._polygon_coordinates(
+                        label, surface.polygon(label).vertex(vertex)
+                    ),
+                )
                 for (label, vertex) in self._representatives
             }
         else:
@@ -292,7 +297,7 @@ class SurfacePoint(Element):
             True
 
         """
-        label, coordinates = self.representative()
+        label, coordinates = next(iter(self._representatives))
         position = self.surface().polygon(label).get_point_position(coordinates)
         return position.is_vertex()
 
@@ -319,7 +324,7 @@ class SurfacePoint(Element):
         warnings.warn(
             "one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead"
         )
-        label, coordinates = self.representative()
+        label, coordinates = next(iter(self._representatives))
         vertex = (
             self.surface().polygon(label).get_point_position(coordinates).get_vertex()
         )
@@ -341,12 +346,21 @@ class SurfacePoint(Element):
             frozenset({(1, (0, 0)), (1, (1, 1)), (2, (0, 1)), (2, (1, 0))})
 
         """
-        return self._representatives
+        return frozenset(
+            (label, self.surface()._polygon_point(label, coordinates))
+            for (label, coordinates) in self._representatives
+        )
 
-    def representative(self):
+    def representative(self, label=None):
         r"""
-        Return a representative of this point, i.e., the first of
-        :meth:`representatives`.
+        Return a representative of this point as a pair of a polygon label and
+        coordinates.
+
+        INPUT:
+
+        - ``label`` -- a polygon label or ``None`` (default: ``None``); if
+          ``None``, return the first of :meth:`representatives`, otherwise
+          return a representative in the polygon ``label``
 
         EXAMPLES::
 
@@ -358,8 +372,43 @@ class SurfacePoint(Element):
             sage: p.representative()  # random output: depends on the Python version
             (2, (1, 0))
 
+        A representative in a given polygon::
+
+            sage: p = S.point(1, (1/2, 0))
+            sage: p.representative(2)
+            (2, (1/2, 1))
+
+        A vertex can have several representatives in the same polygon; one of
+        them is returned, :meth:`coordinates` returns all of them::
+
+            sage: p = S.point(1, (0, 0))
+            sage: label, coordinates = p.representative(1)
+            sage: label
+            1
+            sage: coordinates in p.coordinates(1)
+            True
+
+        A point in the interior of a polygon has no representative in the
+        other polygons::
+
+            sage: p = S.point(1, (1/2, 1/2))
+            sage: p.representative(2)
+            Traceback (most recent call last):
+            ...
+            ValueError: point has no representative in polygon 2
+
         """
-        return next(iter(self.representatives()))
+        if label is None:
+            return next(iter(self.representatives()))
+
+        for representative_label, coordinates in self._representatives:
+            if representative_label == label:
+                return (
+                    representative_label,
+                    self.surface()._polygon_point(label, coordinates),
+                )
+
+        raise ValueError(f"point has no representative in polygon {label}")
 
     def vertex_set(self):
         r"""
@@ -393,7 +442,7 @@ class SurfacePoint(Element):
                 .get_point_position(coordinates)
                 .get_vertex(),
             )
-            for label, coordinates in self.representatives()
+            for label, coordinates in self._representatives
         ]
 
     def contains_vertex(self, label, v=None):
@@ -491,7 +540,7 @@ class SurfacePoint(Element):
 
     def coordinates(self, label):
         r"""
-        Return coordinates for the point in the in the polygon ``label``.
+        Return coordinates for the point in the polygon ``label``.
 
         EXAMPLES::
 
@@ -504,60 +553,15 @@ class SurfacePoint(Element):
 
         """
         return tuple(
-            coordinates for (l, coordinates) in self._representatives if l == label
-        )
-
-    def graphical_surface_point(self, graphical_surface=None):
-        r"""
-        Return a
-        :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to
-        represent this point graphically.
-
-        EXAMPLES::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: p = S.point(0, (1/2, 1/2))
-            sage: G = p.graphical_surface_point()
-
-        """
-        from flatsurf.graphical.surface_point import GraphicalSurfacePoint
-
-        return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
-
-    def plot(self, *args, **kwargs):
-        r"""
-        Return a plot of this point.
-
-        EXAMPLES:
-
-        .. jupyter-execute::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: p = S.point(0, (0, 0))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
-
-        .. jupyter-execute::
-
-            sage: p = S.point(0, (0, 25/12))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
-
-        """
-        graphical_surface = None
-        if args:
-            graphical_surface = args[0]
-            args = args[1:]
-
-        return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
-            *args, **kwargs
+            self.surface()._polygon_point(label, coordinates)
+            for (l, coordinates) in self._representatives
+            if l == label
         )
 
     def __repr__(self):
         r"""
-        Return a printable representation of this point.
+        Return a printable representation of this point; this prints the
+        internal coordinates of the chosen representative.
 
         TESTS::
 
@@ -582,8 +586,7 @@ class SurfacePoint(Element):
 
         # We pick a specific representative to make our lives easier when doctesting
         return min(
-            render(label, coordinates)
-            for (label, coordinates) in self.representatives()
+            render(label, coordinates) for (label, coordinates) in self._representatives
         )
 
     def __eq__(self, other):
@@ -797,9 +800,9 @@ class SaddleConnection(SageObject):
                 from flatsurf.geometry.euclidean import ccw
 
                 if (
-                    ccw(p.edge(end_data[1]), self._direction) >= 0
+                    ccw(p.edge_vector(end_data[1]), self._direction) >= 0
                     and ccw(
-                        p.edge(
+                        p.edge_vector(
                             (len(p.vertices()) + end_data[1] - 1) % len(p.vertices())
                         ),
                         self._direction,
@@ -869,12 +872,12 @@ class SaddleConnection(SageObject):
 
             if traj.segments()[0].is_edge():
                 # Special case (the method below fails if the trajectory is just an edge).
-                self._holonomy = self._surface.polygon(start_data[0]).edge(
+                self._holonomy = self._surface.polygon(start_data[0]).edge_vector(
                     start_data[1]
                 )
-                self._end_holonomy = self._surface.polygon(self._end_data[0]).edge(
-                    self._end_data[1]
-                )
+                self._end_holonomy = self._surface.polygon(
+                    self._end_data[0]
+                ).edge_vector(self._end_data[1])
             else:
                 from .similarity import SimilarityGroup
 
@@ -972,9 +975,9 @@ class SaddleConnection(SageObject):
         this may not lie in the field of definition of the surface, it is
         returned as an element of the Algebraic Real Field.
         """
-        from flatsurf.geometry.categories import ConeSurfaces
+        from flatsurf.geometry.categories import FlatConeSurfaces
 
-        if self._surface not in ConeSurfaces():
+        if self._surface not in FlatConeSurfaces():
             raise NotImplementedError(
                 "length of a saddle connection only makes sense for cone surfaces"
             )
@@ -1165,7 +1168,7 @@ class SaddleConnection(SageObject):
             sage: from flatsurf import *
             sage: S = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: H = S.homology()
-            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge(e) for (label, e), coeff in dict(x._chain).items())
+            sage: holonomy = lambda x: sum(coeff * S.polygon(label).edge_vector(e) for (label, e), coeff in dict(x._chain).items())
             sage: for sc in S.saddle_connections(5):
             ....:     h = H(sc)
             ....:     hol1 = holonomy(h)
@@ -1486,9 +1489,9 @@ class Cylinder(SageObject):
         r"""
         Return the area of this cylinder if it is contained in a ConeSurface.
         """
-        from flatsurf.geometry.categories import ConeSurfaces
+        from flatsurf.geometry.categories import FlatConeSurfaces
 
-        if self._surface not in ConeSurfaces():
+        if self._surface not in FlatConeSurfaces():
             raise NotImplementedError("area only makes sense for cone surfaces")
 
         area = 0
@@ -1618,9 +1621,9 @@ class Cylinder(SageObject):
         not lie in the field of definition of the surface, it is returned
         as an element of the Algebraic Real Field.
         """
-        from flatsurf.geometry.categories import ConeSurfaces
+        from flatsurf.geometry.categories import FlatConeSurfaces
 
-        if self._surface not in ConeSurfaces():
+        if self._surface not in FlatConeSurfaces():
             raise NotImplementedError(
                 "circumference only makes sense for cone surfaces"
             )

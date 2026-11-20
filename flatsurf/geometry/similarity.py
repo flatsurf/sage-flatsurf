@@ -17,8 +17,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
+import operator
+
 from sage.misc.cachefunc import cached_method
 
+from sage.categories.action import Action
 from sage.structure.element import MultiplicativeGroupElement, parent
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -34,6 +37,8 @@ from sage.modules.free_module_element import FreeModuleElement
 
 from sage.structure.element import Matrix
 
+from flatsurf.geometry.subgroup import FinitelyGeneratedSubgroup
+
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
 ZZ_m1 = -ZZ_1
@@ -45,6 +50,10 @@ class Similarity(MultiplicativeGroupElement):
 
     Construct the similarity (x,y) mapsto (ax-by+s,bx+ay+t) if sign=1,
     and (ax+by+s,bx-ay+t) if sign=-1
+
+    The sign is ``1`` for an orientation-preserving similarity and ``-1`` for
+    an orientation-reversing one, see :meth:`is_reflection` and
+    :meth:`is_glide_reflection`.
     """
 
     def __init__(self, p, a, b, s, t, sign):
@@ -75,6 +84,26 @@ class Similarity(MultiplicativeGroupElement):
         MultiplicativeGroupElement.__init__(self, p)
 
     def sign(self):
+        r"""
+        Return ``1`` if this element preserves the orientation and ``-1`` if
+        it reverses it.
+
+        .. SEEALSO::
+
+            :meth:`is_orientable`, :meth:`is_reflection`,
+            :meth:`is_glide_reflection`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((0, 1, 0, 0)).sign()
+            1
+            sage: S((1, 0, 0, 0, -1)).sign()
+            -1
+            sage: S((2, 0, 0, 0, -1)).sign()
+            -1
+        """
         return self._sign
 
     def is_translation(self):
@@ -116,6 +145,30 @@ class Similarity(MultiplicativeGroupElement):
         )
 
     def is_orientable(self):
+        r"""
+        Return whether this element preserves the orientation of the plane,
+        i.e., whether its determinant is positive.
+
+        This concerns the transformation; for a surface, see
+        :meth:`~flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_orientable`.
+
+        .. SEEALSO::
+
+            :meth:`sign`, :meth:`is_reflection`, :meth:`is_glide_reflection`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((0, 1, 0, 0)).is_orientable()
+            True
+            sage: S.one().is_orientable()
+            True
+            sage: S((1, 0, 0, 0, -1)).is_orientable()
+            False
+            sage: S((2, 0, 0, 0, -1)).is_orientable()
+            False
+        """
         return self._sign.is_one()
 
     def is_rotation(self):
@@ -157,9 +210,106 @@ class Similarity(MultiplicativeGroupElement):
         det = self.det()
         return det.is_one() or (-det).is_one()
 
+    def is_reflection(self):
+        r"""
+        Return whether this element is a reflection, i.e., an
+        orientation-reversing involution.
+
+        A reflection is an isometry. An orientation-reversing similarity that
+        is not an isometry (a dilative reflection) has a unique fixed point
+        and is neither a reflection nor a glide reflection.
+
+        .. SEEALSO::
+
+            :meth:`is_glide_reflection`, :meth:`sign`, :meth:`is_orientable`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((1, 0, 0, 0, -1)).is_reflection()
+            True
+            sage: S((-1, 0, 1, 0, -1)).is_reflection()
+            True
+            sage: S((0, 1, 0, 0, -1)).is_reflection()
+            True
+
+        A glide reflection is not a reflection::
+
+            sage: S((1, 0, 1, 0, -1)).is_reflection()
+            False
+
+        Neither is a dilative reflection, nor an orientation-preserving
+        element::
+
+            sage: S((2, 0, 0, 0, -1)).is_reflection()
+            False
+            sage: S((0, 1, 0, 0)).is_reflection()
+            False
+            sage: S.one().is_reflection()
+            False
+        """
+        return self._sign == ZZ_m1 and self.is_isometry() and (self * self).is_one()
+
+    def is_glide_reflection(self):
+        r"""
+        Return whether this element is a glide reflection, i.e., an
+        orientation-reversing isometry that is not an involution.
+
+        A reflection is not a glide reflection (the glide is not zero). An
+        orientation-reversing similarity that is not an isometry (a dilative
+        reflection) has a unique fixed point and is neither a reflection nor
+        a glide reflection.
+
+        .. SEEALSO::
+
+            :meth:`is_reflection`, :meth:`sign`, :meth:`is_orientable`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((1, 0, 1, 0, -1)).is_glide_reflection()
+            True
+
+        A reflection is not a glide reflection::
+
+            sage: S((1, 0, 0, 0, -1)).is_glide_reflection()
+            False
+            sage: S((-1, 0, 1, 0, -1)).is_glide_reflection()
+            False
+            sage: S((0, 1, 0, 0, -1)).is_glide_reflection()
+            False
+
+        Neither is a dilative reflection, nor an orientation-preserving
+        element::
+
+            sage: S((2, 0, 0, 0, -1)).is_glide_reflection()
+            False
+            sage: S((0, 1, 0, 0)).is_glide_reflection()
+            False
+            sage: S.one().is_glide_reflection()
+            False
+        """
+        return self._sign == ZZ_m1 and self.is_isometry() and not (self * self).is_one()
+
     def det(self):
         r"""
-        Return the determinant of this element
+        Return the determinant of the linear part of this element, which is
+        `\pm(a^2 + b^2)` where the sign is the one of :meth:`sign`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: S((1, 0, 0, 0, -1)).det()
+            -1
+            sage: S((2, 0, 0, 0, -1)).det()
+            -4
+            sage: S((0, 1, 0, 0)).det()
+            1
+            sage: S((2, 1, 0, 0)).det()
+            5
         """
         return self._sign * (self._a * self._a + self._b * self._b)
 
@@ -253,9 +403,73 @@ class Similarity(MultiplicativeGroupElement):
     def __call__(self, w, ring=None):
         r"""
         Return the image of ``w`` under the similarity. Here ``w`` may be a
-        convex polygon or a vector (or something that can be indexed in the
+        polygon or a vector (or something that can be indexed in the
         same way as a vector). If a ring is provided, the objects returned will
         be defined over this ring.
+
+        The image of a vector is an immutable vector.
+
+        A polygon is pointed at its vertex 0 and its vertices are listed
+        counterclockwise from it. The image of a polygon with vertices `v_0,
+        \ldots, v_{n-1}` is the polygon pointed at the image of `v_0`, with
+        its vertices listed counterclockwise from it. If the similarity
+        preserves the orientation, these are the images of `v_0, \ldots,
+        v_{n-1}`. If it reverses the orientation, the images run clockwise and
+        the vertex `j` of the image is the image of `v_{-j \bmod n}`.
+        Consequently, the edge `e` of the polygon is the edge `e` of the image
+        if the similarity preserves the orientation, and the edge `(-1 - e)
+        \bmod n` of the image, traversed in the other direction, if it
+        reverses it.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: S = SimilarityGroup(QQ)
+            sage: g = S((1, 2))
+            sage: v = g(vector((1, 1)))
+            sage: v
+            (2, 3)
+            sage: v.is_immutable()
+            True
+
+        A similarity that reverses the orientation moves a polygon as well::
+
+            sage: from flatsurf import Polygon, euclidean_polygons
+            sage: T = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+            sage: r = S((1, 0, 0, 0, -1))
+            sage: r
+            (x, y) |-> (x, -y)
+            sage: r(T)
+            Polygon(vertices=[(0, 0), (0, -1), (1, 0)])
+
+        The edge 0 of ``T``, from (0, 0) to (1, 0), is the edge 2 of the image,
+        traversed backwards::
+
+            sage: r(T).edge_vector(2)
+            (-1, 0)
+
+        A glide reflection::
+
+            sage: S((1, 0, 1, 0, -1))(T)
+            Polygon(vertices=[(1, 0), (1, -1), (2, 0)])
+
+        A dilative reflection of a non-convex polygon::
+
+            sage: N = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (1, 1), (0, 2)])
+            sage: S((2, 0, 0, 0, -1))(N)
+            Polygon(vertices=[(0, 0), (0, -4), (2, -2), (4, -4), (4, 0)])
+
+        The reflection in the diagonal fixes the square::
+
+            sage: Q = euclidean_polygons.square()
+            sage: S((0, 1, 0, 0, -1))(Q) == Q
+            True
+
+        The image under a similarity is the image under its matrix when the
+        similarity is linear::
+
+            sage: r(T) == matrix(QQ, [[1, 0], [0, -1]]) * T
+            True
 
         TESTS::
 
@@ -278,6 +492,14 @@ class Similarity(MultiplicativeGroupElement):
             Polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).category()
             Category of convex simple euclidean polygons over Algebraic Real Field
+            sage: SG((1, 0, 0, 0, -1))(p, ring=AA).category()
+            Category of convex simple euclidean polygons over Algebraic Real Field
+
+        A non-convex polygon is moved as well::
+
+            sage: N = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (1, 1), (0, 2)])
+            sage: SG((1, 2))(N)
+            Polygon(vertices=[(1, 2), (3, 2), (3, 4), (2, 3), (1, 4)])
 
         """
         if ring is not None and ring not in Rings():
@@ -285,20 +507,25 @@ class Similarity(MultiplicativeGroupElement):
 
         from flatsurf.geometry.polygon import EuclideanPolygon
 
-        if isinstance(w, EuclideanPolygon) and w.is_convex():
+        # TODO: The image of a polygon is built over the base ring of the
+        # similarity, not over a common ring of the similarity and the polygon.
+        # So a similarity over QQ applied to a polygon over QQ(sqrt(2)) raises
+        # a TypeError (Unable to coerce s to a rational), while
+        # w.apply_transformation(self) works. Missing: a pushout of the two
+        # base rings when ring is None.
+        if isinstance(w, EuclideanPolygon):
             if ring is None:
                 ring = self.parent().base_ring()
 
             from flatsurf import Polygon
 
-            try:
-                return Polygon(vertices=[self(v) for v in w.vertices()], base_ring=ring)
-            except ValueError:
-                if not self._sign.is_one():
-                    raise ValueError("Similarity must be orientation preserving.")
+            vertices = w.vertices()
+            if self._sign == -1:
+                # The images run clockwise, the polygon must be listed
+                # counterclockwise, starting from the image of vertex 0.
+                vertices = [vertices[0]] + list(reversed(vertices[1:]))
 
-                # Not sure why this would happen:
-                raise
+            return Polygon(vertices=[self(v) for v in vertices], base_ring=ring)
 
         if ring is None:
             if self._sign.is_one():
@@ -306,14 +533,16 @@ class Similarity(MultiplicativeGroupElement):
                     [
                         self._a * w[0] - self._b * w[1] + self._s,
                         self._b * w[0] + self._a * w[1] + self._t,
-                    ]
+                    ],
+                    immutable=True,
                 )
             else:
                 return vector(
                     [
                         self._a * w[0] + self._b * w[1] + self._s,
                         self._b * w[0] - self._a * w[1] + self._t,
-                    ]
+                    ],
+                    immutable=True,
                 )
         else:
             if self._sign.is_one():
@@ -323,6 +552,7 @@ class Similarity(MultiplicativeGroupElement):
                         self._a * w[0] - self._b * w[1] + self._s,
                         self._b * w[0] + self._a * w[1] + self._t,
                     ],
+                    immutable=True,
                 )
             else:
                 return vector(
@@ -331,6 +561,7 @@ class Similarity(MultiplicativeGroupElement):
                         self._a * w[0] + self._b * w[1] + self._s,
                         self._b * w[0] - self._a * w[1] + self._t,
                     ],
+                    immutable=True,
                 )
 
     def _repr_(self):
@@ -436,6 +667,78 @@ class Similarity(MultiplicativeGroupElement):
         return M([self._a, -self._sign * self._b, self._b, self._sign * self._a])
 
 
+class SimilarityAction(Action):
+    r"""
+    The action of a :class:`SimilarityGroup` on the vectors of the plane by
+    multiplication from the left.
+
+    The image of a vector lives in the free module of rank two over the
+    pushout of the base ring of the group and the base ring of the vector.
+
+    INPUT:
+
+    - ``G`` -- a :class:`SimilarityGroup`
+
+    - ``M`` -- a free module of rank two
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.similarity import SimilarityGroup
+        sage: G = SimilarityGroup(QQ)
+        sage: g = G((0, 1, 1, 0))
+        sage: g * vector((1, 0))
+        (1, 1)
+
+        sage: from flatsurf.geometry.similarity import SimilarityAction
+        sage: A = SimilarityAction(G, ZZ^2)
+        sage: A
+        Left action by Similarity group over Rational Field on Ambient free module of rank 2 over the principal ideal domain Integer Ring
+        sage: A.codomain()
+        Vector space of dimension 2 over Rational Field
+
+    """
+
+    def __init__(self, G, M):
+        from sage.categories.pushout import pushout
+        from sage.modules.free_module import FreeModule
+
+        self._codomain = FreeModule(pushout(G.base_ring(), M.base_ring()), 2)
+        super().__init__(G, M, True, operator.mul)
+
+    def codomain(self):
+        r"""
+        Return the parent of the images of this action.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityAction, SimilarityGroup
+            sage: SimilarityAction(SimilarityGroup(QQ), AA^2).codomain()
+            Vector space of dimension 2 over Algebraic Real Field
+
+        """
+        return self._codomain
+
+    def _act_(self, g, v):
+        r"""
+        Return the image of the vector ``v`` under the similarity ``g``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: G = SimilarityGroup(QQ)
+            sage: g = G((2, 0, 0, 1))
+            sage: w = g * vector(AA, (1, 1))
+            sage: w
+            (2, 3)
+            sage: w.parent()
+            Vector space of dimension 2 over Algebraic Real Field
+            sage: w.is_immutable()
+            True
+
+        """
+        return g(v, ring=self._codomain.base_ring())
+
+
 class SimilarityGroup(UniqueRepresentation, Group):
     r"""
     The group of possibly orientation reversing similarities in the plane.
@@ -474,6 +777,48 @@ class SimilarityGroup(UniqueRepresentation, Group):
 
         return VectorSpace(self._ring, 2)
 
+    def _get_action_(self, S, op, self_on_left):
+        r"""
+        Return the action of this group on ``S`` with respect to ``op``.
+
+        This group acts by multiplication from the left on free modules of
+        rank two whose base ring has a common parent with the base ring of
+        this group, see :class:`SimilarityAction`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: G = SimilarityGroup(QQ)
+            sage: g = G((1, 2))
+            sage: g * vector((1, 1))
+            (2, 3)
+            sage: g * vector(AA, (sqrt(2), 0))
+            (2.414213562373095?, 2)
+
+        Only multiplication from the left is an action::
+
+            sage: vector((1, 1)) * g
+            Traceback (most recent call last):
+            ...
+            TypeError: unsupported operand parent(s) for *: 'Ambient free module of rank 2 over the principal ideal domain Integer Ring' and 'Similarity group over Rational Field'
+
+        """
+        if self_on_left and op is operator.mul:
+            from sage.modules.free_module import FreeModule_generic
+
+            if isinstance(S, FreeModule_generic) and S.degree() == 2:
+                from sage.categories.pushout import pushout
+                from sage.structure.coerce_exceptions import CoercionException
+
+                try:
+                    pushout(self._ring, S.base_ring())
+                except (CoercionException, TypeError):
+                    return None
+
+                return SimilarityAction(self, S)
+
+        return super()._get_action_(S, op, self_on_left)
+
     def _element_constructor_(self, *args, **kwds):
         r"""
         TESTS::
@@ -489,6 +834,41 @@ class SimilarityGroup(UniqueRepresentation, Group):
 
             sage: S(vector((1,1)))
             (x, y) |-> (x + 1, y + 1)
+
+        A similarity over another ring is converted coefficient by
+        coefficient::
+
+            sage: K.<a> = QuadraticField(2)
+            sage: SK = SimilarityGroup(K)
+            sage: SK(S((1, 2)))
+            (x, y) |-> (x + 1, y + 2)
+            sage: SK(S((1, 2))).parent() is SK
+            True
+            sage: S(SK((2, 0, 0, 0)))
+            (x, y) |-> (2*x, 2*y)
+            sage: S(SK((a, 0, 0, 0)))
+            Traceback (most recent call last):
+            ...
+            TypeError: Unable to coerce a to a rational
+
+        Matrices of size 2 and 3 (affine) are accepted, and their entries are
+        converted into the base ring::
+
+            sage: g = S((1, -2/3, 1, 1, -1))
+            sage: S(g.matrix()) == g
+            True
+            sage: S(matrix(ZZ, 2, [0, -1, 1, 0]))
+            (x, y) |-> (-y, x)
+            sage: S(matrix(ZZ, 3, [0, 1, 0, 1, 0, 0, 0, 0, 1]))
+            (x, y) |-> (y, x)
+            sage: S(matrix(QQ, 3, [1, 0, 0, 0, 1, 0, 1, 0, 1]))
+            Traceback (most recent call last):
+            ...
+            ValueError: not a similarity matrix
+            sage: S(matrix(QQ, 3, [1, 1, 0, 0, 1, 0, 0, 0, 1]))
+            Traceback (most recent call last):
+            ...
+            ValueError: not a similarity matrix
         """
         if len(args) == 1:
             x = args[0]
@@ -498,8 +878,6 @@ class SimilarityGroup(UniqueRepresentation, Group):
         a = self._ring.one()
         b = s = t = self._ring.zero()
         sign = ZZ_1
-
-        # TODO: 2x2 and 3x3 matrix input
 
         if isinstance(x, (tuple, list)):
             if len(x) == 2:
@@ -519,17 +897,20 @@ class SimilarityGroup(UniqueRepresentation, Group):
             #   a -sb
             #   b sa
             if x.nrows() == x.ncols() == 2:
-                a, c, b, d = x.list()
-                if a == d and b == -c:
-                    sign = ZZ_1
-                elif a == -d and b == c:
-                    sign = ZZ_m1
-                else:
-                    raise ValueError("not a similarity matrix")
+                a, c, b, d = map(self._ring, x.list())
             elif x.nrows() == x.ncols() == 3:
-                raise NotImplementedError
+                a, c, s, b, d, t, z0, z1, z2 = map(self._ring, x.list())
+                if not (z0.is_zero() and z1.is_zero() and z2.is_one()):
+                    raise ValueError("not a similarity matrix")
             else:
                 raise ValueError("invalid dimension for matrix input")
+
+            if a == d and b == -c:
+                sign = ZZ_1
+            elif a == -d and b == c:
+                sign = ZZ_m1
+            else:
+                raise ValueError("not a similarity matrix")
         elif isinstance(x, FreeModuleElement):
             if len(x) == 2:
                 if x.base_ring() is self._ring:
@@ -538,6 +919,9 @@ class SimilarityGroup(UniqueRepresentation, Group):
                     s, t = map(self._ring, x)
             else:
                 raise ValueError("invalid dimension for vector input")
+        elif isinstance(x, Similarity):
+            a, b, s, t = map(self._ring, (x._a, x._b, x._s, x._t))
+            sign = x._sign
         else:
             p = parent(x)
             if self._ring.has_coerce_map_from(p):
@@ -615,10 +999,115 @@ class SimilarityGroup(UniqueRepresentation, Group):
     def base_ring(self):
         return self._ring
 
+    def change_ring(self, ring):
+        r"""
+        Return the group of similarities over ``ring``.
 
-def similarity_from_vectors(u, v, matrix_space=None):
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: G = SimilarityGroup(QQ)
+            sage: G.change_ring(AA)
+            Similarity group over Algebraic Real Field
+            sage: G.change_ring(AA).change_ring(QQ) is G
+            True
+
+        """
+        return SimilarityGroup(ring)
+
+    def subgroup(self, gens):
+        r"""
+        Return the subgroup of this group generated by ``gens``.
+
+        INPUT:
+
+        - ``gens`` -- a list or tuple of similarities, each converted into
+          this group, so that similarities over a subring of the base ring
+          are accepted; an empty list gives the trivial subgroup
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity import SimilarityGroup
+            sage: F = SimilarityGroup(AA)
+            sage: rot = SimilarityGroup(QQ)(matrix(QQ, 2, [0, -1, 1, 0]))
+            sage: G = F.subgroup([rot])
+            sage: G
+            Subgroup with 1 generator of Similarity group over Algebraic Real Field
+            sage: G.gens()[0].parent() is F
+            True
+            sage: F.subgroup([])
+            Subgroup with 0 generators of Similarity group over Algebraic Real Field
+
+        """
+        return SimilaritySubgroup(self, gens)
+
+
+class SimilaritySubgroup(FinitelyGeneratedSubgroup):
+    r"""
+    The subgroup of a :class:`SimilarityGroup` generated by finitely many of
+    its elements.
+
+    Membership is not decided, and the elements of the subgroup are those of
+    the ambient group, which is their parent. See
+    :class:`~flatsurf.geometry.subgroup.FinitelyGeneratedSubgroup` for the
+    methods.
+
+    INPUT:
+
+    - ``ambient`` -- a :class:`SimilarityGroup`
+
+    - ``gens`` -- a list or tuple of similarities, converted into ``ambient``
+
+    EXAMPLES:
+
+    The subgroup generated by a quarter turn and a translation is orientable,
+    while a reflection makes the subgroup generated with the quarter turn
+    reverse the orientation::
+
+        sage: from flatsurf.geometry.similarity import SimilarityGroup
+        sage: F = SimilarityGroup(QQ)
+        sage: rot = F(matrix(QQ, 2, [0, -1, 1, 0]))
+        sage: tr = F(1, 0, 1, 0)
+        sage: r = F(matrix(QQ, 2, [1, 0, 0, -1]))
+        sage: A = F.subgroup([rot, tr])
+        sage: A
+        Subgroup with 2 generators of Similarity group over Rational Field
+        sage: A.is_orientable()
+        True
+        sage: B = F.subgroup([rot, r])
+        sage: B.is_orientable()
+        False
+        sage: B.orientation_preserving_subgroup().gens()
+        ((x, y) |-> (-y, x),)
+
+    TESTS::
+
+        sage: loads(dumps(B)) is B
+        True
+        sage: B.change_ring(AA).change_ring(QQ) is B
+        True
+
+    """
+
+
+def similarity_from_vectors(u, v, matrix_space=None, orientation_preserving=True):
     r"""
     Return the unique similarity matrix that maps ``u`` to ``v``.
+
+    INPUT:
+
+    - ``u``, ``v`` -- non-zero vectors of the same vector space of rank 2
+
+    - ``matrix_space`` -- a space of 2x2 matrices or ``None`` (default:
+      ``None``); the parent of the result, by default the matrices over the
+      base ring of ``u``
+
+    - ``orientation_preserving`` -- a boolean (default: ``True``); whether the
+      similarity preserves the orientation. If ``False``, the result is the
+      unique orientation-reversing similarity that maps ``u`` to ``v``; when
+      ``u == v`` this is the reflection in the line spanned by ``u``.
+
+    OUTPUT: an immutable matrix
 
     EXAMPLES::
 
@@ -669,6 +1158,42 @@ def similarity_from_vectors(u, v, matrix_space=None):
         sage: m*u == 2*v
         True
 
+    The orientation-reversing similarity that maps ``u`` to ``v``::
+
+        sage: V = VectorSpace(QQ, 2)
+        sage: m = similarity_from_vectors(V((1, 0)), V((0, 1)), orientation_preserving=False); m
+        [0 1]
+        [1 0]
+        sage: m * V((1, 0)) == V((0, 1)), m.det()
+        (True, -1)
+
+        sage: u = V((1, 0))
+        sage: m = similarity_from_vectors(u, u, orientation_preserving=False); m
+        [ 1  0]
+        [ 0 -1]
+        sage: m * u == u, m.det()
+        (True, -1)
+
+        sage: u, v = V((5, 0)), V((3, 4))
+        sage: m = similarity_from_vectors(u, v, orientation_preserving=False); m
+        [ 3/5  4/5]
+        [ 4/5 -3/5]
+        sage: m * u == v, m.det()
+        (True, -1)
+
+        sage: u, v = V((2, 1)), V((1, -2))
+        sage: m = similarity_from_vectors(u, v, orientation_preserving=False); m
+        [ 4/5 -3/5]
+        [-3/5 -4/5]
+        sage: m * u == v, m.det()
+        (True, -1)
+
+    ALGORITHM:
+
+    The orientation-preserving similarity is `[c, -s; s, c]`; composing it
+    with the conjugation `(x, y) \mapsto (x, -y)` gives the
+    orientation-reversing one, `[c, s; s, -c]` with `c = (u_0 v_0 - u_1
+    v_1) / |u|^2` and `s = (u_1 v_0 + u_0 v_1) / |u|^2`, over the same ring.
     """
     if u.parent() is not v.parent():
         raise ValueError
@@ -678,13 +1203,111 @@ def similarity_from_vectors(u, v, matrix_space=None):
 
         matrix_space = MatrixSpace(u.base_ring(), 2)
 
-    if u == v:
+    if orientation_preserving and u == v:
         return matrix_space.one()
 
     sqnorm_u = u[0] * u[0] + u[1] * u[1]
+
+    if not orientation_preserving:
+        c = (u[0] * v[0] - u[1] * v[1]) / sqnorm_u
+        s = (u[1] * v[0] + u[0] * v[1]) / sqnorm_u
+        m = matrix_space([c, s, s, -c])
+        m.set_immutable()
+        return m
+
     cos_uv = (u[0] * v[0] + u[1] * v[1]) / sqnorm_u
     sin_uv = (u[0] * v[1] - u[1] * v[0]) / sqnorm_u
 
     m = matrix_space([cos_uv, -sin_uv, sin_uv, cos_uv])
+    m.set_immutable()
+    return m
+
+
+def reflection(p, q, ring=None):
+    r"""
+    Return the affine matrix of the reflection in the line through ``p`` and
+    ``q``.
+
+    INPUT:
+
+    - ``p``, ``q`` -- two distinct points of the plane, as pairs or vectors
+
+    - ``ring`` -- a field or ``None`` (default: ``None``); the base ring of the
+      result, by default the fraction field of the pushout of the rings of the
+      coordinates
+
+    OUTPUT: an immutable 3x3 matrix `[a, b, s; b, -a, t; 0, 0, 1]`, as returned
+    by :meth:`Similarity.matrix`; ``SimilarityGroup(K)(reflection(p, q))`` is
+    the corresponding element of the similarity group.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.similarity import reflection, SimilarityGroup
+        sage: R = reflection((0, 0), (2, 1)); R
+        [ 3/5  4/5    0]
+        [ 4/5 -3/5    0]
+        [   0    0    1]
+        sage: reflection((1, 2), (3, 3))
+        [ 3/5  4/5 -6/5]
+        [ 4/5 -3/5 12/5]
+        [   0    0    1]
+
+    The reflection is rational in the coordinates, over any field::
+
+        sage: K.<a> = NumberField(x^2 - 3, embedding=1.7)
+        sage: reflection((0, 0), (1, a))
+        [ -1/2 1/2*a     0]
+        [1/2*a   1/2     0]
+        [    0     0     1]
+
+    The corresponding element of the similarity group::
+
+        sage: g = SimilarityGroup(QQ)(R); g
+        (x, y) |-> (3/5*x + 4/5*y, 4/5*x - 3/5*y)
+        sage: g.is_reflection()
+        True
+        sage: g * g
+        (x, y) |-> (x, y)
+        sage: R * R
+        [1 0 0]
+        [0 1 0]
+        [0 0 1]
+
+    The two points must differ::
+
+        sage: reflection((1, 1), (1, 1))
+        Traceback (most recent call last):
+        ...
+        ValueError: the points must be distinct
+
+    ALGORITHM:
+
+    With `d = q - p`, the linear part is `L = 2 d d^T / |d|^2 - 1` and the
+    translation is `p - L p`, which makes `p` and `q` fixed.
+    """
+    p = vector(p)
+    q = vector(q)
+
+    if ring is None:
+        from sage.categories.pushout import pushout
+
+        ring = pushout(p.base_ring(), q.base_ring()).fraction_field()
+
+    p = p.change_ring(ring)
+    q = q.change_ring(ring)
+
+    d = q - p
+    sqnorm = d[0] * d[0] + d[1] * d[1]
+    if sqnorm.is_zero():
+        raise ValueError("the points must be distinct")
+
+    a = (d[0] * d[0] - d[1] * d[1]) / sqnorm
+    b = 2 * d[0] * d[1] / sqnorm
+    s = p[0] - a * p[0] - b * p[1]
+    t = p[1] - b * p[0] + a * p[1]
+
+    from sage.matrix.constructor import matrix
+
+    m = matrix(ring, 3, [a, b, s, b, -a, t, 0, 0, 1])
     m.set_immutable()
     return m

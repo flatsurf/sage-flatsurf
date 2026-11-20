@@ -86,6 +86,78 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
         want to put it here.
         """
 
+        def _polygon_coordinates(self, label, point, ring=None):
+            r"""
+            Return ``point`` in the coordinates of the polygon ``label``.
+
+            This is a helper method for
+            :class:`~flatsurf.geometry.surface_objects.SurfacePoint` which
+            turns the coordinates provided by the user into the immutable
+            vectors that the polygons of this surface work with.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``point`` -- coordinates of a point in the plane of that
+              polygon, e.g., a tuple or a vector
+
+            - ``ring`` -- a ring or ``None`` (default: ``None``); the ring
+              of the coordinates, the base ring of this surface if ``None``
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: p = S._polygon_coordinates(0, (1/2, 0))
+                sage: p
+                (1/2, 0)
+                sage: p.parent()
+                Vector space of dimension 2 over Rational Field
+                sage: p.is_immutable()
+                True
+
+                sage: S._polygon_coordinates(0, (1/2, 0), ring=AA).parent()
+                Vector space of dimension 2 over Algebraic Real Field
+
+            """
+            if ring is None:
+                ring = self.base_ring()
+
+            point = (ring**2)(point)
+            point.set_immutable()
+            return point
+
+        def _edge_midpoint(self, label, edge):
+            r"""
+            Return the coordinates of the midpoint of the ``edge`` of the
+            polygon ``label``.
+
+            This is a helper method for
+            :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``edge`` -- an edge index of that polygon
+
+            OUTPUT:
+
+            A vector over the base ring: the midpoint of two vertices of the
+            polygon is always defined over the base ring.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S._edge_midpoint(0, 1)
+                (1, 1/2)
+
+            """
+            polygon = self.polygon(label)
+            return (polygon.vertex(edge) + polygon.vertex(edge + 1)) / 2
+
         def graphical_surface(self, *args, **kwargs):
             r"""
             Return a graphical representation of this surface.
@@ -215,7 +287,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                 sage: labels = []
                 sage: p = s.polygon(1)
                 sage: for e in range(len(p.vertices())):
-                ....:     labels.append(str(p.edge(e)))
+                ....:     labels.append(str(p.edge_vector(e)))
                 sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, edge_labels=labels, edge_label_options={"color":"red"})
                 ...Graphics object consisting of 4 graphics primitives
 
@@ -258,3 +330,60 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                         el = edge_labels[e]
                     plt += gp.plot_edge_label(e, el, **o)
             return plt
+
+    class ElementMethods:
+        r"""
+        Provides methods available to all points of surfaces that are built
+        from polygons in the real plane.
+
+        If you want to add functionality for such points you most likely want
+        to put it here.
+        """
+
+        def graphical_surface_point(self, graphical_surface=None):
+            r"""
+            Return a
+            :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to
+            represent this point graphically.
+
+            EXAMPLES::
+
+                sage: from flatsurf import half_translation_surfaces
+                sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+                sage: p = S.point(0, (1/2, 1/2))
+                sage: G = p.graphical_surface_point()
+
+            """
+            from flatsurf.graphical.surface_point import GraphicalSurfacePoint
+
+            return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
+
+        def plot(self, *args, **kwargs):
+            r"""
+            Return a plot of this point.
+
+            EXAMPLES:
+
+            .. jupyter-execute::
+
+                sage: from flatsurf import half_translation_surfaces
+                sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+                sage: p = S.point(0, (0, 0))
+                sage: p.plot()
+                ...Graphics object consisting of 1 graphics primitive
+
+            .. jupyter-execute::
+
+                sage: p = S.point(0, (0, 25/12))
+                sage: p.plot()
+                ...Graphics object consisting of 1 graphics primitive
+
+            """
+            graphical_surface = None
+            if args:
+                graphical_surface = args[0]
+                args = args[1:]
+
+            return self.graphical_surface_point(
+                graphical_surface=graphical_surface
+            ).plot(*args, **kwargs)

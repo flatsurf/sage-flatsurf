@@ -656,6 +656,106 @@ def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
     return TFractalSurface(w, r, h1, h2)
 
 
+def _pillowcase_gluings(n, glued_edges, mirror_edge):
+    r"""
+    Return the combinatorics of the pillowcase of a polygon with ``n``
+    vertices, after checking the arguments.
+
+    The polygon has label 0 and its mirror image, the reflection in the line
+    of the edge ``mirror_edge``, has label 1. This is a helper function of
+    :meth:`SimilaritySurfaceGenerators.pillowcase` and of
+    :meth:`~flatsurf.geometry.hyperbolic_surface_generators.HyperbolicSurfaceGenerators.pillowcase`.
+
+    INPUT:
+
+    - ``n`` -- an integer, the number of vertices of the polygon
+
+    - ``glued_edges`` -- an iterable of edges of the polygon or ``None``
+      for all its edges
+
+    - ``mirror_edge`` -- an edge in ``glued_edges`` or ``None`` for the first
+      of ``glued_edges``
+
+    OUTPUT:
+
+    A pair ``(m, gluings)``: the mirror edge ``m``; the list of pairs of
+    edges ``((0, e), (1, (2m - e) mod n))`` to glue, one for each ``e`` in
+    ``glued_edges``, in that order.
+
+    EXAMPLES:
+
+    A pentagon reflected in the line of its edge 2::
+
+        sage: from flatsurf.geometry.similarity_surface_generators import _pillowcase_gluings
+        sage: m, gluings = _pillowcase_gluings(5, None, 2)
+        sage: m
+        2
+        sage: gluings
+        [((0, 0), (1, 4)), ((0, 1), (1, 3)), ((0, 2), (1, 2)), ((0, 3), (1, 1)), ((0, 4), (1, 0))]
+
+    Two glued edges of a pentagon, the mirror edge defaulting to the first
+    one::
+
+        sage: _pillowcase_gluings(5, [3, 1], None)
+        (3, [((0, 3), (1, 3)), ((0, 1), (1, 0))])
+
+    TESTS::
+
+        sage: _pillowcase_gluings(4, None, None)
+        (0, [((0, 0), (1, 0)), ((0, 1), (1, 3)), ((0, 2), (1, 2)), ((0, 3), (1, 1))])
+        sage: _pillowcase_gluings(4, [], None)
+        Traceback (most recent call last):
+        ...
+        ValueError: glued_edges must not be empty, the two polygons would be disjoint
+        sage: _pillowcase_gluings(4, [0, 4], None)
+        Traceback (most recent call last):
+        ...
+        ValueError: 4 is not an edge of a polygon with 4 vertices
+        sage: _pillowcase_gluings(4, [0, 1, 0], None)
+        Traceback (most recent call last):
+        ...
+        ValueError: edge 0 is repeated in glued_edges
+        sage: _pillowcase_gluings(4, [0, 1], 2)
+        Traceback (most recent call last):
+        ...
+        ValueError: mirror_edge 2 is not one of the glued edges
+        sage: _pillowcase_gluings(4, None, -1)
+        Traceback (most recent call last):
+        ...
+        ValueError: -1 is not an edge of a polygon with 4 vertices
+
+    """
+    n = int(n)
+
+    def edge(e):
+        e = ZZ(e)
+        if not 0 <= e < n:
+            raise ValueError(f"{e} is not an edge of a polygon with {n} vertices")
+        return int(e)
+
+    if glued_edges is None:
+        glued_edges = list(range(n))
+    else:
+        glued_edges = [edge(e) for e in glued_edges]
+        if not glued_edges:
+            raise ValueError(
+                "glued_edges must not be empty, the two polygons would be disjoint"
+            )
+        for i, e in enumerate(glued_edges):
+            if e in glued_edges[:i]:
+                raise ValueError(f"edge {e} is repeated in glued_edges")
+
+    if mirror_edge is None:
+        m = glued_edges[0]
+    else:
+        m = edge(mirror_edge)
+        if m not in glued_edges:
+            raise ValueError(f"mirror_edge {m} is not one of the glued edges")
+
+    gluings = [((0, e), (1, (2 * m - e) % n)) for e in glued_edges]
+    return m, gluings
+
+
 class SimilaritySurfaceGenerators:
     r"""
     Examples of similarity surfaces.
@@ -716,6 +816,158 @@ class SimilaritySurfaceGenerators:
         return s
 
     @staticmethod
+    def pillowcase(P, glued_edges=None, mirror_edge=None):
+        r"""
+        Return the surface built from the polygon ``P`` and its mirror image,
+        glued along ``glued_edges``.
+
+        The polygon ``P`` has label 0 and its reflection `Q` in the line of
+        the edge `m` = ``mirror_edge`` has label 1. With `n` the number of
+        vertices of ``P``, the vertex `j` of `Q` is the reflection of the
+        vertex `2m + 1 - j \bmod n` of ``P``, so that the edge `j` of `Q` is
+        the reflection of the edge `2m - j \bmod n` of ``P``. The polygon
+        `Q` is the image of ``P`` under the reflection, as given by
+        :meth:`~flatsurf.geometry.categories.polygons.Polygons.ParentMethods.apply_transformation`,
+        with its vertex 0 moved to the reflection of the vertex `2m + 1 \bmod
+        n`, so that the edge `m` of `Q` is the edge `m` of ``P``. The edge `e`
+        of ``P`` is glued to the edge `2m - e \bmod n` of `Q` for every `e`
+        in ``glued_edges``, by the reflection in the line of `e` followed by
+        the reflection in the line of `m`; the edge `m` of ``P`` is glued to
+        the edge `m` of `Q`, which is the same segment of the plane, by the
+        identity. The other edges of ``P`` and of `Q` form the boundary of
+        the surface.
+
+        INPUT:
+
+        - ``P`` -- a Euclidean polygon, convex or not
+
+        - ``glued_edges`` -- an iterable of edges of ``P`` or ``None``
+          (default: ``None``) for all the edges of ``P``
+
+        - ``mirror_edge`` -- an edge in ``glued_edges`` or ``None`` (default:
+          ``None``) for the first of ``glued_edges``, the edge `0` when
+          ``glued_edges`` is ``None``
+
+        OUTPUT:
+
+        An immutable surface over the base ring of ``P``: a reflection in a
+        line through two points has rational coefficients in their
+        coordinates.
+
+        EXAMPLES:
+
+        A triangle reflected in its edge 0, of slope `\sqrt{2}`::
+
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: K.<a> = NumberField(x^2 - 2, embedding=1.4)
+            sage: P = Polygon(vertices=[(0, 0), (1, a), (-1, 1)])
+            sage: S = similarity_surfaces.pillowcase(P)
+            sage: S
+            Genus 0 Cone Surface built from 2 triangles
+            sage: S.base_ring()
+            Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095?
+            sage: S.polygon(1)
+            Polygon(vertices=[(1, a), (0, 0), (2/3*a + 1/3, -2/3*a + 1/3)])
+            sage: S.edge_transformation(0, 0).is_one()
+            True
+            sage: TestSuite(S).run()
+
+        A square glued along two of its edges has a boundary::
+
+            sage: from flatsurf import polygons
+            sage: S = similarity_surfaces.pillowcase(polygons.square(), glued_edges=[0, 1])
+            sage: S
+            Half-Translation Surface with boundary built from 2 squares
+            sage: S.boundary_components()
+            [((0, 2), (0, 3), (1, 1), (1, 2))]
+            sage: TestSuite(S).run()
+
+        A non-convex polygon is not triangulated::
+
+            sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 1), (1, 1), (1, 2), (0, 2)])
+            sage: S = similarity_surfaces.pillowcase(P)
+            sage: S
+            Half-Translation Surface in Q_0(1, -1^5) built from 2 non-convex hexagons
+            sage: TestSuite(S).run()
+
+        The mirror edge must be glued, and the glued edges distinct edges of
+        ``P``::
+
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[])
+            Traceback (most recent call last):
+            ...
+            ValueError: glued_edges must not be empty, the two polygons would be disjoint
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[0, 1], mirror_edge=2)
+            Traceback (most recent call last):
+            ...
+            ValueError: mirror_edge 2 is not one of the glued edges
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[1, 1])
+            Traceback (most recent call last):
+            ...
+            ValueError: edge 1 is repeated in glued_edges
+            sage: similarity_surfaces.pillowcase(polygons.square(), glued_edges=[4])
+            Traceback (most recent call last):
+            ...
+            ValueError: 4 is not an edge of a polygon with 4 vertices
+
+        A hyperbolic polygon is refused, see
+        :meth:`~flatsurf.geometry.hyperbolic_surface_generators.HyperbolicSurfaceGenerators.pillowcase`
+        instead::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: P = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: similarity_surfaces.pillowcase(P)
+            Traceback (most recent call last):
+            ...
+            TypeError: P must be a Euclidean polygon
+
+        TESTS:
+
+        For an odd number `n` of vertices and a horizontal edge `(n -
+        1)/2`, the surface of :meth:`billiard` of a convex polygon, up to a
+        translation of the polygon 1::
+
+            sage: P = Polygon(vertices=[(0, 1), (0, 0), (1, 0)])
+            sage: S = similarity_surfaces.pillowcase(P, mirror_edge=1)
+            sage: S
+            Genus 0 Rational Cone Surface built from 2 isosceles triangles
+            sage: B = similarity_surfaces.billiard(P)
+            sage: [S.opposite_edge(0, e) for e in range(3)] == [B.opposite_edge(0, e) for e in range(3)]
+            True
+            sage: S.polygon(1).edge_vectors() == B.polygon(1).edge_vectors()
+            True
+            sage: [u - v for u, v in zip(S.polygon(1).vertices(), B.polygon(1).vertices())]
+            [(0, -1), (0, -1), (0, -1)]
+
+        SEEALSO:
+
+        :meth:`billiard`, which triangulates a non-convex polygon
+
+        """
+        if not isinstance(P, EuclideanPolygon):
+            raise TypeError("P must be a Euclidean polygon")
+
+        vertices = P.vertices()
+        n = len(vertices)
+        m, gluings = _pillowcase_gluings(n, glued_edges, mirror_edge)
+
+        from flatsurf.geometry.similarity import reflection
+
+        image = P.apply_transformation(reflection(vertices[m], vertices[(m + 1) % n]))
+        Q = Polygon(
+            vertices=[image.vertex((j - 2 * m - 1) % n) for j in range(n)],
+            base_ring=P.base_ring(),
+        )
+
+        surface = MutableOrientedSimilaritySurface(P.base_ring())
+        surface.add_polygon(P, label=0)
+        surface.add_polygon(Q, label=1)
+        for x, y in gluings:
+            surface.glue(x, y)
+        surface.set_immutable()
+        return surface
+
+    @staticmethod
     def billiard(P, rational=None):
         r"""
         Return the ConeSurface associated to the billiard in the polygon ``P``.
@@ -738,8 +990,8 @@ class SimilaritySurfaceGenerators:
             UserWarning: the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore
             sage: Q
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: Q in ConeSurfaces().Rational()
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: Q in FlatConeSurfaces().Rational()
             True
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
@@ -784,9 +1036,14 @@ class SimilaritySurfaceGenerators:
             sage: S = similarity_surfaces.billiard(P); S # optional: pyexactreal
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: TestSuite(S).run() # long time (6s), optional: pyexactreal
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: S in ConeSurfaces()
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: S in FlatConeSurfaces()
             True
+
+        SEEALSO:
+
+        :meth:`pillowcase`, which reflects ``P`` in the line of one of its
+        edges and can leave edges unglued
 
         """
         if not isinstance(P, EuclideanPolygon):
@@ -799,9 +1056,9 @@ class SimilaritySurfaceGenerators:
                 "the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore"
             )
 
-        from flatsurf.geometry.categories import ConeSurfaces
+        from flatsurf.geometry.categories import FlatConeSurfaces
 
-        category = ConeSurfaces()
+        category = FlatConeSurfaces()
         if P.is_rational():
             category = category.Rational()
 
@@ -860,7 +1117,7 @@ class SimilaritySurfaceGenerators:
             surface.add_polygon(p)
         for p in P:
             surface.add_polygon(
-                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edges())])
+                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edge_vectors())])
             )
         for p1, e1, p2, e2 in internal_edges:
             surface.glue((p1, e1), (p2, e2))
@@ -922,15 +1179,43 @@ class SimilaritySurfaceGenerators:
     @staticmethod
     def polygon_double(P):
         r"""
-        Return the ConeSurface associated to the billiard in the polygon ``P``.
-        Differs from billiard(P) only in the graphical display. Here, we display
-        the polygons separately.
+        Return the surface built from the polygon ``P`` and its mirror image
+        in a horizontal line, with the edge `e` of ``P`` glued to the edge `n -
+        1 - e` of the mirror image.
+
+        This method is deprecated, use :meth:`pillowcase` instead, which
+        reflects ``P`` in the line of one of its edges; for an even number of
+        vertices, :meth:`pillowcase` also numbers the vertices of the mirror
+        image differently.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: S = similarity_surfaces.polygon_double(polygons.square())
+            doctest:warning
+            ...
+            UserWarning: polygon_double() has been deprecated and will be removed in a future version of sage-flatsurf; use pillowcase() instead
+            sage: S
+            Half-Translation Surface in Q_0(-1^4) built from 2 squares
+            sage: S.opposite_edge(0, 0)
+            (1, 3)
+
+        SEEALSO:
+
+        :meth:`pillowcase`
+
         """
+        import warnings
+
+        warnings.warn(
+            "polygon_double() has been deprecated and will be removed in a future version of sage-flatsurf; use pillowcase() instead"
+        )
+
         from sage.matrix.constructor import matrix
 
         n = len(P.vertices())
         r = matrix(2, [-1, 0, 0, 1])
-        Q = Polygon(edges=[r * v for v in reversed(P.edges())])
+        Q = Polygon(edges=[r * v for v in reversed(P.edge_vectors())])
 
         surface = MutableOrientedSimilaritySurface(P.base_ring())
         surface.add_polygon(P, label=0)
@@ -949,8 +1234,8 @@ class SimilaritySurfaceGenerators:
             sage: R = similarity_surfaces.right_angle_triangle(2, 3)
             sage: R
             Genus 0 Cone Surface built from 2 right triangles
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: R in ConeSurfaces()
+            sage: from flatsurf.geometry.categories import FlatConeSurfaces
+            sage: R in FlatConeSurfaces()
             True
             sage: TestSuite(R).run()
         """
@@ -1030,9 +1315,7 @@ class DilationSurfaceGenerators:
 
         The unit square is made into an octagon by marking a point on
         each of its edges. Then opposite sides of this octagon are
-        glued together by translation. (Since we currently require strictly
-        convex polygons, we subdivide the square into a hexagon and two
-        triangles as depicted below.) The parameters ``a``, ``b``, ``c``, and
+        glued together by dilations. The parameters ``a``, ``b``, ``c``, and
         ``d`` should be real numbers strictly between zero and one. These
         represent the lengths of an edge of the resulting octagon, as below::
 
@@ -1055,31 +1338,41 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import dilation_surfaces
             sage: ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
             sage: ds
-            Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon
+            Genus 2 Positive Dilation Surface built from a square
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: ds in DilationSurfaces().Positive()
             True
             sage: TestSuite(ds).run()
+
+            sage: ds = dilation_surfaces.genus_two_square(1/AA(2).sqrt(), 1/AA(3).sqrt(), 1/2, 1/5)
+            sage: ds
+            Genus 2 Positive Dilation Surface built from a square
+            sage: ds.base_ring()
+            Algebraic Real Field
+
         """
         field = Sequence([a, b, c, d]).universe().fraction_field()
-        s = MutableOrientedSimilaritySurface(QQ)
+        s = MutableOrientedSimilaritySurface(field)
 
-        hexagon = Polygon(
-            edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)],
+        square = Polygon(
+            edges=[
+                (a, 0),
+                (1 - a, 0),
+                (0, b),
+                (0, 1 - b),
+                (-c, 0),
+                (-1 + c, 0),
+                (0, -d),
+                (0, -1 + d),
+            ],
             base_ring=field,
         )
-        s.add_polygon(hexagon, label=0)
-        s.set_roots([0])
-        triangle1 = Polygon(base_ring=field, edges=[(1 - a, 0), (0, b), (a - 1, -b)])
-        s.add_polygon(triangle1, label=1)
-        triangle2 = Polygon(base_ring=field, edges=[(1 - c, d), (c - 1, 0), (0, -d)])
-        s.add_polygon(triangle2, label=2)
-        s.glue((0, 0), (0, 3))
-        s.glue((0, 2), (0, 5))
-        s.glue((0, 1), (1, 2))
-        s.glue((0, 4), (2, 0))
-        s.glue((1, 0), (2, 1))
-        s.glue((1, 1), (2, 2))
+
+        s.add_polygon(square)
+        s.glue((0, 0), (0, 4))
+        s.glue((0, 1), (0, 5))
+        s.glue((0, 2), (0, 6))
+        s.glue((0, 3), (0, 7))
         s.set_immutable()
         return s
 
@@ -1801,8 +2094,8 @@ class TranslationSurfaceGenerators:
         if n < 3:
             raise ValueError
         o = ZZ_2 * polygons.regular_ngon(2 * n)
-        p1 = Polygon(edges=[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
-        p2 = Polygon(edges=[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
+        p1 = Polygon(edges=[o.edge_vector((2 * i + n) % (2 * n)) for i in range(n)])
+        p2 = Polygon(edges=[o.edge_vector((2 * i + n + 1) % (2 * n)) for i in range(n)])
         s = MutableOrientedSimilaritySurface(o.base_ring())
         s.add_polygon(o)
         s.add_polygon(p1)
@@ -2387,3 +2680,177 @@ class TranslationSurfaceGenerators:
 
 
 translation_surfaces = TranslationSurfaceGenerators()
+
+
+class CrystallographicGroupGenerators:
+    r"""
+    Constructors of crystallographic groups, as subgroups of the similarities
+    of the Euclidean plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf import crystallographic_groups
+        sage: crystallographic_groups
+        crystallographic groups
+
+    """
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this constructor.
+
+        EXAMPLES::
+
+            sage: from flatsurf import crystallographic_groups
+            sage: crystallographic_groups
+            crystallographic groups
+
+        """
+        return "crystallographic groups"
+
+    @staticmethod
+    def triangle(m1, m2, m3, base_ring=None, orientation_preserving=True):
+        r"""
+        Return the Euclidean triangle group with periods ``m1``, ``m2`` and
+        ``m3``.
+
+        These are the wallpaper groups `p4` for `(2, 4, 4)`, `p3` for `(3, 3,
+        3)` and `p6` for `(2, 3, 6)`; with ``orientation_preserving=False``,
+        the groups `p4m`, `p3m1` and `p6m` generated by the reflections in the
+        sides of the triangle.
+
+        INPUT:
+
+        - ``m1``, ``m2``, ``m3`` -- integers at least 2, with `1/m_1 + 1/m_2
+          + 1/m_3 = 1`
+
+        - ``base_ring`` -- an exact field or ``None`` (default: ``None``);
+          with ``None``, the field of the triangle below; otherwise an exact
+          field into which that field converts along the embeddings in the
+          reals, such as ``AA``
+
+        - ``orientation_preserving`` -- a boolean (default: ``True``); with
+          ``False``, the group generated by the three reflections instead of
+          the rotations `g_1, g_2, g_3` of orders `m_1, m_2, m_3` about the
+          vertices of the triangle
+
+        OUTPUT:
+
+        A :class:`~flatsurf.geometry.similarity.SimilaritySubgroup` of the
+        :class:`~flatsurf.geometry.similarity.SimilarityGroup` over the field
+        of the triangle with angles `\pi/m_1, \pi/m_3, \pi/m_2`,
+        that is `\QQ` for `(2, 4, 4)` and `\QQ(\sqrt{3})` otherwise. The
+        vertex of period `m_1` is at the origin and its edge to the vertex of
+        period `m_3` on the positive `x`-axis.
+
+        EXAMPLES::
+
+            sage: from flatsurf import crystallographic_groups
+            sage: G = crystallographic_groups.triangle(2, 4, 4)
+            sage: G.gens()
+            ((x, y) |-> (-x, -y), (x, y) |-> (-y + 1, x + 1), (x, y) |-> (-y - 1, x + 1))
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1^2).is_one(), (g2^4).is_one(), (g3^4).is_one()
+            (True, True, True)
+            sage: (g1 * g2 * g3).is_one()
+            True
+            sage: G.base_ring()
+            Rational Field
+
+        The triangle groups `(2, 3, 6)` and `(3, 3, 3)` are defined over
+        `\QQ(\sqrt{3})`::
+
+            sage: G = crystallographic_groups.triangle(2, 3, 6)
+            sage: G.base_ring().polynomial()
+            x^2 - 3
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1^2).is_one(), (g2^3).is_one(), (g3^6).is_one()
+            (True, True, True)
+            sage: (g1 * g2 * g3).is_one()
+            True
+            sage: G = crystallographic_groups.triangle(3, 3, 3)
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1^3).is_one(), (g2^3).is_one(), (g3^3).is_one()
+            (True, True, True)
+            sage: (g1 * g2 * g3).is_one()
+            True
+
+        The group can be converted into ``AA``::
+
+            sage: G = crystallographic_groups.triangle(2, 4, 4, base_ring=AA)
+            sage: G.base_ring()
+            Algebraic Real Field
+
+        With ``orientation_preserving=False``, the group generated by the
+        reflections in the sides of the triangle::
+
+            sage: W = crystallographic_groups.triangle(2, 4, 4, orientation_preserving=False)
+            sage: W.ngens()
+            3
+            sage: W.is_orientable()
+            False
+            sage: W.orientation_preserving_subgroup().ngens()
+            2
+
+        The periods are integers at least 2, and the group is euclidean::
+
+            sage: crystallographic_groups.triangle(1, 4, 4)
+            Traceback (most recent call last):
+            ...
+            ValueError: the period 1 is not an integer at least 2
+            sage: crystallographic_groups.triangle(2, 3, 7)
+            Traceback (most recent call last):
+            ...
+            ValueError: the triangle group (2, 3, 7) is hyperbolic, not euclidean: 1/m1 + 1/m2 + 1/m3 must be equal to 1
+            sage: crystallographic_groups.triangle(2, 3, 5)
+            Traceback (most recent call last):
+            ...
+            ValueError: the triangle group (2, 3, 5) is spherical, not euclidean: 1/m1 + 1/m2 + 1/m3 must be equal to 1
+
+        TESTS::
+
+            sage: crystallographic_groups.triangle(2, 3, 6, base_ring=QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: the coordinates of the polygon do not lie in Rational Field
+            sage: crystallographic_groups.triangle(2, 4, 4, base_ring=RR)
+            Traceback (most recent call last):
+            ...
+            ValueError: the ring must be exact, not Real Field with 53 bits of precision
+            sage: G = crystallographic_groups.triangle(int(2), int(4), int(4))
+            sage: g1, g2, g3 = G.gens()
+            sage: (g1 * g2 * g3).is_one()
+            True
+
+        ALGORITHM:
+
+        Let `r_0, r_1, r_2` be the reflections in the sides of the triangle,
+        the side `i` going from the vertex `i` to the vertex `i + 1`. The
+        generators are the words `r_2 r_0, r_1 r_2, r_2 r_1 r_0 r_2`, the
+        rotations about its vertices by twice its angles; with
+        ``orientation_preserving=False``, the generators are `r_0, r_1, r_2`.
+
+        """
+        from flatsurf.geometry.polygon import euclidean_polygons
+        from flatsurf.geometry.signature import SurfaceSignature
+        from flatsurf.geometry.similarity import SimilarityGroup, reflection
+        from flatsurf.geometry.subfield import _check_exact
+        from flatsurf.geometry.subgroup import _triangle_group
+
+        _check_exact(base_ring)
+        geometry = SurfaceSignature.from_orbifold_orders(0, (m1, m2, m3)).geometry()
+        if geometry != "euclidean":
+            raise ValueError(
+                f"the triangle group ({m1}, {m2}, {m3}) is {geometry}, not euclidean: 1/m1 + 1/m2 + 1/m3 must be equal to 1"
+            )
+
+        T = euclidean_polygons.triangle(
+            *(QQ((1, 2 * ZZ(m))) for m in (m1, m3, m2)), base_ring=base_ring
+        )
+        F = SimilarityGroup(T.base_ring())
+        V = T.vertices()
+        reflections = [F(reflection(V[i], V[(i + 1) % 3])) for i in range(3)]
+        return _triangle_group(F, reflections, orientation_preserving)
+
+
+crystallographic_groups = CrystallographicGroupGenerators()

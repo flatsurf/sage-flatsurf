@@ -209,9 +209,11 @@ class SimilaritySurfaces(SurfaceCategory):
             category = PolygonalSurfaces.ParentMethods.refined_category(self)
 
             if self.is_cone_surface():
-                from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+                from flatsurf.geometry.categories.cone_surfaces import (
+                    FlatConeSurfaces,
+                )
 
-                category &= ConeSurfaces()
+                category &= FlatConeSurfaces()
 
             if self.is_dilation_surface():
                 from flatsurf.geometry.categories.dilation_surfaces import (
@@ -256,7 +258,7 @@ class SimilaritySurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used to determine whether this surface is in the
-                category of :class:`~.cone_surfaces.ConeSurfaces`. Surfaces can
+                category of :class:`~.cone_surfaces.FlatConeSurfaces`. Surfaces can
                 override this method to perform specialized logic, see the note
                 in :mod:`flatsurf.geometry.categories` for performance
                 considerations.
@@ -273,9 +275,9 @@ class SimilaritySurfaces(SurfaceCategory):
             if self.is_translation_surface():
                 return True
 
-            from flatsurf.geometry.categories import ConeSurfaces
+            from flatsurf.geometry.categories import FlatConeSurfaces
 
-            return ConeSurfaces.ParentMethods._is_cone_surface(self)
+            return FlatConeSurfaces.ParentMethods._is_cone_surface(self)
 
         def is_dilation_surface(self, positive=False):
             r"""
@@ -393,6 +395,43 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
 
+        def _describe_surface(self):
+            if not self.is_finite_type():
+                return "Surface built from infinitely many polygons"
+
+            if not self.is_connected():
+                # Many checks do not work yet if a surface is not connected, so we stop here.
+                return "Disconnected Surface"
+
+            if self.is_translation_surface(positive=True):
+                description = "Translation Surface"
+            elif self.is_translation_surface(positive=False):
+                description = "Half-Translation Surface"
+            elif self.is_dilation_surface(positive=True):
+                description = "Positive Dilation Surface"
+            elif self.is_dilation_surface(positive=False):
+                description = "Dilation Surface"
+            elif self.is_cone_surface():
+                description = "Cone Surface"
+                if self.is_rational_surface():
+                    description = f"Rational {description}"
+            else:
+                description = "Surface"
+
+            if hasattr(self, "stratum"):
+                try:
+                    description += f" in {self.stratum()}"
+                except NotImplementedError:
+                    # Computation of the stratum might fail due to #227.
+                    pass
+            elif self.genus is not NotImplemented:
+                description = f"Genus {self.genus()} {description}"
+
+            if self.is_with_boundary():
+                description += " with boundary"
+
+            return description
+
         def _mul_(self, matrix, switch_sides=True):
             r"""
             EXAMPLES::
@@ -412,11 +451,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: ds1 = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: ds1.polygon(0)
-                Polygon(vertices=[(0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)])
+                Polygon(vertices=[(0, 0), (1/2, 0), (1, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 1), (0, 4/5)])
                 sage: m = matrix(QQ, [[0, 1], [1, 0]]) # maps (x,y) to (y, x)
                 sage: ds2 = m*ds1
                 sage: ds2.polygon(0)
-                Polygon(vertices=[(0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)])
+                Polygon(vertices=[(0, 0), (4/5, 0), (1, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1), (0, 1/2)])
             """
             if not switch_sides:
                 raise NotImplementedError
@@ -518,10 +557,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: S.homology()
-                H₁(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H₁(Genus 2 Positive Dilation Surface built from a square)
 
                 sage: S.homology(0)
-                H₀(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H₀(Genus 2 Positive Dilation Surface built from a square)
 
             """
             if self.is_mutable():
@@ -631,12 +670,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: S.cohomology()
-                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H¹(Genus 2 Positive Dilation Surface built from a square)
 
             ::
 
                 sage: S.cohomology(0)
-                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                H⁰(Genus 2 Positive Dilation Surface built from a square)
 
             """
             if self.is_mutable():
@@ -724,74 +763,6 @@ class SimilaritySurfaces(SurfaceCategory):
             want to put it here.
             """
 
-            def angle(self, numerical=False):
-                r"""
-                Return the total angle at this point as a multiple of 2π.
-
-                INPUT:
-
-                - ``numerical`` -- a boolean (default: ``False``); whether to
-                  return a floating point approximation of the angle or its exact
-                  value.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S(0, 0).angle()
-                    1
-                    sage: S(0, (1, 0)).angle()
-                    1/2
-                    sage: S(0, (1, 0)).angle(numerical=True)
-                    0.500000000000000
-
-                TESTS:
-
-                For mutable surfaces, the angles are not cached::
-
-                    sage: from flatsurf import MutableOrientedSimilaritySurface
-                    sage: T = MutableOrientedSimilaritySurface.from_surface(S)
-                    sage: T._refine_category_(S.category())  # make angle() available
-                    sage: T(0, 0).angle()
-                    1
-                    sage: T(0, 0).angle() is T(0, 0).angle()
-                    False
-
-                ::
-
-                    sage: T.glue((0, 0), (0, 2))
-                    sage: T(0, 0).angle()
-                    3/8
-
-                .. SEEALSO::
-
-                    :meth:`turns` for the number of full 2π turns at a point.
-
-                """
-                if self.is_vertex():
-                    return self.parent()._angle_vertex(self, numerical=numerical)
-
-                from sage.all import QQ, RR
-
-                ring = RR if numerical else QQ
-
-                if self.is_in_edge_interior():
-                    label, coordinates = self.representative()
-                    edge = (
-                        self.parent()
-                        .polygon(label)
-                        .get_point_position(coordinates)
-                        .get_edge()
-                    )
-
-                    opposite_edge = self.parent().opposite_edge(label, edge)
-                    if opposite_edge is None or opposite_edge == (label, edge):
-                        # The total angle at a self-glued or unglued edge is π.
-                        return ring(0.5)
-
-                return ring.one()
-
             def turns(self, start_edge=None, start_holonomy=None):
                 r"""
                 Return the number of total 2π turns at this vertex.
@@ -843,8 +814,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 .. SEEALSO::
 
-                    :meth:`angle` for the possibly non-integral number of
-                    turns at this point.
+                    :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.ElementMethods.angle`
+                    for the possibly non-integral number of turns at this
+                    point.
 
                 """
                 if not self.is_vertex():
@@ -981,10 +953,31 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S = translation_surfaces.square_torus()
                     sage: S(0, 0)._test_edges_ccw()
 
+                A point inside a self-glued edge::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                    sage: S(0, (1, 0))._test_edges_ccw()
+
+                A point inside an unglued edge::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+                    sage: T = MutableOrientedSimilaritySurface(QQ)
+                    sage: T.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                    0
+                    sage: T.set_immutable()
+                    sage: T(0, (1/2, 0))._test_edges_ccw()
+
                 """
                 tester = self._tester(**options)
 
                 edges = self.edges_ccw()
+
+                # Walking around a point inside a self-glued or unglued edge
+                # crosses that single edge once, so the entries do not come in
+                # pairs.
+                if len(self.edges()) == 1:
+                    return
 
                 tester.assertTrue(len(edges) % 2 == 0)
 
@@ -1020,7 +1013,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     start_edge = label, position.get_edge()
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                    start_holonomy = S.polygon(start_edge[0]).edge_vector(start_edge[1])
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
@@ -1074,14 +1067,14 @@ class SimilaritySurfaces(SurfaceCategory):
                             break
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                    start_holonomy = S.polygon(start_edge[0]).edge_vector(start_edge[1])
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
                 similarity = similarity_from_vectors(
-                    S.polygon(start_edge[0]).edge(start_edge[1]), start_holonomy
+                    S.polygon(start_edge[0]).edge_vector(start_edge[1]), start_holonomy
                 )
 
                 edges = [(start_edge, start_holonomy)]
@@ -1092,7 +1085,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         (edges[-1][0][1] - 1)
                         % len(S.polygon(edges[-1][0][0]).vertices()),
                     )
-                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge(
+                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge_vector(
                         exit_edge[1]
                     )
                     edges.append((exit_edge, exit_holonomy))
@@ -1110,7 +1103,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     if enter_edge == start_edge:
                         break
 
-                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge(
+                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge_vector(
                         enter_edge[1]
                     )
                     edges.append((enter_edge, enter_holonomy))
@@ -1126,9 +1119,34 @@ class SimilaritySurfaces(SurfaceCategory):
             want to put it here.
             """
 
+            def _empty_mutable_surface(self):
+                r"""
+                Return an empty mutable surface over the base ring of this
+                surface, in which surfaces of the same geometry are built.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: T = S._empty_mutable_surface()
+                    sage: T
+                    Empty Surface
+                    sage: T.base_ring()
+                    Rational Field
+                    sage: T.is_mutable()
+                    True
+
+                """
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+                return MutableOrientedSimilaritySurface(self.base_ring())
+
             def some_elements(self):
                 r"""
-                Return some typical points of this surface (for testing).
+                Return some typical points of this surface (for testing): a
+                point in the interior of each of the first polygons, a point
+                in the interior of each self-glued or unglued edge of these
+                polygons, then the vertices.
 
                 EXAMPLES::
 
@@ -1137,10 +1155,19 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: list(S.some_elements())
                     [Point (1/2, 1/2) of polygon 0, Vertex 0 of polygon 0]
 
+                A self-glued edge contributes a point::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: S = similarity_surfaces.self_glued_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))
+                    sage: list(S.some_elements())[:6]
+                    [Point (29/39, 77/39) of polygon 0, Point (1, 0) of polygon 0, Point (3/2, 2) of polygon 0, Point (1/2, 9/2) of polygon 0, Point (0, 5/2) of polygon 0, Vertex 0 of polygon 0]
+
                 """
                 from itertools import islice
 
-                for label in islice(self.labels(), 32):
+                labels = list(islice(self.labels(), 32))
+
+                for label in labels:
                     polygon = self.polygon(label)
 
                     from sage.categories.all import Fields
@@ -1151,10 +1178,20 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     else:
                         point = self(  # pylint: disable=not-callable
-                            label, polygon.vertex(0) + polygon.edge(0) / 2
+                            label, polygon.vertex(0) + polygon.edge_vector(0) / 2
                         )
 
                     yield point
+
+                for label in labels:
+                    polygon = self.polygon(label)
+
+                    for e in range(len(polygon.vertices())):
+                        opposite = self.opposite_edge(label, e)
+                        if opposite is None or opposite == (label, e):
+                            yield self(  # pylint: disable=not-callable
+                                label, polygon.vertex(e) + polygon.edge_vector(e) / 2
+                            )
 
                 if self.is_finite_type():
                     yield from self.vertices()
@@ -1356,9 +1393,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     )
                     p, e = p
 
-                u = self.polygon(p).edge(e)
+                u = self.polygon(p).edge_vector(e)
                 pp, ee = self.opposite_edge(p, e)
-                v = self.polygon(pp).edge(ee)
+                v = self.polygon(pp).edge_vector(ee)
 
                 # note the orientation, it is -v and not v
                 from flatsurf.geometry.similarity import similarity_from_vectors
@@ -1696,7 +1733,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     coordinates_AA = []
                     for label, p in zip(self.labels(), self.polygons()):
-                        for e in p.edges():
+                        for e in p.edge_vectors():
                             coordinates_AA.append(AA(e[0]))
                             coordinates_AA.append(AA(e[1]))
                     from sage.rings.qqbar import number_field_elements_from_algebraics
@@ -2147,13 +2184,13 @@ class SimilaritySurfaces(SurfaceCategory):
                 dt = t.derivative()
                 es = []
                 for i in range(e1):
-                    es.append(poly1.edge(i))
+                    es.append(poly1.edge_vector(i))
                 ne = len(poly2.vertices())
                 for i in range(1, ne):
                     ee = (e2 + i) % ne
-                    es.append(dt * poly2.edge(ee))
+                    es.append(dt * poly2.edge_vector(ee))
                 for i in range(e1 + 1, len(poly1.vertices())):
-                    es.append(poly1.edge(i))
+                    es.append(poly1.edge_vector(i))
 
                 try:
                     from flatsurf import Polygon
@@ -2256,7 +2293,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     doctest:warning
                     ...
                     UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
-                    sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
+                    sage: z.representative(pc.root())[1].parent()
                     Vector space of dimension 2 over Algebraic Real Field
 
                 ::
@@ -2569,8 +2606,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     raise ValueError("Edge must be adjacent to two triangles.")
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
-                sim1 = similarity_from_vectors(poly1.edge(e1 + 2), -poly1.edge(e1 + 1))
-                sim2 = similarity_from_vectors(poly2.edge(e2 + 2), -poly2.edge(e2 + 1))
+                sim1 = similarity_from_vectors(
+                    poly1.edge_vector(e1 + 2), -poly1.edge_vector(e1 + 1)
+                )
+                sim2 = similarity_from_vectors(
+                    poly2.edge_vector(e2 + 2), -poly2.edge_vector(e2 + 1)
+                )
                 sim = sim1 * sim2
                 return sim[1][0] < 0
 
@@ -2586,10 +2627,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
                 sim1 = similarity_from_vectors(
-                    poly1.vertex(e1) - poly1.vertex(e1 + 2), -poly1.edge(e1 + 1)
+                    poly1.vertex(e1) - poly1.vertex(e1 + 2), -poly1.edge_vector(e1 + 1)
                 )
                 sim2 = similarity_from_vectors(
-                    poly2.vertex(e2) - poly2.vertex(e2 + 2), -poly2.edge(e2 + 1)
+                    poly2.vertex(e2) - poly2.vertex(e2 + 2), -poly2.edge_vector(e2 + 1)
                 )
                 sim = sim1 * sim2
 
@@ -3176,7 +3217,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 last_sim = SG(-v[0], -v[1])
 
                 # First check the edge eminating rightward from the start_vertex.
-                e = p.edge(initial_vertex)
+                e = p.edge_vector(initial_vertex)
                 if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
                     from flatsurf.geometry.surface_objects import SaddleConnection
 
@@ -3273,73 +3314,6 @@ class SimilaritySurfaces(SurfaceCategory):
                             )
                         )
                 return sc_list
-
-            def ramified_cover(self, d, data):
-                r"""
-                Return a ramified cover of this surface.
-
-                INPUT:
-
-                - ``d`` - integer (the degree of the cover)
-
-                - ``data`` - a dictionary which to a pair ``(label, edge_num)`` associates a permutation
-                  of {1,...,d}
-
-                EXAMPLES:
-
-                The L-shape origami::
-
-                    sage: import flatsurf
-                    sage: T = flatsurf.translation_surfaces.square_torus()
-                    sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
-                    Translation Surface in H_2(2) built from 3 squares
-                    sage: O = T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
-                    sage: O.stratum()
-                    H_2(2)
-
-                TESTS::
-
-                    sage: import flatsurf
-                    sage: T = flatsurf.translation_surfaces.square_torus()
-                    sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,2): '(1,3)'})
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: inconsistent covering data
-
-                """
-                from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-
-                G = SymmetricGroup(d)
-                for k in data:
-                    data[k] = G(data[k])
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-                cover = MutableOrientedSimilaritySurface(self.base_ring())
-                edges = set(self.edges())
-                cover_labels = {}
-                for i in range(1, d + 1):
-                    for lab in self.labels():
-                        cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
-                while edges:
-                    lab, e = elab = edges.pop()
-                    llab, ee = eelab = self.opposite_edge(lab, e)
-                    edges.remove(eelab)
-                    if elab in data:
-                        if eelab in data:
-                            if not (data[elab] * data[eelab]).is_one():
-                                raise ValueError("inconsistent covering data")
-                        s = data[elab]
-                    elif eelab in data:
-                        s = ~data[eelab]
-                    else:
-                        s = G.one()
-
-                    for i in range(1, d + 1):
-                        p0 = cover_labels[(lab, i)]
-                        p1 = cover_labels[(lab, s(i))]
-                        cover.glue((p0, e), (p1, ee))
-                cover.set_immutable()
-                return cover
 
             def subdivide(self):
                 r"""
@@ -3891,17 +3865,6 @@ class SimilaritySurfaces(SurfaceCategory):
                     S.standardize_polygons(in_place=True)
                     S.set_immutable()
                     return S
-
-                def fundamental_group(self, base_label=None):
-                    r"""
-                    Return the fundamental group of this surface.
-                    """
-                    if base_label is None:
-                        base_label = self.root()
-
-                    from flatsurf.geometry.fundamental_group import FundamentalGroup
-
-                    return FundamentalGroup(self, base_label)
 
     class SubcategoryMethods:
         def Rational(self):

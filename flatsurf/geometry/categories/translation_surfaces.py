@@ -383,7 +383,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     Return the stratum this surface belongs to.
 
                     This uses the package ``surface-dynamics``
-                    (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
+                    (see https://flatsurf.github.io/surface-dynamics/)
 
                     EXAMPLES::
 

@@ -7,11 +7,14 @@ from flatsurf.version import version as __version__
 from flatsurf.geometry.polygon import (
     Polygon,
     polygons,
+    euclidean_polygons,
     EquiangularPolygons,
     EuclideanPolygonsWithAngles,
     EuclideanPolygons as Polygons,
     ConvexPolygons,
 )
+from flatsurf.geometry.categories import EuclideanPolygons, HyperbolicPolygons
+from flatsurf.geometry.polygon import EuclideanPolygon
 
 from flatsurf.geometry.similarity_surface_generators import (
     similarity_surfaces,
@@ -20,11 +23,22 @@ from flatsurf.geometry.similarity_surface_generators import (
     translation_surfaces,
 )
 
+from flatsurf.geometry.hyperbolic_surface_generators import (
+    hyperbolic_polygons,
+    hyperbolic_surfaces,
+    fuchsian_groups,
+)
+
+from flatsurf.geometry.similarity_surface_generators import crystallographic_groups
+
 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
 from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
 from flatsurf.geometry.hyperbolic import HyperbolicPlane
+from flatsurf.geometry.hyperbolic_polygon import HyperbolicPolygon
+from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+from flatsurf.geometry.signature import SurfaceSignature
 
 from flatsurf.geometry.homology import SimplicialHomology
 from flatsurf.geometry.cohomology import SimplicialCohomology

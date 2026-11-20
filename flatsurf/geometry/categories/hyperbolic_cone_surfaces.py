@@ -1,0 +1,969 @@
+r"""
+The category of hyperbolic cone surfaces.
+
+A hyperbolic cone surface is a surface that can be built by gluing compact
+polygons of the hyperbolic plane along their edges with isometries. The
+metric is hyperbolic away from the vertices, which can be cone points of any
+total angle.
+
+Two geodesic segments of the hyperbolic plane are related by an isometry only
+when they have the same length, so there is no hyperbolic counterpart of the
+gluings of edges of different lengths by similarities: the edges glued to each
+other have the same length. On an oriented surface, the gluing is the unique
+orientation preserving isometry that sends one edge onto the other one with
+reverse orientation.
+
+See :mod:`flatsurf.geometry.categories` for a general description of the
+category framework in sage-flatsurf.
+
+EXAMPLES:
+
+A sphere with three cone points, glued from a Lambert quadrilateral::
+
+    sage: from flatsurf import HyperbolicPlane
+    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+    sage: H = HyperbolicPlane(QQ)
+    sage: P = H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+    sage: S = MutableOrientedHyperbolicSurface(QQ)
+    sage: S.add_polygon(P)
+    0
+    sage: S.glue((0, 0), (0, 3))
+    sage: S.glue((0, 1), (0, 2))
+    sage: S.set_immutable()
+
+    sage: from flatsurf.geometry.categories import HyperbolicConeSurfaces
+    sage: S in HyperbolicConeSurfaces()
+    True
+
+"""
+
+# ####################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2026 Vincent Delecroix
+#                      2023-2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ####################################################################
+
+from flatsurf.cache import cached_surface_method
+from flatsurf.geometry.categories.surface_category import (
+    SurfaceCategory,
+    SurfaceCategoryWithAxiom,
+)
+
+
+class HyperbolicConeSurfaces(SurfaceCategory):
+    r"""
+    The category of surfaces built by gluing compact polygons of the
+    hyperbolic plane with isometries on the edges.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories import HyperbolicConeSurfaces
+        sage: HyperbolicConeSurfaces()
+        Category of hyperbolic cone surfaces
+        sage: HyperbolicConeSurfaces().Oriented().FiniteType()
+        Category of finite type oriented hyperbolic cone surfaces
+
+    """
+
+    def super_categories(self):
+        r"""
+        Return the categories that a hyperbolic cone surface is also always a
+        member of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import HyperbolicConeSurfaces
+            sage: HyperbolicConeSurfaces().super_categories()
+            [Category of cone surfaces]
+
+        """
+        from flatsurf.geometry.categories.common_cone_surfaces import ConeSurfaces
+
+        return [ConeSurfaces()]
+
+    class ParentMethods:
+        r"""
+        Provides methods available to all hyperbolic cone surfaces.
+
+        If you want to add functionality for such surfaces you most likely
+        want to put it here.
+        """
+
+        def hyperbolic_plane(self):
+            r"""
+            Return the hyperbolic plane that the polygons of this surface live
+            in.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.hyperbolic_plane()
+                Hyperbolic Plane over Rational Field
+
+            """
+            from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
+            return HyperbolicPlane(self.base_ring())
+
+        def _polygon_coordinates(self, label, point, ring=None):
+            r"""
+            Return ``point`` in the coordinates of the polygon ``label``,
+            i.e., its coordinates in the Klein model.
+
+            This is a helper method for
+            :class:`~flatsurf.geometry.surface_objects.SurfacePoint` which
+            turns the coordinates provided by the user into the immutable
+            vectors that the polygons of this surface work with.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``point`` -- a point of the hyperbolic plane, or its coordinates
+              in the Klein model as a pair or a vector
+
+            - ``ring`` -- a ring or ``None`` (default: ``None``); the ring
+              of the coordinates, the base ring of this surface if ``None``
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                0
+                sage: p = S._polygon_coordinates(0, (1/4, 0))
+                sage: p
+                (1/4, 0)
+                sage: p.is_immutable()
+                True
+                sage: S._polygon_coordinates(0, H(2*I))
+                (0, 3/5)
+                sage: S._polygon_coordinates(0, (1/4, 0), ring=AA).parent()
+                Vector space of dimension 2 over Algebraic Real Field
+
+            """
+            from flatsurf.geometry.hyperbolic import HyperbolicPoint
+
+            if ring is None:
+                ring = self.base_ring()
+
+            if isinstance(point, HyperbolicPoint):
+                point = point.coordinates(model="klein")
+
+            point = (ring**2)(point)
+            point.set_immutable()
+            return point
+
+        def _polygon_point(self, label, coordinates):
+            r"""
+            Return the point of the hyperbolic plane with the Klein
+            ``coordinates`` in the polygon ``label``.
+
+            This is the inverse of :meth:`_polygon_coordinates`.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``coordinates`` -- an immutable vector as returned by
+              :meth:`_polygon_coordinates`
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                0
+                sage: S._polygon_point(0, vector((0, 3/5)))
+                2*I
+
+            """
+            x, y = coordinates
+            return self.hyperbolic_plane().point(x, y, model="klein", check=False)
+
+        def _edge_midpoint(self, label, edge):
+            r"""
+            Return the Klein coordinates of the hyperbolic midpoint of the
+            ``edge`` of the polygon ``label``.
+
+            This is a helper method for
+            :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.ParentMethods.orbifold_points`.
+
+            INPUT:
+
+            - ``label`` -- a polygon label
+
+            - ``edge`` -- an edge index of that polygon
+
+            OUTPUT:
+
+            A vector over the base ring. A :class:`ValueError` is raised if the
+            midpoint is not defined over the base ring, which does not happen
+            for an edge glued to itself.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(11/13, 0), (3/5, 2/5), (1/7, 0)]))
+                0
+                sage: S._edge_midpoint(0, 2)
+                (3/5, 0)
+
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                0
+                sage: S._edge_midpoint(0, 0)
+                Traceback (most recent call last):
+                ...
+                ValueError: isometry is not defined over Rational Field; adjoin a square root of 4/3
+
+            """
+            from flatsurf.geometry.hyperbolic_isometry import segment_midpoint
+
+            polygon = self.polygon(label)
+            return segment_midpoint(
+                polygon.vertex(edge), polygon.vertex(edge + 1), ring=self.base_ring()
+            )
+
+        def some_elements(self):
+            r"""
+            Return some typical points of this surface (for testing): a point
+            in the interior of each of the first polygons, a point in the
+            interior of each self-glued or unglued edge of these polygons,
+            then the vertices.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S.glue((0, 0), (0, 3))
+                sage: S.glue((0, 1), (0, 2))
+                sage: S.set_immutable()
+                sage: points = list(S.some_elements())
+                sage: points[0]
+                Point (1/4, 1/4) of polygon 0
+                sage: len(points)
+                4
+
+            The unglued edges contribute a point each::
+
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S.glue((0, 0), (0, 3))
+                sage: S.set_immutable()
+                sage: list(S.some_elements())
+                [Point (1/4, 1/4) of polygon 0,
+                 Point (1/2, 1/4) of polygon 0,
+                 Point (1/4, 1/2) of polygon 0,
+                 Vertex 0 of polygon 0,
+                 Vertex 1 of polygon 0,
+                 Vertex 2 of polygon 0]
+
+            For a non-convex polygon, the point is taken near a convex
+            corner::
+
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, -1/2), (1/2, 1/2), (0, 0), (-1/2, 1/2)]))
+                0
+                sage: S.an_element()
+                Point (-1/6, 0) of polygon 0
+
+            """
+            from itertools import islice
+
+            from sage.modules.free_module_element import vector
+
+            labels = list(islice(self.labels(), 32))
+
+            for label in labels:
+                polygon = self.polygon(label)
+                vertices = [
+                    vector(v.coordinates(model="klein")) for v in polygon.vertices()
+                ]
+                n = len(vertices)
+
+                if polygon.is_convex():
+                    # Convexity in the Klein model is Euclidean convexity, so
+                    # the average of the vertices is inside.
+                    point = sum(vertices) / n
+                else:
+                    # The lowest of the leftmost vertices is a strictly convex
+                    # corner, so the polygon contains a neighbourhood of that
+                    # corner in the cone spanned by its two sides.
+                    corner = min(vertices, key=tuple)
+                    i = vertices.index(corner)
+                    direction = (vertices[i - 1] - corner) + (
+                        vertices[(i + 1) % n] - corner
+                    )
+                    t = self.base_ring()(1) / 3
+                    while True:
+                        point = corner + t * direction
+                        if polygon.get_point_position(point).is_in_interior():
+                            break
+                        t /= 2
+
+                yield self(label, point)  # pylint: disable=not-callable
+
+            for label in labels:
+                polygon = self.polygon(label)
+                vertices = [
+                    vector(v.coordinates(model="klein")) for v in polygon.vertices()
+                ]
+                n = len(vertices)
+
+                for e in range(n):
+                    opposite = self.opposite_edge(label, e)
+                    if opposite is None or opposite == (label, e):
+                        # Geodesics are Euclidean segments in the Klein model.
+                        yield self(  # pylint: disable=not-callable
+                            label, (vertices[e] + vertices[(e + 1) % n]) / 2
+                        )
+
+            if self.is_finite_type():
+                yield from self.vertices()
+
+        def _describe_surface(self):
+            r"""
+            Return a string describing this kind of surface.
+
+            This is a helper method for ``_repr_``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S._describe_surface()
+                'Hyperbolic Surface with boundary'
+                sage: S.glue((0, 0), (0, 3))
+                sage: S.glue((0, 1), (0, 2))
+                sage: S.set_immutable()
+                sage: S._describe_surface()
+                'Genus 0 Hyperbolic Surface'
+
+            ::
+
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                0
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                1
+                sage: S._describe_surface()
+                'Disconnected Surface'
+
+            """
+            if not self.is_finite_type():
+                return "Surface built from infinitely many polygons"
+
+            if not self.is_connected():
+                return "Disconnected Surface"
+
+            description = "Hyperbolic Surface"
+
+            # The genus is only provided by the categories of connected
+            # surfaces without boundary, i.e., not for mutable surfaces.
+            if self.genus is not NotImplemented:
+                description = f"Genus {self.genus()} {description}"
+
+            if self.is_with_boundary():
+                description += " with boundary"
+
+            return description
+
+        def _mismatched_gluing(self):
+            r"""
+            Return the first pair of glued edges of this surface that do not
+            have the same length, or ``None`` if there is none.
+
+            For a surface of infinite type, only the edges of the first 32
+            polygons are considered.
+
+            OUTPUT:
+
+            A pair of pairs (polygon label, edge index) or ``None``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S.glue((0, 0), (0, 3))
+                sage: S._mismatched_gluing() is None
+                True
+
+                sage: from flatsurf.geometry.surface import MutablePolygonalSurface
+                sage: MutablePolygonalSurface.glue(S, (0, 1), (0, 0))
+                sage: S._mismatched_gluing()
+                ((0, 0), (0, 1))
+
+            """
+            from itertools import islice
+
+            labels = self.labels()
+            if not self.is_finite_type():
+                labels = islice(labels, 32)
+
+            for label in labels:
+                sides = self.polygon(label)._cosh2_sides()
+                for edge, cosh2 in enumerate(sides):
+                    cross = self.opposite_edge(label, edge)
+                    if cross is None:
+                        continue
+
+                    cross_label, cross_edge = cross
+                    if self.polygon(cross_label)._cosh2_sides()[cross_edge] != cosh2:
+                        return (label, edge), cross
+
+            return None
+
+        def _test_edge_lengths(self, **options):
+            r"""
+            Verify that the edges glued to each other have the same length.
+
+            The test is skipped for mutable surfaces, which may go through
+            states with mismatched gluings while they are built. A mutable
+            :class:`~flatsurf.geometry.hyperbolic_surface.MutableOrientedHyperbolicSurface`
+            is tested anyway: its ``glue()`` refuses such gluings, so the
+            property holds in every state.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(QQ)
+                sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                0
+                sage: S.glue((0, 0), (0, 3))
+                sage: S.glue((0, 1), (0, 2))
+                sage: S._test_edge_lengths()
+
+            The test fails on a surface glued with the shared method, which
+            does not check the lengths::
+
+                sage: from flatsurf.geometry.surface import MutablePolygonalSurface
+                sage: MutablePolygonalSurface.glue(S, (0, 1), (0, 0))
+                sage: S._test_edge_lengths()
+                Traceback (most recent call last):
+                ...
+                AssertionError: ((0, 0), (0, 1)) is not None
+
+            """
+            from flatsurf.geometry.hyperbolic_surface import (
+                MutableOrientedHyperbolicSurface,
+            )
+
+            if self.is_mutable() and not isinstance(
+                self, MutableOrientedHyperbolicSurface
+            ):
+                return
+
+            tester = self._tester(**options)
+
+            tester.assertIsNone(self._mismatched_gluing())
+
+    class Oriented(SurfaceCategoryWithAxiom):
+        r"""
+        The category of hyperbolic cone surfaces whose orientation is
+        compatible with the orientation of the hyperbolic plane that their
+        polygons live in.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import HyperbolicConeSurfaces
+            sage: HyperbolicConeSurfaces().Oriented()
+            Category of oriented hyperbolic cone surfaces
+
+        """
+
+        class ParentMethods:
+            r"""
+            Provides methods available to all oriented hyperbolic cone
+            surfaces.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
+            def _empty_mutable_surface(self):
+                r"""
+                Return an empty mutable surface in the hyperbolic plane of this
+                surface, in which surfaces of the same geometry are built.
+
+                The plane is kept with its quadratic form, so that the
+                polygons of this surface can be added to the new surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+                    sage: S = MutableOrientedHyperbolicSurface(H3)
+                    sage: S.add_polygon(H3.polygon(vertices=[(0, 0), (1/2, -1/2), (3/4, 0), (1/2, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.glue((0, 1), (0, 2))
+                    sage: S.set_immutable()
+                    sage: T = S._empty_mutable_surface()
+                    sage: T
+                    Empty Surface
+                    sage: T.is_mutable()
+                    True
+                    sage: T.hyperbolic_plane() is H3
+                    True
+
+                """
+                from flatsurf.geometry.hyperbolic_surface import (
+                    MutableOrientedHyperbolicSurface,
+                )
+
+                return MutableOrientedHyperbolicSurface(self.hyperbolic_plane())
+
+            def change_ring(self, ring):
+                r"""
+                Return an immutable copy of this surface over ``ring``.
+
+                INPUT:
+
+                - ``ring`` -- a ring; the Klein coordinates of the vertices
+                  of the polygons and the side pairings must lie in it
+
+                EXAMPLES:
+
+                A surface over a number field copied to ``AA`` and back::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: K.<r> = NumberField(x^4 + 32*x^2 - 32, embedding=AA(12*AA(2).sqrt() - 16).sqrt())
+                    sage: s2 = r^2/12 + 4/3
+                    sage: cos = [1, s2/2, 0, -s2/2, -1, -s2/2, 0, s2/2]
+                    sage: sin = [0, s2/2, 1, s2/2, 0, -s2/2, -1, -s2/2]
+                    sage: P = HyperbolicPlane(K).polygon(vertices=[(r * c, r * s) for c, s in zip(cos, sin)])
+                    sage: S = MutableOrientedHyperbolicSurface(K)
+                    sage: S.add_polygon(P)
+                    0
+                    sage: for i in range(4):
+                    ....:     S.glue((0, i), (0, i + 4))
+                    sage: S.set_immutable()
+
+                    sage: T = S.change_ring(AA)
+                    sage: T.base_ring()
+                    Algebraic Real Field
+                    sage: T.polygon(0).base_ring()
+                    Algebraic Real Field
+                    sage: T.edge_transformation(0, 0).trace()
+                    22.31370849898476?
+                    sage: U = T.change_ring(K)
+                    sage: U.polygon(0) == P
+                    True
+                    sage: U.edge_transformation(0, 0).trace()
+                    2/3*r^2 + 65/3
+
+                The copy is made even when the ring is the base ring::
+
+                    sage: S.change_ring(S.base_ring()) is S
+                    False
+
+                The coordinates must lie in the ring::
+
+                    sage: T.change_ring(QQ)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: the coordinates of polygon 0 do not lie in Rational Field
+                    sage: S.change_ring(QQ)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: the coordinates of polygon 0 do not lie in Rational Field
+
+                So must the side pairings::
+
+                    sage: Q = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
+                    sage: L = MutableOrientedHyperbolicSurface(AA)
+                    sage: L.add_polygon(Q)
+                    0
+                    sage: L.glue((0, 1), (0, 2))
+                    sage: L.change_ring(QQ).polygon(0)
+                    Hyperbolic polygon with vertices [I, (1/2, 0), (1/2, 1/2), (0, 1/2)]
+                    sage: L.<s> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+                    sage: M = MutableOrientedHyperbolicSurface(L)
+                    sage: M.add_polygon(Q.change_ring(L))
+                    0
+                    sage: M.glue((0, 0), (0, 0))
+                    sage: M.edge_transformation(0, 0)
+                    [-2/3*s      0  1/3*s]
+                    [     0     -1      0]
+                    [-1/3*s      0  2/3*s]
+                    sage: M.change_ring(QQ)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: cannot glue edge 0 of polygon 0 to edge 0 of polygon 0: isometry is not defined over Rational Field; adjoin a square root of 4/3
+
+                """
+                if not self.is_finite_type():
+                    raise NotImplementedError(
+                        "change_ring is only implemented for surfaces of finite type"
+                    )
+
+                from flatsurf.geometry.hyperbolic_surface import (
+                    MutableOrientedHyperbolicSurface,
+                )
+
+                # A surface of the form x^2 + y^2 - z^2 stores no plane and is
+                # copied from the ring alone: hyperbolic_plane() would build a
+                # plane over the base ring, which some rings, such as CC, have
+                # not.
+                plane = getattr(self, "_hyperbolic_plane", None)
+                S = MutableOrientedHyperbolicSurface(
+                    ring if plane is None else plane.change_ring(ring)
+                )
+
+                for label in self.labels():
+                    try:
+                        polygon = self.polygon(label).change_ring(ring)
+                    except (TypeError, ValueError) as error:
+                        raise ValueError(
+                            f"the coordinates of polygon {label} do not lie in {ring}"
+                        ) from error
+                    S.add_polygon(polygon, label=label)
+
+                # Each gluing is seen from both of its edges; glue it once.
+                done = set()
+                for label in self.labels():
+                    for edge in range(len(self.polygon(label).vertices())):
+                        cross = self.opposite_edge(label, edge)
+                        if cross is None or (label, edge) in done:
+                            continue
+                        done.add((label, edge))
+                        done.add(cross)
+                        S.glue((label, edge), cross)
+
+                S.set_immutable()
+                return S
+
+            def edge_transformation(self, label, edge):
+                r"""
+                Return the orientation preserving isometry that sends the
+                ``edge`` of the polygon ``label`` to the edge it is glued to.
+
+                The start of the edge is sent to the end of the opposite edge
+                and its end to the start of the opposite edge.
+
+                INPUT:
+
+                - ``label`` -- a polygon label
+
+                - ``edge`` -- an edge index of that polygon
+
+                OUTPUT:
+
+                A :class:`~flatsurf.geometry.hyperbolic_isometry.HyperbolicIsometry`
+                over the base ring of this surface, of the group of the
+                quadratic form of
+                :meth:`~flatsurf.geometry.categories.hyperbolic_cone_surfaces.HyperbolicConeSurfaces.ParentMethods.hyperbolic_plane`.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: H = HyperbolicPlane(QQ)
+                    sage: S = MutableOrientedHyperbolicSurface(QQ)
+                    sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.glue((0, 1), (0, 2))
+                    sage: S.set_immutable()
+
+                    sage: g = S.edge_transformation(0, 1)
+                    sage: g
+                    [   0    1    0]
+                    [-5/3    0  4/3]
+                    [-4/3    0  5/3]
+                    sage: g * vector((1/2, 0)), g * vector((1/2, 1/2))
+                    ((0, 1/2), (1/2, 1/2))
+
+                A kite of the plane with the form `x^2 + 2y^2 - 3z^2`::
+
+                    sage: H3 = HyperbolicPlane(QQ, form=[1, 2, -3])
+                    sage: S = MutableOrientedHyperbolicSurface(H3)
+                    sage: S.add_polygon(H3.polygon(vertices=[(0, 0), (1/2, -1/2), (3/4, 0), (1/2, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.glue((0, 1), (0, 2))
+                    sage: S.set_immutable()
+                    sage: g = S.edge_transformation(0, 0)
+                    sage: g
+                    [-1/3 -4/3    0]
+                    [ 2/3 -1/3    0]
+                    [   0    0    1]
+                    sage: g.parent()
+                    Group of isometries of the hyperbolic plane over Rational Field with form x^2 + 2*y^2 - 3*z^2
+                    sage: S.edge_transformation(0, 1).trace()
+                    -7/15
+                    sage: TestSuite(S).run()
+
+                TESTS::
+
+                    sage: S = MutableOrientedHyperbolicSurface(QQ)
+                    sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.edge_transformation(0, 1)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: edge 1 of polygon 0 is not glued
+
+                """
+                from flatsurf.geometry.hyperbolic_isometry import (
+                    HyperbolicIsometryGroup,
+                )
+
+                cross = self.opposite_edge(label, edge)
+                if cross is None:
+                    raise ValueError(f"edge {edge} of polygon {label} is not glued")
+
+                matrix = self._side_pairing_matrix(label, edge, *cross)
+
+                return HyperbolicIsometryGroup(
+                    self.base_ring(), form=self.hyperbolic_plane()._form
+                )(matrix)
+
+            def _side_pairing_matrix(self, label, edge, cross_label, cross_edge):
+                r"""
+                Return the matrix of the orientation preserving isometry that
+                sends the ``edge`` of the polygon ``label`` onto the edge
+                ``cross_edge`` of ``cross_label`` with reverse orientation,
+                whether or not these edges are glued.
+
+                INPUT:
+
+                - ``label``, ``edge`` -- a polygon label and an edge index
+
+                - ``cross_label``, ``cross_edge`` -- a polygon label and an
+                  edge index
+
+                OUTPUT:
+
+                A matrix over the base ring of this surface. A ``ValueError``
+                is raised if the edges do not have the same length or if the
+                isometry is not defined over the base ring.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: H = HyperbolicPlane(QQ)
+                    sage: S = MutableOrientedHyperbolicSurface(QQ)
+                    sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    0
+                    sage: S._side_pairing_matrix(0, 0, 0, 3)
+                    [ 0 -1  0]
+                    [ 1  0  0]
+                    [ 0  0  1]
+                    sage: S._side_pairing_matrix(0, 0, 0, 1)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: segments do not have the same length
+
+                """
+                from flatsurf.geometry.hyperbolic_isometry import segment_isometry
+
+                polygon = self.polygon(label)
+                cross_polygon = self.polygon(cross_label)
+
+                return segment_isometry(
+                    (polygon.vertex(edge), polygon.vertex(edge + 1)),
+                    (
+                        cross_polygon.vertex(cross_edge + 1),
+                        cross_polygon.vertex(cross_edge),
+                    ),
+                    ring=self.base_ring(),
+                )
+
+            def edge_matrix(self, label, edge):
+                r"""
+                Return the matrix of
+                `\mathrm{SO}(Q)^+`, for the quadratic form `Q` of the
+                hyperbolic plane, of the isometry that sends the ``edge`` of
+                the polygon ``label`` to the edge it is glued to.
+
+                See :meth:`edge_transformation` for the isometry itself.
+
+                INPUT:
+
+                - ``label`` -- a polygon label
+
+                - ``edge`` -- an edge index of that polygon
+
+                OUTPUT:
+
+                A `3 \times 3` matrix over the base ring of this surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: H = HyperbolicPlane(QQ)
+                    sage: S = MutableOrientedHyperbolicSurface(QQ)
+                    sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.glue((0, 1), (0, 2))
+                    sage: S.set_immutable()
+
+                    sage: S.edge_matrix(0, 0)
+                    [ 0 -1  0]
+                    [ 1  0  0]
+                    [ 0  0  1]
+
+                """
+                return self.edge_transformation(label, edge).matrix()
+
+            def _boundary_trace(self, loop):
+                r"""
+                Return the trace in `\mathrm{SO}(2, 1)` of the holonomy of the
+                boundary ``loop``.
+
+                This is a helper method for
+                :meth:`~flatsurf.geometry.categories.common_cone_surfaces.ConeSurfaces.FiniteType.Oriented.Connected.ParentMethods.signature`.
+                The trace is a conjugacy invariant in the base ring, `1 + 2
+                \cosh \ell` for a geodesic boundary of length `\ell`.
+
+                INPUT:
+
+                - ``loop`` -- an element of the fundamental group of this
+                  surface punctured at all of its vertices and based at its
+                  root
+
+                EXAMPLES:
+
+                A pair of pants glued from two right-angled regular hexagons::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: rho = AA(6).sqrt() / 3
+                    sage: h = AA(2).sqrt() / 2
+                    sage: P = HyperbolicPlane(AA).polygon(vertices=[(rho, 0), (rho/2, h), (-rho/2, h), (-rho, 0), (-rho/2, -h), (rho/2, -h)])
+                    sage: S = MutableOrientedHyperbolicSurface(AA)
+                    sage: S.add_polygon(P)
+                    0
+                    sage: S.add_polygon(P)
+                    1
+                    sage: S.glue((0, 0), (1, 0))
+                    sage: S.glue((0, 2), (1, 4))
+                    sage: S.glue((0, 4), (1, 2))
+                    sage: S.set_immutable(minimal_field=True)
+                    sage: [S._boundary_trace(loop) for loop in S.fundamental_group(punctured_vertices=True).boundary_loops()]
+                    [15, 15, 15]
+
+                """
+                # The side pairings lie in SO(Q), so does their product,
+                # whose trace is then invariant under conjugation.
+                return self.holonomy_representation()(loop).matrix().trace()
+
+            @cached_surface_method
+            def _angle_vertex(self, vertex, numerical):
+                r"""
+                Return the total angle at ``vertex`` as a multiple of 2π.
+
+                This is a helper method for
+                :meth:`~flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.ElementMethods.angle`;
+                it sums the interior angles of the polygons at the corners of
+                ``vertex``.
+
+                INPUT:
+
+                - ``vertex`` -- a vertex of this surface
+
+                - ``numerical`` -- a boolean; whether to return a floating
+                  point approximation, or an exact rational number, which
+                  requires every corner angle to be a rational multiple of π
+                  (see
+                  :meth:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon.angle`)
+
+                EXAMPLES::
+
+                    sage: from flatsurf import HyperbolicPlane
+                    sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
+                    sage: H = HyperbolicPlane(QQ)
+                    sage: S = MutableOrientedHyperbolicSurface(QQ)
+                    sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    0
+                    sage: S.glue((0, 0), (0, 3))
+                    sage: S.glue((0, 1), (0, 2))
+                    sage: S.set_immutable()
+
+                    sage: S._angle_vertex(S(0, 1), numerical=False)
+                    1/2
+                    sage: S._angle_vertex(S(0, 2), numerical=True)  # abs tol 1e-12
+                    0.195913276015304
+                    sage: S._angle_vertex(S(0, 2), numerical=False)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: angle is not a rational multiple of 2π; set numerical=True to get a numerical approximation
+
+                When the corners have irrational angles, the exact total of
+                an interior vertex is read from the trace of the holonomy of
+                its loop::
+
+                    sage: T = MutableOrientedHyperbolicSurface(QQ)
+                    sage: T.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+                    0
+                    sage: T.add_polygon(H.polygon(vertices=[(1/2, 0), (1/2, 1/2), (0, 1/2)]))
+                    1
+                    sage: T.glue((0, 1), (1, 2)); T.glue((0, 0), (0, 2)); T.glue((1, 0), (1, 1))
+                    sage: T.set_immutable()
+                    sage: T(1, 0).angle()
+                    1/2
+                    sage: T(1, 1).angle()
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: angle is not a rational multiple of 2π; set numerical=True to get a numerical approximation
+
+                """
+                total = 0
+                for label, point in vertex.representatives():
+                    polygon = self.polygon(label)
+                    corner = polygon.get_point_position(point).get_vertex()
+                    try:
+                        total += polygon.angle(corner, numerical=numerical)
+                    except ValueError:
+                        if numerical:
+                            raise
+                        from flatsurf.geometry.holonomy import _holonomy_angle
+
+                        return _holonomy_angle(self, vertex)
+
+                return total

@@ -821,11 +821,11 @@ class GraphicalSurface:
 
                     from flatsurf.geometry.euclidean import ccw
 
-                    if ccw(polygon.edge(vertex), direction) < 0:
+                    if ccw(polygon.edge_vector(vertex), direction) < 0:
                         continue
                     if (
                         ccw(
-                            polygon.edge((vertex - 1) % len(polygon.vertices())),
+                            polygon.edge_vector((vertex - 1) % len(polygon.vertices())),
                             direction,
                         )
                         < 0

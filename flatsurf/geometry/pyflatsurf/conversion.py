@@ -1902,7 +1902,7 @@ class FlatTriangulationConversion(Conversion):
             if half_edge < 0:
                 continue
 
-            vectors[half_edge - 1] = domain.polygon(polygon).edge(edge)
+            vectors[half_edge - 1] = domain.polygon(polygon).edge_vector(edge)
 
         vector_conversion = VectorSpaceConversion.to_pyflatsurf_from_elements(vectors)
         return [vector_conversion(vector) for vector in vectors]

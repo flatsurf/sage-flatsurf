@@ -2943,10 +2943,10 @@ class TriangulationMorphism_base(SurfaceMorphism):
 
         """
         for preimage_label in self.domain().labels():
-            for e in range(len(self.domain().polygon(preimage_label).edges())):
+            for e in range(len(self.domain().polygon(preimage_label).edge_vectors())):
                 if self._image_edge(preimage_label, e) == (label, edge):
                     return preimage_label, e
-            for e in range(len(self.domain().polygon(preimage_label).edges())):
+            for e in range(len(self.domain().polygon(preimage_label).edge_vectors())):
                 if self._image_edge(preimage_label, e)[0] == label:
                     return preimage_label, None
 
@@ -2989,7 +2989,7 @@ class TriangulationMorphism_base(SurfaceMorphism):
         preimage_label, preimage_coordinates = p.representative()
         preimage_polygon = self.domain().polygon(preimage_label)
 
-        for preimage_edge in range(len(preimage_polygon.edges())):
+        for preimage_edge in range(len(preimage_polygon.edge_vectors())):
             relative_coordinates = preimage_coordinates - preimage_polygon.vertex(
                 preimage_edge
             )
@@ -3027,7 +3027,7 @@ class TriangulationMorphism_base(SurfaceMorphism):
         image_label, image_coordinates = q.representative()
         image_polygon = self.codomain().polygon(image_label)
 
-        for image_edge in range(len(image_polygon.edges())):
+        for image_edge in range(len(image_polygon.edge_vectors())):
             relative_coordinates = image_coordinates - image_polygon.vertex(image_edge)
             preimage_label, preimage_edge = self._section_edge(image_label, image_edge)
             if preimage_edge is None:

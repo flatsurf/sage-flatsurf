@@ -20,6 +20,15 @@ EXAMPLES::
     sage: P in HyperbolicPolygons(QQ)
     True
 
+Compact polygons given by their vertices, possibly non-convex, are also in
+this category::
+
+    sage: Q = H.polygon(vertices=[(0, -1/2), (1/2, 1/2), (0, 0), (-1/2, 1/2)])
+    sage: Q.category()
+    Category of facade simple hyperbolic polygons over Rational Field
+    sage: Q in HyperbolicPolygons(QQ)
+    True
+
 """
 
 # ****************************************************************************

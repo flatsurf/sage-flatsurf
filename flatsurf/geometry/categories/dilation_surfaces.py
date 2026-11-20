@@ -327,7 +327,7 @@ class DilationSurfaces(SurfaceCategory):
 
             for label in self.labels():
                 p = self.polygon(label)
-                edges = p.edges()
+                edges = p.edge_vectors()
                 if len(edges) != 3:
                     return (False, label) if certificate else False
                 s0, s1, s2 = map(slope, edges)
@@ -382,12 +382,12 @@ class DilationSurfaces(SurfaceCategory):
             if len(poly1.vertices()) != 3 or len(poly2.vertices()) != 3:
                 raise ValueError("edge must be adjacent to two triangles")
 
-            edge1 = poly1.edge(e1)
-            edge1L = poly1.edge(e1 - 1)
-            edge1R = poly1.edge(e1 + 1)
-            edge2 = poly2.edge(e2)
-            edge2L = poly2.edge(e2 - 1)
-            edge2R = poly2.edge(e2 + 1)
+            edge1 = poly1.edge_vector(e1)
+            edge1L = poly1.edge_vector(e1 - 1)
+            edge1R = poly1.edge_vector(e1 + 1)
+            edge2 = poly2.edge_vector(e2)
+            edge2L = poly2.edge_vector(e2 - 1)
+            edge2R = poly2.edge_vector(e2 + 1)
 
             # if one of the triangle is monochromatic and the edge is the largest
             sim = self.edge_transformation(p2, e2)
@@ -493,7 +493,7 @@ class DilationSurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: A = S.affine_automorphism_group(); A
-                AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from a square)
 
             TESTS:
 
@@ -523,7 +523,7 @@ class DilationSurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: V = S.veech_group(); V
-                VeechGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+                VeechGroup(Genus 2 Positive Dilation Surface built from a square)
 
             TESTS:
 
@@ -629,14 +629,14 @@ class DilationSurfaces(SurfaceCategory):
                     sage: t = (r * p * r * t0).l_infinity_delaunay_triangulation()
                     sage: systole_count = 0
                     sage: for l, e in t.edges():
-                    ....:     v = t.polygon(l).edge(e)
+                    ....:     v = t.polygon(l).edge_vector(e)
                     ....:     systole_count += v[0]**2 + v[1]**2 == 1
                     sage: assert t.is_veering_triangulated() and systole_count == 8, (systole_count, {lab: t.polygon(lab) for lab in t.labels()}, t.gluings())
 
                     sage: t = (r**4 * p * r**5 * p**2 * r * t0).l_infinity_delaunay_triangulation()
                     sage: systole_count = 0
                     sage: for l, e in t.edges():
-                    ....:     v = t.polygon(l).edge(e)
+                    ....:     v = t.polygon(l).edge_vector(e)
                     ....:     systole_count += v[0]**2 + v[1]**2 == 1
                     sage: assert t.is_veering_triangulated() and systole_count == 8, (systole_count, {lab: t.polygon(lab) for lab in t.labels()}, t.gluings())
 
