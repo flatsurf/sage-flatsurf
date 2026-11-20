@@ -10,7 +10,7 @@ class by the name of its module and of its class as they were in the release.
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2024 Vincent Delecroix
+#        Copyright (C) 2026 Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -74,33 +74,51 @@ def irrational_triangle():
     return Polygon(vertices=[(0, 0), (1, 0), (0, K.gen())])
 
 
-# The name of the pickle, the surface it was made from, whether loading it
-# finds the deprecated name of the category of flat cone surfaces.
+def over_ring(surface, ring):
+    r"""
+    Return ``surface`` with its polygons converted into ``ring``, an immutable
+    surface with the same category.
+
+    A number field pickled by another version of SageMath unpickles to a new
+    field: its factory caches fields by the version of SageMath and by their
+    defining data, and number fields compare by identity. A surface loaded from
+    such a pickle is then over a field that differs from the one of a surface
+    built fresh, though both fields have the same defining polynomial and
+    embedding, and coerce into each other.
+    """
+    if surface.base_ring() is ring:
+        return surface
+
+    assert ring.has_coerce_map_from(surface.base_ring())
+    assert surface.base_ring().has_coerce_map_from(ring)
+
+    copy = MutableOrientedSimilaritySurface.from_surface(
+        surface.change_ring(ring), category=surface.category()
+    )
+    copy.set_immutable()
+    return copy
+
+
+# The name of the pickle and the surface it was made from. Each of these
+# pickles finds the deprecated name of the category of flat cone surfaces.
 CASES = {
-    "square_torus": (lambda: torus(immutable=True), True),
-    "billiard_irrational": (
-        lambda: similarity_surfaces.billiard(irrational_triangle()),
-        True,
+    "square_torus": lambda: torus(immutable=True),
+    "billiard_irrational": lambda: similarity_surfaces.billiard(
+        irrational_triangle()
     ),
-    "billiard_rational": (
-        lambda: similarity_surfaces.billiard(polygons.triangle(2, 3, 4)),
-        True,
+    "billiard_rational": lambda: similarity_surfaces.billiard(
+        polygons.triangle(2, 3, 4)
     ),
-    "half_translation": (
-        lambda: half_translation_surfaces.step_billiard(
-            [1, 1, 1], [QQ(1) / 2, 1, 2]
-        ),
-        True,
+    "half_translation": lambda: half_translation_surfaces.step_billiard(
+        [1, 1, 1], [QQ(1) / 2, 1, 2]
     ),
 }
 
 
 @pytest.mark.parametrize("name", CASES)
 def test_immutable_pickle(name):
-    build, warns = CASES[name]
-
-    S = load(name, warns=warns)
-    T = build()
+    S = load(name)
+    T = over_ring(CASES[name](), S.base_ring())
 
     assert S == T
     assert hash(S) == hash(T)
