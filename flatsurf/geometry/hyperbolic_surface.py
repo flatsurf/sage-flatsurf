@@ -366,42 +366,6 @@ class MutableOrientedHyperbolicSurface(
     # this equality: it does not depend on the plane.
     __hash__ = MutablePolygonalSurface.__hash__
 
-    def add_polygon(self, polygon, *, label=None):
-        r"""
-        Add an unglued polygon to this surface and return its label.
-
-        INPUT:
-
-        - ``polygon`` -- a
-          :class:`~flatsurf.geometry.hyperbolic_polygon.HyperbolicPolygon`
-
-        - ``label`` -- a hashable identifier or ``None`` (default: ``None``);
-          if ``None`` an integer identifier is automatically selected
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: from flatsurf.geometry.hyperbolic_surface import MutableOrientedHyperbolicSurface
-            sage: H = HyperbolicPlane(QQ)
-            sage: S = MutableOrientedHyperbolicSurface(AA)
-            sage: S.add_polygon(H.polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
-            0
-            sage: S.polygon(0).base_ring()
-            Algebraic Real Field
-
-        Euclidean polygons cannot be added::
-
-            sage: from flatsurf import polygons
-            sage: S.add_polygon(polygons.square())
-            Traceback (most recent call last):
-            ...
-            TypeError: polygon must be a hyperbolic polygon given by its vertices
-
-        """
-        self._check_polygon(polygon)
-
-        return super().add_polygon(polygon, label=label)
-
     def glue(self, x, y):
         r"""
         Glue the edge ``x`` to the edge ``y``, after checking that the
@@ -799,6 +763,19 @@ class MutableOrientedHyperbolicSurface(
             ValueError: polygon is defined over Algebraic Real Field, which does not coerce into Rational Field
 
         TESTS:
+
+        A polygon over a smaller ring is added over the ring of the surface,
+        and a Euclidean polygon is refused by :meth:`add_polygon`::
+
+            sage: A = MutableOrientedHyperbolicSurface(AA)
+            sage: A.add_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+            0
+            sage: A.polygon(0).base_ring()
+            Algebraic Real Field
+            sage: A.add_polygon(polygons.square())
+            Traceback (most recent call last):
+            ...
+            TypeError: polygon must be a hyperbolic polygon given by its vertices
 
         The polygon must lie in a hyperbolic plane of the quadratic form of the
         plane of the surface::

@@ -225,9 +225,23 @@ class MutablePolygonalSurface(Surface_base):
             sage: S.add_polygon(polygons.square(), label='X')
             'X'
 
+        A polygon of another geometry is refused and the surface is left
+        unchanged::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: P = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: S.add_polygon(P)
+            Traceback (most recent call last):
+            ...
+            TypeError: polygon must be a Euclidean polygon
+            sage: len(S.polygons())
+            2
+
         """
         if not self._mutable:
             raise Exception("cannot modify an immutable surface")
+
+        self._check_polygon(polygon)
 
         if label is None:
             while self._next_label in self._polygons:
@@ -246,6 +260,27 @@ class MutablePolygonalSurface(Surface_base):
             self._roots = self._roots + (label,)
 
         return label
+
+    def _check_polygon(self, polygon):
+        r"""
+        Raise an error if ``polygon`` cannot be a polygon of this surface.
+
+        This is a hook of :meth:`add_polygon` and :meth:`replace_polygon`:
+        an override checks that the geometry of ``polygon`` is the one of
+        the surface, and that its base ring is compatible with the one of the
+        surface. There is no default: a default accepting every polygon
+        would let a surface hold polygons of another geometry.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.surface import MutablePolygonalSurface
+            sage: MutablePolygonalSurface._check_polygon(None, None)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: a surface must check the polygons it accepts
+
+        """
+        raise NotImplementedError("a surface must check the polygons it accepts")
 
     def add_polygons(self, polygons):
         r"""
@@ -1102,11 +1137,28 @@ class MutablePolygonalSurface(Surface_base):
             ...
             Exception: cannot modify immutable surface; create a mutable copy first
 
+        A polygon of another geometry is refused and the surface is left
+        unchanged::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+            0
+            sage: P = HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)])
+            sage: S.replace_polygon(0, P)
+            Traceback (most recent call last):
+            ...
+            TypeError: polygon must be a Euclidean polygon
+            sage: len(S.polygon(0).vertices())
+            3
+
         """
         if not self._mutable:
             raise Exception(
                 "cannot modify immutable surface; create a mutable copy first"
             )
+
+        self._check_polygon(polygon)
 
         old = self.polygon(label)
 
@@ -1197,6 +1249,26 @@ class OrientedSimilaritySurface(Surface_base):
         category &= SimilaritySurfaces().Oriented()
 
         super().__init__(base, category=category)
+
+    def _check_polygon(self, polygon):
+        r"""
+        Raise a ``TypeError`` if ``polygon`` is not a Euclidean polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, HyperbolicPlane, polygons
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S._check_polygon(polygons.square())
+            sage: S._check_polygon(HyperbolicPlane(QQ).polygon(vertices=[(0, 0), (1/2, 0), (0, 1/2)]))
+            Traceback (most recent call last):
+            ...
+            TypeError: polygon must be a Euclidean polygon
+
+        """
+        from flatsurf.geometry.polygon import EuclideanPolygon
+
+        if not isinstance(polygon, EuclideanPolygon):
+            raise TypeError("polygon must be a Euclidean polygon")
 
 
 class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
