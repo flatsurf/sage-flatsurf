@@ -41,6 +41,7 @@ A sphere with three cone points, glued from a Lambert quadrilateral::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2026 Vincent Delecroix
+#                      2023-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
